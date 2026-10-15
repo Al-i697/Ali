@@ -18,6 +18,7 @@ import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import ExcelJS from 'exceljs';
 import { chromium } from 'playwright-core';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -35,6 +36,11 @@ const PW = {
   demo: { email: 'demo@e2e.local', password: 'Demo-E2E-Pass-2026' },
   fresh: { name: 'سالم بن ناصر الهنائي', email: 'salim@e2e.local', password: 'Fresh-E2E-Pass-2026' },
 };
+
+// مدقّق إمكانية الوصول (axe-core): يُحقَن عبر CDP فلا تمنعه سياسة CSP. يغطي ما يمكن كشفه آليًا فقط
+const axeSource = fs.existsSync(path.join(root, 'node_modules/axe-core/axe.min.js'))
+  ? fs.readFileSync(path.join(root, 'node_modules/axe-core/axe.min.js'), 'utf8')
+  : null;
 
 const DESKTOP = { width: 1360, height: 860 };
 const MOBILE = { width: 390, height: 844 };
@@ -111,6 +117,7 @@ function freePort() {
 }
 
 const tmpDirs = [];
+const tmpFiles = [];
 const servers = [];
 let chromiumPath; // يُمرَّر أيضًا للخادم كي يجد Chromium لتصدير PDF أينما كان مثبّتًا
 
@@ -339,6 +346,44 @@ async function phaseFirstRun(browser) {
       expect((await page.locator('tbody tr').count()) === 3, 'يجب أن يظهر 3 طلاب');
     }, { critical: true });
 
+    await step('الاستيراد بلصق الأسماء: يتجاهل الترقيم (1. و2)) ويتخطّى المكرَّر ويعرض معاينة قبل الحفظ', async () => {
+      await page.getByRole('button', { name: /استيراد \/ لصق أسماء/ }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('قائمة الأسماء').fill('1. محمد بن علي الهاشمي\n2) ناصر بن سعيد المقبالي\nأحمد بن خالد الكلباني');
+      await dlg.getByRole('button', { name: 'معاينة' }).click();
+      await dlg.getByText('معاينة الاستيراد').waitFor();
+      await expectText(dlg, /2 جديد/);
+      await expectText(dlg, /1 مُتخطّى/);
+      expect((await dlg.getByText('1. محمد').count()) === 0, 'الترقيم لم يُحذف من الاسم');
+      await dlg.getByRole('button', { name: /تأكيد استيراد 2 طالبًا/ }).click();
+      await toast(page, /استُورد|أُضيف|أضيف/).waitFor();
+      await page.getByRole('link', { name: 'محمد بن علي الهاشمي' }).waitFor();
+      expect((await page.locator('tbody tr').count()) === 5, 'المتوقع 5 طلاب (3 + 2 جديدان، والمكرر تُخطّي)');
+    });
+
+    await step('الاستيراد من ملف Excel: يكتشف صف العناوين وعمودَي الاسم والرقم تلقائيًا', async () => {
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('الطلاب');
+      ws.addRow(['م', 'اسم الطالب', 'الرقم المدني']);
+      ws.addRow([1, 'يوسف بن حمد الشكيلي', '60010001']);
+      ws.addRow([2, 'خليفة بن راشد العلوي', '60010002']);
+      const file = path.join(os.tmpdir(), `sijilli-e2e-students-${Date.now()}.xlsx`);
+      tmpFiles.push(file);
+      await wb.xlsx.writeFile(file);
+      await page.getByRole('button', { name: /استيراد \/ لصق أسماء/ }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByRole('radio', { name: /ملف Excel/ }).click();
+      await dlg.getByLabel('ملف الطلاب').setInputFiles(file);
+      await dlg.getByRole('button', { name: 'معاينة' }).click();
+      await dlg.getByText('معاينة الاستيراد').waitFor();
+      await expectText(dlg, /2 جديد/);
+      await expectText(dlg, /تم التعرف على الأعمدة/);
+      await expectText(dlg, /60010001/);
+      await dlg.getByRole('button', { name: /تأكيد استيراد 2 طالبًا/ }).click();
+      await page.getByRole('link', { name: 'خليفة بن راشد العلوي' }).waitFor();
+      expect((await page.locator('tbody tr').count()) === 7, 'المتوقع 7 طلاب');
+    }, { critical: true });
+
     let lessonUrl = '';
     await step('ينشئ تحضير درس ويُحفظ تلقائيًا ويبقى بعد إعادة التحميل', async () => {
       await page.goto('/lessons/new');
@@ -357,12 +402,31 @@ async function phaseFirstRun(browser) {
       expect((await page.getByLabel('ناتج التعلم 1').inputValue()) === 'يفسّر وظيفة كل نسيج', 'ناتج التعلم لم يُحفظ بالحفظ التلقائي');
     }, { critical: true });
 
+    await step('التحضير: انقطاع الاتصال أثناء الكتابة ← تنبيه «تعذّر الحفظ» ← يُحفظ تلقائيًا عند عودته', async () => {
+      allowProblem(/requestfailed: PATCH \/api\/lessons\/.+ net::ERR_INTERNET_DISCONNECTED/);
+      const ctx0 = page.context();
+      await ctx0.setOffline(true);
+      try {
+        await page.getByLabel('هدف 1').fill('أن يُميّز الطالب بين الأنسجة النباتية الرئيسة (معدَّل دون اتصال)');
+        await page.getByText(/تعذّر الحفظ/).first().waitFor({ timeout: 10_000 });
+      } finally {
+        await ctx0.setOffline(false);
+      }
+      await page.getByText('محفوظ تلقائيًا').waitFor({ timeout: 15_000 });
+      const id = new URL(page.url()).pathname.split('/').pop();
+      const saved = await apiGet(page, `/lessons/${id}`);
+      expect(saved.objectives[0].includes('معدَّل دون اتصال'), 'التعديل لم يُحفظ بعد عودة الاتصال');
+    });
+
     await step('يُنسخ التحضير إلى تاريخ آخر بنقرة (نسخ الدرس)', async () => {
       await page.getByRole('button', { name: /نسخ إلى شعب/ }).click();
       const dlg = page.getByRole('dialog');
       await dlg.waitFor();
       await dlg.getByRole('button', { name: /نسخ/ }).last().click();
       await toast(page, /نُسخ|نسخ/).waitFor();
+      const list = await apiGet(page, '/lessons?limit=10');
+      expect(list.items.length === 2, `بعد النسخ يجب أن يوجد درسان وجد ${list.items.length}`);
+      expect(list.items.every((l) => l.title === 'الأنسجة النباتية'), 'عنوان النسخة يجب أن يطابق الأصل');
     });
 
     let assignmentUrl = '';
@@ -393,6 +457,46 @@ async function phaseFirstRun(browser) {
       expect((await page.locator('table input').first().inputValue()) === '9', 'الدرجة لم تبقَ بعد إعادة التحميل');
     }, { critical: true });
 
+    await step('تقويم إتقان بمهارة جديدة: رصد مستوى 1–4 ثم «تعبئة الفراغات» للبقية (إتقان لا يدخل المجموع)', async () => {
+      await page.getByRole('button', { name: 'تقويم جديد' }).first().click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('عنوان التقويم').fill('مهارة القياس');
+      await dlg.getByRole('radio', { name: 'إتقان' }).click();
+      await dlg.getByLabel('مهارة جديدة').fill('استخدام أدوات القياس');
+      await dlg.getByLabel('مهارة جديدة').press('Enter');
+      await dlg.getByRole('button', { name: /استخدام أدوات القياس/ }).waitFor();
+      await dlg.getByRole('button', { name: 'إنشاء التقويم' }).click();
+      await toast(page, /أُنشئ التقويم/).waitFor();
+      const first = page.locator('table input[aria-label$="— مهارة القياس"]').first();
+      await first.waitFor();
+      await first.click();
+      await first.fill('3');
+      const put = page.waitForResponse((r) => r.request().method() === 'PUT' && /\/results/.test(r.url()));
+      await first.press('Enter');
+      expect((await put).status() === 200, 'فشل حفظ مستوى الإتقان');
+      // تعبئة الفراغات بالمستوى 4
+      await page.getByRole('button', { name: /مهارة القياس/ }).first().click();
+      await page.getByRole('menuitem', { name: /تعبئة الفراغات/ }).click();
+      const fill = page.getByRole('dialog');
+      await fill.getByLabel('المستوى').selectOption('4');
+      await fill.getByRole('button', { name: 'تعبئة', exact: true }).click();
+      await page.waitForFunction(() => Array.from(document.querySelectorAll('table input[aria-label$="— مهارة القياس"]')).every((i) => i.value !== ''));
+      await page.getByText(/كل الدرجات محفوظة/).first().waitFor();
+      const gb = await apiGet(page, `/gradebook?assignmentId=${new URL(page.url()).pathname.split('/').pop()}&termId=${(await apiGet(page, '/years'))[0].terms[0].id}`);
+      const m = gb.assessments.find((a) => a.title === 'مهارة القياس');
+      const levels = gb.students.map((s) => s.results[m.id]?.level);
+      expect(m.mode === 'mastery', 'النمط يجب أن يكون إتقانًا');
+      expect(levels.includes(3) && levels.filter((l) => l === 4).length === levels.length - 1, `المستويات المحفوظة: ${JSON.stringify(levels)}`);
+    });
+
+    await step('«إضافة سريعة» تُنشئ تقويمًا بقيم معتادة بنقرتين', async () => {
+      const before = await page.locator('table thead th').count();
+      await page.getByRole('button', { name: 'إضافة سريعة' }).click();
+      await page.getByRole('menuitem').first().click();
+      await toast(page, /أُنشئ|أضيف|أُضيف/).waitFor();
+      await page.waitForFunction((n) => document.querySelectorAll('table thead th').length > n, before);
+    });
+
     await step('تقرير كشف الدرجات يعرض الطالب ودرجته في المعاينة', async () => {
       await page.goto('/reports');
       const frame = page.frameLocator('iframe');
@@ -409,9 +513,9 @@ async function phaseFirstRun(browser) {
       expect(fs.readFileSync(xlPath).subarray(0, 2).toString() === 'PK', 'الملف ليس xlsx');
     });
 
-    await step('لوحة التحكم تعكس البيانات الجديدة (3 طلاب)', async () => {
+    await step('لوحة التحكم تعكس البيانات الجديدة (7 طلاب)', async () => {
       await page.goto('/');
-      await expectText(page.locator('main'), /الطلاب 3 في 1 شعبة/);
+      await expectText(page.locator('main'), /الطلاب 7 في 1 شعبة/);
       void lessonUrl;
       void assignmentUrl;
     });
@@ -552,6 +656,81 @@ async function phaseDemo(browser, srv) {
       expect((await cell(gb.students[idx + 3]).inputValue()) === '8.5', 'القيمة الملصوقة ضاعت');
     });
 
+    await step('الشبكة: انقطاع الاتصال ← تبقى الدرجة «غير محفوظة» مع تنبيه ← تُحفظ تلقائيًا عند عودته (بلا فقدان)', async () => {
+      allowProblem(/requestfailed: PUT \/api\/assessments\/.+\/results net::ERR_INTERNET_DISCONNECTED/);
+      const target = gb.students[idx + 5];
+      await page.context().setOffline(true);
+      try {
+        await cell(target).click();
+        await cell(target).fill('4');
+        await page.getByText(/تعذّر حفظ/).first().waitFor({ timeout: 8000 }); // المؤشر يُنبّه بعد فشل المحاولة
+        expect((await cell(target).inputValue()) === '4', 'القيمة المكتوبة يجب أن تبقى ظاهرة');
+      } finally {
+        await page.context().setOffline(false);
+      }
+      await page.waitForFunction(async ([a, t, sid, aid]) => {
+        const g = await (await fetch(`/api/gradebook?assignmentId=${a}&termId=${t}`)).json();
+        return g.students.find((s) => s.studentId === sid)?.results[aid]?.score === 4;
+      }, [asg.id, termId, target.studentId, quiz3.id], { timeout: 15_000 });
+      await page.getByText(/كل الدرجات محفوظة/).first().waitFor();
+    });
+
+    await step('اتساق الأرقام: المجموع والنسبة على الشاشة = تقرير HTML = ملف Excel (لكل طلاب الشعبة)', async () => {
+      await page.goto(`/assessments/${asg.id}?term=${termId}`);
+      await page.locator('table input').first().waitFor();
+      await page.getByText(/كل الدرجات محفوظة/).first().waitFor();
+      const num = (t) => Number.parseFloat(String(t).replace(/[^\d.\-]/g, ''));
+      // 1) الشاشة
+      const screen = await page.evaluate(() =>
+        Object.fromEntries(
+          Array.from(document.querySelectorAll('tbody tr'))
+            .filter((tr) => tr.querySelector('input'))
+            .map((tr) => {
+              const td = tr.querySelectorAll('td');
+              return [td[1].innerText.trim().split('\n')[0].trim(), { total: td[2].innerText.trim(), pct: td[3].innerText.trim() }];
+            }),
+        ),
+      );
+      const names = Object.keys(screen);
+      expect(names.length >= 20, `عدد صفوف الشاشة ${names.length}`);
+      // 2) تقرير HTML
+      const q = `assignmentId=${asg.id}&termId=${termId}`;
+      const html = await page.evaluate(async (u) => (await fetch(`/api${u}`, { credentials: 'same-origin' })).text(), `/reports/class-gradebook/html?${q}`);
+      const fromHtml = await page.evaluate((h) => {
+        const d = new DOMParser().parseFromString(h, 'text/html');
+        const table = Array.from(d.querySelectorAll('table')).find((t) => t.textContent.includes('اسم الطالب'));
+        const heads = Array.from(table.querySelectorAll('thead th')).map((x) => x.textContent.trim());
+        const iT = heads.findIndex((x) => x.startsWith('المجموع'));
+        const iP = heads.findIndex((x) => x.startsWith('النسبة'));
+        return Object.fromEntries(Array.from(table.querySelectorAll('tbody tr')).map((tr) => { const c = Array.from(tr.children).map((x) => x.textContent.trim()); return [c[1], { total: c[iT], pct: c[iP] }]; }));
+      }, html);
+      // 3) ملف Excel (أرقام حقيقية)
+      const res = await page.context().request.get(`/api/reports/class-gradebook/xlsx?${q}`);
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(await res.body());
+      const ws = wb.worksheets[0];
+      let hdr = 0;
+      ws.eachRow((r, i) => { if (!hdr && String(r.getCell(2).value) === 'اسم الطالب') hdr = i; });
+      const hv = ws.getRow(hdr).values;
+      const iT = hv.findIndex((v) => typeof v === 'string' && v.startsWith('المجموع'));
+      const iP = hv.findIndex((v) => v === 'النسبة');
+      const bad = [];
+      for (const n of names) {
+        const s = screen[n];
+        const h = fromHtml[n];
+        const row = ws.getRows(hdr + 1, ws.rowCount - hdr)?.find((r) => r.getCell(2).value === n);
+        if (!h || !row) { bad.push(`${n}: غير موجود في ${!h ? 'HTML' : 'Excel'}`); continue; }
+        const xt = row.getCell(iT).value;
+        const xp = row.getCell(iP).value;
+        if (s.total === '—') { if (h.total !== '—' && h.total !== '') bad.push(`${n}: الشاشة — لكن HTML ${h.total}`); continue; }
+        if (Math.abs(num(s.total) - num(h.total)) > 0.006) bad.push(`${n}: مجموع الشاشة ${s.total} ≠ HTML ${h.total}`);
+        if (Math.abs(num(s.pct) - num(h.pct)) > 0.06) bad.push(`${n}: نسبة الشاشة ${s.pct} ≠ HTML ${h.pct}`);
+        if (typeof xt !== 'number' || Math.abs(num(s.total) - xt) > 0.006) bad.push(`${n}: مجموع الشاشة ${s.total} ≠ Excel ${xt}`);
+        if (typeof xp !== 'number' || Math.abs(num(s.pct) - xp) > 0.06) bad.push(`${n}: نسبة الشاشة ${s.pct} ≠ Excel ${xp}`);
+      }
+      expect(bad.length === 0, `تعارض أرقام (${bad.length}): ${bad.slice(0, 4).join(' ؛ ')}`);
+    });
+
     // ───── تقارير بكل أنواعها ─────
     await step('التقارير: الأنواع الخمسة تُولَّد PDF وExcel صالحين', async () => {
       const st = gb.students[0];
@@ -573,6 +752,50 @@ async function phaseDemo(browser, srv) {
         const html = await page.evaluate(async (u) => (await fetch(`/api${u}`, { credentials: 'same-origin' })).text(), `/reports/${type}/html?${q}`);
         expect(html.includes('<html') && html.includes('dir="rtl"'), `${type} HTML بلا RTL`);
       }
+    });
+
+    await step('التقارير من الواجهة: كل نوع يُعاين ويُنزَّل PDF حقيقيًا، وتقرير الطالب لا يطبع بياناته الشخصية إلا باختيارك', async () => {
+      await page.goto('/reports');
+      const frame = page.frameLocator('iframe');
+      const waitDoc = async (title) => frame.getByText(title).first().waitFor({ timeout: 25_000 });
+      const pdfOk = async () => {
+        const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'تنزيل PDF' }).click()]);
+        const head = fs.readFileSync(await dl.path()).subarray(0, 4).toString();
+        expect(head === '%PDF', 'الملف المنزَّل ليس PDF');
+      };
+      // 1) كشف الدرجات (الافتراضي)
+      await waitDoc('كشف درجات التقويم المستمر');
+      await pdfOk();
+      // 2) تحليل الأداء
+      await page.getByRole('radio', { name: /تحليل أداء الشعبة/ }).click();
+      await waitDoc('تحليل أداء الشعبة');
+      await pdfOk();
+      // 3) تقرير الطالب: بلا ملاحظات ولا بيانات ولي أمر افتراضيًا
+      await page.getByRole('radio', { name: /تقرير الطالب/ }).click();
+      await page.getByLabel('الشعبة', { exact: true }).selectOption({ index: 1 });
+      await page.getByLabel(/^الطالب/).selectOption({ index: 1 });
+      await waitDoc('تقرير أداء الطالب');
+      // نضمن وجود بيانات ولي أمر فعلية كي يكون الفحص ذا معنى (وإلا فالغياب لا يثبت شيئًا)
+      const studentId = await page.getByLabel(/^الطالب/).inputValue();
+      expect((await apiStatus(page, `/students/${studentId}`, 'PATCH', { guardianName: 'والد الطالب التجريبي', guardianPhone: '99000000' })) === 200, 'تعذّر ضبط بيانات ولي الأمر');
+      await page.getByLabel('تضمين ملاحظات المعلم').check();
+      await page.getByLabel('تضمين ملاحظات المعلم').uncheck(); // يُعيد توليد المعاينة بالبيانات المحدَّثة
+      await frame.getByText('تقرير أداء الطالب').first().waitFor();
+      await page.waitForTimeout(800);
+      const bodyBefore = await frame.locator('body').innerText();
+      expect(!/والد الطالب التجريبي|99000000/.test(bodyBefore), 'ظهرت بيانات ولي الأمر دون اختيار المعلم');
+      await page.getByLabel('تضمين بيانات ولي الأمر').check();
+      await frame.getByText('والد الطالب التجريبي').first().waitFor({ timeout: 15_000 });
+      await page.getByLabel('تضمين بيانات ولي الأمر').uncheck();
+      await pdfOk();
+      // 4) سجل التحضير
+      await page.getByRole('radio', { name: /سجل التحضير/ }).click();
+      await waitDoc('سجل التحضير');
+      await pdfOk();
+      // 5) ورقة تحضير الدرس (دفتر التحضير لفترة)
+      await page.getByRole('radio', { name: /ورقة تحضير الدرس/ }).click();
+      await waitDoc(/دفتر التحضير|ورقة تحضير الدرس/);
+      await pdfOk();
     });
 
     // ───── المهام ─────
@@ -638,6 +861,41 @@ async function phaseDemo(browser, srv) {
       await newPw(page, 1).fill('Brand-New-Pass-2026');
       await page.getByRole('button', { name: 'تغيير كلمة المرور' }).click();
       await page.getByText('كلمة المرور الحالية غير صحيحة').first().waitFor();
+    });
+
+    await step('الجدول الأسبوعي: ضع مقررًا في حصة فارغة ← يُحفظ فورًا ← أفرغها', async () => {
+      await page.goto('/timetable');
+      const empty = page.getByRole('button', { name: /فارغة/ }).first();
+      await empty.waitFor();
+      const label = (await empty.getAttribute('aria-label')) ?? '';
+      await empty.click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('القاعة / المعمل (اختياري)').fill('معمل العلوم');
+      await dlg.getByRole('button', { name: /الرياضيات|العلوم/ }).first().click();
+      await dlg.waitFor({ state: 'hidden' });
+      const base = label.replace(/ فارغة$/, '');
+      await page.getByRole('button', { name: new RegExp(`^${base}: `) }).waitFor(); // الخلية تعرض المادة والشعبة الآن
+      await page.reload();
+      await page.getByRole('button', { name: new RegExp(`^${base}: `) }).click(); // باقية بعد إعادة التحميل
+      await page.getByRole('dialog').getByRole('button', { name: 'إفراغ الحصة' }).click();
+      await page.getByRole('button', { name: new RegExp(`^${base} فارغة`) }).waitFor();
+    });
+
+    await step('ملف الطالب: إضافة ملاحظة ← باقية بعد إعادة التحميل ← حذفها بتأكيد', async () => {
+      const st = gb.students[3];
+      await page.goto(`/students/${st.studentId}`);
+      await page.getByRole('tab', { name: /الملاحظات/ }).click();
+      await page.getByRole('button', { name: 'إضافة ملاحظة' }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('الملاحظة').fill('يحتاج متابعة في مهارة القياس — ملاحظة اختبار');
+      await dlg.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await page.getByText('ملاحظة اختبار').first().waitFor();
+      await page.reload();
+      await page.getByRole('tab', { name: /الملاحظات/ }).click();
+      await page.getByText('ملاحظة اختبار').first().waitFor(); // باقية بعد إعادة التحميل
+      await page.getByRole('button', { name: 'حذف الملاحظة' }).first().click();
+      await page.getByRole('dialog').getByRole('button', { name: 'حذف', exact: true }).click();
+      await page.waitForFunction(() => !document.body.innerText.includes('ملاحظة اختبار'));
     });
 
     await step('الصفحات الأخرى تُفتح بلا أخطاء: الجدول الأسبوعي، ملف الطالب، التحضير', async () => {
@@ -842,7 +1100,7 @@ async function phaseVisual(browser, srv) {
     await page.evaluate(async () => { await fetch('/api/settings', { method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-sijilli-client': 'web' }, body: JSON.stringify({ preferences: { theme: 'system' } }) }); });
     for (const [name, url] of pages) {
       if (onlyPages.length && !onlyPages.includes(name)) continue;
-      await step(`${name} — ${theme}/${vp}: يُرسم بلا تمرير أفقي ولا أزرار بلا اسم`, async () => {
+      await step(`${name} — ${theme}/${vp}: يُرسم بلا تمرير أفقي ولا مخالفات وصول (axe)`, async () => {
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.locator('main :is(h1, h2, table, [role=tablist], input)').first().waitFor();
         await page.waitForTimeout(350);
@@ -867,6 +1125,14 @@ async function phaseVisual(browser, srv) {
         expect(info.overflow <= 1, `تمرير أفقي بمقدار ${info.overflow}px`);
         expect(info.unnamed.length === 0, `عناصر تفاعلية بلا اسم: ${info.unnamed.join(', ')}`);
         expect(info.theme === theme, `السمة المطبّقة ${info.theme} وليست ${theme}`);
+        if (axeSource) {
+          await page.evaluate(axeSource);
+          const violations = await page.evaluate(async () => {
+            const res = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'] } });
+            return res.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length, first: v.nodes[0]?.target.join(' ').slice(0, 90) }));
+          });
+          expect(violations.length === 0, `مخالفات إمكانية الوصول (axe): ${violations.map((v) => `${v.id}[${v.impact}]×${v.nodes} ${v.first}`).join(' ؛ ')}`);
+        }
       });
     }
     await ctx.close();
@@ -901,6 +1167,7 @@ async function main() {
   } finally {
     await browser.close().catch(() => {});
     for (const s of servers) await s.stop();
+    for (const f of tmpFiles) fs.rmSync(f, { force: true });
     if (!keepData) for (const d of tmpDirs) fs.rmSync(d, { recursive: true, force: true });
     else console.log('\nمجلدات البيانات المؤقتة:', tmpDirs.join(', '));
   }

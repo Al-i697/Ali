@@ -190,6 +190,7 @@ export function AppShell() {
     <div className="min-h-dvh">
       {/* الشريط الجانبي (الحاسوب) */}
       <aside
+        aria-label="القائمة الجانبية"
         className={cn(
           'no-print fixed inset-y-0 start-0 z-30 hidden flex-col border-e border-line bg-surface transition-[width] duration-200 lg:flex',
           collapsed ? 'w-[84px]' : 'w-[268px]',
@@ -235,7 +236,7 @@ export function AppShell() {
 
       <div className={cn('transition-[padding] duration-200', collapsed ? 'lg:ps-[84px]' : 'lg:ps-[268px]')}>
         {user.isDemo ? (
-          <div className="no-print bg-accent-soft px-4 py-1.5 text-center text-[13px] font-medium text-accent">
+          <div role="region" aria-label="تنبيه الحساب التجريبي" className="no-print bg-accent-soft px-4 py-1.5 text-center text-[13px] font-medium text-accent">
             حساب تجريبي: كل البيانات المعروضة وهمية لأغراض التوضيح فقط وليست لطلاب حقيقيين.
           </div>
         ) : null}

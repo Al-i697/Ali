@@ -141,7 +141,7 @@ function TodaySlots({ data }: { data: DashboardDto }) {
       ) : (
         <ul className="divide-y divide-line">
           {data.todaySlots.map((s) => (
-            <li key={s.slotId} className={cn('flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-3.5', s.state === 'current' && 'bg-brand-soft/50', s.state === 'past' && 'opacity-80')}>
+            <li key={s.slotId} className={cn('flex flex-wrap items-center gap-x-4 gap-y-3 px-5 py-3.5', s.state === 'current' && 'bg-brand-soft/50')}>
               <div className="flex w-[104px] shrink-0 items-center gap-3">
                 <span className={cn('grid size-10 place-items-center rounded-xl text-[17px] font-bold tnum', s.state === 'current' ? 'bg-brand text-brand-fg' : 'bg-surface-3 text-ink-2')}>{fmt.num(s.period)}</span>
                 <span className="text-[12.5px] leading-5 text-muted">

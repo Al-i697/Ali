@@ -15,12 +15,12 @@
   --border-strong: #c5d0c6;
   --text: #14231f;
   --text-2: #3f524b;
-  --muted: #667a72;
+  --muted: #586c64;
   --brand: #0f5f52;
   --brand-hover: #0b4a40;
   --brand-soft: #e0efea;
   --brand-contrast: #ffffff;
-  --accent: #b07a1a;
+  --accent: #8a5c0b;
   --accent-soft: #faefd6;
   --good: #1d7a4a;
   --good-soft: #e0f2e7;
@@ -103,13 +103,13 @@
 }
 
 /* ألوان المواد: كل مادة لها لون مميز يظهر في الشرائح والجداول */
-.subj-teal { --c: #0f766e; --c-soft: #d9f0ec; }
+.subj-teal { --c: #0d6b64; --c-soft: #d9f0ec; }
 .subj-blue { --c: #1d62b8; --c-soft: #dce9f9; }
 .subj-violet { --c: #6d47c4; --c-soft: #e9e2f8; }
-.subj-rose { --c: #be3a63; --c-soft: #f9e0e8; }
-.subj-amber { --c: #9a6a00; --c-soft: #faeccb; }
-.subj-green { --c: #2f7d32; --c-soft: #dff0df; }
-.subj-orange { --c: #b8541a; --c-soft: #fbe5d6; }
+.subj-rose { --c: #a82e55; --c-soft: #f9e0e8; }
+.subj-amber { --c: #835a00; --c-soft: #faeccb; }
+.subj-green { --c: #276b2a; --c-soft: #dff0df; }
+.subj-orange { --c: #a24912; --c-soft: #fbe5d6; }
 .subj-slate { --c: #4d5d66; --c-soft: #e4e9ec; }
 :root[data-theme='dark'] .subj-teal { --c: #5fd0c3; --c-soft: #12332f; }
 :root[data-theme='dark'] .subj-blue { --c: #7db0f0; --c-soft: #14283f; }

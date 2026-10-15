@@ -180,7 +180,7 @@ function CalendarTab({ onNewOn }: { onNewOn: (date: string) => void }) {
           </div>
         </div>
         <div className="grid grid-cols-7 border-b border-line bg-surface-3 text-center text-[13px] font-medium text-muted">
-          {Array.from({ length: 7 }, (_, i) => <div key={i} className={cn('py-2', (i === 5 || i === 6) && 'opacity-60')}>{weekdayName(i)}</div>)}
+          {Array.from({ length: 7 }, (_, i) => <div key={i} className={cn('py-2', (i === 5 || i === 6) && 'text-muted')}>{weekdayName(i)}</div>)}
         </div>
         <div className="grid grid-cols-7">
           {days.map((d, i) => {
@@ -197,7 +197,7 @@ function CalendarTab({ onNewOn }: { onNewOn: (date: string) => void }) {
               >
                 <span className={cn('mb-1 inline-grid size-6 place-items-center rounded-full text-[13px] tnum', d === today ? 'bg-brand font-bold text-brand-fg' : 'text-ink-2')}>{fmt.num(Number(d.slice(8)))}</span>
                 <div className="space-y-0.5">
-                  {items.slice(0, 3).map((it) => <div key={it.id} className={cn('truncate rounded px-1.5 py-px text-[11.5px] leading-4', itemTone[it.tone], it.done && 'line-through opacity-70')}>{it.title}</div>)}
+                  {items.slice(0, 3).map((it) => <div key={it.id} className={cn('truncate rounded px-1.5 py-px text-[11.5px] leading-4', itemTone[it.tone], it.done && 'line-through')}>{it.title}</div>)}
                   {items.length > 3 ? <div className="px-1 text-[11px] text-muted">+{fmt.num(items.length - 3)} أخرى</div> : null}
                 </div>
               </button>
@@ -216,7 +216,7 @@ function CalendarTab({ onNewOn }: { onNewOn: (date: string) => void }) {
                   <Link to={it.href} className="flex items-start gap-2.5 rounded-xl border border-line p-3 transition-colors hover:bg-surface-2">
                     <span className={cn('mt-1.5 size-2.5 shrink-0 rounded-full', { neutral: 'bg-muted', info: 'bg-info', good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad' }[it.tone])} />
                     <span className="min-w-0 text-[14.5px]">
-                      <span className={cn('block font-medium text-ink', it.done && 'line-through opacity-70')}>{it.title}</span>
+                      <span className={cn('block font-medium', it.done ? 'text-muted line-through' : 'text-ink')}>{it.title}</span>
                       <span className="block text-[12.5px] text-muted">{{ task: 'مهمة', assessment: 'تقويم', lesson: 'تحضير' }[it.type]}{it.time ? ` · ${fmt.time(it.time)}` : ''}{it.subtitle ? ` · ${it.subtitle}` : ''}</span>
                     </span>
                   </Link>

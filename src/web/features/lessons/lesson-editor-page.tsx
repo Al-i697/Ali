@@ -264,6 +264,13 @@ export default function LessonEditorPage() {
     return () => clearTimeout(t);
   }, [payloadJson, dirty, valid, save]);
 
+  // عودة الاتصال بعد فشل حفظ: نعيد المحاولة تلقائيًا (التعديلات تبقى في الصفحة ولا تضيع)
+  useEffect(() => {
+    const onOnline = () => void save();
+    window.addEventListener('online', onOnline);
+    return () => window.removeEventListener('online', onOnline);
+  }, [save]);
+
   // حفظ فوري بالضغط على Ctrl/⌘+S، وحفظ أخير عند مغادرة الصفحة
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -334,18 +341,20 @@ export default function LessonEditorPage() {
   const asg = assignments.find((a) => a.id === draft.assignmentId);
   const periods = Array.from({ length: Math.max(MAX_PERIODS, settings?.schedule.periods.length ?? 0) }, (_, i) => i + 1).slice(0, MAX_PERIODS);
 
+  // الخطأ أولًا: وإلا بقي «جارٍ الحفظ…» ظاهرًا للأبد (التعديل ما زال غير محفوظ) وأخفى فشل الحفظ عن المعلم
   const statusBadge =
-    saveState === 'saving' || (dirty && valid) ? (
-      <span className="inline-flex items-center gap-1.5 text-[13.5px] text-muted"><Loader2 className="size-4 animate-[spin_0.8s_linear_infinite]" /> جارٍ الحفظ…</span>
-    ) : saveState === 'error' ? (
+    saveState === 'error' && dirty ? (
       <button onClick={() => void save()} className="inline-flex items-center gap-1.5 text-[13.5px] font-medium text-bad" title={saveError}><CircleAlert className="size-4" /> تعذّر الحفظ — إعادة المحاولة</button>
+    ) : saveState === 'saving' || (dirty && valid) ? (
+      <span className="inline-flex items-center gap-1.5 text-[13.5px] text-muted"><Loader2 className="size-4 animate-[spin_0.8s_linear_infinite]" /> جارٍ الحفظ…</span>
     ) : !isNew ? (
       <span className="inline-flex items-center gap-1.5 text-[13.5px] text-good"><Check className="size-4" /> محفوظ تلقائيًا</span>
     ) : null;
 
   return (
     <>
-      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+<div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="sr-only">{isNew ? 'تحضير جديد' : `تحضير: ${draft.title || 'بلا عنوان'}`}</h1>
         <Link to="/lessons" className="inline-flex items-center gap-1 text-[14px] text-muted hover:text-brand"><ArrowRight className="size-4" /> التحضير</Link>
         <div className="flex items-center gap-3">
           {statusBadge}
@@ -413,7 +422,7 @@ export default function LessonEditorPage() {
         </div>
 
         {/* الشريط الجانبي: بيانات الحصة والإجراءات */}
-        <aside className="space-y-4 lg:sticky lg:top-24">
+        <aside aria-label="بيانات الحصة والإجراءات" className="space-y-4 lg:sticky lg:top-24">
           <Card className="space-y-4 p-5">
             <Field label="الشعبة والمادة" required>
               {(p) => (

@@ -66,7 +66,7 @@ export function Alert({ tone = 'info', title, children, className, action }: { t
       <Icon className="mt-0.5 size-5 shrink-0" aria-hidden />
       <div className="min-w-0 flex-1 text-[14.5px] leading-6">
         {title ? <div className="font-semibold">{title}</div> : null}
-        {children ? <div className={cn(title && 'opacity-90')}>{children}</div> : null}
+        {children ? <div>{children}</div> : null}
       </div>
       {action}
     </div>
