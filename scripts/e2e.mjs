@@ -679,7 +679,7 @@ async function phaseDemo(browser, srv) {
       await page.goto(`/assessments/${asg.id}?term=${termId}`);
       await page.locator('table input').first().waitFor();
       await page.getByText(/كل الدرجات محفوظة/).first().waitFor();
-      const num = (t) => Number.parseFloat(String(t).replace(/[^\d.\-]/g, ''));
+      const num = (t) => Number.parseFloat(String(t).replace(/[^\d.-]/g, ''));
       // 1) الشاشة
       const screen = await page.evaluate(() =>
         Object.fromEntries(
