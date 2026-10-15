@@ -7,6 +7,7 @@ import { auditModule } from './audit/routes';
 import { authModule } from './auth/routes';
 import { backupModule } from './backup/routes';
 import { dashboardModule } from './dashboard/routes';
+import { labModule } from './lab/routes';
 import { lessonsModule } from './lessons/routes';
 import { reportsModule } from './reports/routes';
 import { settingsModule } from './settings/routes';
@@ -27,6 +28,7 @@ const modules: FastifyPluginAsync[] = [
   lessonsModule,
   tasksModule,
   supportModule,
+  labModule,
   dashboardModule,
   reportsModule,
   backupModule,

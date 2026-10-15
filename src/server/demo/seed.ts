@@ -12,6 +12,7 @@ import { createUser } from '../modules/users/service';
 import { createSection, createSubject, createYear } from '../modules/academic/service';
 import { addStudentsToSection } from '../modules/students/service';
 import { createAssessment, createSkill, saveResults } from '../modules/assessments/service';
+import { copyLab, createLab, updateLab } from '../modules/lab/service';
 import { createLesson } from '../modules/lessons/service';
 import { addNote as addSupportNote, createPlan, suggestions } from '../modules/support/service';
 import { setSlot } from '../modules/timetable/service';
@@ -278,6 +279,44 @@ export async function seedDemo(db: Db, opts: DemoOptions): Promise<{ userId: str
     }, today);
     addSupportNote(db, owner, plan.id, { date: addDays(today, -3), text: 'اختار موضوع المشروع وجمع المراجع الأولية.' });
   });
+
+  // ───────── سجل المختبر والأنشطة ─────────
+  const sci1 = created[0]!.assignmentId;
+  const sci2 = created[1]!.assignmentId;
+  const onion = createLab(db, owner, {
+    assignmentId: sci1, date: addDays(today, -18), period: 2, kind: 'experiment', title: 'فحص خلايا قشرة البصل بالمجهر الضوئي', location: 'مختبر العلوم',
+    objectives: ['أن يحضّر الطالب شريحة مجهرية مبلّلة', 'أن يحدّد الجدار الخلوي والنواة تحت المجهر'],
+    materials: ['مجهر ضوئي', 'شرائح وأغطية زجاجية', 'بصلة', 'محلول اليود', 'ملقط'],
+    safety: ['ارتداء المعطف والنظارات الواقية', 'الحذر عند حمل الشرائح الزجاجية', 'غسل اليدين بعد التجربة'],
+    procedure: '١) فصل طبقة رقيقة من قشرة البصل.\n٢) وضعها على الشريحة وإضافة قطرة من اليود.\n٣) تغطيتها بالغطاء بحذر لتجنّب فقاعات الهواء.\n٤) الفحص بقوة التكبير الصغرى ثم الكبرى ورسم ما يُلاحَظ.',
+    results: 'ظهرت الخلايا مستطيلة متراصّة بجدران واضحة ونوى مصبوغة. نجح معظم الطلاب في تحضير الشريحة، وأخطأ عدد قليل بتكوّن فقاعات هواء.',
+    participants: 24, notes: 'يلزم توفير مجهرين إضافيين لتقليل الازدحام.', status: 'done',
+  }, today);
+  // نسخ الخطة إلى الشعبة الثانية ثم تسجيل تنفيذها (يوضّح دورة: نسخ ← تنفيذ ← تسجيل النتائج)
+  const [onion2] = copyLab(db, owner, onion.id, { targets: [{ assignmentId: sci2, date: addDays(today, -16), period: 4 }] }, today);
+  updateLab(db, owner, onion2!.id, { status: 'done', participants: 25, results: 'تكررت الملاحظات نفسها؛ كان أداء المجموعة أسرع بفضل تجربة الشعبة الأولى.' }, today);
+  createLab(db, owner, {
+    assignmentId: sci1, date: addDays(today, -9), period: 3, kind: 'demo', title: 'عرض عملي: الانتشار بقطرة حبر في الماء', location: 'مختبر العلوم',
+    objectives: ['أن يلاحظ الطالب انتشار الجزيئات من التركيز الأعلى إلى الأقل'],
+    materials: ['كؤوس مدرّجة', 'ماء بدرجات حرارة مختلفة', 'حبر ملوّن'],
+    safety: ['الحذر من الماء الساخن'],
+    results: 'انتشر الحبر أسرع في الماء الدافئ. استخدم الطلاب النتيجة لتفسير أثر الحرارة في سرعة الانتشار.',
+    participants: 24, status: 'done',
+  }, today);
+  // نشاط مخطَّط فات موعده دون تسجيل — يظهر في «بحاجة إلى إجراء» بلوحة التحكم
+  createLab(db, owner, {
+    assignmentId: sci2, date: addDays(today, -2), period: 5, kind: 'activity', title: 'نشاط: مقارنة الخلية النباتية والحيوانية بالنماذج',
+    objectives: ['أن يقارن الطالب بين الخليتين من خلال نماذج مجسّمة'], materials: ['نماذج ومجسمات', 'أوراق عمل'],
+  }, today);
+  const osmosis = createLab(db, owner, {
+    assignmentId: sci1, date: addDays(today, 3), period: 2, kind: 'experiment', title: 'تجربة الأسموزية بشرائح البطاطس', location: 'مختبر العلوم',
+    objectives: ['أن يستنتج الطالب أثر تركيز المحلول في كتلة شريحة البطاطس', 'أن يسجّل القياسات في جدول ويمثّلها بيانيًا'],
+    materials: ['كؤوس مدرّجة', 'ميزان حساس', 'محاليل ملحية بتراكيز مختلفة', 'شرائح بطاطس متساوية'],
+    safety: ['ارتداء المعطف والنظارات الواقية', 'التخلص الآمن من المخلفات'],
+    procedure: 'تُوزن الشرائح قبل التجربة وتُغمر في المحاليل 30 دقيقة ثم تُجفَّف وتُوزن مرة أخرى، وتُحسب نسبة التغيّر في الكتلة.',
+  }, today);
+  copyLab(db, owner, osmosis.id, { targets: [{ assignmentId: sci2, date: addDays(today, 4), period: 4 }] }, today);
+  createLab(db, owner, { assignmentId: null, date: addDays(today, 12), kind: 'competition', title: 'معرض العلوم المدرسي', location: 'الساحة المدرسية', objectives: ['عرض مشاريع الطلاب العلمية أمام المجتمع المدرسي'] }, today);
 
   return { userId: owner, email: opts.email };
 }

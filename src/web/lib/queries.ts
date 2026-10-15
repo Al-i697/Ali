@@ -36,6 +36,9 @@ export const qk = {
   supportPlans: (params?: unknown) => ['support', 'plans', params ?? {}] as const,
   supportPlan: (id: string) => ['support', 'plan', id] as const,
   supportSuggestions: (assignmentId?: string) => ['support', 'suggestions', assignmentId ?? 'all'] as const,
+  // كل مفاتيح المختبر تبدأ بـ'lab' فيكفي إبطال ['lab'] لتحديثها معًا
+  lab: (params?: unknown) => ['lab', 'list', params ?? {}] as const,
+  labItem: (id: string) => ['lab', 'item', id] as const,
   calendar: (from: string, to: string) => ['calendar', from, to] as const,
   dashboard: ['dashboard'] as const,
   users: ['users'] as const,
@@ -76,7 +79,7 @@ export const useAssignments = (yearId?: string) =>
 
 /** يُبطل كل ما يتأثر بتغيير بنية الشعب/الطلاب/التقويم (أبسط وأأمن من إبطال انتقائي دقيق) */
 export function invalidateAcademic(qc: QueryClient) {
-  for (const key of ['sections', 'section', 'roster', 'assignments', 'students', 'student', 'profile', 'gradebook', 'assessments', 'dashboard', 'timetable', 'lessons', 'subjects', 'years', 'support']) {
+  for (const key of ['sections', 'section', 'roster', 'assignments', 'students', 'student', 'profile', 'gradebook', 'assessments', 'dashboard', 'timetable', 'lessons', 'subjects', 'years', 'support', 'lab']) {
     void qc.invalidateQueries({ queryKey: [key] });
   }
 }

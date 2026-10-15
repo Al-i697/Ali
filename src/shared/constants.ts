@@ -359,6 +359,53 @@ export const SUPPORT_STRATEGY_PRESETS: Record<'remedial' | 'enrichment', string[
   enrichment: ['مشروع بحثي مصغّر', 'مسائل تحدٍّ متقدمة', 'قيادة مجموعة تعاونية', 'مصادر إثرائية إضافية', 'تصميم تجربة أو نشاط للزملاء'],
 };
 
+// ───────────── سجل المختبر والأنشطة ─────────────
+export const LAB_KIND = defineEnum([
+  { value: 'experiment', label: 'تجربة عملية' },
+  { value: 'demo', label: 'عرض عملي' },
+  { value: 'activity', label: 'نشاط صفّي' },
+  { value: 'project', label: 'مشروع' },
+  { value: 'field_trip', label: 'زيارة ميدانية' },
+  { value: 'competition', label: 'مسابقة أو معرض' },
+  { value: 'other', label: 'أخرى' },
+] as const);
+export type LabKind = (typeof LAB_KIND.values)[number];
+
+export const LAB_STATUS = defineEnum([
+  { value: 'planned', label: 'مخطَّط' },
+  { value: 'done', label: 'نُفِّذ' },
+  { value: 'cancelled', label: 'ملغى' },
+] as const);
+export type LabStatus = (typeof LAB_STATUS.values)[number];
+
+/** اقتراحات جاهزة تُضاف بنقرة ويمكن كتابة غيرها (لا تقيّد المعلم) */
+export const LAB_MATERIAL_PRESETS = [
+  'مجهر ضوئي',
+  'أنابيب اختبار',
+  'كؤوس مدرَّجة',
+  'ميزان حساس',
+  'مصدر حرارة',
+  'مواد كيميائية',
+  'أدوات قياس',
+  'عينات',
+  'نماذج ومجسمات',
+  'جهاز عرض',
+  'حاسوب',
+] as const;
+
+export const LAB_SAFETY_PRESETS = [
+  'ارتداء المعطف والنظارات الواقية',
+  'ارتداء القفازات',
+  'عدم تذوّق أي مادة أو شمّها مباشرة',
+  'تهوية المكان جيدًا',
+  'الحذر من الأسطح الساخنة',
+  'التخلص الآمن من المخلفات',
+  'غسل اليدين بعد التجربة',
+  'الإشراف المباشر من المعلم',
+] as const;
+
+export const LAB_LOCATION_PRESETS = ['مختبر العلوم', 'مختبر الحاسوب', 'غرفة مصادر التعلم', 'الساحة المدرسية', 'الفصل'] as const;
+
 // ───────────── التقارير ─────────────
 export const REPORT_TYPE = defineEnum([
   { value: 'class-gradebook', label: 'كشف درجات الشعبة' },
@@ -367,6 +414,7 @@ export const REPORT_TYPE = defineEnum([
   { value: 'lessons', label: 'سجل التحضير' },
   { value: 'lesson-plan', label: 'ورقة تحضير الدرس' },
   { value: 'support-plans', label: 'الخطط العلاجية والإثرائية' },
+  { value: 'lab-log', label: 'سجل المختبر والأنشطة' },
 ] as const);
 export type ReportType = (typeof REPORT_TYPE.values)[number];
 

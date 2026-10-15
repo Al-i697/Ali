@@ -16,6 +16,7 @@ import { getGradebook } from '../assessments/service';
 import { summarizeGradebook } from '../assessments/summary';
 import { listSections, listYears } from '../academic/service';
 import { getSettings } from '../settings/service';
+import { dashboardLab } from '../lab/service';
 import { dashboardCounts as supportCounts } from '../support/service';
 import { listTasks } from '../tasks/service';
 
@@ -214,6 +215,7 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
     upcomingAssessments: upcomingAssessments.slice(0, 6),
     attention: attention.slice(0, 8),
     support: supportCounts(db, ownerId, today),
+    lab: dashboardLab(db, ownerId, today, year?.startDate),
   };
 }
 

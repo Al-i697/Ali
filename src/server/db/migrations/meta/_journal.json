@@ -15,6 +15,13 @@
       "when": 1792076979936,
       "tag": "0001_support_plans",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792078631226,
+      "tag": "0002_lab_activities",
+      "breakpoints": true
     }
   ]
 }

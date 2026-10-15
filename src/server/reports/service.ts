@@ -7,6 +7,7 @@ import { getSettings } from '../modules/settings/service';
 import {
   buildClassAnalysis,
   buildClassGradebook,
+  buildLabLog,
   buildLessonPlan,
   buildLessonsLog,
   buildStudentReport,
@@ -57,6 +58,9 @@ export function buildReport(app: FastifyInstance, ownerId: string, type: ReportT
       break;
     case 'support-plans':
       doc = buildSupportPlans(ctx, { planId: q.planId, assignmentId: q.assignmentId, from: q.from, to: q.to, kind: q.kind, status: q.status });
+      break;
+    case 'lab-log':
+      doc = buildLabLog(ctx, { labId: q.labId, assignmentId: q.assignmentId, from: q.from, to: q.to, all: q.labAll, kind: q.labKind, status: q.labStatus });
       break;
   }
   return { doc, brand };

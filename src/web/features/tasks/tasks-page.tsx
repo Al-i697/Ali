@@ -142,6 +142,8 @@ function TasksTab({ onEdit, onNew }: { onEdit: (t: TaskDto) => void; onNew: () =
 }
 
 // ───────────── التقويم الشهري ─────────────
+const CALENDAR_TYPE_LABEL: Record<CalendarItemDto['type'], string> = { task: 'مهمة', assessment: 'تقويم', lesson: 'تحضير', support: 'متابعة خطة', lab: 'نشاط مختبر' };
+
 const itemTone: Record<CalendarItemDto['tone'], string> = {
   neutral: 'bg-surface-3 text-ink-2',
   info: 'bg-info-soft text-info',
@@ -217,7 +219,7 @@ function CalendarTab({ onNewOn }: { onNewOn: (date: string) => void }) {
                     <span className={cn('mt-1.5 size-2.5 shrink-0 rounded-full', { neutral: 'bg-muted', info: 'bg-info', good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad' }[it.tone])} />
                     <span className="min-w-0 text-[14.5px]">
                       <span className={cn('block font-medium', it.done ? 'text-muted line-through' : 'text-ink')}>{it.title}</span>
-                      <span className="block text-[12.5px] text-muted">{{ task: 'مهمة', assessment: 'تقويم', lesson: 'تحضير', support: 'متابعة خطة' }[it.type]}{it.time ? ` · ${fmt.time(it.time)}` : ''}{it.subtitle ? ` · ${it.subtitle}` : ''}</span>
+                      <span className="block text-[12.5px] text-muted">{CALENDAR_TYPE_LABEL[it.type]}{it.time ? ` · ${fmt.time(it.time)}` : ''}{it.subtitle ? ` · ${it.subtitle}` : ''}</span>
                     </span>
                   </Link>
                 </li>

@@ -4,6 +4,10 @@ import { pickCurrentTerm } from '../../shared/academic';
 import {
   ACTIVITY_PHASE,
   ASSESSMENT_TYPE,
+  LAB_KIND,
+  LAB_STATUS,
+  type LabKind,
+  type LabStatus,
   LESSON_STATUS,
   MASTERY_LEVELS,
   masteryLabel,
@@ -23,6 +27,7 @@ import { badRequest } from '../lib/errors';
 import { listYears } from '../modules/academic/service';
 import { getGradebook, listSkills } from '../modules/assessments/service';
 import { summarizeGradebook } from '../modules/assessments/summary';
+import { getLab, listLab } from '../modules/lab/service';
 import { getLesson, listLessons } from '../modules/lessons/service';
 import { getPlan, listPlans } from '../modules/support/service';
 import { requireAssignment, requireStudent, requireTerm, listAssignmentInfos } from '../modules/_shared/owned';
@@ -740,6 +745,159 @@ export function buildSupportPlans(
     ],
     landscape: true,
     filename: `الخطط-العلاجية-والإثرائية-${ctx.today}`,
+    signatures: true,
+    generatedAt: ctx.now,
+  };
+}
+
+
+// ═════════════ 7) سجل المختبر والأنشطة (نشاط واحد أو قائمة بفترة) ═════════════
+export function buildLabLog(
+  ctx: BuildCtx,
+  q: { labId?: string; assignmentId?: string; from?: string; to?: string; all?: boolean; kind?: LabKind; status?: LabStatus },
+): ReportDoc {
+  const d = ctx.settings.preferences.digits;
+  const f = fmtFactory(d);
+  const statusTone = (s: LabStatus): Tone => (s === 'done' ? 'good' : s === 'cancelled' ? 'muted' : 'info');
+
+  // ───── نشاط واحد: ورقة تقرير قابلة للتسليم للإدارة/المشرف ─────
+  if (q.labId) {
+    const l = getLab(ctx.db, ctx.ownerId, q.labId, ctx.today);
+    const blocks: ReportDoc['blocks'] = [
+      {
+        type: 'kv',
+        columns: 3,
+        items: [
+          { label: 'التاريخ', value: `${weekdayName(weekdayOf(l.date))} ${formatDate(l.date, d, 'medium')}` },
+          { label: 'الحصة', value: l.period ? f(l.period) : '—' },
+          { label: 'نوع النشاط', value: LAB_KIND.labels[l.kind] },
+          { label: 'الشعبة', value: l.sectionLabel ?? 'نشاط عام' },
+          { label: 'المادة', value: l.subjectName ?? '—' },
+          { label: 'المكان', value: l.location ?? '—' },
+          { label: 'الحالة', value: LAB_STATUS.labels[l.status] },
+          { label: 'عدد الطلاب المشاركين', value: l.participants === null ? '—' : f(l.participants) },
+        ],
+      },
+    ];
+    const list = (title: string, items: string[]) => items.length && blocks.push({ type: 'list', title, items });
+    list('الأهداف', l.objectives);
+    list('المواد والأدوات', l.materials);
+    list('احتياطات السلامة', l.safety);
+    if (l.procedure) blocks.push({ type: 'field', label: 'خطوات التنفيذ', text: l.procedure });
+    if (l.results) blocks.push({ type: 'field', label: 'النتائج والملاحظات', text: l.results });
+    if (l.notes) blocks.push({ type: 'field', label: 'معوّقات وتوصيات', text: l.notes });
+    return {
+      type: 'lab-log',
+      title: `تقرير ${LAB_KIND.labels[l.kind]}`,
+      subtitle: l.title,
+      meta: [
+        { label: 'المعلم', value: ctx.settings.profile.fullName },
+        { label: 'التاريخ', value: formatDate(ctx.today, d, 'long') },
+      ],
+      blocks,
+      filename: `نشاط-${l.title.split(' ').slice(0, 4).join('-')}`,
+      signatures: true,
+      generatedAt: ctx.now,
+    };
+  }
+
+  // ───── قائمة الأنشطة بفترة ─────
+  const years = listYears(ctx.db, ctx.ownerId);
+  const year = years.find((y) => y.isCurrent) ?? years[0];
+  const cur = year ? pickCurrentTerm(year.terms, ctx.today) : null;
+  // «كل الفترات» صريحة (لا تُستنتج من غياب التاريخين: غيابهما يعني الفصل الحالي كبقية تقارير الفترات)
+  const everything = q.all === true;
+  const from = everything ? '0000-01-01' : (q.from ?? cur?.startDate ?? ctx.today);
+  const to = everything ? '9999-12-31' : (q.to ?? cur?.endDate ?? ctx.today);
+  if (to < from) throw badRequest('تاريخ النهاية يجب أن يكون بعد البداية');
+  let scope = 'كل الشعب والمواد';
+  if (q.assignmentId) {
+    const a = requireAssignment(ctx.db, ctx.ownerId, q.assignmentId);
+    scope = `${a.subjectName} — ${a.sectionLabel}`;
+  }
+
+  const page = listLab(ctx.db, ctx.ownerId, { from, to, assignmentId: q.assignmentId, kind: q.kind, status: q.status, limit: 500, offset: 0 }, ctx.today);
+  // الأقدم أولًا: سجلٌّ يُقرأ بتسلسله الزمني
+  const items = [...page.items].sort((a, b) => (a.date === b.date ? (a.period ?? 99) - (b.period ?? 99) : a.date < b.date ? -1 : 1));
+  const count = (s: LabStatus) => items.filter((x) => x.status === s).length;
+  const participants = items.reduce((n, x) => n + (x.status === 'done' ? (x.participants ?? 0) : 0), 0);
+  const byKind = LAB_KIND.items
+    .map((k) => ({ label: k.label, n: items.filter((x) => x.kind === k.value && x.status === 'done').length }))
+    .filter((k) => k.n > 0);
+
+  const meta: ReportDoc['meta'] = [
+    ...(everything
+      ? [{ label: 'الفترة', value: 'كل الفترات' }]
+      : [
+          { label: 'من', value: formatDate(from, d, 'long') },
+          { label: 'إلى', value: formatDate(to, d, 'long') },
+        ]),
+    { label: 'النطاق', value: scope },
+    { label: 'عدد الأنشطة', value: f(items.length) },
+  ];
+  if (q.kind) meta.push({ label: 'النوع', value: LAB_KIND.labels[q.kind] });
+  if (q.status) meta.push({ label: 'الحالة', value: LAB_STATUS.labels[q.status] });
+  meta.push({ label: 'المعلم', value: ctx.settings.profile.fullName });
+
+  const blocks: ReportDoc['blocks'] = [
+    {
+      type: 'stats',
+      items: [
+        { label: 'إجمالي الأنشطة', value: f(items.length) },
+        { label: 'نُفِّذ', value: f(count('done')), tone: 'good' },
+        { label: 'مخطَّط', value: f(count('planned')), tone: 'info' },
+        { label: 'ملغى', value: f(count('cancelled')), tone: 'muted' },
+        { label: 'مشاركات الطلاب', value: f(participants), hint: 'مجموع المشاركين في المنفَّذ', tone: 'good' },
+      ],
+    },
+  ];
+  // الحد الأقصى للتقرير الواحد 500 نشاط؛ لا نقتطع بصمت (الأرقام أعلاه تخص المعروض فقط)
+  if (page.total > items.length) {
+    blocks.push({ type: 'paragraph', tone: 'warn', text: `عُرض أحدث ${f(items.length)} نشاطًا من ${f(page.total)} في هذه الفترة. ضيّق الفترة أو التصفية لعرض الباقي.` });
+  }
+  if (byKind.length > 1) {
+    blocks.push({ type: 'bars', title: 'الأنشطة المنفَّذة حسب النوع', items: byKind.map((k) => ({ label: k.label, value: k.n, display: f(k.n), tone: 'info' as Tone })) });
+  }
+  blocks.push({
+    type: 'table',
+    compact: true,
+    empty: 'لا توجد أنشطة في هذه الفترة',
+    columns: [
+      { key: 'n', title: 'م', width: 0.45, align: 'center' },
+      { key: 'd', title: 'التاريخ', width: 1.3, align: 'center' },
+      { key: 'w', title: 'اليوم', width: 1, align: 'center' },
+      { key: 'p', title: 'الحصة', width: 0.7, align: 'center', kind: 'number' },
+      { key: 's', title: 'الشعبة', width: 0.9, align: 'center' },
+      { key: 'sub', title: 'المادة', width: 1.3 },
+      { key: 'k', title: 'النوع', width: 1.2, align: 'center' },
+      { key: 't', title: 'عنوان النشاط', width: 3.2 },
+      { key: 'l', title: 'المكان', width: 1.5 },
+      { key: 'st', title: 'الحالة', width: 0.9, align: 'center' },
+      { key: 'pa', title: 'المشاركون', width: 0.9, align: 'center', kind: 'number' },
+    ],
+    rows: items.map((x, i) => [
+      i + 1,
+      formatDate(x.date, d, 'short'),
+      weekdayName(weekdayOf(x.date)),
+      x.period,
+      x.sectionLabel ?? 'عام',
+      x.subjectName,
+      LAB_KIND.labels[x.kind],
+      x.title,
+      x.location,
+      { v: x.overdue ? 'فات موعده' : LAB_STATUS.labels[x.status], tone: x.overdue ? 'bad' : statusTone(x.status) },
+      x.status === 'done' ? x.participants : null,
+    ]),
+  });
+
+  return {
+    type: 'lab-log',
+    title: 'سجل المختبر والأنشطة',
+    subtitle: scope,
+    meta,
+    blocks,
+    landscape: true,
+    filename: everything ? 'سجل-المختبر-كل-الفترات' : `سجل-المختبر-${from}-${to}`,
     signatures: true,
     generatedAt: ctx.now,
   };

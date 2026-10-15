@@ -22,6 +22,7 @@ const TimetablePage = lazy(() => import('@/features/timetable/timetable-page'));
 const TasksPage = lazy(() => import('@/features/tasks/tasks-page'));
 const SupportPage = lazy(() => import('@/features/support/support-page'));
 const SupportPlanPage = lazy(() => import('@/features/support/plan-page'));
+const LabPage = lazy(() => import('@/features/lab/lab-page'));
 const ReportsPage = lazy(() => import('@/features/reports/reports-page'));
 const SettingsPage = lazy(() => import('@/features/settings/settings-page'));
 
@@ -92,6 +93,7 @@ export function App() {
                       <Route path="tasks" element={<TasksPage />} />
                       <Route path="support" element={<SupportPage />} />
                       <Route path="support/:planId" element={<SupportPlanPage />} />
+                      <Route path="lab" element={<LabPage />} />
                       <Route path="reports" element={<ReportsPage />} />
                       <Route path="settings" element={<SettingsPage />} />
                       <Route path="*" element={<NotFound />} />

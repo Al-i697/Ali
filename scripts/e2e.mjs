@@ -42,6 +42,17 @@ const axeSource = fs.existsSync(path.join(root, 'node_modules/axe-core/axe.min.j
   ? fs.readFileSync(path.join(root, 'node_modules/axe-core/axe.min.js'), 'utf8')
   : null;
 
+/** يفحص الصفحة المفتوحة (بما فيها النوافذ المنبثقة) بـ axe ويرمي عند أي مخالفة */
+async function expectNoAxe(page, what) {
+  if (!axeSource) return;
+  await page.evaluate(axeSource);
+  const violations = await page.evaluate(async () => {
+    const res = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'] } });
+    return res.violations.map((v) => ({ id: v.id, impact: v.impact, nodes: v.nodes.length, first: v.nodes[0]?.target.join(' ').slice(0, 90) }));
+  });
+  expect(violations.length === 0, `${what}: مخالفات إمكانية الوصول (axe): ${violations.map((v) => `${v.id}[${v.impact}]×${v.nodes} ${v.first}`).join(' ؛ ')}`);
+}
+
 const DESKTOP = { width: 1360, height: 860 };
 const MOBILE = { width: 390, height: 844 };
 
@@ -866,6 +877,268 @@ async function phaseDemo(browser, srv) {
       expect(hasAny > 0, 'لا عناصر خطة في بطاقة «يحتاجون متابعة»');
     });
 
+    // ───── المختبر والأنشطة ─────
+    const labTitle = 'فحص عينة ماء بالمجهر — اختبار E2E';
+    const labDate = new Date(Date.now() + 9 * 86_400_000).toISOString().slice(0, 10);
+    const muscatToday = () => new Date(Date.now() + 4 * 3_600_000).toISOString().slice(0, 10);
+    let labId = '';
+    const labList = () => page.locator('ul[aria-label="الأنشطة"]');
+    const labRows = () => labList().locator('> li');
+    const countIs = (n) => page.waitForFunction((k) => document.querySelectorAll('ul[aria-label="الأنشطة"] > li').length === k, n);
+
+    await step('المختبر: السجل يعرض الأنشطة المزروعة بحالاتها، وزر «فات موعده» يعزل ما لم يُسجَّل تنفيذه', async () => {
+      await page.goto('/lab');
+      await page.getByRole('radiogroup', { name: 'نطاق الفترة' }).getByRole('radio', { name: 'الكل' }).click();
+      const all = await apiGet(page, '/lab-activities?limit=500');
+      expect(all.total >= 7, `الأنشطة المزروعة: ${all.total}`);
+      await countIs(Math.min(100, all.total));
+      expect(all.stats.done >= 3 && all.stats.planned >= 3 && all.stats.overdue >= 1, `الإحصاءات: ${JSON.stringify(all.stats)}`);
+      await expectText(page.locator('main'), new RegExp(`${all.stats.participants}`), 'إجمالي المشاركات');
+      const chip = page.getByRole('button', { name: /^فات موعده/ });
+      await chip.click();
+      await page.waitForURL(/view=overdue/);
+      await countIs(all.stats.overdue);
+      expect((await labRows().filter({ hasText: 'فات موعده' }).count()) === all.stats.overdue, 'كل صفوف عرض «فات موعده» يجب أن تحمل الوسم');
+      expect((await chip.getAttribute('aria-pressed')) === 'true', 'الزر لا يعلن أنه مضغوط');
+      await chip.click();
+      await countIs(Math.min(100, all.total));
+    });
+
+    await step('المختبر: إنشاء نشاط من النموذج يحفظ القوائم والأدوات والسلامة والشعبة، ويبقى بعد إعادة التحميل', async () => {
+      await page.goto('/lab');
+      await page.getByRole('button', { name: 'نشاط جديد' }).first().click();
+      const dlg = page.getByRole('dialog', { name: 'نشاط جديد' });
+      await dlg.getByLabel('عنوان النشاط').fill(labTitle);
+      await dlg.getByLabel('الشعبة والمادة').selectOption({ label: '10/2 — العلوم' });
+      await dlg.getByLabel('التاريخ').fill(labDate);
+      await dlg.getByLabel('المكان').fill('مختبر العلوم');
+      await dlg.getByLabel('الهدف 1').fill('أن يلاحظ الطالب الكائنات الدقيقة في قطرة ماء');
+      await dlg.getByRole('button', { name: 'مجهر ضوئي' }).click();
+      const mat = dlg.getByLabel('المواد والأدوات');
+      await mat.fill('شرائح زجاجية');
+      await mat.press('Enter');
+      await dlg.getByRole('button', { name: 'ارتداء المعطف والنظارات الواقية' }).click();
+      await dlg.getByLabel('خطوات التنفيذ').fill('١) نأخذ قطرة ماء.\n٢) نضعها على الشريحة ونفحصها.');
+      await dlg.getByRole('button', { name: 'إضافة إلى السجل' }).click();
+      await toast(page, /أُضيف النشاط إلى السجل/).waitFor();
+      await dlg.waitFor({ state: 'hidden' });
+      const found = await apiGet(page, `/lab-activities?q=${encodeURIComponent('عينة ماء')}`);
+      const item = found.items.find((x) => x.title === labTitle);
+      expect(!!item, 'النشاط الجديد غير موجود في الخادم');
+      labId = item.id;
+      const full = await apiGet(page, `/lab-activities/${labId}`);
+      expect(full.sectionLabel === '10/2' && full.status === 'planned' && full.date === labDate && full.location === 'مختبر العلوم', `الحقول الأساسية: ${JSON.stringify({ s: full.sectionLabel, st: full.status, d: full.date, l: full.location })}`);
+      expect(full.objectives.length === 1 && full.materials.includes('مجهر ضوئي') && full.materials.includes('شرائح زجاجية'), `الأهداف/المواد: ${JSON.stringify([full.objectives, full.materials])}`);
+      expect(full.safety.includes('ارتداء المعطف والنظارات الواقية') && /قطرة ماء/.test(full.procedure ?? ''), 'السلامة/الخطوات لم تُحفظ');
+      await page.reload();
+      await labList().getByText(labTitle).first().waitFor();
+    });
+
+    await step('لوحة التحكم: بطاقة «أنشطة المختبر» تعرض القادم وتنبّه إلى ما فات موعده وتفتح عرضه', async () => {
+      await page.goto('/');
+      await page.getByRole('heading', { name: 'أنشطة المختبر' }).waitFor();
+      await page.locator('a[href^="/lab?open="]').filter({ hasText: labTitle }).first().waitFor();
+      const alert = page.getByRole('status').filter({ hasText: 'ولم يُسجَّل تنفيذه' });
+      await alert.waitFor();
+      await alert.getByRole('link', { name: 'تسجيل الآن' }).click();
+      await page.waitForURL(/\/lab\?view=overdue/);
+      await page.getByRole('button', { name: /^فات موعده/ }).waitFor();
+    });
+
+    await step('نافذة النشاط تحمي ما كُتب: الإغلاق بتغييرات غير محفوظة يطلب تأكيدًا، و«متابعة التحرير» تُبقيها', async () => {
+      await page.goto('/lab');
+      await page.getByRole('button', { name: 'نشاط جديد' }).first().click();
+      const dlg = page.getByRole('dialog', { name: 'نشاط جديد' });
+      await dlg.getByLabel('عنوان النشاط').fill('عنوان لن يُحفظ أبدًا');
+      await dlg.getByRole('radio', { name: 'نُفِّذ' }).click(); // يُظهر قسم «التنفيذ والنتائج» أيضًا
+      await expectNoAxe(page, 'نافذة النشاط الجديد');
+      await page.keyboard.press('Escape');
+      const ask = page.getByRole('dialog', { name: 'تجاهل التغييرات؟' });
+      await ask.waitFor();
+      await ask.getByRole('button', { name: 'متابعة التحرير' }).click();
+      await ask.waitFor({ state: 'hidden' });
+      expect((await dlg.getByLabel('عنوان النشاط').inputValue()) === 'عنوان لن يُحفظ أبدًا', 'ضاع ما كُتب بعد «متابعة التحرير»');
+      await dlg.getByRole('button', { name: 'إلغاء' }).click();
+      await ask.waitFor();
+      await ask.getByRole('button', { name: 'تجاهل وإغلاق' }).click();
+      await dlg.waitFor({ state: 'hidden' });
+      const found = await apiGet(page, `/lab-activities?q=${encodeURIComponent('لن يُحفظ أبدًا')}`);
+      expect(found.total === 0, 'حُفظ النشاط رغم تجاهل التغييرات');
+    });
+
+    await step('الحارس: لا يُسجَّل «نُفِّذ» لنشاط تاريخه لم يحن — النموذج يمنعه والخادم أيضًا', async () => {
+      allowProblem(/http 400: PATCH \/api\/lab-activities\//);
+      await page.goto(`/lab?open=${labId}`);
+      const dlg = page.getByRole('dialog', { name: 'تعديل النشاط' });
+      await dlg.getByLabel('عنوان النشاط').waitFor();
+      expect((await dlg.getByLabel('عنوان النشاط').inputValue()) === labTitle, 'نافذة التعديل لم تُحمَّل بيانات النشاط');
+      await dlg.getByRole('radio', { name: 'نُفِّذ' }).click();
+      await dlg.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await dlg.getByText('لا يمكن تسجيل «نُفِّذ» لتاريخ لم يحن بعد').waitFor();
+      expect((await apiGet(page, `/lab-activities/${labId}`)).status === 'planned', 'تغيّرت الحالة رغم الرفض');
+      // الخادم يرفض أيضًا (لا يُعتمد على النموذج وحده)
+      expect((await apiStatus(page, `/lab-activities/${labId}`, 'PATCH', { status: 'done' })) === 400, 'الخادم قبِل «نُفِّذ» لتاريخ مستقبلي');
+      await dlg.getByRole('button', { name: 'إلغاء' }).click();
+      await page.getByRole('dialog', { name: 'تجاهل التغييرات؟' }).getByRole('button', { name: 'تجاهل وإغلاق' }).click();
+      await dlg.waitFor({ state: 'hidden' });
+    });
+
+    await step('التقويم الدراسي: النشاط يظهر بنوعه ورابطه يفتح نافذة تعديله مباشرة', async () => {
+      const cal = await apiGet(page, `/calendar?from=${labDate}&to=${labDate}`);
+      const it = cal.find((i) => i.type === 'lab' && i.title === labTitle);
+      expect(!!it && it.href === `/lab?open=${labId}` && it.done === false && /تجربة عملية/.test(it.subtitle ?? ''), `عنصر التقويم: ${JSON.stringify(it)}`);
+      await page.goto(it.href);
+      const dlg = page.getByRole('dialog', { name: 'تعديل النشاط' });
+      await dlg.getByLabel('عنوان النشاط').waitFor();
+      expect((await dlg.getByLabel('عنوان النشاط').inputValue()) === labTitle, 'الرابط فتح نشاطًا آخر');
+      await dlg.getByRole('button', { name: 'إلغاء' }).click(); // لا تغييرات ⇒ يُغلق دون تأكيد
+      await dlg.waitFor({ state: 'hidden' });
+      expect(!new URL(page.url()).search.includes('open='), 'يجب إزالة ?open من العنوان بعد الفتح');
+    });
+
+    await step('تسجيل التنفيذ السريع: «كل طلاب الشعبة» يملأ العدد، فيصير النشاط «نُفِّذ» ويخرج من «فات موعده» ويتحدّث عدّاد اللوحة', async () => {
+      const before = (await apiGet(page, '/dashboard')).lab.overdue;
+      expect(before >= 1, `لا نشاط فائت للتسجيل (${before})`);
+      const target = (await apiGet(page, '/lab-activities?view=overdue')).items[0]; // الصف الأول في العرض نفسه (الأحدث تاريخًا)
+      await page.goto('/lab?view=overdue');
+      const row = labRows().first();
+      await row.waitFor();
+      await row.getByRole('button', { name: 'تسجيل التنفيذ' }).click();
+      const dlg = page.getByRole('dialog', { name: 'تسجيل التنفيذ' });
+      await expectNoAxe(page, 'نافذة تسجيل التنفيذ');
+      await dlg.getByRole('button', { name: /كل طلاب الشعبة/ }).click();
+      const filled = Number(await dlg.getByLabel('عدد الطلاب المشاركين').inputValue());
+      expect(filled >= 20, `عدد طلاب الشعبة المعبّأ: ${filled}`);
+      await dlg.getByLabel('النتائج والملاحظات').fill('لوحظ اختلاف الخلية النباتية عن الحيوانية — نتيجة اختبار E2E');
+      await dlg.getByRole('button', { name: 'تم التنفيذ' }).click();
+      await toast(page, /سُجِّل تنفيذ النشاط/).waitFor();
+      await dlg.waitFor({ state: 'hidden' });
+      const detail = await apiGet(page, `/lab-activities/${target.id}`);
+      expect(detail.status === 'done' && detail.participants === filled && /نتيجة اختبار E2E/.test(detail.results ?? ''), `النشاط المُسجَّل: ${JSON.stringify([detail.status, detail.participants, detail.results])}`);
+      expect((await apiGet(page, '/dashboard')).lab.overdue === before - 1, 'عدّاد «فات موعده» لم ينقص');
+    });
+
+    await step('النسخ الذكي: «اقتراح من الجدول» يضع لكل شعبة موازية أقرب حصة فعلية في جدولها، والنسخة «مخطَّطة» بلا نتائج', async () => {
+      await page.goto('/lab');
+      const src = labRows().filter({ hasText: 'فحص خلايا قشرة البصل' }).filter({ hasText: '10/1' }).first();
+      await src.waitFor();
+      await src.getByRole('button', { name: /^خيارات/ }).click();
+      await page.getByRole('menuitem', { name: /نسخ إلى شعب/ }).click();
+      const dlg = page.getByRole('dialog', { name: 'نسخ النشاط' });
+      await dlg.getByRole('button', { name: /اقتراح من الجدول/ }).click();
+      const targets = dlg.getByTestId('lab-copy-target');
+      await expectNoAxe(page, 'نافذة نسخ النشاط');
+      expect((await targets.count()) === 1, `الشعب الموازية المقترحة: ${await targets.count()} (المتوقع 10/2 فقط)`);
+      const date = await targets.first().getByLabel('التاريخ').inputValue();
+      const period = await targets.first().getByLabel('الحصة').inputValue();
+      const slots = await apiGet(page, `/timetable?yearId=${years[0].id}`);
+      const wd = new Date(`${date}T00:00:00Z`).getUTCDay();
+      const hit = slots.find((s) => s.assignment.sectionLabel === '10/2' && s.assignment.subjectName === 'العلوم' && s.weekday === wd && String(s.period) === period);
+      expect(!!hit, `الاقتراح ${date} (يوم ${wd}) الحصة ${period} لا يوافق أي حصة في جدول 10/2`);
+      const gap = (Date.parse(date) - Date.parse(muscatToday())) / 86_400_000;
+      expect(gap >= 0 && gap < 7, `الموعد المقترح ليس أقرب حصة قادمة: بعد ${gap} يومًا`);
+      await dlg.getByRole('button', { name: /^نسخ إلى/ }).click();
+      await toast(page, /نُسخ النشاط إلى/).waitFor();
+      const list = await apiGet(page, `/lab-activities?q=${encodeURIComponent('فحص خلايا قشرة البصل')}&limit=50`);
+      const copy = list.items.find((x) => x.sectionLabel === '10/2' && x.status === 'planned' && x.date === date);
+      expect(!!copy, 'النسخة الجديدة غير موجودة');
+      const full = await apiGet(page, `/lab-activities/${copy.id}`);
+      expect(!!full.sourceId && full.results === null && full.participants === null && full.notes === null && full.materials.length > 0 && String(full.period) === period, `النسخة: ${JSON.stringify({ s: full.sourceId, r: full.results, p: full.participants, m: full.materials.length, per: full.period })}`);
+    });
+
+    await step('التقارير: «سجل المختبر والأنشطة» يُعاين ويُنزَّل PDF وExcel بأرقام السجل، وورقة النشاط الواحد وطباعتها من الصفحة', async () => {
+      const from = new Date(Date.now() - 60 * 86_400_000).toISOString().slice(0, 10);
+      const to = new Date(Date.now() + 60 * 86_400_000).toISOString().slice(0, 10);
+      await page.goto('/reports');
+      await page.getByRole('radio', { name: /سجل المختبر والأنشطة/ }).click();
+      await page.getByLabel(/^من/).fill(from);
+      await page.getByLabel(/^إلى/).fill(to);
+      const frame = page.frameLocator('iframe');
+      await frame.getByText(labTitle).first().waitFor({ timeout: 25_000 });
+      const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'تنزيل PDF' }).click()]);
+      expect(fs.readFileSync(await dl.path()).subarray(0, 4).toString() === '%PDF', 'الملف المنزَّل ليس PDF');
+      // Excel: يحتوي صف النشاط الجديد وصفوف المزروع
+      const res = await page.context().request.get(`/api/reports/lab-log/xlsx?from=${from}&to=${to}`);
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(await res.body());
+      const cells = [];
+      wb.worksheets[0].eachRow((r) => r.eachCell((c) => cells.push(String(c.value))));
+      expect(cells.includes(labTitle) && cells.some((v) => v.includes('فحص خلايا قشرة البصل')), 'Excel لا يحتوي صفوف الأنشطة');
+      // ورقة نشاط واحد
+      const one = await page.evaluate(async (u) => (await fetch(`/api${u}`, { credentials: 'same-origin' })).text(), `/reports/lab-log/html?labId=${labId}`);
+      expect(one.includes('dir="rtl"') && one.includes(labTitle) && one.includes('تقرير تجربة عملية') && one.includes('شرائح زجاجية') && one.includes('ارتداء المعطف والنظارات الواقية'), 'ورقة النشاط ناقصة');
+      const pdf1 = await bytesOf(page, `/reports/lab-log/pdf?labId=${labId}`);
+      expect(pdf1.status === 200 && asText(pdf1.head).startsWith('%PDF') && pdf1.size > 4000, `PDF النشاط: ${pdf1.status}/${pdf1.size}`);
+      // من صفحة المختبر: «طباعة ورقة النشاط» تفتح التقرير في تبويب
+      await page.goto('/lab');
+      const row = labRows().filter({ hasText: labTitle }).first();
+      await row.waitFor();
+      await row.getByRole('button', { name: /^خيارات/ }).click();
+      const [popup] = await Promise.all([page.context().waitForEvent('page'), page.getByRole('menuitem', { name: 'طباعة ورقة النشاط' }).click()]);
+      await popup.waitForLoadState();
+      expect((await popup.content()).includes(labTitle), 'ورقة الطباعة لا تحمل عنوان النشاط');
+      await popup.close();
+      // قائمة «تقرير السجل» في الصفحة: PDF وExcel بنطاق «الكل» = كل الفترات (لا الفصل الحالي الافتراضي)
+      await page.getByRole('radiogroup', { name: 'نطاق الفترة' }).getByRole('radio', { name: 'الكل' }).click();
+      await page.getByRole('button', { name: 'تقرير السجل' }).click();
+      const [dp] = await Promise.all([page.waitForEvent('download'), page.getByRole('menuitem', { name: 'تنزيل PDF' }).click()]);
+      expect(fs.readFileSync(await dp.path()).subarray(0, 4).toString() === '%PDF', 'تقرير السجل من الصفحة ليس PDF');
+      await page.getByRole('button', { name: 'تقرير السجل' }).click();
+      const [req, dx] = await Promise.all([page.waitForRequest((r) => r.url().includes('/api/reports/lab-log/xlsx')), page.waitForEvent('download'), page.getByRole('menuitem', { name: 'تنزيل Excel' }).click()]);
+      expect(fs.readFileSync(await dx.path()).subarray(0, 2).toString() === 'PK', 'تقرير السجل من الصفحة ليس Excel');
+      expect(req.url().includes('labAll=true'), `نطاق «الكل» لم يُرسل كـ«كل الفترات»: ${req.url()}`);
+    });
+
+    await step('تعليم النشاط «ملغى» ثم إعادة التخطيط ثم الحذف بتأكيد — وتبقى الإحصاءات متسقة', async () => {
+      const row = () => labRows().filter({ hasText: labTitle }).first();
+      await page.goto('/lab');
+      await row().waitFor();
+      await row().getByRole('button', { name: /^خيارات/ }).click();
+      await page.getByRole('menuitem', { name: 'تعليم كملغى' }).click();
+      await toast(page, /عُلِّم النشاط كملغى/).waitFor();
+      await row().getByText('ملغى').waitFor();
+      expect((await apiGet(page, `/lab-activities/${labId}`)).status === 'cancelled', 'لم تُحفظ حالة «ملغى»');
+      const cal = await apiGet(page, `/calendar?from=${labDate}&to=${labDate}`);
+      expect(!cal.some((i) => i.type === 'lab' && i.title === labTitle), 'النشاط الملغى يجب ألا يظهر في التقويم');
+      await row().getByRole('button', { name: /^خيارات/ }).click();
+      await page.getByRole('menuitem', { name: 'إعادة التخطيط' }).click();
+      await toast(page, /أُعيد النشاط إلى «مخطَّط»/).waitFor();
+      expect((await apiGet(page, `/lab-activities/${labId}`)).status === 'planned', 'لم تُحفظ إعادة التخطيط');
+      await row().getByRole('button', { name: /^خيارات/ }).click();
+      await page.getByRole('menuitem', { name: 'حذف' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'حذف', exact: true }).click();
+      await toast(page, /حُذف النشاط/).waitFor();
+      await page.waitForFunction((t) => !document.body.innerText.includes(t), labTitle);
+      allowProblem(/http 404: GET \/api\/lab-activities\//);
+      expect((await apiStatus(page, `/lab-activities/${labId}`)) === 404, 'النشاط لم يُحذف من الخادم');
+    });
+
+    await step('نشاط من عام دراسي سابق: التعديل يُبقي ارتباطه بشعبته (لا يتحوّل «عامًّا» لغياب مقرره عن قائمة العام المختار)', async () => {
+      const send = (method, u, body) =>
+        page.evaluate(async ([m, url, b]) => { const r = await fetch(`/api${url}`, { method: m, credentials: 'same-origin', headers: { ...(b ? { 'content-type': 'application/json' } : {}), 'x-sijilli-client': 'web' }, body: b ? JSON.stringify(b) : undefined }); return { status: r.status, body: await r.json().catch(() => null) }; }, [method, u, body]);
+      const oldYear = (await send('POST', '/years', { name: '2024/2025 (اختبار)', startDate: '2024-08-24', endDate: '2025-06-19', makeCurrent: false })).body;
+      const oldSection = (await send('POST', '/sections', { yearId: oldYear.id, gradeLevel: 9, name: '7', subjectIds: [asg.subjectId] })).body;
+      const oldAsg = oldSection.assignments[0];
+      const made = (await send('POST', '/lab-activities', { assignmentId: oldAsg.id, date: '2024-10-05', title: 'نشاط العام السابق', status: 'done', participants: 20 })).body;
+      await page.goto('/lab');
+      await page.getByRole('radiogroup', { name: 'نطاق الفترة' }).getByRole('radio', { name: 'الكل' }).click();
+      const row = labRows().filter({ hasText: 'نشاط العام السابق' }).first();
+      await row.waitFor();
+      await row.getByRole('button', { name: 'نشاط العام السابق', exact: true }).click();
+      const dlg = page.getByRole('dialog', { name: 'تعديل النشاط' });
+      await dlg.getByLabel('عنوان النشاط').waitFor();
+      expect((await dlg.getByLabel('الشعبة والمادة').inputValue()) === oldAsg.id, 'شعبة العام السابق لا تظهر محدَّدة في النموذج (ستُفكّ عند الحفظ)');
+      await dlg.getByLabel('عنوان النشاط').fill('نشاط العام السابق — معدَّل');
+      await dlg.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await toast(page, /حُفظ النشاط/).waitFor();
+      const after = await apiGet(page, `/lab-activities/${made.id}`);
+      expect(after.assignmentId === oldAsg.id && after.title === 'نشاط العام السابق — معدَّل' && after.participants === 20, `بعد الحفظ: ${JSON.stringify({ a: after.assignmentId === oldAsg.id, t: after.title, p: after.participants })}`);
+      // تنظيف: لا نترك عامًا إضافيًا في الحساب التجريبي
+      expect((await send('DELETE', `/lab-activities/${made.id}`)).status === 200, 'تعذّر حذف النشاط المؤقت');
+      expect((await send('DELETE', `/sections/${oldSection.id}?force=true`)).status === 200, 'تعذّر حذف الشعبة المؤقتة');
+      expect((await send('DELETE', `/years/${oldYear.id}`)).status === 200, 'تعذّر حذف العام المؤقت');
+    });
+
     // ───── المهام ─────
     await step('المهام: إضافة سريعة ← إنجاز ← تظهر في «المنجزة» ← حذف بتأكيد', async () => {
       await page.goto('/tasks');
@@ -1026,6 +1299,8 @@ async function phaseAdmin(browser, srv) {
         await op.getByText('ابدأ مع سجلي في دقائق').waitFor();
         const students = await apiGet(op, '/students');
         expect((students.total ?? students.items?.length ?? 0) === 0, 'المعلم الجديد يرى طلابًا ليسوا له!');
+        const labs = await apiGet(op, '/lab-activities');
+        expect(labs.total === 0 && labs.items.length === 0, 'المعلم الجديد يرى أنشطة مختبر ليست له!');
       });
 
       await step('تعطيل المدير للحساب يُنهي جلسة المستخدم فورًا ويمنع دخوله', async () => {
@@ -1153,6 +1428,7 @@ async function phaseVisual(browser, srv) {
     ['tasks', '/tasks'],
     ['support', '/support'],
     ['support-plan', `/support/${plans[0].id}`],
+    ['lab', '/lab'],
     ['reports', '/reports'],
     ['settings', '/settings'],
   ];

@@ -11,6 +11,7 @@ import {
   ClipboardList,
   Copy,
   FileBarChart,
+  FlaskConical,
   GraduationCap,
   HeartHandshake,
   Plus,
@@ -189,6 +190,54 @@ function TodaySlots({ data }: { data: DashboardDto }) {
 }
 
 // ───────────── المهام ─────────────
+/** أنشطة المختبر القادمة + تنبيه بما فات موعده دون تسجيل. تُخفى عمّن لم يستخدم السجل بعد كي لا تزدحم لوحته ببطاقة فارغة */
+function LabCard({ data }: { data: DashboardDto }) {
+  const fmt = useFmt();
+  const { upcoming, overdue, total } = data.lab;
+  if (total === 0) return null;
+  return (
+    <Card>
+      <CardHeader
+        icon={<FlaskConical className="size-[18px]" />}
+        title="أنشطة المختبر"
+        description="الأنشطة المخطَّطة من اليوم فصاعدًا"
+        action={<ButtonLink to="/lab" variant="soft" size="sm">السجل</ButtonLink>}
+      />
+      <div className="px-5 pb-4">
+        {overdue > 0 ? (
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-bad/30 bg-bad-soft px-3.5 py-2.5 text-[14px] text-bad" role="status">
+            <span><b className="tnum">{fmt.num(overdue, 0)}</b> {overdue === 1 ? 'نشاط مضى موعده' : 'أنشطة مضى موعدها'} ولم يُسجَّل تنفيذه</span>
+            <Link to="/lab?view=overdue" className="font-semibold underline underline-offset-2">تسجيل الآن</Link>
+          </div>
+        ) : null}
+        {upcoming.length === 0 ? (
+          <p className="py-3 text-center text-[14.5px] text-muted">لا أنشطة مخطَّطة قادمة.</p>
+        ) : (
+          <ul className="space-y-2.5">
+            {upcoming.map((a) => (
+              <li key={a.id}>
+                <Link to={`/lab?open=${a.id}`} className="flex items-center gap-3 rounded-lg hover:bg-surface-2">
+                  <div className="grid w-12 shrink-0 place-items-center rounded-lg bg-info-soft py-1 text-info">
+                    <span className="text-[17px] font-bold leading-5 tnum">{fmt.num(Number(a.date.slice(8, 10)), 0)}</span>
+                    <span className="text-[11px] leading-4">{fmt.date(a.date, 'medium').split(' ')[1]}</span>
+                  </div>
+                  <div className="min-w-0 text-[14.5px]">
+                    <div className="truncate font-medium text-ink">{a.title}</div>
+                    <div className="truncate text-[12.5px] text-muted">
+                      {a.sectionLabel ? <><span className="tnum">{a.sectionLabel}</span> — {a.subjectName}</> : 'نشاط عام'}
+                      {a.period ? <> · الحصة <span className="tnum">{fmt.num(a.period, 0)}</span></> : null}
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 function TasksCard({ data }: { data: DashboardDto }) {
   const qc = useQueryClient();
   const fmt = useFmt();
@@ -339,6 +388,8 @@ export default function DashboardPage() {
               )}
             </div>
           </Card>
+
+          <LabCard data={data} />
         </div>
 
         <div className="space-y-6">

@@ -19,6 +19,8 @@ import type {
   AssessmentType,
   GradingSettings,
   Gender,
+  LabKind,
+  LabStatus,
   LessonStatus,
   NoteCategory,
   ResultStatus,
@@ -508,6 +510,44 @@ export const supportPlanNotes = sqliteTable(
     ...timestamps,
   },
   (t) => [index('support_notes_plan_date_idx').on(t.planId, t.date)],
+);
+
+// ═════════════ سجل المختبر والأنشطة ═════════════
+export const labActivities = sqliteTable(
+  'lab_activities',
+  {
+    id: id(),
+    ownerId: owner(),
+    /** يبقى السجل بعد حذف المقرر (يصير «عامًا») — فهو توثيق لما نُفِّذ فعلًا */
+    assignmentId: text('assignment_id').references(() => assignments.id, { onDelete: 'set null' }),
+    date: text('date').notNull(),
+    period: integer('period'),
+    kind: text('kind').$type<LabKind>().notNull().default('experiment'),
+    title: text('title').notNull(),
+    /** عنوان + مكان + مواد بعد التطبيع العربي — للبحث */
+    searchText: text('search_text').notNull().default(''),
+    location: text('location'),
+    objectives: text('objectives', { mode: 'json' }).$type<string[]>().notNull().default(sql`'[]'`),
+    materials: text('materials', { mode: 'json' }).$type<string[]>().notNull().default(sql`'[]'`),
+    safety: text('safety', { mode: 'json' }).$type<string[]>().notNull().default(sql`'[]'`),
+    procedure: text('procedure'),
+    results: text('results'),
+    participants: integer('participants'),
+    notes: text('notes'),
+    status: text('status').$type<LabStatus>().notNull().default('planned'),
+    /** النشاط الذي نُسخ منه هذا النشاط (للتتبع فقط) */
+    sourceId: text('source_id'),
+    ...timestamps,
+  },
+  (t) => [
+    index('lab_owner_date_idx').on(t.ownerId, t.date),
+    index('lab_assignment_date_idx').on(t.assignmentId, t.date),
+    index('lab_owner_status_idx').on(t.ownerId, t.status, t.date),
+    check('lab_kind_chk', sql`${t.kind} in ('experiment','demo','activity','project','field_trip','competition','other')`),
+    check('lab_status_chk', sql`${t.status} in ('planned','done','cancelled')`),
+    check('lab_period_chk', sql`${t.period} is null or ${t.period} between 1 and 12`),
+    check('lab_participants_chk', sql`${t.participants} is null or ${t.participants} >= 0`),
+  ],
 );
 
 // ═════════════ سجل التدقيق ═════════════

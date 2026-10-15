@@ -155,7 +155,7 @@ function SubjectsTab({ section }: { section: SectionDto }) {
                   onClick={() =>
                     void deleteWithForce(confirm, (force) => api.del(`/assignments/${a.id}`, { force }), {
                       title: `إزالة «${a.subjectName}» من ${section.label}؟`,
-                      description: 'ستُحذف تقويماتها ودرجاتها وتحضيراتها وحصصها في الجدول إن وُجدت.',
+                      description: 'ستُحذف تقويماتها ودرجاتها وتحضيراتها وحصصها في الجدول إن وُجدت. أما أنشطة المختبر والخطط العلاجية المرتبطة بها فتبقى في سجلاتك بلا شعبة.',
                     }).then((ok) => ok && toast.success('أُزيلت المادة') && void 0)
                   }
                 >
@@ -224,7 +224,7 @@ export default function SectionPage() {
               variant="dangerSoft"
               icon={<Trash2 className="size-4" />}
               onClick={async () => {
-                const ok = await deleteWithForce(confirm, (force) => api.del(`/sections/${s.id}`, { force }), { title: `حذف الشعبة ${s.label}؟`, description: 'تُحذف الشعبة ومقرراتها. سجلات الطلاب أنفسهم تبقى في النظام.' });
+                const ok = await deleteWithForce(confirm, (force) => api.del(`/sections/${s.id}`, { force }), { title: `حذف الشعبة ${s.label}؟`, description: 'تُحذف الشعبة ومقرراتها. سجلات الطلاب أنفسهم تبقى في النظام، وكذلك أنشطة المختبر والخطط العلاجية المرتبطة بها (تصير بلا شعبة).' });
                 if (ok) {
                   toast.success('حُذفت الشعبة');
                   void navigate('/classes');

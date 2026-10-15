@@ -4,6 +4,7 @@ import { schema } from '../../db/client';
 import type { CalendarItemDto, TaskDto } from '../../../shared/dto';
 import { badRequest } from '../../lib/errors';
 import { assignmentMap, requireAssignment, requireTask } from '../_shared/owned';
+import { calendarItems as labCalendarItems } from '../lab/service';
 import { calendarItems as supportCalendarItems } from '../support/service';
 
 const { tasks, assessments, lessonPlans } = schema;
@@ -102,7 +103,7 @@ export function deleteTask(db: Db, ownerId: string, id: string): void {
   db.delete(tasks).where(eq(tasks.id, id)).run();
 }
 
-/** التقويم الدراسي: دمج المهام والاختبارات/التقويمات والتحضيرات في خط زمني واحد */
+/** التقويم الدراسي: دمج المهام والتقويمات والتحضيرات ومراجعات الخطط وأنشطة المختبر في خط زمني واحد */
 export function calendar(db: Db, ownerId: string, from: string, to: string): CalendarItemDto[] {
   const items: CalendarItemDto[] = [];
 
@@ -169,5 +170,6 @@ export function calendar(db: Db, ownerId: string, from: string, to: string): Cal
     });
   }
   items.push(...supportCalendarItems(db, ownerId, from, to));
+  items.push(...labCalendarItems(db, ownerId, from, to));
   return items.sort((a, b) => (a.date === b.date ? (a.time ?? '') < (b.time ?? '') ? -1 : 1 : a.date < b.date ? -1 : 1));
 }

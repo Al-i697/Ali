@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, HeartHandshake, Loader2, Printer, TrendingUp, UserRound } from 'lucide-react';
-import { REPORT_TYPE, SUPPORT_KIND, SUPPORT_STATUS, type ReportType, type SupportKind, type SupportStatus } from '@shared/constants';
+import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, FlaskConical, HeartHandshake, Loader2, Printer, TrendingUp, UserRound } from 'lucide-react';
+import { LAB_KIND, LAB_STATUS, REPORT_TYPE, SUPPORT_KIND, SUPPORT_STATUS, type LabKind, type LabStatus, type ReportType, type SupportKind, type SupportStatus } from '@shared/constants';
 import { useAcademic } from '@/context/academic';
 import { useAuth } from '@/context/auth';
 import { api, apiUrl, downloadFile, errorMessage, getText } from '@/lib/api';
@@ -20,6 +20,7 @@ const TYPES: { value: ReportType; icon: typeof FileText; desc: string }[] = [
   { value: 'lessons', icon: BookOpenCheck, desc: 'جدول بدروس فترة زمنية وحالة تحضيرها وتنفيذها.' },
   { value: 'lesson-plan', icon: FileText, desc: 'أوراق تحضير مفصلة لفترة (كل درس في صفحة) جاهزة للطباعة.' },
   { value: 'support-plans', icon: HeartHandshake, desc: 'قائمة الخطط العلاجية والإثرائية بحالتها وأثرها على نسب الطلاب. (الخطة الفردية تُطبع من صفحتها).' },
+  { value: 'lab-log', icon: FlaskConical, desc: 'سجل التجارب والأنشطة العملية لفترة: نوعها ومكانها وحالتها وعدد المشاركين. (ورقة النشاط الواحد تُطبع من صفحة المختبر).' },
 ];
 
 type Params = {
@@ -34,6 +35,8 @@ type Params = {
   includeGuardian: boolean;
   supportKind: '' | SupportKind;
   supportStatus: '' | SupportStatus;
+  labKind: '' | LabKind;
+  labStatus: '' | LabStatus;
 };
 
 function ready(type: ReportType, p: Params): boolean {
@@ -49,6 +52,8 @@ function ready(type: ReportType, p: Params): boolean {
       return !!p.from && !!p.to && p.to >= p.from;
     case 'support-plans':
       return true;
+    case 'lab-log':
+      return !!p.from && !!p.to && p.to >= p.from;
   }
 }
 
@@ -64,6 +69,8 @@ function queryFor(type: ReportType, p: Params) {
       return { from: p.from, to: p.to, assignmentId: p.assignmentFilter || undefined };
     case 'support-plans':
       return { assignmentId: p.assignmentFilter || undefined, kind: p.supportKind || undefined, status: p.supportStatus || undefined };
+    case 'lab-log':
+      return { from: p.from, to: p.to, assignmentId: p.assignmentFilter || undefined, labKind: p.labKind || undefined, labStatus: p.labStatus || undefined };
   }
 }
 
@@ -126,6 +133,8 @@ export default function ReportsPage() {
     includeGuardian: false,
     supportKind: '',
     supportStatus: '',
+    labKind: '',
+    labStatus: '',
   });
 
   // قيم افتراضية عند وصول البيانات
@@ -278,6 +287,40 @@ export default function ReportsPage() {
                       <Select {...f} value={p.supportStatus} onChange={(e) => set('supportStatus', e.target.value as '' | SupportStatus)}>
                         <option value="">الكل</option>
                         {SUPPORT_STATUS.items.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                      </Select>
+                    )}
+                  </Field>
+                </div>
+              </>
+            )}
+            {type === 'lab-log' && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="من" required>{(f) => <Input {...f} type="date" value={p.from} onChange={(e) => set('from', e.target.value)} />}</Field>
+                  <Field label="إلى" required>{(f) => <Input {...f} type="date" value={p.to} onChange={(e) => set('to', e.target.value)} />}</Field>
+                </div>
+                <Field label="الشعبة والمادة">
+                  {(f) => (
+                    <Select {...f} value={p.assignmentFilter} onChange={(e) => set('assignmentFilter', e.target.value)}>
+                      <option value="">الكل</option>
+                      {(assignments.data ?? []).map((a) => <option key={a.id} value={a.id}>{a.sectionLabel} — {a.subjectName}</option>)}
+                    </Select>
+                  )}
+                </Field>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="النوع">
+                    {(f) => (
+                      <Select {...f} value={p.labKind} onChange={(e) => set('labKind', e.target.value as '' | LabKind)}>
+                        <option value="">الكل</option>
+                        {LAB_KIND.items.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+                      </Select>
+                    )}
+                  </Field>
+                  <Field label="الحالة">
+                    {(f) => (
+                      <Select {...f} value={p.labStatus} onChange={(e) => set('labStatus', e.target.value as '' | LabStatus)}>
+                        <option value="">الكل</option>
+                        {LAB_STATUS.items.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                       </Select>
                     )}
                   </Field>

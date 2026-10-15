@@ -5,6 +5,8 @@ import type {
   AssessmentType,
   Gender,
   GradingSettings,
+  LabKind,
+  LabStatus,
   LessonStatus,
   NoteCategory,
   ResultStatus,
@@ -340,7 +342,7 @@ export type TaskDto = {
 
 export type CalendarItemDto = {
   id: string;
-  type: 'task' | 'assessment' | 'lesson' | 'support';
+  type: 'task' | 'assessment' | 'lesson' | 'support' | 'lab';
   date: string;
   time: string | null;
   title: string;
@@ -398,6 +400,43 @@ export type SupportSuggestionDto = {
   kind: SupportKind;
 };
 
+// ───────────── سجل المختبر والأنشطة ─────────────
+export type LabActivitySummaryDto = {
+  id: string;
+  /** null ⇒ نشاط عام غير مرتبط بشعبة */
+  assignmentId: string | null;
+  sectionLabel: string | null;
+  subjectName: string | null;
+  subjectColor: string | null;
+  date: string;
+  period: number | null;
+  kind: LabKind;
+  title: string;
+  location: string | null;
+  status: LabStatus;
+  participants: number | null;
+  /** مخطَّط وفات موعده دون تسجيل تنفيذه أو إلغائه */
+  overdue: boolean;
+  updatedAt: string;
+};
+
+export type LabActivityDto = LabActivitySummaryDto & {
+  objectives: string[];
+  materials: string[];
+  safety: string[];
+  procedure: string | null;
+  results: string | null;
+  notes: string | null;
+  /** النشاط الذي نُسخ منه (للتتبع فقط) */
+  sourceId: string | null;
+  createdAt: string;
+};
+
+/** إحصاءات تُحسب على كل ما يطابق التصفية (عدا الحالة) ولا تتأثر بالترقيم */
+export type LabStats = { planned: number; done: number; cancelled: number; overdue: number; participants: number };
+
+export type LabActivitiesPage = { items: LabActivitySummaryDto[]; total: number; stats: LabStats };
+
 // ───────────── لوحة التحكم ─────────────
 export type DashboardTodaySlot = {
   slotId: string;
@@ -447,6 +486,8 @@ export type DashboardDto = {
   upcomingAssessments: { assessmentId: string; title: string; date: string; assignment: AssignmentDto }[];
   attention: DashboardAttention[];
   support: { open: number; due: number };
+  /** أنشطة المختبر: القادمة (اليوم فما بعد)، وعدد ما فات موعده دون تسجيل تنفيذه، وإجمالي ما سُجِّل (لإخفاء البطاقة عمّن لا يستخدمها) */
+  lab: { upcoming: LabActivitySummaryDto[]; overdue: number; total: number };
 };
 
 // ───────────── التقارير والنسخ الاحتياطي ─────────────

@@ -1,7 +1,7 @@
 # مرجع الواجهة البرمجية (API)
 
 > **مولَّد تلقائيًا** من المسارات المسجّلة فعليًا بالأمر `npm run docs:api` — لا تعدّله يدويًا.
-> عدد المسارات: **101**.
+> عدد المسارات: **107**.
 
 ## قواعد عامة
 
@@ -203,6 +203,12 @@
 
 | الطريقة | المسار | الصلاحية |
 |---|---|---|
+| `GET` | `/api/lab-activities` | مسجَّل الدخول |
+| `POST` | `/api/lab-activities` | مسجَّل الدخول |
+| `DELETE` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `GET` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `PATCH` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `POST` | `/api/lab-activities/:id/copy` | مسجَّل الدخول |
 | `GET` | `/api/support-plans` | مسجَّل الدخول |
 | `POST` | `/api/support-plans` | مسجَّل الدخول |
 | `DELETE` | `/api/support-plans/:id` | مسجَّل الدخول |
