@@ -339,6 +339,26 @@ export const DIGITS_PREF = defineEnum([
 ] as const);
 export type DigitsPref = (typeof DIGITS_PREF.values)[number];
 
+// ───────────── الخطط العلاجية والإثرائية ─────────────
+export const SUPPORT_KIND = defineEnum([
+  { value: 'remedial', label: 'علاجية' },
+  { value: 'enrichment', label: 'إثرائية' },
+] as const);
+export type SupportKind = (typeof SUPPORT_KIND.values)[number];
+
+export const SUPPORT_STATUS = defineEnum([
+  { value: 'open', label: 'مفتوحة' },
+  { value: 'done', label: 'منجزة' },
+  { value: 'cancelled', label: 'ملغاة' },
+] as const);
+export type SupportStatus = (typeof SUPPORT_STATUS.values)[number];
+
+/** استراتيجيات جاهزة تُقترح عند كتابة الخطة (تُضاف بنقرة ويمكن كتابة غيرها) */
+export const SUPPORT_STRATEGY_PRESETS: Record<'remedial' | 'enrichment', string[]> = {
+  remedial: ['تبسيط المفهوم بأمثلة محسوسة', 'التعلّم بالأقران', 'تدريبات إضافية متدرجة', 'جلسة علاجية مصغّرة بعد الحصة', 'استخدام وسائل بصرية', 'متابعة أسبوعية مع ولي الأمر'],
+  enrichment: ['مشروع بحثي مصغّر', 'مسائل تحدٍّ متقدمة', 'قيادة مجموعة تعاونية', 'مصادر إثرائية إضافية', 'تصميم تجربة أو نشاط للزملاء'],
+};
+
 // ───────────── التقارير ─────────────
 export const REPORT_TYPE = defineEnum([
   { value: 'class-gradebook', label: 'كشف درجات الشعبة' },
@@ -346,6 +366,7 @@ export const REPORT_TYPE = defineEnum([
   { value: 'student', label: 'تقرير الطالب' },
   { value: 'lessons', label: 'سجل التحضير' },
   { value: 'lesson-plan', label: 'ورقة تحضير الدرس' },
+  { value: 'support-plans', label: 'الخطط العلاجية والإثرائية' },
 ] as const);
 export type ReportType = (typeof REPORT_TYPE.values)[number];
 

@@ -10,6 +10,7 @@ import {
   buildLessonPlan,
   buildLessonsLog,
   buildStudentReport,
+  buildSupportPlans,
   type BuildCtx,
 } from './builders';
 import { renderReportHtml } from './html';
@@ -53,6 +54,9 @@ export function buildReport(app: FastifyInstance, ownerId: string, type: ReportT
       break;
     case 'lesson-plan':
       doc = buildLessonPlan(ctx, { lessonId: q.lessonId, from: q.from, to: q.to, assignmentId: q.assignmentId });
+      break;
+    case 'support-plans':
+      doc = buildSupportPlans(ctx, { planId: q.planId, assignmentId: q.assignmentId, from: q.from, to: q.to, kind: q.kind, status: q.status });
       break;
   }
   return { doc, brand };

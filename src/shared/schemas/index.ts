@@ -6,4 +6,5 @@ export * from './students';
 export * from './lessons';
 export * from './assessments';
 export * from './tasks';
+export * from './support';
 export * from './reports';

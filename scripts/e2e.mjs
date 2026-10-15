@@ -796,6 +796,74 @@ async function phaseDemo(browser, srv) {
       await page.getByRole('radio', { name: /ورقة تحضير الدرس/ }).click();
       await waitDoc(/دفتر التحضير|ورقة تحضير الدرس/);
       await pdfOk();
+      // 6) الخطط العلاجية والإثرائية
+      await page.getByRole('radio', { name: /الخطط العلاجية والإثرائية/ }).click();
+      await waitDoc('الخطط العلاجية والإثرائية');
+      await pdfOk();
+    });
+
+    // ───── الخطط العلاجية والإثرائية ─────
+    await step('الخطط: القائمة تعرض الخطط، ومتابعة تُضاف وتبقى بعد إعادة التحميل، ثم تُنجز الخطة بنتيجة', async () => {
+      await page.goto('/support');
+      await page.locator('a[href^="/support/"]').first().waitFor();
+      expect((await page.locator('a[href^="/support/"]').count()) >= 5, 'الخطط المزروعة لا تظهر');
+      await page.locator('a[href^="/support/"]').first().click();
+      await page.waitForURL(/\/support\/[^/]+$/);
+      await page.getByLabel('متابعة جديدة').fill('متابعة اختبار E2E');
+      await page.getByRole('button', { name: 'إضافة', exact: true }).click();
+      await page.getByText('متابعة اختبار E2E').first().waitFor();
+      await page.reload();
+      await page.getByText('متابعة اختبار E2E').first().waitFor();
+      await page.getByRole('button', { name: 'إنجاز الخطة' }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('نتيجة الخطة').fill('تحقق الهدف وارتفعت نسبته');
+      await dlg.getByRole('button', { name: 'تأكيد الإنجاز' }).click();
+      await page.getByText('تحقق الهدف وارتفعت نسبته').first().waitFor();
+      await page.getByRole('button', { name: 'إعادة فتح' }).waitFor();
+    });
+
+    await step('الاقتراحات: الطلاب دون الحد بلا خطة مفتوحة يُقترحون، وإنشاء جماعي بنقرتين يحفظ خطة لكل منهم', async () => {
+      await page.goto('/support');
+      const bulk = page.getByRole('button', { name: /إنشاء خطة علاجية للمحدّدين/ });
+      await bulk.waitFor();
+      const before = await apiGet(page, '/support-plans?status=open');
+      await bulk.click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('الاستراتيجيات').fill('جلسة علاجية مصغّرة بعد الحصة');
+      await dlg.getByLabel('الاستراتيجيات').press('Enter');
+      await dlg.getByRole('button', { name: 'إنشاء الخطط' }).click();
+      await toast(page, /أُنشئت \d+ خطة/).waitFor();
+      const after = await apiGet(page, '/support-plans?status=open');
+      expect(after.length > before.length, `لم تزد الخطط المفتوحة (${before.length} → ${after.length})`);
+      const added = after.filter((p) => !before.some((b) => b.id === p.id));
+      expect(added.every((p) => p.kind === 'remedial' && p.strategies.includes('جلسة علاجية مصغّرة بعد الحصة') && p.baselinePercent !== null), 'خطط الإنشاء الجماعي ناقصة (نوع/استراتيجية/خط أساس)');
+    });
+
+    await step('خطة جديدة من ملف الطالب: الشعبة والطالب مُعبَّآن مسبقًا، وتظهر في تبويب «الخطط» وفي لوحة التحكم والتقويم', async () => {
+      const st = gb.students[5];
+      const review = new Date(Date.now() + 30 * 86_400_000).toISOString().slice(0, 10); // دائمًا بعد تاريخ البدء (اليوم)
+      await page.goto(`/students/${st.studentId}`);
+      await page.getByRole('tab', { name: 'الخطط' }).click();
+      await page.getByRole('button', { name: 'خطة جديدة' }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('عنوان الخطة').fill('مشروع إثرائي اختباري');
+      await dlg.getByRole('radio', { name: 'إثرائية' }).click();
+      await dlg.getByLabel('الهدف').fill('إنجاز مشروع مصغّر');
+      await dlg.getByLabel('موعد المراجعة').fill(review);
+      await dlg.getByRole('button', { name: 'إنشاء الخطة' }).click();
+      await toast(page, /أُنشئت الخطة/).waitFor();
+      await page.getByText('مشروع إثرائي اختباري').first().waitFor();
+      const dash = await apiGet(page, '/dashboard');
+      expect(dash.support.open >= 6, `عدّاد الخطط في لوحة التحكم: ${dash.support.open}`);
+      const cal = await apiGet(page, `/calendar?from=${review}&to=${review}`);
+      expect(cal.some((i) => i.type === 'support' && i.date === review), 'موعد المراجعة لا يظهر في التقويم الدراسي');
+    });
+
+    await step('لوحة التحكم: «طلاب يحتاجون متابعة» تعلّم من لهم خطة وتعرض «+ خطة» لمن بلا خطة', async () => {
+      await page.goto('/');
+      await page.getByRole('link', { name: /^الخطط \(/ }).waitFor();
+      const hasAny = (await page.getByText('لها خطة').count()) + (await page.getByRole('link', { name: /إنشاء خطة علاجية/ }).count());
+      expect(hasAny > 0, 'لا عناصر خطة في بطاقة «يحتاجون متابعة»');
     });
 
     // ───── المهام ─────
@@ -1069,6 +1137,7 @@ async function phaseVisual(browser, srv) {
   const sections = await apiGet(boot.page, `/sections?yearId=${years[0].id}`);
   const roster = await apiGet(boot.page, `/sections/${sections[0].id}/students`);
   const lessons = await apiGet(boot.page, '/lessons?limit=1');
+  const plans = await apiGet(boot.page, '/support-plans');
   await boot.ctx.close();
 
   const pages = [
@@ -1082,6 +1151,8 @@ async function phaseVisual(browser, srv) {
     ['gradebook', `/assessments/${asg.id}?term=${years[0].terms[0].id}`],
     ['timetable', '/timetable'],
     ['tasks', '/tasks'],
+    ['support', '/support'],
+    ['support-plan', `/support/${plans[0].id}`],
     ['reports', '/reports'],
     ['settings', '/settings'],
   ];

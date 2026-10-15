@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, Loader2, Printer, TrendingUp, UserRound } from 'lucide-react';
-import { REPORT_TYPE, type ReportType } from '@shared/constants';
+import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, HeartHandshake, Loader2, Printer, TrendingUp, UserRound } from 'lucide-react';
+import { REPORT_TYPE, SUPPORT_KIND, SUPPORT_STATUS, type ReportType, type SupportKind, type SupportStatus } from '@shared/constants';
 import { useAcademic } from '@/context/academic';
 import { useAuth } from '@/context/auth';
 import { api, apiUrl, downloadFile, errorMessage, getText } from '@/lib/api';
@@ -19,6 +19,7 @@ const TYPES: { value: ReportType; icon: typeof FileText; desc: string }[] = [
   { value: 'student', icon: UserRound, desc: 'أداء طالب في كل مواده مع تفاصيل التقويمات والمهارات.' },
   { value: 'lessons', icon: BookOpenCheck, desc: 'جدول بدروس فترة زمنية وحالة تحضيرها وتنفيذها.' },
   { value: 'lesson-plan', icon: FileText, desc: 'أوراق تحضير مفصلة لفترة (كل درس في صفحة) جاهزة للطباعة.' },
+  { value: 'support-plans', icon: HeartHandshake, desc: 'قائمة الخطط العلاجية والإثرائية بحالتها وأثرها على نسب الطلاب. (الخطة الفردية تُطبع من صفحتها).' },
 ];
 
 type Params = {
@@ -31,6 +32,8 @@ type Params = {
   assignmentFilter: string;
   includeNotes: boolean;
   includeGuardian: boolean;
+  supportKind: '' | SupportKind;
+  supportStatus: '' | SupportStatus;
 };
 
 function ready(type: ReportType, p: Params): boolean {
@@ -44,6 +47,8 @@ function ready(type: ReportType, p: Params): boolean {
       return !!p.from && !!p.to && p.to >= p.from;
     case 'lesson-plan':
       return !!p.from && !!p.to && p.to >= p.from;
+    case 'support-plans':
+      return true;
   }
 }
 
@@ -57,7 +62,46 @@ function queryFor(type: ReportType, p: Params) {
     case 'lessons':
     case 'lesson-plan':
       return { from: p.from, to: p.to, assignmentId: p.assignmentFilter || undefined };
+    case 'support-plans':
+      return { assignmentId: p.assignmentFilter || undefined, kind: p.supportKind || undefined, status: p.supportStatus || undefined };
   }
+}
+
+const PAGE_PX = { portrait: 794, landscape: 1123 } as const; // عرض A4 بالبكسل عند 96 نقطة/بوصة
+
+/**
+ * معاينة طباعة حقيقية: نعرض الصفحة بعرض الورقة الفعلي (A4 طولي/عرضي) ثم نصغّرها لتناسب المساحة،
+ * فيرى المعلم التقرير كما سيُطبع (أعمدة الجداول بعرضها الحقيقي) بدل تضييقه إلى عرض النافذة.
+ * على الشاشات الضيقة جدًا (الجوال) نبقي التدفق الطبيعي لأن التصغير يجعل النص غير مقروء.
+ */
+function PrintPreview({ html, title, frameRef }: { html: string; title: string; frameRef: React.RefObject<HTMLIFrameElement | null> }) {
+  const box = useRef<HTMLDivElement>(null);
+  const [width, setWidth] = useState(0);
+  const landscape = /size:\s*A4\s+landscape/i.test(html);
+  const pageW = landscape ? PAGE_PX.landscape : PAGE_PX.portrait;
+  useEffect(() => {
+    const el = box.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => setWidth(el.clientWidth));
+    ro.observe(el);
+    setWidth(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+  const scaled = width >= 560;
+  const scale = scaled ? Math.min(1, width / pageW) : 1;
+  const height = '80vh';
+  return (
+    <div ref={box} className="relative overflow-hidden rounded-card border border-line bg-[#e8ece9] shadow-card" style={scaled ? { height, minHeight: 420 } : undefined}>
+      <iframe
+        ref={frameRef}
+        title={title}
+        srcDoc={html}
+        className="block border-0 bg-transparent"
+        style={scaled ? { width: pageW, height: `calc(${height} / ${scale})`, transform: `scale(${scale})`, transformOrigin: 'top right', position: 'absolute', top: 0, right: 0 } : { width: '100%', height }}
+        sandbox="allow-same-origin allow-modals"
+      />
+    </div>
+  );
 }
 
 export default function ReportsPage() {
@@ -80,6 +124,8 @@ export default function ReportsPage() {
     assignmentFilter: '',
     includeNotes: false,
     includeGuardian: false,
+    supportKind: '',
+    supportStatus: '',
   });
 
   // قيم افتراضية عند وصول البيانات
@@ -208,6 +254,36 @@ export default function ReportsPage() {
                 </div>
               </>
             )}
+            {type === 'support-plans' && (
+              <>
+                <Field label="الشعبة والمادة">
+                  {(f) => (
+                    <Select {...f} value={p.assignmentFilter} onChange={(e) => set('assignmentFilter', e.target.value)}>
+                      <option value="">الكل</option>
+                      {(assignments.data ?? []).map((a) => <option key={a.id} value={a.id}>{a.sectionLabel} — {a.subjectName}</option>)}
+                    </Select>
+                  )}
+                </Field>
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="النوع">
+                    {(f) => (
+                      <Select {...f} value={p.supportKind} onChange={(e) => set('supportKind', e.target.value as '' | SupportKind)}>
+                        <option value="">الكل</option>
+                        {SUPPORT_KIND.items.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
+                      </Select>
+                    )}
+                  </Field>
+                  <Field label="الحالة">
+                    {(f) => (
+                      <Select {...f} value={p.supportStatus} onChange={(e) => set('supportStatus', e.target.value as '' | SupportStatus)}>
+                        <option value="">الكل</option>
+                        {SUPPORT_STATUS.items.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                      </Select>
+                    )}
+                  </Field>
+                </div>
+              </>
+            )}
             {(type === 'lessons' || type === 'lesson-plan') && (
               <>
                 <div className="grid grid-cols-2 gap-3">
@@ -248,9 +324,7 @@ export default function ReportsPage() {
           ) : preview.error ? (
             <Alert tone="bad" title="تعذّر إعداد التقرير">{errorMessage(preview.error)}</Alert>
           ) : (
-            <div className="relative overflow-hidden rounded-card border border-line bg-[#e8ece9] shadow-card">
-              <iframe ref={frame} title={`معاينة ${typeMeta.label}`} srcDoc={preview.data} className="block h-[80vh] w-full bg-transparent" sandbox="allow-same-origin allow-modals" />
-            </div>
+            <PrintPreview html={preview.data} title={`معاينة ${typeMeta.label}`} frameRef={frame} />
           )}
         </div>
       </div>

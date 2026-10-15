@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { REPORT_FORMAT, REPORT_TYPE } from '../constants';
+import { REPORT_FORMAT, REPORT_TYPE, SUPPORT_KIND, SUPPORT_STATUS } from '../constants';
 import { dateSchema, idSchema } from './common';
 
 const bool = z
@@ -12,6 +12,9 @@ export const reportQuery = z.object({
   termId: idSchema.optional(),
   studentId: idSchema.optional(),
   lessonId: idSchema.optional(),
+  planId: idSchema.optional(),
+  kind: z.enum(SUPPORT_KIND.values).optional(),
+  status: z.enum(SUPPORT_STATUS.values).optional(),
   from: dateSchema.optional(),
   to: dateSchema.optional(),
   includeNotes: bool.optional(),

@@ -2,8 +2,9 @@
 //  • تُنشأ فقط بأمر صريح (npm run cli -- seed-demo) في حساب موسوم is_demo يظهر بشريط تنبيه في الواجهة.
 //  • الأسماء مولَّدة عشوائيًا من قوائم أسماء شائعة، وليست لأشخاص حقيقيين.
 //  • يمكن حذفها بالكامل بأمر purge-demo دون أن تمسّ أي بيانات حقيقية.
+import { eq } from 'drizzle-orm';
 import type { ScryptParams } from '../config';
-import type { Db } from '../db/client';
+import { schema, type Db } from '../db/client';
 import { addDays, nowInZone, weekdayOf } from '../../shared/dates';
 import { pickCurrentTerm } from '../../shared/academic';
 import type { ActivityPhase } from '../../shared/constants';
@@ -12,6 +13,7 @@ import { createSection, createSubject, createYear } from '../modules/academic/se
 import { addStudentsToSection } from '../modules/students/service';
 import { createAssessment, createSkill, saveResults } from '../modules/assessments/service';
 import { createLesson } from '../modules/lessons/service';
+import { addNote as addSupportNote, createPlan, suggestions } from '../modules/support/service';
 import { setSlot } from '../modules/timetable/service';
 import { createTask } from '../modules/tasks/service';
 import { createNote } from '../modules/students/service';
@@ -247,6 +249,35 @@ export async function seedDemo(db: Db, opts: DemoOptions): Promise<{ userId: str
   const sid = first.students[0]!;
   createNote(db, owner, sid, { assignmentId: first.assignmentId, date: addDays(today, -5), category: 'positive', text: 'قدّم عرضًا متميزًا في الحصة وساعد زملاءه في التجربة العملية.' });
   createNote(db, owner, first.students[1]!, { assignmentId: first.assignmentId, date: addDays(today, -3), category: 'academic', text: 'يحتاج إلى متابعة في مهارة تفسير الرسوم البيانية.' });
+
+  // ───────── خطط علاجية وإثرائية (من الاقتراحات التلقائية لكل شعب العام الحالي) ─────────
+  const sug = suggestions(db, owner, {}, today);
+  const remedial = sug.filter((s) => s.kind === 'remedial').slice(0, 3);
+  const enrich = sug.filter((s) => s.kind === 'enrichment').slice(0, 2);
+  const remedialSpecs = [
+    (sub: string) => ({ title: `علاج الأخطاء المتكررة في ${sub}`, reason: 'تدنٍّ في الاختبارات القصيرة وأخطاء متكررة في الأسئلة التطبيقية.', goal: `رفع نسبته في ${sub} إلى 60% فأكثر بنهاية الفصل`, strategies: ['تبسيط المفهوم بأمثلة محسوسة', 'التعلّم بالأقران', 'تدريبات إضافية متدرجة'] }),
+    (sub: string) => ({ title: `تقوية أساسيات ${sub}`, reason: 'ضعف في المفاهيم الأساسية للوحدة الأولى.', goal: 'إتقان المفاهيم الأساسية وحل 4 من 5 أسئلة تطبيقية بصورة صحيحة', strategies: ['استخدام وسائل بصرية', 'جلسة علاجية مصغّرة بعد الحصة'] }),
+    (sub: string) => ({ title: `خطة دعم عامة في ${sub}`, reason: 'نسبة منخفضة في معظم التقويمات هذا الفصل.', goal: 'رفع المستوى إلى «مقبول» فأعلى', strategies: ['متابعة أسبوعية مع ولي الأمر', 'تدريبات إضافية متدرجة'] }),
+  ];
+  remedial.forEach((s, i) => {
+    const plan = createPlan(db, owner, { studentId: s.studentId, assignmentId: s.assignmentId, kind: 'remedial', ...remedialSpecs[i]!(s.subjectName), startDate: addDays(today, -14 + i * 3), reviewDate: addDays(today, i === 0 ? -1 : 9 + i * 4) }, today);
+    addSupportNote(db, owner, plan.id, { date: addDays(today, -10 + i), text: 'جلسة علاجية أولى: عُرضت عليه أمثلة محلولة وتدرّب على مسائل مشابهة.' });
+    if (i === 0) {
+      addSupportNote(db, owner, plan.id, { date: addDays(today, -4), text: 'تحسّن ملحوظ في التمارين الصفية؛ يلزم تثبيت المهارة بتمارين منزلية.' });
+      // قصة تحسّن توضيحية في البيانات الوهمية: خط الأساس أدنى من نسبته الحالية
+      if (plan.currentPercent !== null) db.update(schema.supportPlans).set({ baselinePercent: Math.max(0, Math.round((plan.currentPercent - 7.5) * 10) / 10) }).where(eq(schema.supportPlans.id, plan.id)).run();
+    }
+  });
+  enrich.forEach((s, i) => {
+    const plan = createPlan(db, owner, {
+      studentId: s.studentId, assignmentId: s.assignmentId, kind: 'enrichment',
+      title: i === 0 ? `مشروع بحثي إثرائي في ${s.subjectName}` : `مسائل تحدٍّ في ${s.subjectName}`,
+      reason: 'أداء مرتفع باستمرار ويحتاج إلى ما يتجاوز المنهج الأساسي.',
+      goal: i === 0 ? 'إنجاز مشروع بحثي مصغّر وعرضه على الشعبة' : 'حل 5 مسائل تحدٍّ وتفسير الحلول لزملائه',
+      strategies: ['مشروع بحثي مصغّر', 'مسائل تحدٍّ متقدمة'], startDate: addDays(today, -7), reviewDate: addDays(today, 14),
+    }, today);
+    addSupportNote(db, owner, plan.id, { date: addDays(today, -3), text: 'اختار موضوع المشروع وجمع المراجع الأولية.' });
+  });
 
   return { userId: owner, email: opts.email };
 }

@@ -12,6 +12,7 @@ import {
   Copy,
   FileBarChart,
   GraduationCap,
+  HeartHandshake,
   Plus,
   Rocket,
   Target,
@@ -368,21 +369,35 @@ export default function DashboardPage() {
           </Card>
 
           <Card>
-            <CardHeader icon={<AlertTriangle className="size-[18px]" />} title="طلاب يحتاجون متابعة" description="أقل من حد الدعم في هذا الفصل" />
+            <CardHeader
+              icon={<AlertTriangle className="size-[18px]" />}
+              title="طلاب يحتاجون متابعة"
+              description="أقل من حد الدعم في هذا الفصل"
+              action={
+                <ButtonLink to="/support" variant="soft" size="sm" icon={<HeartHandshake className="size-4" />}>
+                  الخطط ({fmt.num(data.support.open, 0)}){data.support.due ? <span className="text-bad"> · {fmt.num(data.support.due, 0)} للمراجعة</span> : null}
+                </ButtonLink>
+              }
+            />
             <div className="px-5 pb-4">
               {data.attention.length === 0 ? (
                 <p className="py-3 text-center text-[14.5px] text-muted">لا طلاب دون الحد حاليًا.</p>
               ) : (
                 <ul className="divide-y divide-line">
                   {data.attention.map((a) => (
-                    <li key={`${a.assignmentId}-${a.studentId}`}>
-                      <Link to={`/students/${a.studentId}`} className="flex items-center justify-between gap-3 py-2.5 hover:text-brand">
+                    <li key={`${a.assignmentId}-${a.studentId}`} className="flex items-center gap-2">
+                      <Link to={`/students/${a.studentId}`} className="flex min-w-0 flex-1 items-center justify-between gap-3 py-2.5 hover:text-brand">
                         <div className="min-w-0">
                           <div className="truncate text-[14.5px] font-medium">{a.fullName}</div>
                           <div className="text-[12.5px] text-muted">{a.subjectName} — <span className="tnum">{a.sectionLabel}</span></div>
                         </div>
                         <Badge tone="bad" className="tnum">{fmt.pct(a.percent)}</Badge>
                       </Link>
+                      {a.hasPlan ? (
+                        <Link to={`/support?assignment=${a.assignmentId}`} className="shrink-0 rounded-lg bg-good-soft px-2 py-1 text-[12.5px] font-medium text-good hover:underline" aria-label={`لـ${a.fullName} خطة علاجية مفتوحة`}>لها خطة</Link>
+                      ) : (
+                        <Link to={`/support?new=1&kind=remedial&student=${a.studentId}&assignment=${a.assignmentId}`} className="shrink-0 rounded-lg border border-line px-2 py-1 text-[12.5px] font-medium text-ink-2 hover:border-brand hover:text-brand" aria-label={`إنشاء خطة علاجية لـ${a.fullName}`}>+ خطة</Link>
+                      )}
                     </li>
                   ))}
                 </ul>

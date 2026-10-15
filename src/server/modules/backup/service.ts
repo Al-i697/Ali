@@ -12,6 +12,11 @@ export type { BackupReason };
 const NAME_RE = /^sijilli-(\d{8}-\d{6}-\d{3})-(manual|auto|pre-migration|pre-restore)\.sqlite(\.enc)?$/;
 const KEEP_OTHER = 5;
 
+/** يحذف ملفات SQLite الجانبية (-wal/-shm) التي يتركها فتح ملف بوضع WAL — لا يجوز أن تتراكم في مجلد النسخ */
+function rmSideFiles(file: string): void {
+  for (const suffix of ['-wal', '-shm', '-journal']) fs.rmSync(`${file}${suffix}`, { force: true });
+}
+
 function stamp(d = new Date()): string {
   const p = (n: number) => String(n).padStart(2, '0');
   return `${d.getUTCFullYear()}${p(d.getUTCMonth() + 1)}${p(d.getUTCDate())}-${p(d.getUTCHours())}${p(d.getUTCMinutes())}${p(d.getUTCSeconds())}-${String(d.getUTCMilliseconds()).padStart(3, '0')}`;
@@ -64,13 +69,16 @@ export class BackupService {
     const plain = path.join(dir, `${base}.partial`);
     await this.db.backupTo(plain);
     try {
-      // نتحقق من سلامة النسخة قبل اعتمادها — نسخة تالفة أخطر من عدم وجود نسخة
-      const check = new Database(plain, { readonly: true, fileMustExist: true });
+      // نحوّل النسخة إلى وضع DELETE فتصير ملفًا واحدًا قائمًا بذاته (بلا -wal/-shm)، ثم نتحقق من سلامتها
+      // قبل اعتمادها — نسخة تالفة أخطر من عدم وجود نسخة
+      const check = new Database(plain, { fileMustExist: true });
       try {
+        check.pragma('journal_mode = DELETE');
         const res = String(check.pragma('integrity_check', { simple: true }));
         if (res !== 'ok') throw new Error(`فشل فحص سلامة النسخة: ${res}`);
       } finally {
         check.close();
+        rmSideFiles(plain);
       }
       const finalName = this.encrypted ? `${base}.enc` : base;
       const finalPath = path.join(dir, finalName);
@@ -86,6 +94,7 @@ export class BackupService {
       return { name: finalName, size: st.size, createdAt: st.mtime.toISOString(), encrypted: this.encrypted, reason };
     } catch (err) {
       fs.rmSync(plain, { force: true });
+      rmSideFiles(plain);
       throw err;
     }
   }
@@ -131,6 +140,7 @@ export class BackupService {
       return { users: (cand.prepare('select count(*) c from users').get() as { c: number }).c };
     } finally {
       cand.close();
+      rmSideFiles(file); // نسخ قديمة بوضع WAL: فتحها للقراءة يولّد ملفات جانبية لا نتركها
     }
   }
 

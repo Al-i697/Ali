@@ -217,7 +217,7 @@ function CalendarTab({ onNewOn }: { onNewOn: (date: string) => void }) {
                     <span className={cn('mt-1.5 size-2.5 shrink-0 rounded-full', { neutral: 'bg-muted', info: 'bg-info', good: 'bg-good', warn: 'bg-warn', bad: 'bg-bad' }[it.tone])} />
                     <span className="min-w-0 text-[14.5px]">
                       <span className={cn('block font-medium', it.done ? 'text-muted line-through' : 'text-ink')}>{it.title}</span>
-                      <span className="block text-[12.5px] text-muted">{{ task: 'مهمة', assessment: 'تقويم', lesson: 'تحضير' }[it.type]}{it.time ? ` · ${fmt.time(it.time)}` : ''}{it.subtitle ? ` · ${it.subtitle}` : ''}</span>
+                      <span className="block text-[12.5px] text-muted">{{ task: 'مهمة', assessment: 'تقويم', lesson: 'تحضير', support: 'متابعة خطة' }[it.type]}{it.time ? ` · ${fmt.time(it.time)}` : ''}{it.subtitle ? ` · ${it.subtitle}` : ''}</span>
                     </span>
                   </Link>
                 </li>

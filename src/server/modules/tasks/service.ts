@@ -4,6 +4,7 @@ import { schema } from '../../db/client';
 import type { CalendarItemDto, TaskDto } from '../../../shared/dto';
 import { badRequest } from '../../lib/errors';
 import { assignmentMap, requireAssignment, requireTask } from '../_shared/owned';
+import { calendarItems as supportCalendarItems } from '../support/service';
 
 const { tasks, assessments, lessonPlans } = schema;
 
@@ -167,5 +168,6 @@ export function calendar(db: Db, ownerId: string, from: string, to: string): Cal
       href: `/lessons/${l.id}`,
     });
   }
+  items.push(...supportCalendarItems(db, ownerId, from, to));
   return items.sort((a, b) => (a.date === b.date ? (a.time ?? '') < (b.time ?? '') ? -1 : 1 : a.date < b.date ? -1 : 1));
 }

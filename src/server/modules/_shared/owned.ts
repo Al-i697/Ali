@@ -6,7 +6,7 @@ import { notFound } from '../../lib/errors';
 import { sectionLabel } from '../../../shared/constants';
 import type { AssignmentDto } from '../../../shared/dto';
 
-const { academicYears, terms, subjects, sections, assignments, students, assessments, lessonPlans, skills, tasks, studentNotes } = schema;
+const { academicYears, terms, subjects, sections, assignments, students, assessments, lessonPlans, skills, tasks, studentNotes, supportPlans, supportPlanNotes } = schema;
 
 export function requireYear(db: Db, ownerId: string, id: string) {
   const row = db.select().from(academicYears).where(and(eq(academicYears.id, id), eq(academicYears.ownerId, ownerId))).get();
@@ -65,6 +65,22 @@ export function requireTask(db: Db, ownerId: string, id: string) {
 export function requireNote(db: Db, ownerId: string, id: string) {
   const row = db.select().from(studentNotes).where(and(eq(studentNotes.id, id), eq(studentNotes.ownerId, ownerId))).get();
   if (!row) throw notFound('الملاحظة');
+  return row;
+}
+
+export function requireSupportPlan(db: Db, ownerId: string, id: string) {
+  const row = db.select().from(supportPlans).where(and(eq(supportPlans.id, id), eq(supportPlans.ownerId, ownerId))).get();
+  if (!row) throw notFound('الخطة');
+  return row;
+}
+
+export function requireSupportNote(db: Db, ownerId: string, planId: string, id: string) {
+  const row = db
+    .select()
+    .from(supportPlanNotes)
+    .where(and(eq(supportPlanNotes.id, id), eq(supportPlanNotes.planId, planId), eq(supportPlanNotes.ownerId, ownerId)))
+    .get();
+  if (!row) throw notFound('ملاحظة المتابعة');
   return row;
 }
 

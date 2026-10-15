@@ -7,6 +7,10 @@ import {
   LESSON_STATUS,
   MASTERY_LEVELS,
   masteryLabel,
+  SUPPORT_KIND,
+  SUPPORT_STATUS,
+  type SupportKind,
+  type SupportStatus,
   sectionLongLabel,
   weekdayName,
   type BandTone,
@@ -20,6 +24,7 @@ import { listYears } from '../modules/academic/service';
 import { getGradebook, listSkills } from '../modules/assessments/service';
 import { summarizeGradebook } from '../modules/assessments/summary';
 import { getLesson, listLessons } from '../modules/lessons/service';
+import { getPlan, listPlans } from '../modules/support/service';
 import { requireAssignment, requireStudent, requireTerm, listAssignmentInfos } from '../modules/_shared/owned';
 import { getStudentDto, listNotes } from '../modules/students/service';
 import type { Cell, Column, ReportDoc, Tone } from './types';
@@ -585,6 +590,156 @@ export function buildLessonPlan(ctx: BuildCtx, q: { lessonId?: string; from?: st
     ],
     blocks,
     filename: single ? `تحضير-${first.title.split(' ').slice(0, 4).join('-')}` : `دفتر-التحضير-${q.from}-${q.to}`,
+    signatures: true,
+    generatedAt: ctx.now,
+  };
+}
+
+
+// ═════════════ 6) الخطط العلاجية والإثرائية (خطة فردية أو قائمة) ═════════════
+export function buildSupportPlans(
+  ctx: BuildCtx,
+  q: { planId?: string; assignmentId?: string; from?: string; to?: string; kind?: SupportKind; status?: SupportStatus },
+): ReportDoc {
+  const d = ctx.settings.preferences.digits;
+  const f = fmtFactory(d);
+  const pct = (n: number | null) => (n === null ? null : n);
+
+  // ───── خطة فردية: ورقة قابلة للتسليم لولي الأمر/الإدارة ─────
+  if (q.planId) {
+    const p = getPlan(ctx.db, ctx.ownerId, q.planId, ctx.today);
+    const kindName = SUPPORT_KIND.labels[p.kind];
+    const blocks: ReportDoc['blocks'] = [
+      {
+        type: 'kv',
+        columns: 3,
+        items: [
+          { label: 'الطالب', value: p.studentName },
+          { label: 'الشعبة', value: p.sectionLabel ?? '—' },
+          { label: 'المادة', value: p.subjectName ?? '—' },
+          { label: 'نوع الخطة', value: kindName },
+          { label: 'تاريخ البدء', value: formatDate(p.startDate, d, 'long') },
+          { label: 'موعد المراجعة', value: p.reviewDate ? formatDate(p.reviewDate, d, 'long') : '—' },
+          { label: 'الحالة', value: SUPPORT_STATUS.labels[p.status] },
+        ],
+      },
+    ];
+    if (p.baselinePercent !== null || p.currentPercent !== null) {
+      const delta = p.baselinePercent !== null && p.currentPercent !== null ? round(p.currentPercent - p.baselinePercent, 1) : null;
+      blocks.push({
+        type: 'stats',
+        items: [
+          { label: 'نسبة الطالب عند بدء الخطة', value: p.baselinePercent === null ? '—' : `${f(p.baselinePercent, 1)}%` },
+          { label: 'نسبته الحالية', value: p.currentPercent === null ? '—' : `${f(p.currentPercent, 1)}%` },
+          ...(delta === null ? [] : [{ label: 'التغيّر', value: `${delta > 0 ? '+' : ''}${f(delta, 1)} نقطة`, tone: (delta > 0 ? 'good' : delta < 0 ? 'bad' : 'neutral') as Tone }]),
+        ],
+      });
+    }
+    if (p.reason) blocks.push({ type: 'field', label: p.kind === 'remedial' ? 'التشخيص / سبب الخطة' : 'مبرر الخطة', text: p.reason });
+    blocks.push({ type: 'field', label: 'الهدف', text: p.goal });
+    if (p.strategies.length) blocks.push({ type: 'list', title: 'الاستراتيجيات والإجراءات', items: p.strategies });
+    blocks.push({
+      type: 'table',
+      title: 'سجل المتابعة',
+      compact: true,
+      empty: 'لم تُسجَّل متابعات بعد',
+      columns: [
+        { key: 'd', title: 'التاريخ', width: 1.6, align: 'center' },
+        { key: 't', title: 'الملاحظة', width: 8 },
+      ],
+      rows: [...p.notes].sort((a, b) => (a.date < b.date ? -1 : 1)).map((n) => [formatDate(n.date, d, 'medium'), n.text]),
+    });
+    if (p.outcome) blocks.push({ type: 'field', label: 'نتيجة الخطة', text: p.outcome });
+    return {
+      type: 'support-plans',
+      title: `خطة ${kindName} فردية`,
+      subtitle: p.title,
+      meta: [
+        { label: 'الطالب', value: p.studentName },
+        { label: 'المعلم', value: ctx.settings.profile.fullName },
+        { label: 'التاريخ', value: formatDate(ctx.today, d, 'long') },
+      ],
+      blocks,
+      filename: `خطة-${kindName}-${p.studentName.split(' ').slice(0, 2).join('-')}`,
+      signatures: true,
+      generatedAt: ctx.now,
+    };
+  }
+
+  // ───── قائمة الخطط ─────
+  if (q.from && q.to && q.to < q.from) throw badRequest('تاريخ النهاية يجب أن يكون بعد البداية');
+  let scope = 'كل الشعب والمواد';
+  if (q.assignmentId) {
+    const a = requireAssignment(ctx.db, ctx.ownerId, q.assignmentId);
+    scope = `${a.subjectName} — ${a.sectionLabel}`;
+  }
+  const plans = listPlans(ctx.db, ctx.ownerId, { assignmentId: q.assignmentId, kind: q.kind, status: q.status, limit: 500 }, ctx.today)
+    .filter((p) => (!q.from || p.startDate >= q.from) && (!q.to || p.startDate <= q.to))
+    .sort((a, b) => (a.sectionLabel ?? '').localeCompare(b.sectionLabel ?? '', 'ar') || a.studentName.localeCompare(b.studentName, 'ar'));
+  const count = (pred: (p: (typeof plans)[number]) => boolean) => plans.filter(pred).length;
+  const improved = plans.filter((p) => p.baselinePercent !== null && p.currentPercent !== null && p.currentPercent > p.baselinePercent).length;
+
+  const meta: ReportDoc['meta'] = [
+    { label: 'النطاق', value: scope },
+    { label: 'عدد الخطط', value: f(plans.length) },
+  ];
+  if (q.kind) meta.push({ label: 'النوع', value: SUPPORT_KIND.labels[q.kind] });
+  if (q.status) meta.push({ label: 'الحالة', value: SUPPORT_STATUS.labels[q.status] });
+  if (q.from || q.to) meta.push({ label: 'بدأت بين', value: `${q.from ? formatDate(q.from, d, 'medium') : '…'} – ${q.to ? formatDate(q.to, d, 'medium') : '…'}` });
+  meta.push({ label: 'المعلم', value: ctx.settings.profile.fullName }, { label: 'التاريخ', value: formatDate(ctx.today, d, 'long') });
+
+  return {
+    type: 'support-plans',
+    title: 'الخطط العلاجية والإثرائية',
+    subtitle: scope,
+    meta,
+    blocks: [
+      {
+        type: 'stats',
+        items: [
+          { label: 'إجمالي الخطط', value: f(plans.length) },
+          { label: 'مفتوحة', value: f(count((p) => p.status === 'open')), tone: 'info' },
+          { label: 'منجزة', value: f(count((p) => p.status === 'done')), tone: 'good' },
+          { label: 'حان موعد مراجعتها', value: f(count((p) => p.due)), tone: 'warn' },
+          { label: 'تحسّنت نسبة الطالب', value: f(improved), hint: 'مقارنة بخط الأساس', tone: 'good' },
+        ],
+      },
+      {
+        type: 'table',
+        compact: true,
+        empty: 'لا توجد خطط مطابقة',
+        columns: [
+          { key: 'n', title: 'م', width: 0.45, align: 'center' },
+          { key: 'st', title: 'الطالب', width: 2.6 },
+          { key: 'sec', title: 'الشعبة', width: 0.9, align: 'center' },
+          { key: 'sub', title: 'المادة', width: 1.3 },
+          { key: 'k', title: 'النوع', width: 0.9, align: 'center' },
+          { key: 'g', title: 'الهدف', width: 3 },
+          { key: 'sd', title: 'البدء', width: 1.2, align: 'center' },
+          { key: 'rd', title: 'المراجعة', width: 1.2, align: 'center' },
+          { key: 's', title: 'الحالة', width: 0.9, align: 'center' },
+          { key: 'b', title: 'الأساس', width: 0.9, align: 'center', kind: 'percent' },
+          { key: 'c', title: 'الحالي', width: 0.9, align: 'center', kind: 'percent' },
+          { key: 'nn', title: 'متابعات', width: 0.8, align: 'center', kind: 'number' },
+        ],
+        rows: plans.map((p, i) => [
+          i + 1,
+          p.studentName,
+          p.sectionLabel,
+          p.subjectName,
+          { v: SUPPORT_KIND.labels[p.kind], tone: p.kind === 'remedial' ? 'warn' : 'info' },
+          p.goal,
+          formatDate(p.startDate, d, 'short'),
+          p.reviewDate ? { v: formatDate(p.reviewDate, d, 'short'), tone: p.due ? 'bad' : undefined } : '—',
+          { v: SUPPORT_STATUS.labels[p.status], tone: p.status === 'done' ? 'good' : p.status === 'cancelled' ? 'muted' : 'info' },
+          pct(p.baselinePercent),
+          pct(p.currentPercent),
+          p.notesCount,
+        ]),
+      },
+    ],
+    landscape: true,
+    filename: `الخطط-العلاجية-والإثرائية-${ctx.today}`,
     signatures: true,
     generatedAt: ctx.now,
   };

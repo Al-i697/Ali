@@ -20,6 +20,8 @@ const AssessmentsPage = lazy(() => import('@/features/gradebook/assessments-page
 const GradebookPage = lazy(() => import('@/features/gradebook/gradebook-page'));
 const TimetablePage = lazy(() => import('@/features/timetable/timetable-page'));
 const TasksPage = lazy(() => import('@/features/tasks/tasks-page'));
+const SupportPage = lazy(() => import('@/features/support/support-page'));
+const SupportPlanPage = lazy(() => import('@/features/support/plan-page'));
 const ReportsPage = lazy(() => import('@/features/reports/reports-page'));
 const SettingsPage = lazy(() => import('@/features/settings/settings-page'));
 
@@ -88,6 +90,8 @@ export function App() {
                       <Route path="assessments/:assignmentId" element={<GradebookPage />} />
                       <Route path="timetable" element={<TimetablePage />} />
                       <Route path="tasks" element={<TasksPage />} />
+                      <Route path="support" element={<SupportPage />} />
+                      <Route path="support/:planId" element={<SupportPlanPage />} />
                       <Route path="reports" element={<ReportsPage />} />
                       <Route path="settings" element={<SettingsPage />} />
                       <Route path="*" element={<NotFound />} />

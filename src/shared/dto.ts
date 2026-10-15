@@ -10,6 +10,8 @@ import type {
   ResultStatus,
   ScheduleSettings,
   StudentStatus,
+  SupportKind,
+  SupportStatus,
   TaskKind,
   TaskPriority,
   TaskStatus,
@@ -338,7 +340,7 @@ export type TaskDto = {
 
 export type CalendarItemDto = {
   id: string;
-  type: 'task' | 'assessment' | 'lesson';
+  type: 'task' | 'assessment' | 'lesson' | 'support';
   date: string;
   time: string | null;
   title: string;
@@ -347,6 +349,53 @@ export type CalendarItemDto = {
   done: boolean;
   /** مسار الواجهة لفتح العنصر */
   href: string;
+};
+
+// ───────────── الخطط العلاجية والإثرائية ─────────────
+export type SupportNoteDto = { id: string; planId: string; date: string; text: string; createdAt: string };
+
+export type SupportPlanDto = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  /** شعبة المقرر (أو شعبة الطالب الحالية إن لم تُربط الخطة بمقرر) */
+  sectionLabel: string | null;
+  assignmentId: string | null;
+  subjectName: string | null;
+  subjectColor: string | null;
+  kind: SupportKind;
+  title: string;
+  reason: string | null;
+  goal: string;
+  strategies: string[];
+  startDate: string;
+  reviewDate: string | null;
+  status: SupportStatus;
+  outcome: string | null;
+  /** نسبة الطالب في المقرر لحظة إنشاء الخطة (خط الأساس) */
+  baselinePercent: number | null;
+  /** نسبته الحالية في الفصل الحالي — للمقارنة بخط الأساس */
+  currentPercent: number | null;
+  closedAt: string | null;
+  notesCount: number;
+  lastNoteDate: string | null;
+  /** مفتوحة وحان (أو فات) موعد مراجعتها */
+  due: boolean;
+  createdAt: string;
+};
+
+export type SupportPlanDetailDto = SupportPlanDto & { notes: SupportNoteDto[] };
+
+export type SupportSuggestionDto = {
+  studentId: string;
+  fullName: string;
+  assignmentId: string;
+  sectionLabel: string;
+  subjectName: string;
+  subjectColor: string;
+  termId: string;
+  percent: number;
+  kind: SupportKind;
 };
 
 // ───────────── لوحة التحكم ─────────────
@@ -379,6 +428,8 @@ export type DashboardAttention = {
   subjectName: string;
   assignmentId: string;
   percent: number;
+  /** لهذا الطالب خطة علاجية مفتوحة في هذا المقرر */
+  hasPlan: boolean;
 };
 
 export type DashboardDto = {
@@ -395,6 +446,7 @@ export type DashboardDto = {
   incomplete: DashboardIncomplete[];
   upcomingAssessments: { assessmentId: string; title: string; date: string; assignment: AssignmentDto }[];
   attention: DashboardAttention[];
+  support: { open: number; due: number };
 };
 
 // ───────────── التقارير والنسخ الاحتياطي ─────────────

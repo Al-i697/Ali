@@ -13,6 +13,9 @@ import { useFmt } from '@/lib/hooks';
 import { useAppMutation } from '@/lib/mutation';
 import { qk } from '@/lib/queries';
 import { cn } from '@/lib/cn';
+import { PlanDialog } from '@/features/support/plan-dialog';
+import { PlanCard } from '@/features/support/shared';
+import type { SupportPlanDto } from '@shared/dto';
 import { Alert, Avatar, Badge, Button, Card, CardHeader, EmptyState, Field, Input, Modal, PageHeader, PageLoader, ProgressBar, QueryError, Select, SubjectChip, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, useConfirm, IconButton } from '@/components/ui';
 import { MasteryBar, Ring } from '@/components/charts/charts';
 import { useAuth } from '@/context/auth';
@@ -58,6 +61,23 @@ function NoteDialog({ open, onOpenChange, studentId, note, assignments }: { open
         <Field label="الملاحظة" required>{(p) => <Textarea {...p} rows={4} value={text} onChange={(e) => setText(e.target.value)} autoFocus maxLength={2000} />}</Field>
       </div>
     </Modal>
+  );
+}
+
+/** تبويب «الخطط»: خطط الطالب العلاجية والإثرائية مع إنشاء خطة جديدة له */
+function PlansTab({ studentId, assignmentId }: { studentId: string; assignmentId?: string }) {
+  const [creating, setCreating] = useState(false);
+  const q = useQuery({ queryKey: qk.supportPlans({ studentId }), queryFn: () => api.get<SupportPlanDto[]>('/support-plans', { studentId, status: undefined }) });
+  return (
+    <>
+      <div className="mb-4 flex justify-end"><Button variant="primary" icon={<Plus className="size-4" />} onClick={() => setCreating(true)}>خطة جديدة</Button></div>
+      {q.isPending ? <PageLoader /> : q.error ? <QueryError error={q.error} onRetry={() => void q.refetch()} /> : q.data.length === 0 ? (
+        <EmptyState icon={<FileText className="size-6" />} title="لا خطط لهذا الطالب" description="أنشئ خطة علاجية إن كان متعثرًا، أو إثرائية إن كان متميزًا، وتابع أثرها على نسبته." />
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">{q.data.map((p) => <PlanCard key={p.id} p={p} />)}</div>
+      )}
+      <PlanDialog open={creating} onOpenChange={setCreating} prefill={{ studentId, assignmentId }} />
+    </>
   );
 }
 
@@ -114,6 +134,7 @@ export default function StudentProfilePage() {
         <TabsList>
           <TabsTrigger value="performance">الأداء</TabsTrigger>
           <TabsTrigger value="skills">المهارات {p.skills.length ? <Badge className="tnum">{fmt.num(p.skills.length)}</Badge> : null}</TabsTrigger>
+          <TabsTrigger value="plans">الخطط</TabsTrigger>
           <TabsTrigger value="notes">الملاحظات {p.notes.length ? <Badge className="tnum">{fmt.num(p.notes.length)}</Badge> : null}</TabsTrigger>
           <TabsTrigger value="info">البيانات</TabsTrigger>
         </TabsList>
@@ -190,6 +211,8 @@ export default function StudentProfilePage() {
             </Card>
           )}
         </TabsContent>
+
+        <TabsContent value="plans"><PlansTab studentId={s.id} assignmentId={p.subjects[0]?.assignment.id} /></TabsContent>
 
         <TabsContent value="notes">
           <div className="mb-4 flex justify-end"><Button variant="primary" icon={<Plus className="size-4" />} onClick={() => setNoteDlg({ note: null })}>إضافة ملاحظة</Button></div>

@@ -11,6 +11,7 @@ import { lessonsModule } from './lessons/routes';
 import { reportsModule } from './reports/routes';
 import { settingsModule } from './settings/routes';
 import { studentsModule } from './students/routes';
+import { supportModule } from './support/routes';
 import { tasksModule } from './tasks/routes';
 import { timetableModule } from './timetable/routes';
 import { usersModule } from './users/routes';
@@ -25,6 +26,7 @@ const modules: FastifyPluginAsync[] = [
   timetableModule,
   lessonsModule,
   tasksModule,
+  supportModule,
   dashboardModule,
   reportsModule,
   backupModule,

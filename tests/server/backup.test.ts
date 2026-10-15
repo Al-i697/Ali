@@ -193,3 +193,28 @@ describe('تشفير النسخ الاحتياطية', () => {
     }
   });
 });
+
+describe('نظافة مجلد النسخ الاحتياطية', () => {
+  it('كل نسخة ملف واحد قائم بذاته: بلا ملفات -wal/-shm/.partial جانبية، بوضع DELETE، وتبقى سليمة بعد الفتح والتحقق', async () => {
+    const env = await makeFileEnv();
+    try {
+      const admin = new TestClient(env.app);
+      await admin.setupAdmin();
+      await seedFor(admin);
+      const created = await admin.post('/api/backups');
+      expect(created.status).toBe(201);
+      const file = path.join(env.config.backupDir, created.body.name);
+      // رأس SQLite: البايتان 18 و19 = 1 (وضع DELETE القديم) وليس 2 (WAL)
+      const header = Buffer.alloc(20);
+      const fd = fs.openSync(file, 'r');
+      fs.readSync(fd, header, 0, 20, 0);
+      fs.closeSync(fd);
+      expect([header[18], header[19]]).toEqual([1, 1]);
+      // فحص الاستعادة (يفتح الملف) لا يترك أثرًا أيضًا
+      env.app.backups.validateCandidate(file);
+      expect(fs.readdirSync(env.config.backupDir)).toEqual([created.body.name]);
+    } finally {
+      await env.cleanup();
+    }
+  });
+});

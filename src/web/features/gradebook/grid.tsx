@@ -241,6 +241,7 @@ export function GradeGrid({ gb, onEdit, onCopy, onDelete, onStatus, registerApi 
     void qc.invalidateQueries({ queryKey: ['gradebook'] });
     void qc.invalidateQueries({ queryKey: qk.dashboard });
     void qc.invalidateQueries({ queryKey: ['profile'] });
+    void qc.invalidateQueries({ queryKey: ['support'] }); // الاقتراحات والنسبة الحالية في الخطط تتبع الدرجات
     if (pending.current.size > 0) schedule(); // تعديلات جاءت أثناء الإرسال
   }, [qc, update, schedule]);
 

@@ -137,6 +137,9 @@
     text-rendering: optimizeLegibility;
   }
   ::selection { background: var(--brand); color: var(--brand-contrast); }
+  /* شبكات بعمود واحد افتراضيًا بعرض minmax(0,1fr): وإلا يوسّع أي محتوى غير قابل للالتفاف العمودَ الضمني (auto)
+     فيتجاوز الصفحة على الجوال. أدوات grid-cols-* والنقاط الاستجابية تتغلّب عليها لأنها في طبقة أعلى. */
+  .grid { grid-template-columns: minmax(0, 1fr); }
   :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
   button, [role='button'], a { -webkit-tap-highlight-color: transparent; }
   button { font: inherit; }

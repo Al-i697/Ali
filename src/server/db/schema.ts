@@ -24,6 +24,8 @@ import type {
   ResultStatus,
   ScheduleSettings,
   StudentStatus,
+  SupportKind,
+  SupportStatus,
   TaskKind,
   TaskPriority,
   TaskStatus,
@@ -456,6 +458,56 @@ export const tasks = sqliteTable(
     ...timestamps,
   },
   (t) => [index('tasks_owner_status_due_idx').on(t.ownerId, t.status, t.dueDate)],
+);
+
+// ═════════════ الخطط العلاجية والإثرائية ═════════════
+export const supportPlans = sqliteTable(
+  'support_plans',
+  {
+    id: id(),
+    ownerId: owner(),
+    studentId: text('student_id')
+      .notNull()
+      .references(() => students.id, { onDelete: 'cascade' }),
+    assignmentId: text('assignment_id').references(() => assignments.id, { onDelete: 'set null' }),
+    /** الفصل الذي أُخذ منه خط الأساس */
+    termId: text('term_id').references(() => terms.id, { onDelete: 'set null' }),
+    kind: text('kind').$type<SupportKind>().notNull(),
+    title: text('title').notNull(),
+    reason: text('reason'),
+    goal: text('goal').notNull(),
+    strategies: text('strategies', { mode: 'json' }).$type<string[]>().notNull().default(sql`'[]'`),
+    startDate: text('start_date').notNull(),
+    reviewDate: text('review_date'),
+    status: text('status').$type<SupportStatus>().notNull().default('open'),
+    outcome: text('outcome'),
+    /** نسبة الطالب في المقرر لحظة إنشاء الخطة — لقياس أثر الخطة لاحقًا */
+    baselinePercent: real('baseline_percent'),
+    closedAt: text('closed_at'),
+    ...timestamps,
+  },
+  (t) => [
+    index('support_plans_owner_status_idx').on(t.ownerId, t.status, t.reviewDate),
+    index('support_plans_owner_student_idx').on(t.ownerId, t.studentId),
+    index('support_plans_assignment_idx').on(t.assignmentId),
+    check('support_plans_kind_chk', sql`${t.kind} in ('remedial','enrichment')`),
+    check('support_plans_status_chk', sql`${t.status} in ('open','done','cancelled')`),
+  ],
+);
+
+export const supportPlanNotes = sqliteTable(
+  'support_plan_notes',
+  {
+    id: id(),
+    ownerId: owner(),
+    planId: text('plan_id')
+      .notNull()
+      .references(() => supportPlans.id, { onDelete: 'cascade' }),
+    date: text('date').notNull(),
+    text: text('text').notNull(),
+    ...timestamps,
+  },
+  (t) => [index('support_notes_plan_date_idx').on(t.planId, t.date)],
 );
 
 // ═════════════ سجل التدقيق ═════════════

@@ -16,6 +16,7 @@ import { getGradebook } from '../assessments/service';
 import { summarizeGradebook } from '../assessments/summary';
 import { listSections, listYears } from '../academic/service';
 import { getSettings } from '../settings/service';
+import { dashboardCounts as supportCounts } from '../support/service';
 import { listTasks } from '../tasks/service';
 
 const { timetableSlots, lessonPlans, assessments, assessmentResults, enrollments, assignments } = schema;
@@ -171,15 +172,24 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
   // ───────── طلاب يحتاجون متابعة (نسبة أقل من حد العلاج) ─────────
   const attention: DashboardAttention[] = [];
   if (term && year) {
+    const withPlan = new Set(
+      db
+        .select({ studentId: schema.supportPlans.studentId, assignmentId: schema.supportPlans.assignmentId })
+        .from(schema.supportPlans)
+        .where(and(eq(schema.supportPlans.ownerId, ownerId), eq(schema.supportPlans.status, 'open'), eq(schema.supportPlans.kind, 'remedial')))
+        .all()
+        .map((r) => `${r.studentId}|${r.assignmentId}`),
+    );
     for (const asg of infos.values()) {
       const summary = summarizeGradebook(getGradebook(db, ownerId, asg.id, term.id));
       for (const s of summary.students) {
         if (s.flag === 'remedial' && s.totals.percent !== null) {
-          attention.push({ studentId: s.studentId, fullName: s.fullName, sectionLabel: asg.sectionLabel, subjectName: asg.subjectName, assignmentId: asg.id, percent: s.totals.percent });
+          attention.push({ studentId: s.studentId, fullName: s.fullName, sectionLabel: asg.sectionLabel, subjectName: asg.subjectName, assignmentId: asg.id, percent: s.totals.percent, hasPlan: withPlan.has(`${s.studentId}|${asg.id}`) });
         }
       }
     }
-    attention.sort((a, b) => a.percent - b.percent);
+    // من لا خطة له أولًا (هو من يحتاج إجراءً)، ثم الأدنى نسبة
+    attention.sort((a, b) => Number(a.hasPlan) - Number(b.hasPlan) || a.percent - b.percent);
   }
 
   return {
@@ -203,6 +213,7 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
     incomplete: incomplete.slice(0, 8),
     upcomingAssessments: upcomingAssessments.slice(0, 6),
     attention: attention.slice(0, 8),
+    support: supportCounts(db, ownerId, today),
   };
 }
 
