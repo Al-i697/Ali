@@ -142,22 +142,24 @@ export function ListEditor({
   'aria-label'?: string;
 }) {
   const refs = useRef<(HTMLTextAreaElement | null)[]>([]);
-  const set = (i: number, v: string) => onChange(value.map((x, j) => (j === i ? v : x)));
+  // القائمة الفارغة تعرض سطرًا واحدًا جاهزًا للكتابة (لا حاجة للنقر على «إضافة» أولًا)؛ لا يُحفظ شيء حتى تُكتب قيمة
+  const items = value.length ? value : [''];
+  const set = (i: number, v: string) => onChange(items.map((x, j) => (j === i ? v : x)));
   const insertAfter = (i: number) => {
-    const next = [...value.slice(0, i + 1), '', ...value.slice(i + 1)];
+    const next = [...items.slice(0, i + 1), '', ...items.slice(i + 1)];
     onChange(next);
     setTimeout(() => refs.current[i + 1]?.focus(), 0);
   };
   const move = (i: number, d: -1 | 1) => {
     const j = i + d;
-    if (j < 0 || j >= value.length) return;
-    const next = [...value];
+    if (j < 0 || j >= items.length) return;
+    const next = [...items];
     [next[i], next[j]] = [next[j]!, next[i]!];
     onChange(next);
   };
   return (
     <div className="space-y-2">
-      {value.map((item, i) => (
+      {items.map((item, i) => (
         <div key={i} className="flex items-start gap-2">
           <span className="mt-2 grid size-6 shrink-0 place-items-center rounded-full bg-surface-3 text-[12px] font-semibold text-muted tnum">{i + 1}</span>
           <Textarea
@@ -173,9 +175,9 @@ export function ListEditor({
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 insertAfter(i);
-              } else if (e.key === 'Backspace' && item === '' && value.length > 0) {
+              } else if (e.key === 'Backspace' && item === '' && items.length > 1) {
                 e.preventDefault();
-                onChange(value.filter((_, j) => j !== i));
+                onChange(items.filter((_, j) => j !== i));
                 setTimeout(() => refs.current[Math.max(0, i - 1)]?.focus(), 0);
               }
             }}
@@ -185,16 +187,16 @@ export function ListEditor({
             <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="grid size-8 place-items-center rounded-md text-muted hover:bg-surface-3 disabled:opacity-30" aria-label="تحريك للأعلى">
               <ArrowUp className="size-4" />
             </button>
-            <button type="button" onClick={() => move(i, 1)} disabled={i === value.length - 1} className="grid size-8 place-items-center rounded-md text-muted hover:bg-surface-3 disabled:opacity-30" aria-label="تحريك للأسفل">
+            <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1} className="grid size-8 place-items-center rounded-md text-muted hover:bg-surface-3 disabled:opacity-30" aria-label="تحريك للأسفل">
               <ArrowDown className="size-4" />
             </button>
-            <button type="button" onClick={() => onChange(value.filter((_, j) => j !== i))} className="grid size-8 place-items-center rounded-md text-muted hover:bg-bad-soft hover:text-bad" aria-label="حذف">
+            <button type="button" onClick={() => onChange(items.filter((_, j) => j !== i))} className="grid size-8 place-items-center rounded-md text-muted hover:bg-bad-soft hover:text-bad" aria-label="حذف">
               <Trash2 className="size-4" />
             </button>
           </div>
         </div>
       ))}
-      <Button variant="soft" size="sm" icon={<Plus className="size-4" />} onClick={() => insertAfter(value.length - 1)}>
+      <Button variant="soft" size="sm" icon={<Plus className="size-4" />} onClick={() => insertAfter(items.length - 1)}>
         {addLabel}
       </Button>
     </div>

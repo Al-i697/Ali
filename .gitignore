@@ -24,3 +24,6 @@ npm-debug.log*
 playwright-report/
 test-results/
 e2e-artifacts/
+
+# مخرجات اختبار E2E (لقطات الشاشة)
+e2e-output/

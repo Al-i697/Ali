@@ -104,7 +104,7 @@ function TodaySlots({ data }: { data: DashboardDto }) {
     onSuccess: (res) => {
       void qc.invalidateQueries({ queryKey: qk.dashboard });
       toast.success('نُسخ التحضير إلى اليوم — راجعه وعدّله');
-      navigate(`/lessons/${res[0]!.id}`);
+      void navigate(`/lessons/${res[0]!.id}`);
     },
     onError: (e) => toast.error(errorMessage(e)),
   });

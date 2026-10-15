@@ -159,7 +159,8 @@
   .ledger-rule {
     background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, var(--border) 31px, var(--border) 32px);
   }
-  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* position:relative ضروري: عناصر sr-only (absolute) داخل الجدول كانت تتجاوز القص وتوسّع الصفحة كلها على الجوال */
+  .scroll-x { position: relative; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 }
 
 /* طباعة الصفحات الداخلية (غير التقارير) */

@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import type { AuthUserDto, SettingsDto, SystemInfo } from '@shared/dto';
-import { api, setUnauthorizedHandler } from '@/lib/api';
+import { api, errorMessage, setUnauthorizedHandler } from '@/lib/api';
 import { qk, useMe, useSettings, useSystemInfo } from '@/lib/queries';
 import { applyTheme, watchSystemTheme, readThemePref } from '@/lib/theme';
 
@@ -20,6 +21,16 @@ type AuthValue = {
 
 const AuthContext = createContext<AuthValue | null>(null);
 
+/**
+ * يُسقط بيانات المستخدم السابق من ذاكرة الاستعلامات (مع إبقاء حالة الدخول ومعلومات النظام).
+ * ضروري على الأجهزة المشتركة: من يدخل بعد انتهاء جلسة غيره لا يجوز أن يرى بياناته المخزّنة ولو لحظة.
+ * ملاحظة: لا نستعمل queryClient.clear() لأن المراقِبين المركَّبين (useMe) يبقون مرتبطين بالاستعلام المحذوف
+ * فلا يتلقون تحديثات setQueryData اللاحقة، فتبقى الواجهة ترى المستخدم القديم.
+ */
+function dropUserData(qc: QueryClient) {
+  qc.removeQueries({ predicate: (q) => q.queryKey[0] !== qk.me[0] && q.queryKey[0] !== qk.system[0] });
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const qc = useQueryClient();
   const system = useSystemInfo();
@@ -31,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     setUnauthorizedHandler(() => {
       qc.setQueryData(qk.me, null);
+      dropUserData(qc);
     });
     return () => setUnauthorizedHandler(null);
   }, [qc]);
@@ -45,8 +57,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback<AuthValue['login']>(
     async (input) => {
       const res = await api.post<{ user: AuthUserDto }>('/auth/login', input);
+      dropUserData(qc);
       qc.setQueryData(qk.me, res.user);
-      void qc.invalidateQueries({ queryKey: qk.settings });
     },
     [qc],
   );
@@ -54,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const setup = useCallback<AuthValue['setup']>(
     async (input) => {
       const res = await api.post<{ user: AuthUserDto }>('/auth/setup', input);
+      dropUserData(qc);
       qc.setQueryData(qk.me, res.user);
       void qc.invalidateQueries({ queryKey: qk.system });
     },
@@ -63,11 +76,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await api.post('/auth/logout');
-    } finally {
-      qc.clear();
-      qc.setQueryData(qk.me, null);
+    } catch (e) {
+      // فشل الخروج (انقطاع الاتصال مثلًا): نبقى في مكاننا ونُنبّه، بدل إيهام المستخدم بأنه خرج والجلسة قائمة
+      toast.error(`تعذّر تسجيل الخروج: ${errorMessage(e)}`);
+      return;
     }
-  }, [qc]);
+    // إعادة تحميل كاملة: تُفرَّغ ذاكرة الاستعلامات وحالة الواجهة كلها فلا يبقى أثر لبيانات المستخدم
+    window.location.assign('/login');
+  }, []);
 
   const refreshUser = useCallback(async () => {
     await qc.invalidateQueries({ queryKey: qk.me });

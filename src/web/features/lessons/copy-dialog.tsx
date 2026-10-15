@@ -37,7 +37,7 @@ export function LessonCopyDialog({ lesson, onClose, defaultDate }: { lesson: Les
       success: (r) => `نُسخ التحضير إلى ${fmt.num(r.length)} ${r.length === 1 ? 'وجهة' : 'وجهات'} كمسودات`,
       onSuccess: (r) => {
         onClose();
-        if (r.length === 1) navigate(`/lessons/${r[0]!.id}`);
+        if (r.length === 1) void navigate(`/lessons/${r[0]!.id}`);
       },
     },
   );

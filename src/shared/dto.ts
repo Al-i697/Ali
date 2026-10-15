@@ -28,7 +28,7 @@ export type SystemInfo = {
   version: string;
   needsSetup: boolean;
   timezone: string;
-  capabilities: { pdf: boolean };
+  capabilities: { pdf: boolean; ai: boolean };
 };
 
 export type AuthUserDto = {

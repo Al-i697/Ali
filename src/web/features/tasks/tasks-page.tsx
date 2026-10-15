@@ -12,7 +12,7 @@ import { useFmt } from '@/lib/hooks';
 import { useAppMutation } from '@/lib/mutation';
 import { qk, useAssignments } from '@/lib/queries';
 import { useAcademic } from '@/context/academic';
-import { Alert, Badge, Button, Card, CardHeader, EmptyState, Field, IconButton, Input, Menu, MenuItem, Modal, PageHeader, PageLoader, QueryError, Segmented, Select, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, useConfirm } from '@/components/ui';
+import { Alert, Badge, Button, Card, CardHeader, EmptyState, Field, IconButton, Input, Modal, PageHeader, PageLoader, QueryError, Segmented, Select, Tabs, TabsContent, TabsList, TabsTrigger, Textarea, useConfirm } from '@/components/ui';
 
 const kindTone: Record<TaskKind, 'info' | 'warn' | 'brand' | 'accent' | 'neutral'> = { task: 'info', exam: 'warn', meeting: 'brand', reminder: 'accent', event: 'neutral' };
 

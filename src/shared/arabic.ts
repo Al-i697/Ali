@@ -35,7 +35,7 @@ const TATWEEL = /ـ/g;
 
 /** تنظيف اسم: إزالة التطويل والمسافات الزائدة (دون المساس بالحروف) */
 export function cleanName(input: string): string {
-  return input.replace(TATWEEL, '').replace(/[​-‏‪-‮⁦-⁩]/g, '').replace(/\s+/g, ' ').trim();
+  return input.replace(TATWEEL, '').replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, '').replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -46,7 +46,7 @@ export function normalizeArabic(input: string): string {
   return toWesternDigits(input)
     .replace(TASHKEEL, '')
     .replace(TATWEEL, '')
-    .replace(/[​-‏‪-‮⁦-⁩]/g, '')
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069]/g, '')
     .replace(/[أإآٱ]/g, 'ا')
     .replace(/ى/g, 'ي')
     .replace(/ة/g, 'ه')

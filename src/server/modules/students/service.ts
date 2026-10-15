@@ -490,7 +490,7 @@ export function createNote(
   input: { assignmentId?: string | null; date: string; category: NoteDto['category']; text: string },
 ): NoteDto {
   requireStudent(db, ownerId, studentId);
-  if (input.assignmentId) assignmentMap(db, ownerId, [input.assignmentId]).get(input.assignmentId) ?? (() => { throw badRequest('المقرر غير صالح'); })();
+  if (input.assignmentId && !assignmentMap(db, ownerId, [input.assignmentId]).has(input.assignmentId)) throw badRequest('المقرر غير صالح');
   const row = db
     .insert(studentNotes)
     .values({ ownerId, studentId, assignmentId: input.assignmentId ?? null, date: input.date, category: input.category, text: input.text })
@@ -506,7 +506,7 @@ export function updateNote(
   input: Partial<{ assignmentId: string | null; date: string; category: NoteDto['category']; text: string }>,
 ): NoteDto {
   const note = requireNote(db, ownerId, id);
-  if (input.assignmentId) assignmentMap(db, ownerId, [input.assignmentId]).get(input.assignmentId) ?? (() => { throw badRequest('المقرر غير صالح'); })();
+  if (input.assignmentId && !assignmentMap(db, ownerId, [input.assignmentId]).has(input.assignmentId)) throw badRequest('المقرر غير صالح');
   db.update(studentNotes).set(input).where(eq(studentNotes.id, id)).run();
   return listNotes(db, ownerId, note.studentId).find((n) => n.id === id)!;
 }

@@ -157,6 +157,8 @@ export function GradeGrid({ gb, onEdit, onCopy, onDelete, onStatus, registerApi 
 
   const [status, setStatus] = useState<SaveStatus>({ pending: 0, saving: false, failed: 0, invalid: 0 });
   const lastStatus = useRef<SaveStatus | null>(null);
+  // يعمل بعد كل رسم عمدًا (الحالة مشتقة من refs)؛ الحارس lastStatus يمنع حلقة إعادة الرسم
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     let failed = 0;
     let invalid = 0;

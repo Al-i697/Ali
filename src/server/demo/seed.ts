@@ -8,7 +8,7 @@ import { addDays, nowInZone, weekdayOf } from '../../shared/dates';
 import { pickCurrentTerm } from '../../shared/academic';
 import type { ActivityPhase } from '../../shared/constants';
 import { createUser } from '../modules/users/service';
-import { createSection, createSubject, createYear, listYears } from '../modules/academic/service';
+import { createSection, createSubject, createYear } from '../modules/academic/service';
 import { addStudentsToSection } from '../modules/students/service';
 import { createAssessment, createSkill, saveResults } from '../modules/assessments/service';
 import { createLesson } from '../modules/lessons/service';
@@ -116,7 +116,7 @@ export async function seedDemo(db: Db, opts: DemoOptions): Promise<{ userId: str
     const section = createSection(db, owner, { yearId: year.id, gradeLevel: g.grade, name: g.name, subjectIds: [g.subject.id] });
     const used = new Set<string>();
     const students = Array.from({ length: g.size }, () => {
-      let name = '';
+      let name: string;
       do {
         const first = pick(g.gender === 'male' ? MALE : FEMALE);
         const father = pick(MALE);

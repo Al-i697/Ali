@@ -22,7 +22,7 @@ type Stored = { yearId?: string; termId?: string };
 export function AcademicProvider({ children }: { children: ReactNode }) {
   const { data, isLoading } = useYears();
   const [stored, setStored] = useLocalState<Stored>('sijilli-ctx', {});
-  const years = data ?? [];
+  const years = useMemo(() => data ?? [], [data]);
 
   const value = useMemo<AcademicValue>(() => {
     const year = years.find((y) => y.id === stored.yearId) ?? years.find((y) => y.isCurrent) ?? years[0] ?? null;

@@ -140,10 +140,7 @@ function UserMenu() {
       <MenuItem
         icon={<LogOut className="size-4" />}
         danger
-        onSelect={async () => {
-          await logout();
-          navigate('/login', { replace: true });
-        }}
+        onSelect={() => void logout()}
       >
         تسجيل الخروج
       </MenuItem>

@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import Fastify, { type FastifyError, type FastifyInstance } from 'fastify';
+import Fastify, { type FastifyError, type FastifyInstance, type RouteOptions } from 'fastify';
 import cookie from '@fastify/cookie';
 import compress from '@fastify/compress';
 import helmet from '@fastify/helmet';
@@ -11,6 +11,7 @@ import { ZodError } from 'zod';
 import { CLIENT_HEADER, CLIENT_HEADER_VALUE, LIMITS } from '../shared/constants';
 import { installArabicZod } from '../shared/schemas/common';
 import type { AppConfig } from './config';
+import { AiService } from './ai/provider';
 import { AppDatabase } from './db/client';
 import { AppError, forbidden, unauthorized, validationError } from './lib/errors';
 import { readSession } from './lib/session';
@@ -23,6 +24,8 @@ export type BuildOptions = {
   config: AppConfig;
   /** قاعدة بيانات جاهزة (للاختبارات). إن لم تُمرَّر تُفتح من الإعدادات وتُطبَّق الهجرات */
   db?: AppDatabase;
+  /** يُستدعى لكل مسار يُسجَّل — لتوليد التوثيق وفحوص الأمان الشاملة (لا يُستعمل في التشغيل العادي) */
+  onRoute?: (route: RouteOptions) => void;
 };
 
 export const sessionCookieName = (config: Pick<AppConfig, 'cookieSecure'>) =>
@@ -50,6 +53,8 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
     routerOptions: { maxParamLength: 200 },
   });
 
+  if (opts.onRoute) app.addHook('onRoute', opts.onRoute);
+
   const db = opts.db ?? AppDatabase.open(config.databaseFile);
   const backups = new BackupService(db, config, app.log);
   if (!opts.db) {
@@ -65,6 +70,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   app.decorate('db', db);
   app.decorate('pdf', new PdfService(config));
   app.decorate('backups', backups);
+  app.decorate('ai', new AiService());
   app.decorateRequest('auth', null);
 
   app.addHook('onReady', async () => backups.start());

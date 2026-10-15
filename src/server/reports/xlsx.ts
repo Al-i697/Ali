@@ -29,7 +29,7 @@ const BORDER: Partial<ExcelJS.Borders> = {
 
 /** أسماء الأوراق في Excel: ≤31 حرفًا وبلا الرموز المحظورة، وفريدة */
 function sheetName(raw: string, used: Set<string>): string {
-  let base = raw.replace(/[\\/?*[\]:]/g, ' ').trim().slice(0, 31) || 'ورقة';
+  const base = raw.replace(/[\\/?*[\]:]/g, ' ').trim().slice(0, 31) || 'ورقة';
   let name = base;
   let i = 2;
   while (used.has(name.toLowerCase())) name = `${base.slice(0, 28)} ${i++}`;

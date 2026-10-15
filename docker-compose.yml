@@ -1,0 +1,25 @@
+# تشغيل سجلي بـ Docker Compose:   docker compose up -d --build
+# أول زيارة لعنوان الموقع تعرض صفحة «الإعداد لأول مرة» لإنشاء حساب المدير.
+services:
+  sijilli:
+    build: .
+    image: sijilli:latest
+    restart: unless-stopped
+    ports:
+      # يُربط بالمضيف المحلي فقط؛ ضع خلفه وكيلًا عكسيًا بـ HTTPS (انظر docs/DEPLOYMENT.md)
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - sijilli-data:/data
+    environment:
+      # العنوان العام للموقع (يُفعّل ملفات تعريف الارتباط الآمنة ويُستخدم للتحقق من Origin)
+      APP_URL: ${APP_URL:-}
+      # فعّلها (true) عند وجود وكيل عكسي أمام التطبيق
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      # عبارة تشفير النسخ الاحتياطية (اختيارية). احتفظ بها في مكان آمن: لا استعادة بدونها
+      BACKUP_PASSPHRASE: ${BACKUP_PASSPHRASE:-}
+      BACKUP_INTERVAL_HOURS: ${BACKUP_INTERVAL_HOURS:-24}
+      BACKUP_KEEP: ${BACKUP_KEEP:-14}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+
+volumes:
+  sijilli-data:

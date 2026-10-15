@@ -9,7 +9,7 @@ import { badRequest } from '../../lib/errors';
 import { likeContains } from '../../lib/sql';
 import { assignmentMap, listAssignmentInfos, requireAssignment, requireLesson, requireTerm } from '../_shared/owned';
 
-const { lessonPlans, assignments, sections, terms } = schema;
+const { lessonPlans, assignments, terms } = schema;
 
 type LessonRow = typeof lessonPlans.$inferSelect;
 

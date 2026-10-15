@@ -227,7 +227,7 @@ export default function SectionPage() {
                 const ok = await deleteWithForce(confirm, (force) => api.del(`/sections/${s.id}`, { force }), { title: `حذف الشعبة ${s.label}؟`, description: 'تُحذف الشعبة ومقرراتها. سجلات الطلاب أنفسهم تبقى في النظام.' });
                 if (ok) {
                   toast.success('حُذفت الشعبة');
-                  navigate('/classes');
+                  void navigate('/classes');
                 }
               }}
             >

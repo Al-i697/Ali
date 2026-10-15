@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { TestClient, makeEnv, seedFor, PASSWORD, type TestEnv } from './helpers';
+import { TestClient, makeEnv, seedFor, type TestEnv } from './helpers';
 
 let env: TestEnv;
 let ctx: Awaited<ReturnType<typeof seedFor>>;

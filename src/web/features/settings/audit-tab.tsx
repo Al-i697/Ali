@@ -68,7 +68,7 @@ export function AuditTab() {
           <EmptyState icon={<ScrollText className="size-6" />} title="السجل فارغ" />
         ) : (
           <>
-            <div className="overflow-x-auto rounded-xl border border-line">
+            <div className="relative overflow-x-auto rounded-xl border border-line">
               <table className="w-full min-w-[640px] text-[14px]">
                 <thead className="bg-surface-2 text-start text-[13px] text-muted">
                   <tr>

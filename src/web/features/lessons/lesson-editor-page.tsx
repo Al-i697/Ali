@@ -193,7 +193,7 @@ export default function LessonEditorPage() {
   const { year } = useAcademic();
   const { settings } = useAuth();
   const assignmentsQ = useAssignments(year?.id);
-  const assignments = assignmentsQ.data ?? [];
+  const assignments = useMemo(() => assignmentsQ.data ?? [], [assignmentsQ.data]);
   const lessonQ = useQuery({ queryKey: qk.lesson(lessonId ?? 'new'), queryFn: () => api.get<LessonDto>(`/lessons/${lessonId}`), enabled: !isNew });
 
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -290,7 +290,7 @@ export default function LessonEditorPage() {
       void qc.invalidateQueries({ queryKey: ['lessons'] });
       void qc.invalidateQueries({ queryKey: qk.dashboard });
       toast.success('أُنشئ التحضير — يُحفظ تلقائيًا أثناء الكتابة');
-      navigate(`/lessons/${res.id}`, { replace: true });
+      void navigate(`/lessons/${res.id}`, { replace: true });
     } catch (e) {
       toast.error(errorMessage(e));
     } finally {
@@ -469,7 +469,7 @@ export default function LessonEditorPage() {
                     void qc.invalidateQueries({ queryKey: ['lessons'] });
                     void qc.invalidateQueries({ queryKey: qk.dashboard });
                     toast.success('حُذف التحضير');
-                    navigate('/lessons', { replace: true });
+                    void navigate('/lessons', { replace: true });
                   }
                 }}
               >

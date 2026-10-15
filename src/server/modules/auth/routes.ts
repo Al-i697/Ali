@@ -47,7 +47,7 @@ export const authModule: FastifyPluginAsync = async (app) => {
     version: cfg.version,
     needsSetup: countUsers(app.db.orm) === 0,
     timezone: cfg.timezone,
-    capabilities: { pdf: app.pdf.available },
+    capabilities: { pdf: app.pdf.available, ai: app.ai.available },
   }));
 
   // ───────── الإعداد الأولي: أول مستخدم يصبح مدير النظام ─────────

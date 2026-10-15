@@ -68,7 +68,7 @@ export function LoginPage() {
     setError(null);
     try {
       await login({ email: values.email, password: values.password, remember: values.remember ?? false });
-      navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true });
+      void navigate((location.state as { from?: string } | null)?.from ?? '/', { replace: true });
     } catch (err) {
       setError(applyApiError(form, err));
     }
@@ -113,7 +113,7 @@ export function SetupPage() {
     setError(null);
     try {
       await setup({ fullName, email, password });
-      navigate('/', { replace: true });
+      void navigate('/', { replace: true });
     } catch (err) {
       setError(applyApiError(form, err));
     }

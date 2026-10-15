@@ -12,7 +12,7 @@ type SheetRow = { rowNumber: number; cells: Cells };
 
 function decodeText(buf: Buffer): string {
   try {
-    return new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^﻿/, '');
+    return new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^\uFEFF/, '');
   } catch {
     // ملفات CSV من Excel العربي القديم تكون غالبًا Windows-1256
     return new TextDecoder('windows-1256').decode(buf);
@@ -71,7 +71,7 @@ async function readXlsx(buf: Buffer): Promise<SheetRow[]> {
   ws.eachRow({ includeEmpty: false }, (row, rowNumber) => {
     const cells: string[] = [];
     row.eachCell({ includeEmpty: true }, (cell, col) => {
-      let text = '';
+      let text: string;
       try {
         text = cell.text ?? '';
       } catch {
@@ -103,7 +103,7 @@ export function readPastedText(text: string): SheetRow[] {
   const rows: SheetRow[] = [];
   text.split(/\r?\n/).forEach((raw, i) => {
     // حذف الترقيم في بداية السطر: «1. » أو «٢) » أو «3-»
-    let line = raw.replace(/^\s*[\d٠-٩۰-۹]+\s*[.)\-–:،]\s*/, '').trim();
+    const line = raw.replace(/^\s*[\d٠-٩۰-۹]+\s*[.)\-–:،]\s*/, '').trim();
     if (!line) return;
     let cells: string[];
     if (line.includes('\t')) cells = line.split('\t').map((c) => c.trim());

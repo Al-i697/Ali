@@ -1,15 +1,15 @@
 import type { FastifyInstance } from 'fastify';
-import { buildApp } from '../../src/server/app';
+import { buildApp, type BuildOptions } from '../../src/server/app';
 import { loadConfig, type AppConfig } from '../../src/server/config';
 import { AppDatabase } from '../../src/server/db/client';
 
 export type TestEnv = { app: FastifyInstance; db: AppDatabase; config: AppConfig };
 
-export async function makeEnv(overrides: Record<string, string> = {}): Promise<TestEnv> {
+export async function makeEnv(overrides: Record<string, string> = {}, build: Partial<BuildOptions> = {}): Promise<TestEnv> {
   const config = loadConfig({ NODE_ENV: 'test', DATA_DIR: '/tmp/sijilli-test-unused', ...overrides });
   const db = AppDatabase.open(':memory:');
   db.migrate(config.migrationsDir);
-  const app = await buildApp({ config, db });
+  const app = await buildApp({ config, db, ...build });
   await app.ready();
   return { app, db, config };
 }
@@ -91,7 +91,7 @@ export function multipart(filename: string, content: Buffer | string, mime = 'te
 }
 
 /** يهيّئ معلمًا جاهزًا بعام وشعبة ومادة وثلاثة طلاب — لتقليل التكرار في الاختبارات */
-export async function seedTeacher(app: import('fastify').FastifyInstance, email = 'admin@school.om') {
+export async function seedTeacher(app: FastifyInstance, email = 'admin@school.om') {
   const c = new TestClient(app);
   await c.setupAdmin(email);
   return seedFor(c);
