@@ -98,7 +98,9 @@ describe('الإعداد الأولي والدخول', () => {
     expect((await c.get('/api/auth/me')).status).toBe(200);
     const out = await c.post('/api/auth/logout');
     expect(out.status).toBe(200);
-    expect((await c.get('/api/auth/me')).status).toBe(401);
+    const after = await c.get('/api/auth/me');
+    expect(after.status).toBe(200);
+    expect(after.body.user).toBeNull(); // لا خطأ 401: يُرجع null للزائر
   });
 });
 

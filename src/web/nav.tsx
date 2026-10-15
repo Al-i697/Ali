@@ -1,0 +1,23 @@
+import type { LucideIcon } from 'lucide-react';
+import { BookOpenCheck, CalendarClock, CalendarDays, ClipboardList, FileBarChart, LayoutDashboard, Settings, Users } from 'lucide-react';
+
+// سجل التنقل: لإضافة صفحة جديدة (مثل «الخطط العلاجية») أضف عنصرًا هنا ومسارًا في App.tsx.
+export type NavItem = {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  end?: boolean;
+  /** يظهر في شريط التنقل السفلي بالجوال */
+  mobile?: boolean;
+};
+
+export const NAV: NavItem[] = [
+  { to: '/', label: 'لوحة التحكم', icon: LayoutDashboard, end: true, mobile: true },
+  { to: '/classes', label: 'الشعب والطلاب', icon: Users, mobile: true },
+  { to: '/lessons', label: 'التحضير', icon: BookOpenCheck, mobile: true },
+  { to: '/assessments', label: 'التقويم المستمر', icon: ClipboardList, mobile: true },
+  { to: '/timetable', label: 'الجدول الأسبوعي', icon: CalendarClock },
+  { to: '/tasks', label: 'المهام والتقويم', icon: CalendarDays },
+  { to: '/reports', label: 'التقارير', icon: FileBarChart },
+  { to: '/settings', label: 'الإعدادات', icon: Settings },
+];

@@ -165,6 +165,13 @@ export async function reportToXlsx(doc: ReportDoc): Promise<Buffer> {
         ws.getCell(row, 1).value = block.text;
         row += 2;
         break;
+      case 'field':
+        ws.getCell(row, 1).value = block.label;
+        ws.getCell(row, 1).font = { bold: true };
+        ws.getCell(row, 2).value = block.text;
+        ws.getCell(row, 2).alignment = { wrapText: true, vertical: 'top', readingOrder: 'rtl' };
+        row++;
+        break;
       case 'kv':
         for (const i of block.items) {
           ws.getCell(row, 1).value = i.label;

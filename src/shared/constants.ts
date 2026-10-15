@@ -345,6 +345,7 @@ export const REPORT_TYPE = defineEnum([
   { value: 'class-analysis', label: 'تحليل أداء الشعبة' },
   { value: 'student', label: 'تقرير الطالب' },
   { value: 'lessons', label: 'سجل التحضير' },
+  { value: 'lesson-plan', label: 'ورقة تحضير الدرس' },
 ] as const);
 export type ReportType = (typeof REPORT_TYPE.values)[number];
 

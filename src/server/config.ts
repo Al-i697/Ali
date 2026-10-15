@@ -101,12 +101,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     chromiumPath: e.CHROMIUM_PATH || null,
     pdfNoSandbox: e.PDF_NO_SANDBOX,
     timezone: e.TZ_NAME,
-    webRoot: path.resolve(
-      firstExisting(
-        [e.WEB_ROOT, path.join(here, '../web'), path.join(here, '../../dist/web')],
-        '../web',
-      ),
-    ),
+    // مخرجات الواجهة المبنية فقط (dist/web). نفس المسار النسبي يصح في التطوير (src/server) وفي الحزمة (dist/server)،
+    // ولا نقبل src/web أبدًا حتى لا تُخدَّم ملفات المصدر الخام.
+    webRoot: path.resolve(firstExisting([e.WEB_ROOT, path.join(here, '../../dist/web')], '../../dist/web')),
     migrationsDir: firstExisting(
       [path.join(here, 'migrations'), path.join(here, 'db/migrations')],
       'migrations',

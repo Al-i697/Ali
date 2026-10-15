@@ -155,3 +155,30 @@ describe('تصدير PDF', () => {
     expect(rows.length).toBeGreaterThanOrEqual(1);
   });
 });
+
+describe('ورقة تحضير الدرس', () => {
+  it('تطبع درسًا واحدًا بكل أقسامه', async () => {
+    const lesson = (await ctx.c.post('/api/lessons', {
+      assignmentId: ctx.assignmentId, date: '2026-09-20', period: 3, title: 'الأنسجة الحيوانية', unitName: 'الوحدة الثانية',
+      objectives: ['أن يعدّد الطالب أنواع الأنسجة'], strategies: ['العصف الذهني'], resources: ['السبورة'],
+      activities: [{ phase: 'intro', description: 'سؤال تمهيدي', minutes: 5 }, { phase: 'main', description: 'شرح الأنسجة', minutes: 25 }],
+      assessmentMethods: ['أسئلة شفهية'], homework: 'حل تمارين ص 40', durationMinutes: 45,
+    })).body;
+    const r = await ctx.c.get(`/api/reports/lesson-plan/html?lessonId=${lesson.id}`);
+    expect(r.status).toBe(200);
+    for (const t of ['ورقة تحضير الدرس', 'الأنسجة الحيوانية', 'أن يعدّد الطالب أنواع الأنسجة', 'سير الدرس والأنشطة', 'شرح الأنسجة', 'الواجب المنزلي', 'حل تمارين ص 40', 'العصف الذهني']) expect(r.body).toContain(t);
+    const x = await ctx.c.get(`/api/reports/lesson-plan/xlsx?lessonId=${lesson.id}`);
+    expect(x.status).toBe(200);
+  });
+
+  it('يطبع دفعة دروس لفترة (كل درس في صفحة) ويتحقق من المعاملات والملكية', async () => {
+    const batch = await ctx.c.get('/api/reports/lesson-plan/html?from=2026-09-01&to=2026-09-30');
+    expect(batch.status).toBe(200);
+    expect(batch.body).toContain('دفتر التحضير');
+    expect((batch.body.match(/class="pb"/g) ?? []).length).toBeGreaterThanOrEqual(1);
+    expect((await ctx.c.get('/api/reports/lesson-plan/html')).status).toBe(400);
+    expect((await ctx.c.get('/api/reports/lesson-plan/html?from=2030-01-01&to=2030-01-31')).status).toBe(400);
+    const lesson = (await ctx.c.get('/api/lessons?limit=1')).body.items[0];
+    expect((await other.get(`/api/reports/lesson-plan/html?lessonId=${lesson.id}`)).status).toBe(404);
+  });
+});

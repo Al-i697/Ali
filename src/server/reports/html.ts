@@ -130,6 +130,7 @@ tfoot td{background:#eef4f1;font-weight:600}
 .bar .fill{height:100%;border-radius:3px}
 .bar .val{color:#33443f;font-variant-numeric:tabular-nums}
 ul{margin:4px 0 8px;padding-inline-start:20px}
+.field{margin:6px 0 10px;break-inside:avoid}.fl{font-weight:600;color:#0b3f36;font-size:10pt}.ft{white-space:pre-wrap;padding:4px 0 0}
 .kv{display:grid;gap:3px 16px;margin:6px 0 10px}
 .kv div{font-size:10pt}.kv span{color:#6a7b76}
 .pb{break-after:page}
@@ -169,6 +170,8 @@ function renderBlock(b: Block, digits: DigitStyle): Raw {
       return html`<h2>${b.text}</h2>`;
     case 'paragraph':
       return html`<p class="${b.tone ? `t-${b.tone}` : ''}">${b.text}</p>`;
+    case 'field':
+      return html`<div class="field"><div class="fl">${b.label}</div><div class="ft">${b.text}</div></div>`;
     case 'kv':
       return html`<div class="kv" style="grid-template-columns:repeat(${b.columns ?? 2},1fr)">${b.items.map((i) => html`<div><span>${i.label}:</span> <b>${i.value}</b></div>`)}</div>`;
     case 'stats':

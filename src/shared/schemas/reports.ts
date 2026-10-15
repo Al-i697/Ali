@@ -11,6 +11,7 @@ export const reportQuery = z.object({
   assignmentId: idSchema.optional(),
   termId: idSchema.optional(),
   studentId: idSchema.optional(),
+  lessonId: idSchema.optional(),
   from: dateSchema.optional(),
   to: dateSchema.optional(),
   includeNotes: bool.optional(),

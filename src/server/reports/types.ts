@@ -21,6 +21,8 @@ export type Column = {
 export type Block =
   | { type: 'heading'; text: string }
   | { type: 'paragraph'; text: string; tone?: Tone }
+  /** حقل نصي موسوم: عنوان صغير + نص (يحافظ على الأسطر) */
+  | { type: 'field'; label: string; text: string }
   | { type: 'kv'; items: { label: string; value: string }[]; columns?: 2 | 3 | 4 }
   | { type: 'stats'; items: { label: string; value: string; hint?: string; tone?: Tone }[] }
   | { type: 'table'; title?: string; columns: Column[]; rows: Cell[][]; footer?: Cell[][]; compact?: boolean; empty?: string }

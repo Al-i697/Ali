@@ -2,6 +2,7 @@
 import type { Db } from '../db/client';
 import { pickCurrentTerm } from '../../shared/academic';
 import {
+  ACTIVITY_PHASE,
   ASSESSMENT_TYPE,
   LESSON_STATUS,
   MASTERY_LEVELS,
@@ -18,7 +19,7 @@ import { badRequest } from '../lib/errors';
 import { listYears } from '../modules/academic/service';
 import { getGradebook, listSkills } from '../modules/assessments/service';
 import { summarizeGradebook } from '../modules/assessments/summary';
-import { listLessons } from '../modules/lessons/service';
+import { getLesson, listLessons } from '../modules/lessons/service';
 import { requireAssignment, requireStudent, requireTerm, listAssignmentInfos } from '../modules/_shared/owned';
 import { getStudentDto, listNotes } from '../modules/students/service';
 import type { Cell, Column, ReportDoc, Tone } from './types';
@@ -506,3 +507,85 @@ export function buildLessonsLog(ctx: BuildCtx, q: { from?: string; to?: string; 
   };
 }
 
+
+// ═════════════ 5) ورقة تحضير الدرس (درس واحد أو دفعة بفترة زمنية) ═════════════
+export function buildLessonPlan(ctx: BuildCtx, q: { lessonId?: string; from?: string; to?: string; assignmentId?: string }): ReportDoc {
+  const d = ctx.settings.preferences.digits;
+  const f = fmtFactory(d);
+  let ids: string[];
+  if (q.lessonId) ids = [q.lessonId];
+  else {
+    if (!q.from || !q.to) throw badRequest('حدّد الدرس أو الفترة الزمنية', 'MISSING_PARAM', { lessonId: 'مطلوب' });
+    if (q.to < q.from) throw badRequest('تاريخ النهاية يجب أن يكون بعد البداية');
+    const page = listLessons(ctx.db, ctx.ownerId, { from: q.from, to: q.to, assignmentId: q.assignmentId, limit: 100, offset: 0 });
+    ids = [...page.items].sort((a, b) => (a.date === b.date ? (a.period ?? 0) - (b.period ?? 0) : a.date < b.date ? -1 : 1)).map((l) => l.id);
+    if (ids.length === 0) throw badRequest('لا يوجد تحضير في هذه الفترة');
+  }
+
+  const blocks: ReportDoc['blocks'] = [];
+  const lessons = ids.map((id) => getLesson(ctx.db, ctx.ownerId, id));
+  lessons.forEach((l, idx) => {
+    if (idx > 0) blocks.push({ type: 'pagebreak' });
+    const minutes = l.activities.reduce((n, a) => n + (a.minutes ?? 0), 0);
+    blocks.push(
+      { type: 'heading', text: l.title },
+      {
+        type: 'kv',
+        columns: 3,
+        items: [
+          { label: 'التاريخ', value: `${weekdayName(weekdayOf(l.date))} ${formatDate(l.date, d, 'medium')}` },
+          { label: 'الحصة', value: l.period ? f(l.period) : '—' },
+          { label: 'الشعبة', value: l.sectionLabel },
+          { label: 'المادة', value: l.subjectName },
+          { label: 'الوحدة', value: l.unitName ?? '—' },
+          { label: 'رقم الدرس', value: l.lessonNumber ?? '—' },
+          { label: 'المدة', value: l.durationMinutes ? `${f(l.durationMinutes)} دقيقة` : '—' },
+          { label: 'الحالة', value: LESSON_STATUS.labels[l.status] },
+        ],
+      },
+    );
+    const list = (title: string, items: string[]) => items.length && blocks.push({ type: 'list', title, items });
+    list('نواتج التعلم', l.outcomes);
+    list('أهداف الدرس', l.objectives);
+    if (l.concepts.length) blocks.push({ type: 'field', label: 'المفاهيم والمصطلحات', text: l.concepts.join('، ') });
+    list('استراتيجيات التدريس', l.strategies);
+    list('مصادر التعلم والوسائل', l.resources);
+    if (l.activities.length) {
+      blocks.push({
+        type: 'table',
+        title: `سير الدرس والأنشطة${minutes ? ` (${f(minutes)} دقيقة)` : ''}`,
+        compact: true,
+        columns: [
+          { key: 'n', title: 'م', width: 0.4, align: 'center' },
+          { key: 'p', title: 'المرحلة', width: 1.4 },
+          { key: 'd', title: 'النشاط', width: 6 },
+          { key: 'm', title: 'الزمن (د)', width: 0.9, align: 'center', kind: 'number' },
+        ],
+        rows: l.activities.map((a, i) => [i + 1, ACTIVITY_PHASE.labels[a.phase], a.description, a.minutes ?? null]),
+      });
+    }
+    list('أساليب التقويم', l.assessmentMethods);
+    if (l.assessmentNotes) blocks.push({ type: 'field', label: 'ملاحظات التقويم', text: l.assessmentNotes });
+    if (l.homework) blocks.push({ type: 'field', label: 'الواجب المنزلي', text: l.homework });
+    if (l.supportPlan) blocks.push({ type: 'field', label: 'المعالجة (للطلاب الذين يحتاجون دعمًا)', text: l.supportPlan });
+    if (l.enrichmentPlan) blocks.push({ type: 'field', label: 'الإثراء (للمتميزين)', text: l.enrichmentPlan });
+    if (l.notes) blocks.push({ type: 'field', label: 'ملاحظات', text: l.notes });
+    if (l.reflection) blocks.push({ type: 'field', label: 'التأمل بعد التنفيذ', text: l.reflection });
+  });
+
+  const first = lessons[0]!;
+  const single = lessons.length === 1;
+  return {
+    type: 'lesson-plan',
+    title: single ? 'ورقة تحضير الدرس' : 'دفتر التحضير',
+    subtitle: single ? `${first.subjectName} — ${first.sectionLabel}` : `${f(lessons.length)} درسًا`,
+    meta: [
+      { label: 'المعلم', value: ctx.settings.profile.fullName },
+      { label: 'التاريخ', value: formatDate(ctx.today, d, 'long') },
+    ],
+    blocks,
+    filename: single ? `تحضير-${first.title.split(' ').slice(0, 4).join('-')}` : `دفتر-التحضير-${q.from}-${q.to}`,
+    signatures: true,
+    generatedAt: ctx.now,
+  };
+}

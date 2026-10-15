@@ -1,0 +1,180 @@
+@import 'tailwindcss';
+
+/* الوضع الداكن يُفعَّل بالسمة data-theme على <html> (يضبطها theme-init.js قبل الرسم) */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* ─────────── رموز التصميم ───────────
+   هوية «سجلي»: ورق السجل الدافئ + حبر أخضر عميق + لمسة ذهبية (اللبان العُماني).
+   كل لون دلالي متغير CSS يتبدّل بين الفاتح والداكن، فلا حاجة لـ dark: في المكوّنات. */
+:root {
+  --bg: #f3f4ee;
+  --surface: #ffffff;
+  --surface-2: #f8f9f4;
+  --surface-3: #eef1ea;
+  --border: #dde4dc;
+  --border-strong: #c5d0c6;
+  --text: #14231f;
+  --text-2: #3f524b;
+  --muted: #667a72;
+  --brand: #0f5f52;
+  --brand-hover: #0b4a40;
+  --brand-soft: #e0efea;
+  --brand-contrast: #ffffff;
+  --accent: #b07a1a;
+  --accent-soft: #faefd6;
+  --good: #1d7a4a;
+  --good-soft: #e0f2e7;
+  --info: #2a66ab;
+  --info-soft: #e2ecf8;
+  --warn: #956200;
+  --warn-soft: #fcefcf;
+  --bad: #b13528;
+  --bad-soft: #fbe2dd;
+  --ring: rgb(15 95 82 / 0.35);
+  --shadow-sm: 0 1px 2px rgb(20 35 31 / 0.06);
+  --shadow-md: 0 4px 14px rgb(20 35 31 / 0.08), 0 1px 3px rgb(20 35 31 / 0.06);
+  --shadow-lg: 0 16px 40px rgb(20 35 31 / 0.16);
+  --overlay: rgb(15 25 22 / 0.5);
+  --grid-dot: rgb(20 35 31 / 0.07);
+}
+
+:root[data-theme='dark'] {
+  --bg: #0d1311;
+  --surface: #141d1a;
+  --surface-2: #19241f;
+  --surface-3: #1f2c27;
+  --border: #25332d;
+  --border-strong: #34463f;
+  --text: #e8f0ec;
+  --text-2: #b5c6be;
+  --muted: #8aa197;
+  --brand: #45bfa6;
+  --brand-hover: #66d3bc;
+  --brand-soft: #14302a;
+  --brand-contrast: #04201a;
+  --accent: #e3b455;
+  --accent-soft: #33290f;
+  --good: #58c98e;
+  --good-soft: #112b1e;
+  --info: #72a9e3;
+  --info-soft: #132539;
+  --warn: #e6b34f;
+  --warn-soft: #33270b;
+  --bad: #f08676;
+  --bad-soft: #3a1a16;
+  --ring: rgb(69 191 166 / 0.4);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 4px 14px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 16px 40px rgb(0 0 0 / 0.55);
+  --overlay: rgb(0 0 0 / 0.62);
+  --grid-dot: rgb(232 240 236 / 0.06);
+}
+
+@theme inline {
+  --font-sans: 'IBM Plex Sans Arabic', 'IBM Plex Sans', ui-sans-serif, system-ui, 'Segoe UI', Tahoma, sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-fg: var(--brand-contrast);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --shadow-card: var(--shadow-sm);
+  --shadow-pop: var(--shadow-md);
+  --shadow-modal: var(--shadow-lg);
+  --radius-card: 14px;
+  --radius-ctl: 10px;
+}
+
+/* ألوان المواد: كل مادة لها لون مميز يظهر في الشرائح والجداول */
+.subj-teal { --c: #0f766e; --c-soft: #d9f0ec; }
+.subj-blue { --c: #1d62b8; --c-soft: #dce9f9; }
+.subj-violet { --c: #6d47c4; --c-soft: #e9e2f8; }
+.subj-rose { --c: #be3a63; --c-soft: #f9e0e8; }
+.subj-amber { --c: #9a6a00; --c-soft: #faeccb; }
+.subj-green { --c: #2f7d32; --c-soft: #dff0df; }
+.subj-orange { --c: #b8541a; --c-soft: #fbe5d6; }
+.subj-slate { --c: #4d5d66; --c-soft: #e4e9ec; }
+:root[data-theme='dark'] .subj-teal { --c: #5fd0c3; --c-soft: #12332f; }
+:root[data-theme='dark'] .subj-blue { --c: #7db0f0; --c-soft: #14283f; }
+:root[data-theme='dark'] .subj-violet { --c: #b39cf0; --c-soft: #271d45; }
+:root[data-theme='dark'] .subj-rose { --c: #f08aa9; --c-soft: #40182a; }
+:root[data-theme='dark'] .subj-amber { --c: #e8bb55; --c-soft: #36290a; }
+:root[data-theme='dark'] .subj-green { --c: #7fd281; --c-soft: #15301a; }
+:root[data-theme='dark'] .subj-orange { --c: #f09a63; --c-soft: #3b2010; }
+:root[data-theme='dark'] .subj-slate { --c: #a9b9c2; --c-soft: #232d33; }
+
+@layer base {
+  html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    line-height: 1.65;
+    font-feature-settings: 'kern', 'liga';
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection { background: var(--brand); color: var(--brand-contrast); }
+  :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 6px; }
+  button, [role='button'], a { -webkit-tap-highlight-color: transparent; }
+  button { font: inherit; }
+  input, select, textarea { font: inherit; color: inherit; }
+  ::placeholder { color: var(--muted); opacity: 0.8; }
+  /* شريط تمرير رفيع */
+  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  h1, h2, h3 { text-wrap: balance; }
+  table { border-collapse: separate; border-spacing: 0; }
+  /* الأرقام في الجداول متساوية العرض ليسهل مقارنتها */
+  .tnum { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  /* ورق مسطّر خفيف: لمسة «السجل» في ترويسات الصفحات */
+  .paper-dots {
+    background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
+  .ledger-rule {
+    background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 31px, var(--border) 31px, var(--border) 32px);
+  }
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+/* طباعة الصفحات الداخلية (غير التقارير) */
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print { display: none !important; }
+}
+
+/* احترام تفضيل تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes slide-in-end { from { transform: translateX(-100%); } to { transform: none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }

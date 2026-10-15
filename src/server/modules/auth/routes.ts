@@ -144,10 +144,10 @@ export const authModule: FastifyPluginAsync = async (app) => {
     return { ok: true };
   });
 
-  app.get('/auth/me', { config: { allowMustChange: true } }, async (req) => {
-    const { user } = getCtx(req);
-    return { user };
-  });
+  /** عام: يعيد المستخدم الحالي أو null (بدل 401) حتى لا تمتلئ كونسول المتصفح بأخطاء عند كل زيارة لشاشة الدخول */
+  app.get('/auth/me', { config: { public: true, allowMustChange: true } }, async (req) => ({
+    user: req.auth?.user ?? null,
+  }));
 
   // ───────── تغيير كلمة المرور ─────────
   app.post(

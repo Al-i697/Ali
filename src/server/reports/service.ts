@@ -7,6 +7,7 @@ import { getSettings } from '../modules/settings/service';
 import {
   buildClassAnalysis,
   buildClassGradebook,
+  buildLessonPlan,
   buildLessonsLog,
   buildStudentReport,
   type BuildCtx,
@@ -49,6 +50,9 @@ export function buildReport(app: FastifyInstance, ownerId: string, type: ReportT
       break;
     case 'lessons':
       doc = buildLessonsLog(ctx, { from: q.from, to: q.to, assignmentId: q.assignmentId });
+      break;
+    case 'lesson-plan':
+      doc = buildLessonPlan(ctx, { lessonId: q.lessonId, from: q.from, to: q.to, assignmentId: q.assignmentId });
       break;
   }
   return { doc, brand };
