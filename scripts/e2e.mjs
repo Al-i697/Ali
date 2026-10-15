@@ -3,7 +3,7 @@
 //
 //   npm run build && npm run test:e2e
 //
-// خيارات:  --only=first-run,demo,admin,visual   تشغيل مراحل محددة
+// خيارات:  --only=first-run,demo,admin,visual,ai   تشغيل مراحل محددة
 //          --keep                                 إبقاء مجلد البيانات المؤقت بعد الانتهاء
 //          --headed                               إظهار نافذة المتصفح
 //
@@ -12,6 +12,7 @@
 //   demo       الحساب التجريبي: الشبكة بالكيبورد واللصق، المهام، الإعدادات، التقارير PDF/Excel، العزل
 //   admin      المدير: المستخدمون، كلمة مرور مؤقتة، التعطيل، النسخ الاحتياطي والاستعادة، سجل العمليات
 //   visual     مسح بصري: كل الصفحات × (فاتح/داكن) × (حاسوب/جوال) — لقطات + فحص التمرير الأفقي والأخطاء
+//   ai         المساعد الذكي بخادم Claude وهمي: موافقة المدير، مسودة التحضير والتقويم والخطط، حماية الأسماء، الأعطال، الحصة
 import { spawn, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import net from 'node:net';
@@ -20,6 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ExcelJS from 'exceljs';
 import { chromium } from 'playwright-core';
+import { startFakeAnthropic } from './e2e-fake-anthropic.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const argv = process.argv.slice(2);
@@ -101,6 +103,22 @@ async function expectText(locator, re, what) {
   }
 }
 
+/** يعيد المحاولة (حتى 15ث) إلى أن تُرجع الدالة قيمة صادقة؛ للتحقق من أن الحفظ التلقائي وصل إلى الخادم فعلًا */
+async function until(fn, message, timeout = 15_000) {
+  const end = Date.now() + timeout;
+  for (;;) {
+    let v;
+    try {
+      v = await fn();
+    } catch {
+      v = false;
+    }
+    if (v) return v;
+    if (Date.now() > end) throw new Error(message);
+    await new Promise((r) => setTimeout(r, 300));
+  }
+}
+
 async function runPhase(name, fn) {
   if (only.length && !only.includes(name)) return;
   currentPhase = name;
@@ -142,7 +160,7 @@ function cli(dataDir, args) {
   return r.stdout;
 }
 
-async function startServer(label, { seed = false } = {}) {
+async function startServer(label, { seed = false, env: extraEnv = {} } = {}) {
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), `sijilli-e2e-${label}-`));
   tmpDirs.push(dataDir);
   if (seed) {
@@ -160,6 +178,7 @@ async function startServer(label, { seed = false } = {}) {
     LOG_LEVEL: 'warn',
     PDF_NO_SANDBOX: 'true',
     ...(chromiumPath ? { CHROMIUM_PATH: chromiumPath } : {}),
+    ...extraEnv,
   };
   const proc = spawn(process.execPath, [path.join(root, 'dist/server/index.js')], { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] });
   let log = '';
@@ -1497,6 +1516,341 @@ async function phaseVisual(browser, srv) {
   }
 }
 
+// ═════════════════════════ المرحلة 5: المساعد الذكي ═════════════════════════
+// خادم حقيقي بمزوّد Claude مضبوط على خادم وهمي محلي (لا شبكة ولا مفتاح حقيقي). يُثبت أن المسار كله يعمل في المتصفح،
+// وأن ما يغادر الخادم نص المعلم وحده، وأن الواجهة لا تُدرج شيئًا إلا بقرار المعلم، وأن الأعطال والحصص تُعالَج بلطف.
+async function phaseAi(browser) {
+  const fake = await startFakeAnthropic();
+  const KEY = 'sk-ant-e2e-dummy-key-0000';
+  const srv = await startServer('ai', {
+    seed: true,
+    env: { AI_PROVIDER: 'anthropic', ANTHROPIC_API_KEY: KEY, AI_BASE_URL: fake.baseUrl, AI_DAILY_LIMIT: '10', AI_RATE_PER_MINUTE: '30', AI_TIMEOUT_MS: '10000' },
+  });
+  const teacher = await newSession(browser, srv.base, 'ai-teacher');
+  const adminS = await newSession(browser, srv.base, 'ai-admin');
+  const tp = teacher.page;
+  const ap = adminS.page;
+  const extraCtx = [];
+  // استجابات الرفض المقصودة في هذه المرحلة (تحقق، تأكيد أسماء، عطل مزوّد، حصة، تعطيل)
+  allowProblem(/http 403: (GET|PATCH) \/api\/ai\/settings/);
+  allowProblem(/http (400|422|424|429|501): POST \/api\/ai\/run/);
+  const runBtn = (dlg) => dlg.getByRole('button', { name: 'اقترح', exact: true });
+  const draftDialog = () => tp.getByRole('dialog', { name: 'مسودة تحضير بالمساعد الذكي' });
+  const openDraft = async () => {
+    await tp.getByRole('button', { name: 'اقترح مسودة التحضير' }).click();
+    const dlg = draftDialog();
+    await dlg.waitFor();
+    await dlg.getByLabel('عنوان الدرس').waitFor();
+    return dlg;
+  };
+  let lessonId = '';
+  let students = [];
+  const lessonNow = () => apiGet(tp, `/lessons/${lessonId}`);
+
+  try {
+    await step('الدخول: معلم (تجريبي) ومدير', async () => {
+      await login(tp, PW.demo);
+      await login(ap, PW.admin);
+      students = (await apiGet(tp, '/students?limit=500')).items;
+      expect(students.length > 10, 'طلاب الحساب التجريبي لم يُزرعوا');
+    }, { critical: true });
+
+    await step('قبل موافقة المدير: لا أثر للمساعد عند المعلم، ولا يستطيع تفعيله ولا تشغيله', async () => {
+      const sys = await apiGet(tp, '/system/info');
+      expect(sys.capabilities.ai === false, 'القدرة ظاهرة قبل الموافقة');
+      const st = await apiGet(tp, '/ai/status');
+      expect(st.ready === false && st.provider === null, `الحالة قبل الموافقة: ${JSON.stringify(st)}`);
+      await tp.goto('/lessons/new');
+      await tp.getByLabel('عنوان الدرس').waitFor();
+      expect((await tp.getByRole('heading', { name: 'المساعد الذكي' }).count()) === 0, 'بطاقة المساعد ظاهرة قبل الموافقة');
+      expect((await apiStatus(tp, '/ai/settings', 'GET')) === 403, 'المعلم يقرأ إعدادات المساعد');
+      expect((await apiStatus(tp, '/ai/settings', 'PATCH', { enabled: true })) === 403, 'المعلم يفعّل المساعد!');
+      expect((await apiStatus(tp, '/ai/run', 'POST', { task: 'lesson-draft', title: 'درس' })) === 501, 'التشغيل مسموح قبل الموافقة');
+      expect(fake.requests.length === 0, 'وصل طلب إلى المزوّد قبل الموافقة');
+    });
+
+    await step('المدير: تبويب «المساعد الذكي» يعرض المزوّد المضبوط ووجهة النص، وهو غير مفعّل بعد', async () => {
+      await ap.goto('/settings?tab=ai');
+      await ap.getByText('مزوّد مضبوط على الخادم', { exact: true }).waitFor();
+      await ap.getByText('غير مفعّل للمعلمين', { exact: true }).waitFor();
+      expect((await ap.getByText('لا مزوّد مضبوط على الخادم').count()) === 0, 'يعرض «لا مزوّد» رغم ضبطه');
+      await expectText(ap.locator('main'), /Claude \(Anthropic\)/, 'اسم المزوّد');
+      await expectText(ap.locator('main'), /claude-opus-5-5/, 'النموذج');
+      await expectText(ap.locator('main'), /127\.0\.0\.1:\d+/, 'وجهة النص');
+      await expectText(ap.locator('main'), /شبكة محلية/, 'نوع الوجهة');
+      expect(!(await ap.locator('main').innerText()).includes(KEY), 'المفتاح ظاهر في واجهة المدير!');
+      await expectNoAxe(ap, 'تبويب المساعد الذكي');
+    });
+
+    await step('المدير يوافق بتأكيد صريح يشرح ما يُرسَل وإلى أين', async () => {
+      await ap.getByRole('switch', { name: 'تفعيل المساعد للمعلمين' }).click();
+      const dlg = ap.getByRole('dialog', { name: 'تفعيل المساعد الذكي للمعلمين؟' });
+      await dlg.waitFor();
+      await expectText(dlg, /لا تُرسَل أسماء الطلاب/);
+      await expectText(dlg, /127\.0\.0\.1:\d+/);
+      await dlg.getByRole('button', { name: 'تفعيل', exact: true }).click();
+      await toast(ap, /فُعّل المساعد الذكي للمعلمين/).waitFor();
+      await ap.getByText('مفعّل للمعلمين', { exact: true }).waitFor();
+    }, { critical: true });
+
+    await step('المعلم: تظهر بطاقة المساعد بعد الموافقة', async () => {
+      await tp.reload();
+      await tp.getByRole('heading', { name: 'المساعد الذكي' }).waitFor();
+      await tp.getByRole('button', { name: 'اقترح مسودة التحضير' }).waitFor();
+      await tp.getByRole('button', { name: 'أفكار للتقويم' }).waitFor();
+    }, { critical: true });
+
+    await step('مسودة التحضير: إفصاح عن الوجهة ← اقتراح ← مراجعة ← إدراج المحدد فقط دون المساس بما كتبه المعلم ← يُحفظ تلقائيًا', async () => {
+      await tp.getByLabel('عنوان الدرس').fill('الانتشار والأسموزية');
+      await tp.getByLabel('هدف 1').fill('أن يفسّر الطالب حركة الجزيئات');
+      await tp.getByRole('button', { name: 'إنشاء التحضير' }).click();
+      await tp.waitForURL((u) => /\/lessons\/(?!new$)[^/]+$/.test(u.pathname)); // «new» يطابق النمط العام فلا يكفي
+      lessonId = new URL(tp.url()).pathname.split('/').pop();
+
+      const dlg = await openDraft();
+      await expectText(dlg, /ماذا يُرسَل إلى المساعد؟/);
+      await expectText(dlg, /Claude \(Anthropic\)/);
+      await expectText(dlg, /127\.0\.0\.1:\d+/);
+      expect((await dlg.getByLabel('عنوان الدرس').inputValue()) === 'الانتشار والأسموزية', 'العنوان لم يُعبَّأ من التحضير');
+      expect((await dlg.getByLabel('هدف 1').inputValue()) === 'أن يفسّر الطالب حركة الجزيئات', 'الهدف لم يُعبَّأ من التحضير');
+      expect(fake.requests.length === 0, 'أُرسل شيء قبل أن يضغط المعلم «اقترح»');
+      await expectNoAxe(tp, 'نافذة المسودة — الإدخال');
+
+      await dlg.getByLabel('ملاحظات للمساعد').fill('طلاب مستوى متوسط');
+      await runBtn(dlg).click();
+      await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      await expectText(dlg, /سؤال تمهيدي عن انتشار رائحة العطر/);
+      await expectNoAxe(tp, 'نافذة المسودة — المراجعة');
+      expect(JSON.stringify(await lessonNow()).includes('سؤال تمهيدي') === false, 'أُدرج المقترح قبل موافقة المعلم');
+
+      await dlg.getByRole('checkbox', { name: 'المفاهيم والمصطلحات' }).uncheck();
+      await dlg.getByRole('button', { name: 'إدراج المحدد في التحضير' }).click();
+      await toast(tp, /أُدرج المحدد في التحضير/).waitFor();
+      await dlg.waitFor({ state: 'detached' });
+
+      expect((await tp.getByLabel('هدف 1').inputValue()) === 'أن يفسّر الطالب حركة الجزيئات', 'هدف المعلم تغيّر!');
+      expect((await tp.getByLabel('هدف 2').inputValue()) === 'أن يعرّف الطالب الانتشار', 'هدف المساعد لم يُضف بعد هدف المعلم');
+      expect((await tp.getByLabel('وصف النشاط 1').inputValue()).includes('سؤال تمهيدي'), 'الأنشطة لم تُدرج');
+      await until(async () => {
+        const l = await lessonNow();
+        return l.objectives.length === 3 && l.activities.length === 4 && l.concepts.length === 0 && l.homework === 'حل تمارين الصفحة 40' && !!l.supportPlan && !!l.enrichmentPlan;
+      }, 'ما أُدرج لم يصل إلى الخادم بالحفظ التلقائي (أو أُدرج غير المحدد)');
+      const l = await lessonNow();
+      expect(l.objectives[0] === 'أن يفسّر الطالب حركة الجزيئات', 'ترتيب الأهداف تغيّر');
+      expect(l.activities.every((a) => ['intro', 'main', 'practice', 'closure'].includes(a.phase)), 'مرحلة نشاط غير معروفة');
+    }, { critical: true });
+
+    await step('ما غادر الخادم هو نص المعلم وحده: لا أسماء طلاب ولا المفتاح في الجسم، والمفتاح في الرأس فقط', async () => {
+      expect(fake.requests.length === 1, `عدد طلبات المزوّد ${fake.requests.length}`);
+      const r = fake.requests[0];
+      expect(r.headers['x-api-key'] === KEY, 'رأس المفتاح غير صحيح');
+      expect(r.body.model === 'claude-opus-5-5', `النموذج ${r.body.model}`);
+      expect(r.body.output_config?.effort === 'low' && r.body.output_config?.format?.type === 'json_schema', 'إعدادات الجهد/البنية');
+      expect(!('temperature' in r.body) && !('top_p' in r.body) && !('thinking' in r.body), 'معاملات ممنوعة على النموذج');
+      const user = r.body.messages[0].content;
+      expect(user.includes('الانتشار والأسموزية') && user.includes('أن يفسّر الطالب حركة الجزيئات') && user.includes('طلاب مستوى متوسط'), 'الرسالة لا تحوي ما كتبه المعلم');
+      expect(/الصف: [^\n·]+ · المادة: /.test(user), 'الصف والمادة غير مضمَّنين');
+      const blob = JSON.stringify(r.body);
+      const leaked = students.find((st) => blob.includes(st.fullName));
+      expect(!leaked, `اسم طالب في الطلب: ${leaked?.fullName}`);
+      expect(!blob.includes(KEY), 'المفتاح داخل جسم الطلب');
+      expect(!students.some((st) => st.guardianPhone && blob.includes(st.guardianPhone)), 'رقم ولي أمر في الطلب');
+    });
+
+    await step('أفكار التقويم: اختيار فكرتين من ثلاث ← العناوين إلى الأساليب والمعايير إلى الملاحظات', async () => {
+      await tp.getByRole('button', { name: 'أفكار للتقويم' }).click();
+      const dlg = tp.getByRole('dialog', { name: 'أفكار تقويم بالمساعد الذكي' });
+      await dlg.waitFor();
+      await runBtn(dlg).click();
+      await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      await expectText(dlg, /اختبار قصير/);
+      await expectNoAxe(tp, 'نافذة أفكار التقويم — المراجعة');
+      await dlg.getByRole('checkbox', { name: /عرض شفهي/ }).uncheck();
+      await dlg.getByRole('button', { name: 'إدراج المحدد في التقويم' }).click();
+      await toast(tp, /أُدرج المحدد في التحضير/).waitFor();
+      await until(async () => {
+        const l = await lessonNow();
+        return l.assessmentMethods.includes('اختبار قصير') && l.assessmentMethods.includes('تقرير تجربة') && !l.assessmentMethods.includes('عرض شفهي') && /معايير النجاح/.test(l.assessmentNotes ?? '') && l.assessmentMethods.includes('أسئلة شفهية');
+      }, 'أفكار التقويم لم تُحفظ كما اختيرت (أو استُبدلت أساليب المعلم)');
+    });
+
+    await step('الحماية: رقم طويل يُرفض قبل الإرسال؛ واسم طالب يتطلب تأكيدًا صريحًا ثم يُرسَل ويُسجَّل التأكيد', async () => {
+      await tp.goto(`/lessons/${lessonId}`);
+      const dlg = await openDraft();
+      const before = fake.requests.length;
+      await dlg.getByLabel('ملاحظات للمساعد').fill('اتصل بولي الأمر على 91234567');
+      await runBtn(dlg).click();
+      await dlg.getByText('تعذّر الحصول على اقتراح').waitFor();
+      await expectText(dlg, /رقمًا طويلًا|ما يشبه رقم هاتف/);
+      expect(fake.requests.length === before, 'وصل إلى المزوّد نص فيه رقم هاتف!');
+
+      const full = students[0].fullName;
+      await dlg.getByLabel('ملاحظات للمساعد').fill(`الطالب ${full} متفوق في الدرس`);
+      expect((await dlg.getByText('تعذّر الحصول على اقتراح').count()) === 0, 'الخطأ القديم بقي بعد تعديل المدخلات');
+      await runBtn(dlg).click();
+      await dlg.getByText('تنبيه: النص يطابق اسمًا من أسماء طلابك').waitFor();
+      const send = dlg.getByRole('button', { name: 'أرسل بعد التأكيد' });
+      expect(await send.isDisabled(), 'زر الإرسال مفعّل قبل التأكيد');
+      expect(fake.requests.length === before, 'وصل إلى المزوّد نص فيه اسم طالب قبل التأكيد!');
+      await dlg.getByRole('checkbox', { name: /أؤكد أن الاسم الوارد/ }).check();
+      await send.click();
+      await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      expect(fake.requests.length === before + 1, 'لم يصل الطلب بعد التأكيد');
+      await dlg.getByRole('button', { name: 'إغلاق دون إدراج' }).click();
+      await dlg.waitFor({ state: 'detached' });
+      expect((await lessonNow()).objectives.length === 3, 'أُدرج شيء رغم «إغلاق دون إدراج»');
+    });
+
+    await step('عطل المزوّد: رسالة عربية لطيفة، المدخلات باقية، وإعادة المحاولة تنجح', async () => {
+      await tp.goto(`/lessons/${lessonId}`);
+      fake.setMode('error');
+      try {
+        const dlg = await openDraft();
+        await dlg.getByLabel('ملاحظات للمساعد').fill('ملاحظة لتجربة العطل');
+        await runBtn(dlg).click();
+        await dlg.getByText('تعذّر الحصول على اقتراح').waitFor({ timeout: 20_000 });
+        await expectText(dlg, /تعذّر الحصول على رد من المساعد الآن/);
+        expect(!/internal failure|api_error|500/.test(await dlg.innerText()), 'تفاصيل المزوّد الخام ظاهرة للمعلم');
+        expect((await dlg.getByLabel('ملاحظات للمساعد').inputValue()) === 'ملاحظة لتجربة العطل', 'المدخلات ضاعت بعد الفشل');
+        fake.setMode('ok');
+        await dlg.getByRole('button', { name: 'حاول مجددًا' }).click();
+        await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+        await dlg.getByRole('button', { name: 'إغلاق دون إدراج' }).click();
+      } finally {
+        fake.setMode('ok');
+      }
+    });
+
+    await step('الخطة العلاجية: أفكار المساعد داخل نموذج الخطة ← إدراج ← تُحفظ الخطة بما اختير', async () => {
+      const st0 = students[3];
+      await tp.goto(`/students/${st0.id}`);
+      await tp.getByRole('tab', { name: 'الخطط' }).click();
+      await tp.getByRole('button', { name: 'خطة جديدة' }).click();
+      const plan = tp.getByRole('dialog', { name: 'خطة جديدة' });
+      await plan.getByLabel('عنوان الخطة').fill('علاج مهارة قراءة الرسوم البيانية');
+      await plan.getByRole('button', { name: 'اقترح أفكارًا بالمساعد الذكي' }).click();
+      const sup = tp.getByRole('dialog', { name: 'أفكار خطة علاجية بالمساعد الذكي' });
+      await sup.waitFor();
+      expect((await sup.getByLabel('وصف المهارة أو الصعوبة').inputValue()) === 'علاج مهارة قراءة الرسوم البيانية', 'وصف المهارة لم يُعبَّأ من عنوان الخطة');
+      expect(!(await sup.innerText()).includes(st0.fullName), 'اسم الطالب ظاهر في نافذة المساعد');
+      await runBtn(sup).click();
+      await sup.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      await expectNoAxe(tp, 'نافذة أفكار الخطة — المراجعة');
+      await sup.getByRole('button', { name: 'إدراج المحدد في الخطة' }).click();
+      await sup.waitFor({ state: 'detached' });
+      await plan.waitFor();
+      expect((await plan.getByLabel('الهدف').inputValue()).includes('70%'), 'الهدف لم يُدرج في نموذج الخطة');
+      await plan.getByText('تغذية راجعة فورية').first().waitFor();
+      await plan.getByRole('button', { name: 'إنشاء الخطة' }).click();
+      await toast(tp, /أُنشئت الخطة/).waitFor();
+      const plans = await apiGet(tp, '/support-plans?status=open');
+      const created = plans.find((pl) => pl.title === 'علاج مهارة قراءة الرسوم البيانية');
+      expect(!!created && created.strategies.includes('تغذية راجعة فورية') && created.goal.includes('70%') && (created.reason ?? '').includes('الرسم البياني'), 'الخطة لم تُحفظ بما أُدرج');
+      const blob = JSON.stringify(fake.requests.at(-1).body);
+      expect(!blob.includes(st0.fullName), 'اسم الطالب في طلب الخطة');
+    });
+
+    await step('الجوال: نافذة المساعد لا تتجاوز عرض الشاشة وأزرارها قابلة للوصول، بلقطات ومسح وصول', async () => {
+      fs.mkdirSync(shotsDir, { recursive: true });
+      const m = await newSession(browser, srv.base, 'ai-mobile', { viewport: MOBILE });
+      extraCtx.push(m.ctx);
+      await login(m.page, PW.demo);
+      await m.page.goto(`/lessons/${lessonId}`);
+      await m.page.getByRole('button', { name: 'اقترح مسودة التحضير' }).click();
+      const dlg = m.page.getByRole('dialog', { name: 'مسودة تحضير بالمساعد الذكي' });
+      await dlg.waitFor();
+      const overflow = () => m.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect((await overflow()) <= 1, 'تمرير أفقي في نافذة الإدخال على الجوال');
+      await m.page.screenshot({ path: path.join(shotsDir, 'ai-mobile-input.png') });
+      await expectNoAxe(m.page, 'المساعد — جوال — الإدخال');
+      await runBtn(dlg).click();
+      await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      expect((await overflow()) <= 1, 'تمرير أفقي في نافذة المراجعة على الجوال');
+      await m.page.screenshot({ path: path.join(shotsDir, 'ai-mobile-review.png') });
+      await expectNoAxe(m.page, 'المساعد — جوال — المراجعة');
+      const apply = dlg.getByRole('button', { name: 'إدراج المحدد في التحضير' });
+      await apply.scrollIntoViewIfNeeded();
+      const box = await apply.boundingBox();
+      expect(!!box && box.x >= 0 && box.x + box.width <= MOBILE.width + 1, 'زر الإدراج خارج عرض الشاشة');
+    });
+
+    await step('الوضع الداكن: مراجعة الاقتراح بلا مخالفات وصول (تباين الألوان)', async () => {
+      const d = await newSession(browser, srv.base, 'ai-dark', { colorScheme: 'dark' });
+      extraCtx.push(d.ctx);
+      await login(d.page, PW.demo);
+      await d.page.evaluate(async () => { await fetch('/api/settings', { method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-sijilli-client': 'web' }, body: JSON.stringify({ preferences: { theme: 'system' } }) }); });
+      await d.page.goto(`/lessons/${lessonId}`);
+      await d.page.getByRole('button', { name: 'اقترح مسودة التحضير' }).click();
+      const dlg = d.page.getByRole('dialog', { name: 'مسودة تحضير بالمساعد الذكي' });
+      await dlg.waitFor();
+      await expectNoAxe(d.page, 'المساعد — داكن — الإدخال');
+      await runBtn(dlg).click();
+      await dlg.getByText('مقترح من مساعد آلي — راجعه').waitFor();
+      await d.page.screenshot({ path: path.join(shotsDir, 'ai-dark-review.png') });
+      await expectNoAxe(d.page, 'المساعد — داكن — المراجعة');
+      expect((await d.page.evaluate(() => document.documentElement.dataset.theme)) === 'dark', 'الوضع الداكن لم يُطبَّق');
+    });
+
+    await step('الحصة اليومية: عند استنفادها يُرفض الطلب (429) وتُعطَّل الواجهة برسالة واضحة', async () => {
+      let st = await apiGet(tp, '/ai/status');
+      expect(st.limits.usedToday > 0 && st.limits.usedToday < st.limits.perDay, `الاستخدام الحالي ${st.limits.usedToday}/${st.limits.perDay}`);
+      while (st.limits.usedToday < st.limits.perDay) {
+        const code = await apiStatus(tp, '/ai/run', 'POST', { task: 'lesson-draft', title: 'درس للحصة' });
+        expect(code === 200, `طلب ضمن الحصة رُفض: ${code}`);
+        st = await apiGet(tp, '/ai/status');
+      }
+      expect((await apiStatus(tp, '/ai/run', 'POST', { task: 'lesson-draft', title: 'درس فوق الحصة' })) === 429, 'لم يُرفض الطلب بعد استنفاد الحصة');
+      await tp.goto(`/lessons/${lessonId}`);
+      const dlg = await openDraft();
+      await dlg.getByText('بلغتَ حصتك اليومية').waitFor();
+      expect(await runBtn(dlg).isDisabled(), 'زر «اقترح» مفعّل رغم استنفاد الحصة');
+      await dlg.getByRole('button', { name: 'إغلاق' }).last().click(); // الأخير: زر التذييل (الأول رمز ✕ بالاسم نفسه)
+    });
+
+    await step('المدير: الاستخدام وآخر خطأ وسجل العمليات — أرقام وأنواع فقط بلا أي نص مُرسَل', async () => {
+      const set = await apiGet(ap, '/ai/settings');
+      expect(set.enabled && set.configured && set.ready, `الحالة: ${JSON.stringify({ e: set.enabled, c: set.configured })}`);
+      expect(set.usage.last24h.runs >= 10 && set.usage.last24h.blocked >= 2 && set.usage.last24h.failed >= 1, `الاستخدام: ${JSON.stringify(set.usage.last24h)}`);
+      expect(set.lastError?.kind === 'server', `آخر خطأ: ${JSON.stringify(set.lastError)}`);
+      await ap.goto('/settings?tab=ai');
+      await ap.getByText('آخر خطأ من المزوّد منذ تشغيل الخادم').waitFor();
+      await expectText(ap.locator('main'), /خطأ من جهة المزوّد/);
+      await expectNoAxe(ap, 'تبويب المساعد الذكي مع الاستخدام');
+
+      const audit = (await apiGet(ap, '/audit?limit=500')).items;
+      const blob = JSON.stringify(audit);
+      for (const secret of ['الانتشار والأسموزية', 'طلاب مستوى متوسط', 'ملاحظة لتجربة العطل', 'علاج مهارة قراءة', KEY, students[0].fullName]) {
+        expect(!blob.includes(secret), `نص حسّاس في سجل العمليات: «${secret.slice(0, 20)}»`);
+      }
+      expect(audit.some((a) => a.action === 'ai_enabled'), 'تفعيل المساعد غير مسجّل');
+      expect(audit.some((a) => a.action === 'ai_run' && a.meta?.nameOverride === true), 'تأكيد المعلم لاسم الطالب غير مسجّل');
+      expect(audit.some((a) => a.action === 'ai_input_rejected' && a.meta?.reason === 'long_number'), 'رفض الرقم الطويل غير مسجّل');
+      expect(audit.some((a) => a.action === 'ai_input_rejected' && a.meta?.reason === 'student_name'), 'طلب تأكيد الاسم غير مسجّل');
+      expect(audit.some((a) => a.action === 'ai_run_failed' && a.meta?.kind === 'server'), 'فشل المزوّد غير مسجّل');
+      await ap.goto('/settings?tab=audit');
+      await ap.getByText('طلب إلى المساعد الذكي').first().waitFor();
+      await ap.getByText('نص رُفض قبل إرساله للمساعد').first().waitFor();
+    });
+
+    await step('إيقاف المدير للمساعد فوري: تختفي أدواته عند المعلم ويُرفض التشغيل', async () => {
+      await ap.goto('/settings?tab=ai');
+      await ap.getByRole('switch', { name: 'تفعيل المساعد للمعلمين' }).click();
+      await toast(ap, /أُوقف المساعد الذكي/).waitFor();
+      await ap.getByText('غير مفعّل للمعلمين', { exact: true }).waitFor();
+      expect((await apiStatus(tp, '/ai/run', 'POST', { task: 'lesson-draft', title: 'بعد الإيقاف' })) === 501, 'التشغيل مسموح بعد الإيقاف');
+      await tp.goto(`/lessons/${lessonId}`);
+      await tp.getByLabel('عنوان الدرس').waitFor();
+      expect((await tp.getByRole('heading', { name: 'المساعد الذكي' }).count()) === 0, 'بطاقة المساعد ظاهرة بعد الإيقاف');
+      expect((await apiGet(tp, '/system/info')).capabilities.ai === false, 'القدرة لا تزال ظاهرة');
+    });
+  } finally {
+    await teacher.ctx.close();
+    await adminS.ctx.close();
+    for (const c of extraCtx) await c.close().catch(() => {});
+    await fake.close();
+  }
+}
+
 // ═════════════════════════ التشغيل ═════════════════════════
 async function main() {
   for (const f of ['dist/server/index.js', 'dist/server/cli.js', 'dist/web/index.html']) {
@@ -1522,6 +1876,7 @@ async function main() {
       await runPhase('visual', () => phaseVisual(browser, shared));
       await runPhase('admin', () => phaseAdmin(browser, shared)); // أخيرًا: الاستعادة تغيّر القاعدة
     }
+    await runPhase('ai', () => phaseAi(browser)); // خادم مستقل بمزوّد وهمي، لا يمسّ الخادم المشترك
   } finally {
     await browser.close().catch(() => {});
     for (const s of servers) await s.stop();

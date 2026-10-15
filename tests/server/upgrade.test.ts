@@ -6,6 +6,7 @@ import { afterAll, describe, expect, it } from 'vitest';
 import { buildApp } from '../../src/server/app';
 import { loadConfig } from '../../src/server/config';
 import { AppDatabase } from '../../src/server/db/client';
+import { getAiEnabled } from '../../src/server/modules/ai/service';
 import { TestClient, seedFor } from './helpers';
 
 const dirs: string[] = [];
@@ -38,6 +39,7 @@ describe('ترقية قاعدة بيانات إلى أحدث هجرة', () => {
     await app1.close();
     expect(old.sqlite.prepare("select name from sqlite_master where name='support_plans'").get()).toBeUndefined();
     expect(old.sqlite.prepare("select name from sqlite_master where name='lab_activities'").get()).toBeUndefined();
+    expect(old.sqlite.prepare("select name from sqlite_master where name='app_settings'").get()).toBeUndefined();
     old.close();
 
     // 2) بدء التطبيق بالمخطط الأحدث: نسخة أمان ثم ترقية
@@ -55,6 +57,10 @@ describe('ترقية قاعدة بيانات إلى أحدث هجرة', () => {
     // القاعدة الحيّة: بياناتها سليمة والجداول الجديدة موجودة، والدخول يعمل بنفس الحساب
     expect(app2.db.sqlite.prepare("select name from sqlite_master where name='support_plans'").get()).toBeTruthy();
     expect(app2.db.sqlite.prepare("select name from sqlite_master where name='lab_activities'").get()).toBeTruthy();
+    expect(app2.db.sqlite.prepare("select name from sqlite_master where name='app_settings'").get()).toBeTruthy();
+    // الترقية لا تُفعّل المساعد الذكي: لا موافقة مسجّلة ولا صفوف في app_settings
+    expect((app2.db.sqlite.prepare('select count(*) c from app_settings').get() as { c: number }).c).toBe(0);
+    expect(getAiEnabled(app2.db.orm)).toBe(false);
     expect((app2.db.sqlite.prepare('select count(*) c from students').get() as { c: number }).c).toBe(3);
     expect(app2.db.sqlite.pragma('integrity_check', { simple: true })).toBe('ok');
     expect(app2.db.sqlite.pragma('foreign_key_check')).toEqual([]);

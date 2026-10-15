@@ -406,6 +406,17 @@ export const LAB_SAFETY_PRESETS = [
 
 export const LAB_LOCATION_PRESETS = ['مختبر العلوم', 'مختبر الحاسوب', 'غرفة مصادر التعلم', 'الساحة المدرسية', 'الفصل'] as const;
 
+// ───────────── المساعد الذكي ─────────────
+export const AI_TASK = defineEnum([
+  { value: 'lesson-draft', label: 'مسودة تحضير' },
+  { value: 'assessment-ideas', label: 'أفكار تقويم' },
+  { value: 'support-plan-ideas', label: 'أفكار علاج أو إثراء' },
+] as const);
+export type AiTaskName = (typeof AI_TASK.values)[number];
+
+/** حدود ما يُرسَل إلى المساعد (حروف). المجموع ≤ totalChars يُفرض في الخادم بعد التنقية */
+export const AI_LIMITS = { totalChars: 4000, title: 200, objective: 400, objectives: 8, notes: 800, focus: 1200 } as const;
+
 // ───────────── التقارير ─────────────
 export const REPORT_TYPE = defineEnum([
   { value: 'class-gradebook', label: 'كشف درجات الشعبة' },

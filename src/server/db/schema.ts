@@ -550,6 +550,16 @@ export const labActivities = sqliteTable(
   ],
 );
 
+// ═════════════ إعدادات النظام (للنظام كله لا لمعلم بعينه) ═════════════
+/** مفتاح/قيمة: مثل موافقة المدير على المساعد الذكي. بلا owner_id عمدًا — يديرها المدير فقط عبر واجهات مخصصة */
+export const appSettings = sqliteTable('app_settings', {
+  key: text('key').primaryKey(),
+  value: text('value', { mode: 'json' }).$type<unknown>().notNull(),
+  /** من غيّر القيمة (بلا مفتاح أجنبي: يبقى الأثر بعد حذف الحساب) */
+  updatedBy: text('updated_by'),
+  updatedAt: text('updated_at').notNull().$defaultFn(now).$onUpdateFn(now),
+});
+
 // ═════════════ سجل التدقيق ═════════════
 /** لا مفتاح أجنبي للمستخدم عمدًا: يبقى السجل بعد حذف الحساب */
 export const auditLog = sqliteTable(

@@ -1,6 +1,8 @@
 // عقود الاستجابة (DTO) بين الخادم والواجهة. ملف صرف بلا اعتماديات تشغيل ليُستورد من الجهتين.
 // الخادم يعلّق دوال الخدمة بهذه الأنواع فيتحقق المترجم من مطابقتها، والواجهة تستهلكها كما هي.
 import type {
+  ActivityPhase,
+  AiTaskName,
   AssessmentMode,
   AssessmentType,
   Gender,
@@ -436,6 +438,65 @@ export type LabActivityDto = LabActivitySummaryDto & {
 export type LabStats = { planned: number; done: number; cancelled: number; overdue: number; participants: number };
 
 export type LabActivitiesPage = { items: LabActivitySummaryDto[]; total: number; stats: LabStats };
+
+// ───────────── المساعد الذكي ─────────────
+export type AiProviderInfo = {
+  id: string;
+  label: string;
+  model: string;
+  /** مضيف الخدمة التي يُرسَل إليها النص (للشفافية: أين يذهب ما يُكتب؟) */
+  host: string;
+  /** يعمل على الجهاز/الشبكة المحلية نفسها (لا يخرج النص إلى الإنترنت) */
+  local: boolean;
+};
+
+export type AiStatusDto = {
+  /** مضبوط على الخادم ووافق المدير: تظهر الميزة للمعلمين */
+  ready: boolean;
+  provider: AiProviderInfo | null;
+  limits: { perDay: number; usedToday: number };
+};
+
+export type AiLessonDraft = {
+  outcomes: string[];
+  objectives: string[];
+  concepts: string[];
+  strategies: string[];
+  resources: string[];
+  activities: { phase: ActivityPhase; description: string; minutes: number | null }[];
+  assessmentMethods: string[];
+  homework: string | null;
+  supportIdea: string | null;
+  enrichmentIdea: string | null;
+};
+
+export type AiAssessmentIdea = { title: string; type: AssessmentType; description: string; criteria: string[] };
+export type AiAssessmentIdeas = { ideas: AiAssessmentIdea[] };
+export type AiSupportIdeas = { reason: string | null; goal: string | null; strategies: string[] };
+
+export type AiRunResponse = {
+  source: AiProviderInfo;
+  usage: { usedToday: number; perDay: number };
+} & (
+  | { task: Extract<AiTaskName, 'lesson-draft'>; result: AiLessonDraft }
+  | { task: Extract<AiTaskName, 'assessment-ideas'>; result: AiAssessmentIdeas }
+  | { task: Extract<AiTaskName, 'support-plan-ideas'>; result: AiSupportIdeas }
+);
+
+export type AiUsageDto = { runs: number; blocked: number; failed: number; inputTokens: number; outputTokens: number };
+
+export type AiSettingsDto = {
+  /** مزوّد مضبوط في بيئة الخادم (AI_PROVIDER + المفتاح) */
+  configured: boolean;
+  /** موافقة المدير على تفعيل الميزة للمعلمين */
+  enabled: boolean;
+  ready: boolean;
+  provider: AiProviderInfo | null;
+  limits: { perDay: number; perMinute: number; maxConcurrency: number };
+  usage: { last24h: AiUsageDto; last7d: AiUsageDto };
+  /** آخر خطأ من المزوّد منذ تشغيل الخادم (بلا نصوص أو مفاتيح) */
+  lastError: { at: string; kind: string; status: number | null } | null;
+};
 
 // ───────────── لوحة التحكم ─────────────
 export type DashboardTodaySlot = {

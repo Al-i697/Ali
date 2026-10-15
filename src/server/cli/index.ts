@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parseArgs } from 'node:util';
 import { eq } from 'drizzle-orm';
+import { runAiCheck } from '../ai/check';
 import { loadConfig } from '../config';
 import { AppDatabase, schema } from '../db/client';
 import { hashPassword } from '../lib/password';
@@ -29,6 +30,7 @@ const HELP = `
   migrate                                                            تطبيق هجرات قاعدة البيانات
   seed-demo [--email <بريد>] [--password <كلمة>]                     إنشاء حساب تجريبي ببيانات وهمية (منفصل عن الحقيقي)
   purge-demo                                                         حذف كل الحسابات التجريبية وبياناتها
+  ai-check                                                           فحص اتصال المساعد الذكي بالمزوّد (طلب صغير بلا بيانات حقيقية؛ يستهلك رصيدًا ضئيلًا)
 `;
 
 function generatePassword(): string {
@@ -56,6 +58,24 @@ async function main() {
   }
 
   const config = loadConfig();
+
+  // لا يحتاج قاعدة البيانات: يختبر الإعداد والاتصال بالمزوّد فقط
+  if (command === 'ai-check') {
+    console.log(`المزوّد: ${config.ai.provider}${config.ai.provider === 'anthropic' ? ` · النموذج: ${config.ai.model} · الجهد: ${config.ai.effort}` : ''}`);
+    const r = await runAiCheck(config.ai);
+    if (r.ok) {
+      console.log(`✔ المساعد يعمل — ${r.provider} @ ${r.host}`);
+      console.log(`  النموذج المضبوط: ${r.model} · أجاب: ${r.answeredBy}`);
+      console.log(`  الزمن: ${(r.durationMs / 1000).toFixed(1)} ث · رموز الدخل/الخرج: ${r.inputTokens}/${r.outputTokens}`);
+      console.log('  تذكير: لا يظهر للمعلمين إلا بعد موافقة المدير من الإعدادات ← المساعد الذكي.');
+    } else {
+      console.error(`✘ فشل الفحص (${r.kind}${r.status ? ` · HTTP ${r.status}` : ''}${r.requestId ? ` · request-id ${r.requestId}` : ''})`);
+      console.error(`  ${r.message}`);
+      process.exitCode = 1;
+    }
+    return;
+  }
+
   const db = AppDatabase.open(config.databaseFile);
   const backupLog = { info: (o: object, m?: string) => console.log(m ?? '', o), error: (o: object, m?: string) => console.error(m ?? '', o) };
 

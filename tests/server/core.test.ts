@@ -168,34 +168,8 @@ describe('الطلاب: التسجيل والاستيراد والترتيب', (
   });
 });
 
-describe('نقطة توسعة المساعد الذكي', () => {
-  it('معطّلة افتراضيًا: لا مزوّد ← available=false والتشغيل يرفض بـ 501', async () => {
-    const { AiService } = await import('../../src/server/ai/provider');
-    const svc = new AiService();
-    expect(svc.available).toBe(false);
-    await expect(svc.run({ task: 'lesson-draft', input: 'نص' })).rejects.toMatchObject({ status: 501, code: 'AI_UNAVAILABLE' });
-  });
-
-  it('عند تسجيل مزوّد جاهز تعمل، وتُقصّ المدخلات وتُرفض الفارغة والطويلة', async () => {
-    const { AiService } = await import('../../src/server/ai/provider');
-    const seen: string[] = [];
-    const svc = new AiService();
-    svc.register({
-      id: 'fake',
-      isAvailable: () => true,
-      complete: async (r) => {
-        seen.push(r.input);
-        return { text: `اقتراح: ${r.input}`, provider: 'fake' };
-      },
-    });
-    expect(svc.available).toBe(true);
-    await expect(svc.run({ task: 'assessment-ideas', input: '  أهداف الدرس  ' })).resolves.toEqual({ text: 'اقتراح: أهداف الدرس', provider: 'fake' });
-    expect(seen).toEqual(['أهداف الدرس']);
-    await expect(svc.run({ task: 'assessment-ideas', input: '   ' })).rejects.toMatchObject({ status: 400 });
-    await expect(svc.run({ task: 'assessment-ideas', input: 'ا'.repeat(4001) })).rejects.toMatchObject({ status: 400 });
-  });
-
-  it('system/info يعلن أن المساعد غير متاح', async () => {
+describe('المساعد الذكي: الإعلان الافتراضي', () => {
+  it('system/info يعلن أن المساعد غير متاح ما لم يُضبط مزوّد ويوافق المدير (التفاصيل في ai.test.ts)', async () => {
     const info = (await env.app.inject({ method: 'GET', url: '/api/system/info' })).json();
     expect(info.capabilities.ai).toBe(false);
   });

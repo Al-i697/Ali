@@ -42,6 +42,9 @@ export const qk = {
   calendar: (from: string, to: string) => ['calendar', from, to] as const,
   dashboard: ['dashboard'] as const,
   users: ['users'] as const,
+  // المساعد الذكي: الحالة للمعلم (جاهزية + الحصة اليومية) والإعدادات للمدير
+  aiStatus: ['ai', 'status'] as const,
+  aiSettings: ['ai', 'settings'] as const,
   backups: ['backups'] as const,
   sessions: ['sessions'] as const,
 };

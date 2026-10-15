@@ -11,6 +11,19 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 
 export type ScryptParams = { N: number; r: number; p: number };
 
+/** المساعد الذكي: معطّل ما لم يُضبط AI_PROVIDER ومفتاحه، ويبقى بعدها بحاجة إلى موافقة المدير من الإعدادات */
+export type AiConfig = {
+  provider: 'none' | 'anthropic';
+  apiKey: string | null;
+  baseUrl: string | null;
+  model: string;
+  effort: 'low' | 'medium' | 'high';
+  timeoutMs: number;
+  dailyLimit: number;
+  perMinute: number;
+  maxConcurrency: number;
+};
+
 export type AppConfig = {
   env: 'development' | 'production' | 'test';
   host: string;
@@ -34,6 +47,7 @@ export type AppConfig = {
   scrypt: ScryptParams;
   sessionHours: number;
   rememberDays: number;
+  ai: AiConfig;
   version: string;
 };
 
@@ -60,6 +74,16 @@ const envSchema = z.object({
   TZ_NAME: z.string().default('Asia/Muscat'),
   WEB_ROOT: z.string().optional(),
   SCRYPT_LOG_N: z.coerce.number().int().min(10).max(20).optional(),
+  // ── المساعد الذكي (اختياري، معطّل افتراضيًا) ──
+  AI_PROVIDER: z.enum(['none', 'anthropic']).default('none'),
+  ANTHROPIC_API_KEY: z.string().optional(),
+  AI_BASE_URL: z.string().url().optional().or(z.literal('')),
+  AI_MODEL: z.string().trim().min(1).default('claude-opus-5-5'),
+  AI_EFFORT: z.enum(['low', 'medium', 'high']).default('low'),
+  AI_TIMEOUT_MS: z.coerce.number().int().min(5_000).max(300_000).default(90_000),
+  AI_DAILY_LIMIT: z.coerce.number().int().min(1).max(10_000).default(30),
+  AI_RATE_PER_MINUTE: z.coerce.number().int().min(1).max(120).default(6),
+  AI_MAX_CONCURRENCY: z.coerce.number().int().min(1).max(20).default(3),
 });
 
 function firstExisting(candidates: (string | undefined)[], what: string): string {
@@ -77,6 +101,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     throw new Error(`إعدادات البيئة غير صالحة:\n${lines.join('\n')}`);
   }
   const e = parsed.data;
+  if (e.AI_PROVIDER === 'anthropic' && !e.ANTHROPIC_API_KEY?.trim()) {
+    throw new Error('إعدادات البيئة غير صالحة:\n  • AI_PROVIDER=anthropic يتطلب ضبط ANTHROPIC_API_KEY (أو اجعل AI_PROVIDER=none)');
+  }
   const dataDir = path.resolve(e.DATA_DIR);
   const appUrl = e.APP_URL ? e.APP_URL.replace(/\/+$/, '') : null;
   const cookieSecure =
@@ -112,6 +139,17 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     scrypt: { N: 2 ** logN, r: 8, p: 1 },
     sessionHours: 12,
     rememberDays: 30,
+    ai: {
+      provider: e.AI_PROVIDER,
+      apiKey: e.ANTHROPIC_API_KEY?.trim() || null,
+      baseUrl: e.AI_BASE_URL ? e.AI_BASE_URL.replace(/\/+$/, '') : null,
+      model: e.AI_MODEL,
+      effort: e.AI_EFFORT,
+      timeoutMs: e.AI_TIMEOUT_MS,
+      dailyLimit: e.AI_DAILY_LIMIT,
+      perMinute: e.AI_RATE_PER_MINUTE,
+      maxConcurrency: e.AI_MAX_CONCURRENCY,
+    },
     version: VERSION,
   };
 }

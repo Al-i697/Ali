@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Sparkles } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,6 +9,9 @@ import { addDays, todayISO } from '@shared/dates';
 import type { RosterEntryDto, SupportPlanDetailDto } from '@shared/dto';
 import { dateSchema, idSchema, requiredText, stringList } from '@shared/schemas/common';
 import { useAcademic } from '@/context/academic';
+import { useAuth } from '@/context/auth';
+import { applySupportIdeas } from '@/features/ai/merge';
+import { SupportAssistDialog, type SupportSeed } from '@/features/ai/support-assist-dialog';
 import { api } from '@/lib/api';
 import { applyApiError } from '@/lib/forms';
 import { useAppMutation } from '@/lib/mutation';
@@ -48,8 +52,11 @@ export function PlanDialog({
 }) {
   const editing = !!plan;
   const { year } = useAcademic();
+  const { system } = useAuth();
+  const aiOn = system?.capabilities.ai ?? false;
   const assignments = useAssignments(year?.id);
   const [error, setError] = useState<string | null>(null);
+  const [assistSeed, setAssistSeed] = useState<SupportSeed | null>(null);
   const empty = (): FormValues => ({
     assignmentId: prefill?.assignmentId ?? '',
     studentId: prefill?.studentId ?? '',
@@ -104,6 +111,18 @@ export function PlanDialog({
   const submit = form.handleSubmit((v) => save.mutate(v));
   const e = form.formState.errors;
 
+  // نلتقط قيم النموذج لحظة النقر (لا عند كل رسم): تُعبَّأ منها نافذة المساعد ويُحسب ما يُحدَّد افتراضيًا
+  const openAssist = () => {
+    const v = form.getValues();
+    setAssistSeed({
+      kind: v.kind,
+      assignmentId: v.assignmentId,
+      context: asg ? { gradeLevel: asg.gradeLevel, subjectName: asg.subjectName } : null,
+      title: v.title,
+      current: { reason: v.reason ?? '', goal: v.goal ?? '', strategies: v.strategies ?? [] },
+    });
+  };
+
   return (
     <Modal
       open={open}
@@ -127,6 +146,13 @@ export function PlanDialog({
             <Segmented<SupportKind> value={field.value} onChange={field.onChange} label="نوع الخطة" options={SUPPORT_KIND.items.map((k) => ({ value: k.value, label: k.label }))} />
           </div>
         )} />
+
+        {aiOn ? (
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-dashed border-line-strong bg-surface-2 px-3 py-2.5">
+            <Button variant="soft" size="sm" icon={<Sparkles className="size-4" />} onClick={openAssist}>اقترح أفكارًا بالمساعد الذكي</Button>
+            <span className="text-[13px] text-muted">أسباب محتملة وهدف وإجراءات بصياغة عامة، تراجعها قبل الإدراج.</span>
+          </div>
+        ) : null}
 
         {!editing ? (
           <div className="grid gap-4 sm:grid-cols-2">
@@ -171,6 +197,23 @@ export function PlanDialog({
           <Field label="موعد المراجعة" error={e.reviewDate?.message} hint="يظهر في التقويم الدراسي ولوحة التحكم">{(p) => <Input {...p} type="date" {...form.register('reviewDate')} />}</Field>
         </div>
       </form>
+
+      {/* خارج النموذج عمدًا: أحداث React تصعد عبر البوابات فلا نريدها أن تبلغ onSubmit */}
+      {aiOn && assistSeed ? (
+        <SupportAssistDialog
+          open
+          seed={assistSeed}
+          onClose={() => setAssistSeed(null)}
+          onApply={(ideas, picks) => {
+            const v = form.getValues();
+            const next = applySupportIdeas({ reason: v.reason ?? '', goal: v.goal ?? '', strategies: v.strategies ?? [] }, ideas, picks);
+            const opts = { shouldDirty: true, shouldValidate: true } as const;
+            form.setValue('reason', next.reason, opts);
+            form.setValue('goal', next.goal, opts);
+            form.setValue('strategies', next.strategies, opts);
+          }}
+        />
+      ) : null}
     </Modal>
   );
 }

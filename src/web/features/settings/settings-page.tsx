@@ -1,10 +1,11 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { useSearchParams } from 'react-router';
-import { CalendarRange, Clock, DatabaseBackup, Gauge, Palette, ScrollText, ShieldCheck, UserRound, Users } from 'lucide-react';
+import { CalendarRange, Clock, DatabaseBackup, Gauge, Palette, ScrollText, ShieldCheck, Sparkles, UserRound, Users } from 'lucide-react';
 import { useAuth } from '@/context/auth';
 import { useSettings } from '@/lib/queries';
 import { PageHeader, PageLoader, QueryError, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { AcademicTab } from './academic-tab';
+import { AiTab } from './ai-tab';
 import { AuditTab } from './audit-tab';
 import { BackupsTab } from './backups-tab';
 import { AppearanceTab, ProfileTab } from './profile-appearance-tabs';
@@ -23,6 +24,7 @@ const TABS: TabDef[] = [
   { id: 'security', label: 'الأمان', icon: <ShieldCheck className="size-4" /> },
   { id: 'users', label: 'المستخدمون', icon: <Users className="size-4" />, adminOnly: true },
   { id: 'backups', label: 'النسخ الاحتياطي', icon: <DatabaseBackup className="size-4" />, adminOnly: true },
+  { id: 'ai', label: 'المساعد الذكي', icon: <Sparkles className="size-4" />, adminOnly: true },
   { id: 'audit', label: 'سجل العمليات', icon: <ScrollText className="size-4" />, adminOnly: true },
 ];
 
@@ -72,6 +74,7 @@ export default function SettingsPage() {
               <>
                 <TabsContent value="users"><UsersTab /></TabsContent>
                 <TabsContent value="backups"><BackupsTab /></TabsContent>
+                <TabsContent value="ai"><AiTab /></TabsContent>
                 <TabsContent value="audit"><AuditTab /></TabsContent>
               </>
             ) : null}

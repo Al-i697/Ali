@@ -38,6 +38,11 @@ const ACTIONS: Record<string, { label: string; tone: Tone }> = {
   backup_deleted: { label: 'حذف نسخة احتياطية', tone: 'bad' },
   backup_restored: { label: 'استعادة نسخة احتياطية', tone: 'warn' },
   backup_restored_upload: { label: 'استعادة من ملف مرفوع', tone: 'warn' },
+  ai_enabled: { label: 'تفعيل المساعد الذكي للمعلمين', tone: 'good' },
+  ai_disabled: { label: 'إيقاف المساعد الذكي', tone: 'neutral' },
+  ai_run: { label: 'طلب إلى المساعد الذكي', tone: 'accent' },
+  ai_run_failed: { label: 'فشل طلب المساعد الذكي', tone: 'bad' },
+  ai_input_rejected: { label: 'نص رُفض قبل إرساله للمساعد', tone: 'warn' },
 };
 
 const PAGE = 50;
@@ -89,6 +94,9 @@ export function AuditTab() {
                           {r.action === 'login_failed' && r.meta && typeof r.meta.reason === 'string' ? (
                             <span className="ms-2 text-[12.5px] text-muted">({failReason(r.meta.reason)})</span>
                           ) : null}
+                          {r.action === 'ai_input_rejected' && r.meta && typeof r.meta.reason === 'string' ? (
+                            <span className="ms-2 text-[12.5px] text-muted">({rejectReason(r.meta.reason)})</span>
+                          ) : null}
                         </td>
                         <td className="px-4 py-2.5 text-ink-2" dir="ltr" style={{ textAlign: 'start' }}>{r.userEmail ?? '—'}</td>
                         <td className="px-4 py-2.5 text-muted tnum" dir="ltr" style={{ textAlign: 'start' }}>{r.ip ?? '—'}</td>
@@ -116,6 +124,21 @@ export function AuditTab() {
       </div>
     </Card>
   );
+}
+
+function rejectReason(reason: string): string {
+  switch (reason) {
+    case 'email':
+      return 'بريد إلكتروني';
+    case 'phone':
+      return 'رقم هاتف';
+    case 'long_number':
+      return 'رقم طويل';
+    case 'student_name':
+      return 'اسم يطابق طالبًا';
+    default:
+      return reason;
+  }
 }
 
 function failReason(reason: string): string {

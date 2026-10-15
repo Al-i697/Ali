@@ -11,7 +11,8 @@ import { ZodError } from 'zod';
 import { CLIENT_HEADER, CLIENT_HEADER_VALUE, LIMITS } from '../shared/constants';
 import { installArabicZod } from '../shared/schemas/common';
 import type { AppConfig } from './config';
-import { AiService } from './ai/provider';
+import { createAnthropicProvider } from './ai/anthropic';
+import { AiService, type AiProvider } from './ai/provider';
 import { AppDatabase } from './db/client';
 import { AppError, forbidden, unauthorized, validationError } from './lib/errors';
 import { readSession } from './lib/session';
@@ -26,6 +27,8 @@ export type BuildOptions = {
   db?: AppDatabase;
   /** يُستدعى لكل مسار يُسجَّل — لتوليد التوثيق وفحوص الأمان الشاملة (لا يُستعمل في التشغيل العادي) */
   onRoute?: (route: RouteOptions) => void;
+  /** مزوّد مساعد جاهز (للاختبارات). إن لم يُمرَّر يُنشأ من إعدادات AI_* إن كانت مضبوطة */
+  aiProvider?: AiProvider;
 };
 
 export const sessionCookieName = (config: Pick<AppConfig, 'cookieSecure'>) =>
@@ -70,7 +73,12 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   app.decorate('db', db);
   app.decorate('pdf', new PdfService(config));
   app.decorate('backups', backups);
-  app.decorate('ai', new AiService());
+  const ai = new AiService({ maxConcurrency: config.ai.maxConcurrency, perMinute: config.ai.perMinute });
+  if (opts.aiProvider) ai.register(opts.aiProvider);
+  else if (config.ai.provider === 'anthropic' && config.ai.apiKey) {
+    ai.register(createAnthropicProvider({ apiKey: config.ai.apiKey, baseUrl: config.ai.baseUrl, model: config.ai.model, effort: config.ai.effort, timeoutMs: config.ai.timeoutMs }));
+  }
+  app.decorate('ai', ai);
   app.decorateRequest('auth', null);
 
   app.addHook('onReady', async () => backups.start());

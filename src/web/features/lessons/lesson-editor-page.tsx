@@ -13,6 +13,8 @@ import { deleteWithForce } from '@/lib/destructive';
 import { cn } from '@/lib/cn';
 import { useBeforeUnload, useDebounced, useFmt } from '@/lib/hooks';
 import { qk, useAssignments } from '@/lib/queries';
+import { LessonAssistCard, LessonAssistDialog, type LessonAssistMode } from '@/features/ai/lesson-assist-dialog';
+import { applyAssessmentIdeas, applyLessonDraft } from '@/features/ai/merge';
 import { Badge, Button, Card, EmptyState, Field, IconButton, Input, ListEditor, Modal, PageLoader, ProgressBar, QueryError, Segmented, Select, SubjectChip, Switch, TagInput, Textarea, useConfirm } from '@/components/ui';
 import { LessonCopyDialog } from './copy-dialog';
 
@@ -191,7 +193,8 @@ export default function LessonEditorPage() {
   const confirm = useConfirm();
   const fmt = useFmt();
   const { year } = useAcademic();
-  const { settings } = useAuth();
+  const { settings, system } = useAuth();
+  const aiOn = system?.capabilities.ai ?? false;
   const assignmentsQ = useAssignments(year?.id);
   const assignments = useMemo(() => assignmentsQ.data ?? [], [assignmentsQ.data]);
   const lessonQ = useQuery({ queryKey: qk.lesson(lessonId ?? 'new'), queryFn: () => api.get<LessonDto>(`/lessons/${lessonId}`), enabled: !isNew });
@@ -202,6 +205,7 @@ export default function LessonEditorPage() {
   const [creating, setCreating] = useState(false);
   const [picker, setPicker] = useState(false);
   const [copying, setCopying] = useState<LessonSummaryDto | null>(null);
+  const [aiMode, setAiMode] = useState<LessonAssistMode | null>(null);
   const savedJson = useRef('');
   const initFor = useRef<string | null>(null);
   const draftRef = useRef<Draft | null>(null);
@@ -461,6 +465,8 @@ export default function LessonEditorPage() {
             {draft.isTemplate ? <p className="-mt-2 text-[12.5px] text-muted">القالب لا يظهر في جدول الحصص، ويُستخدم لبدء تحضير جديد بنقرة.</p> : null}
           </Card>
 
+          {aiOn ? <LessonAssistCard onOpen={setAiMode} /> : null}
+
           {!isNew && lessonQ.data ? (
             <Card className="space-y-2 p-4">
               <Button variant="secondary" className="w-full justify-start" icon={<Copy className="size-4" />} onClick={() => setCopying({ ...lessonQ.data, sectionLabel: asg?.sectionLabel ?? lessonQ.data.sectionLabel, subjectName: asg?.subjectName ?? lessonQ.data.subjectName } as LessonSummaryDto)}>نسخ إلى شعب / تواريخ أخرى</Button>
@@ -493,6 +499,20 @@ export default function LessonEditorPage() {
 
       <LessonPicker open={picker} onOpenChange={setPicker} onPick={(l) => void applyFrom(l)} />
       <LessonCopyDialog lesson={copying} onClose={() => setCopying(null)} defaultDate={draft.date} />
+      {aiOn ? (
+        <LessonAssistDialog
+          mode={aiMode}
+          seed={{
+            assignmentId: draft.assignmentId,
+            context: asg ? { gradeLevel: asg.gradeLevel, subjectName: asg.subjectName } : null,
+            durationMinutes: draft.durationMinutes,
+            current: draft,
+          }}
+          onClose={() => setAiMode(null)}
+          onApplyDraft={(ai, picks, t) => setDraft((d) => (d ? applyLessonDraft({ ...d, title: d.title.trim() ? d.title : t }, ai, picks) : d))}
+          onApplyIdeas={(ideas, t) => setDraft((d) => (d ? applyAssessmentIdeas({ ...d, title: d.title.trim() ? d.title : t }, ideas) : d))}
+        />
+      ) : null}
     </>
   );
 }

@@ -10,6 +10,7 @@ import { AppError, conflict, tooMany, unauthorized } from '../../lib/errors';
 import { dummyVerify, hashPassword, needsRehash, verifyPassword } from '../../lib/password';
 import { createSession, destroySession, destroyUserSessions } from '../../lib/session';
 import { parse } from '../../lib/validate';
+import { aiReady } from '../ai/service';
 import { countUsers, createUser, findUserByEmail, findUserById, toAuthUser } from '../users/service';
 
 const { users, sessions } = schema;
@@ -47,7 +48,7 @@ export const authModule: FastifyPluginAsync = async (app) => {
     version: cfg.version,
     needsSetup: countUsers(app.db.orm) === 0,
     timezone: cfg.timezone,
-    capabilities: { pdf: app.pdf.available, ai: app.ai.available },
+    capabilities: { pdf: app.pdf.available, ai: aiReady(app) },
   }));
 
   // ───────── الإعداد الأولي: أول مستخدم يصبح مدير النظام ─────────
