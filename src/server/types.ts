@@ -2,6 +2,7 @@ import type { AppConfig } from './config';
 import type { AppDatabase } from './db/client';
 import type { UserRole } from '../shared/constants';
 import type { PdfService } from './reports/pdf';
+import type { BackupService } from './modules/backup/service';
 
 export type AuthUser = {
   id: string;
@@ -19,6 +20,7 @@ declare module 'fastify' {
     config: AppConfig;
     db: AppDatabase;
     pdf: PdfService;
+    backups: BackupService;
   }
   interface FastifyRequest {
     auth: AuthContext | null;

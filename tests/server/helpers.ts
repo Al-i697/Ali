@@ -115,3 +115,33 @@ export async function seedFor(c: TestClient) {
   const assignmentId = section.assignments[0].id as string;
   return { c, year, term1: year.terms[0], term2: year.terms[1], subject, section, roster, assignmentId };
 }
+
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+
+/** بيئة بقاعدة بيانات على ملف حقيقي (للنسخ الاحتياطي والاستعادة) */
+export async function makeFileEnv(overrides: Record<string, string> = {}) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sijilli-test-'));
+  const config = loadConfig({
+    NODE_ENV: 'test',
+    DATA_DIR: dir,
+    BACKUP_INTERVAL_HOURS: '0',
+    ...overrides,
+  });
+  const db = AppDatabase.open(config.databaseFile);
+  db.migrate(config.migrationsDir);
+  const app = await buildApp({ config, db });
+  await app.ready();
+  return {
+    app,
+    db,
+    config,
+    dir,
+    cleanup: async () => {
+      await app.close();
+      db.close();
+      fs.rmSync(dir, { recursive: true, force: true });
+    },
+  };
+}

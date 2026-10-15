@@ -81,6 +81,23 @@ export class AppDatabase {
     }
   }
 
+  /**
+   * استبدال قاعدة البيانات الحالية بملف آخر (استعادة نسخة احتياطية).
+   * العملية متزامنة بالكامل: لا يتخلّلها طلب آخر، فلا يرى أحد حالة نصفية.
+   * نحذف ملفي WAL/SHM القديمين — بقاؤهما مع ملف جديد يُفسد القاعدة.
+   */
+  replaceWith(srcFile: string, migrationsDir: string): void {
+    const dest = this.file;
+    if (dest === ':memory:') throw new Error('لا يمكن الاستعادة إلى قاعدة بيانات في الذاكرة');
+    this.sqlite.close();
+    for (const ext of ['-wal', '-shm']) fs.rmSync(`${dest}${ext}`, { force: true });
+    fs.copyFileSync(srcFile, dest);
+    const reopened = AppDatabase.open(dest);
+    this.sqlite = reopened.sqlite;
+    this.orm = reopened.orm;
+    this.migrate(migrationsDir);
+  }
+
   integrityCheck(): string {
     return String(this.sqlite.pragma('integrity_check', { simple: true }));
   }

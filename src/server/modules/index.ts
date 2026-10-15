@@ -4,8 +4,10 @@ import type { FastifyPluginAsync } from 'fastify';
 import { academicModule } from './academic/routes';
 import { assessmentsModule } from './assessments/routes';
 import { authModule } from './auth/routes';
+import { backupModule } from './backup/routes';
 import { dashboardModule } from './dashboard/routes';
 import { lessonsModule } from './lessons/routes';
+import { reportsModule } from './reports/routes';
 import { settingsModule } from './settings/routes';
 import { studentsModule } from './students/routes';
 import { tasksModule } from './tasks/routes';
@@ -23,6 +25,8 @@ const modules: FastifyPluginAsync[] = [
   lessonsModule,
   tasksModule,
   dashboardModule,
+  reportsModule,
+  backupModule,
 ];
 
 export const registerModules: FastifyPluginAsync = async (app) => {

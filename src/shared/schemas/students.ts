@@ -16,8 +16,8 @@ export const studentFields = {
     .max(30)
     .regex(/^[\p{L}\p{N}\-_/.]*$/u, 'الرقم يجب أن يتكوّن من حروف وأرقام فقط')
     .nullable()
-    .optional()
-    .transform((v) => (v === '' ? null : v)),
+    .transform((v) => (v === '' ? null : v))
+    .optional(),
   gender: z.enum(GENDER.values).nullable().optional(),
   birthDate: dateSchema.nullable().optional(),
   guardianName: optText(120),
@@ -27,8 +27,8 @@ export const studentFields = {
     .max(30)
     .regex(/^[+\d\s\-()]*$/, 'رقم الهاتف غير صالح')
     .nullable()
-    .optional()
-    .transform((v) => (v === '' ? null : v)),
+    .transform((v) => (v === '' ? null : v))
+    .optional(),
   notes: optText(2000),
 };
 

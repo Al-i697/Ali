@@ -79,8 +79,8 @@ export const optText = (max: number = LIMITS.textMax) =>
     .trim()
     .max(max)
     .nullable()
-    .optional()
-    .transform((v) => (v === '' ? null : v));
+    .transform((v) => (v === '' ? null : v))
+    .optional();
 
 export const stringList = (maxItems: number = LIMITS.listMax, maxLen: number = LIMITS.listItemMax) =>
   z.array(z.string().trim().min(1).max(maxLen)).max(maxItems);

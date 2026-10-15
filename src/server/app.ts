@@ -14,6 +14,7 @@ import type { AppConfig } from './config';
 import { AppDatabase } from './db/client';
 import { AppError, forbidden, unauthorized, validationError } from './lib/errors';
 import { readSession } from './lib/session';
+import { BackupService } from './modules/backup/service';
 import { registerModules } from './modules';
 import { PdfService } from './reports/pdf';
 import './types';
@@ -42,9 +43,6 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   const { config } = opts;
   installArabicZod();
 
-  const db = opts.db ?? AppDatabase.open(config.databaseFile);
-  if (!opts.db) db.migrate(config.migrationsDir);
-
   const app = Fastify({
     logger: loggerOptions(config),
     trustProxy: config.trustProxy,
@@ -52,12 +50,26 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
     routerOptions: { maxParamLength: 200 },
   });
 
+  const db = opts.db ?? AppDatabase.open(config.databaseFile);
+  const backups = new BackupService(db, config, app.log);
+  if (!opts.db) {
+    // قبل تطبيق أي هجرة على بيانات موجودة نأخذ نسخة أمان — الترقية لا تُجرى على بيانات بلا شبكة أمان
+    if (db.pendingMigrations(config.migrationsDir) > 0 && db.hasUserData()) {
+      const b = await backups.create('pre-migration');
+      app.log.info({ backup: b.name }, 'pre-migration backup created');
+    }
+    db.migrate(config.migrationsDir);
+  }
+
   app.decorate('config', config);
   app.decorate('db', db);
   app.decorate('pdf', new PdfService(config));
+  app.decorate('backups', backups);
   app.decorateRequest('auth', null);
 
+  app.addHook('onReady', async () => backups.start());
   app.addHook('onClose', async () => {
+    backups.stop();
     await app.pdf.close();
     if (!opts.db) db.close();
   });
