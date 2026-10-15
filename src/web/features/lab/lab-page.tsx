@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { AlertTriangle, Ban, CalendarClock, CheckCheck, CircleCheck, Copy, Download, FileSpreadsheet, FileText, FlaskConical, MoreHorizontal, Pencil, Plus, Printer, RotateCcw, Search, Trash2, Users } from 'lucide-react';
@@ -166,15 +166,6 @@ export default function LabPage() {
     labStatus: overdueView ? 'planned' : status || undefined,
   };
   const filtered = !!(q || kind || status || assignmentId || overdueView);
-
-  if (!year && !assignments.isPending) {
-    return (
-      <>
-        <PageHeader title="المختبر والأنشطة" />
-        <EmptyState icon={<FlaskConical className="size-7" />} title="أنشئ عامًا دراسيًا أولًا" description="ترتبط الأنشطة بشعبك ومقرراتك." action={<Link to="/classes" className="text-brand underline">الذهاب إلى الشعب</Link>} />
-      </>
-    );
-  }
 
   return (
     <>

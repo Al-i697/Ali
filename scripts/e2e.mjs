@@ -1078,6 +1078,17 @@ async function phaseDemo(browser, srv) {
       await popup.waitForLoadState();
       expect((await popup.content()).includes(labTitle), 'ورقة الطباعة لا تحمل عنوان النشاط');
       await popup.close();
+      // بقية بنود قائمة الصف تعمل فعلًا (لا بنود ميتة): تنزيل ورقة النشاط PDF، ثم «تعديل» يفتح النموذج ببيانات النشاط
+      await row.getByRole('button', { name: /^خيارات/ }).click();
+      const [dsheet] = await Promise.all([page.waitForEvent('download'), page.getByRole('menuitem', { name: 'تنزيل ورقة النشاط PDF' }).click()]);
+      expect(fs.readFileSync(await dsheet.path()).subarray(0, 4).toString() === '%PDF', 'ورقة النشاط المنزَّلة من القائمة ليست PDF');
+      await row.getByRole('button', { name: /^خيارات/ }).click();
+      await page.getByRole('menuitem', { name: 'تعديل', exact: true }).click();
+      const editDlg = page.getByRole('dialog', { name: 'تعديل النشاط' });
+      await editDlg.getByLabel('عنوان النشاط').waitFor();
+      expect((await editDlg.getByLabel('عنوان النشاط').inputValue()) === labTitle, 'بند «تعديل» فتح نشاطًا آخر');
+      await editDlg.getByRole('button', { name: 'إلغاء' }).click();
+      await editDlg.waitFor({ state: 'hidden' });
       // قائمة «تقرير السجل» في الصفحة: PDF وExcel بنطاق «الكل» = كل الفترات (لا الفصل الحالي الافتراضي)
       await page.getByRole('radiogroup', { name: 'نطاق الفترة' }).getByRole('radio', { name: 'الكل' }).click();
       await page.getByRole('button', { name: 'تقرير السجل' }).click();
