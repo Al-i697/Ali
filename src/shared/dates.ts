@@ -167,3 +167,23 @@ export function formatTime(time: string | null | undefined, digits: DigitStyle =
     timeZone: 'UTC',
   }).format(d);
 }
+
+/** طابع زمني ISO كامل (UTC) → «13 سبتمبر 2026، 9:30 ص» بتوقيت التطبيق */
+export function formatDateTime(
+  timestamp: string | null | undefined,
+  digits: DigitStyle = 'latn',
+  tz: string = APP_TIMEZONE,
+): string {
+  if (!timestamp) return '—';
+  const d = new Date(timestamp);
+  if (Number.isNaN(d.getTime())) return '—';
+  return new Intl.DateTimeFormat(locale(digits), {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: tz,
+  }).format(d);
+}

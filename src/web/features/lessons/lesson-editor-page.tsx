@@ -8,7 +8,7 @@ import { timeToMinutes, todayISO } from '@shared/dates';
 import type { LessonDto, LessonSummaryDto, LessonsPage } from '@shared/dto';
 import { useAcademic } from '@/context/academic';
 import { useAuth } from '@/context/auth';
-import { api, apiUrl, errorMessage } from '@/lib/api';
+import { api, apiUrl, downloadFile, errorMessage } from '@/lib/api';
 import { deleteWithForce } from '@/lib/destructive';
 import { cn } from '@/lib/cn';
 import { useBeforeUnload, useDebounced, useFmt } from '@/lib/hooks';
@@ -456,7 +456,7 @@ export default function LessonEditorPage() {
             <Card className="space-y-2 p-4">
               <Button variant="secondary" className="w-full justify-start" icon={<Copy className="size-4" />} onClick={() => setCopying({ ...lessonQ.data, sectionLabel: asg?.sectionLabel ?? lessonQ.data.sectionLabel, subjectName: asg?.subjectName ?? lessonQ.data.subjectName } as LessonSummaryDto)}>نسخ إلى شعب / تواريخ أخرى</Button>
               <Button variant="secondary" className="w-full justify-start" icon={<Printer className="size-4" />} onClick={() => { void save().then(() => window.open(apiUrl('/reports/lesson-plan/html', { lessonId }), '_blank')); }}>طباعة ورقة التحضير</Button>
-              <a href={apiUrl('/reports/lesson-plan/pdf', { lessonId })} className="inline-flex h-10 w-full items-center gap-2 rounded-ctl border border-line-strong bg-surface px-4 text-[15px] font-medium text-ink shadow-card hover:bg-surface-3"><ListPlus className="size-4" /> تنزيل PDF</a>
+              <Button variant="secondary" className="w-full justify-start" icon={<ListPlus className="size-4" />} onClick={() => { void save().then(() => downloadFile('/reports/lesson-plan/pdf', { lessonId }, 'lesson-plan.pdf')).catch((e) => toast.error(errorMessage(e))); }}>تنزيل PDF</Button>
               <Button
                 variant="dangerSoft"
                 className="w-full justify-start"

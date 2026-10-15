@@ -85,3 +85,72 @@ export function errorMessage(err: unknown): string {
   if (err instanceof Error) return err.message;
   return 'حدث خطأ غير متوقع';
 }
+
+/** يجلب نصًا (مثل HTML التقرير) ويحوّل أخطاء الخادم إلى ApiError عربية */
+export async function getText(path: string, query?: Query): Promise<string> {
+  let res: Response;
+  try {
+    res = await fetch(`/api${withQuery(path, query)}`, { credentials: 'same-origin' });
+  } catch {
+    throw new ApiError(0, 'NETWORK', 'تعذّر الاتصال بالخادم. تحقق من الاتصال ثم حاول مجددًا.');
+  }
+  const text = await res.text();
+  if (!res.ok) {
+    let err: ApiErrorBody['error'] | undefined;
+    try {
+      err = (JSON.parse(text) as ApiErrorBody).error;
+    } catch {
+      err = undefined;
+    }
+    if (res.status === 401) onUnauthorized?.();
+    throw new ApiError(res.status, err?.code ?? 'HTTP_ERROR', err?.message ?? 'تعذّر تنفيذ الطلب');
+  }
+  return text;
+}
+
+function filenameFrom(header: string | null, fallback: string): string {
+  if (!header) return fallback;
+  const star = /filename\*=UTF-8''([^;]+)/i.exec(header);
+  if (star?.[1]) {
+    try {
+      return decodeURIComponent(star[1]);
+    } catch {
+      /* يتابع */
+    }
+  }
+  const plain = /filename="?([^";]+)"?/i.exec(header);
+  return plain?.[1] ?? fallback;
+}
+
+/**
+ * ينزّل ملفًا من الخادم (PDF/Excel/نسخة احتياطية) عبر fetch ثم رابط مؤقت،
+ * فتظهر رسالة الخطأ العربية (مثل «تصدير PDF غير متاح») بدل صفحة JSON خام.
+ */
+export async function downloadFile(path: string, query?: Query, fallbackName = 'download'): Promise<void> {
+  let res: Response;
+  try {
+    res = await fetch(`/api${withQuery(path, query)}`, { credentials: 'same-origin' });
+  } catch {
+    throw new ApiError(0, 'NETWORK', 'تعذّر الاتصال بالخادم. تحقق من الاتصال ثم حاول مجددًا.');
+  }
+  if (!res.ok) {
+    let err: ApiErrorBody['error'] | undefined;
+    try {
+      err = ((await res.json()) as ApiErrorBody).error;
+    } catch {
+      err = undefined;
+    }
+    if (res.status === 401) onUnauthorized?.();
+    throw new ApiError(res.status, err?.code ?? 'HTTP_ERROR', err?.message ?? 'تعذّر تنزيل الملف');
+  }
+  const blob = await res.blob();
+  const name = filenameFrom(res.headers.get('content-disposition'), fallbackName);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}

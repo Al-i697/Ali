@@ -1,5 +1,5 @@
-import { forwardRef, useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { forwardRef, useId, useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/cn';
 
 const control =
@@ -7,6 +7,27 @@ const control =
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(function Input({ className, ...rest }, ref) {
   return <input ref={ref} className={cn(control, 'h-10', className)} {...rest} />;
+});
+
+/** حقل كلمة مرور مع زر إظهار/إخفاء (الاتجاه LTR لأن كلمات المرور لاتينية غالبًا) */
+export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputHTMLAttributes<HTMLInputElement>, 'type'>>(function PasswordInput(
+  { className, ...rest },
+  ref,
+) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input ref={ref} {...rest} type={show ? 'text' : 'password'} className={cn('pe-3 ps-11', className)} dir="ltr" />
+      <button
+        type="button"
+        onClick={() => setShow((s) => !s)}
+        className="absolute start-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted hover:bg-surface-3"
+        aria-label={show ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+      >
+        {show ? <EyeOff className="size-[18px]" /> : <Eye className="size-[18px]" />}
+      </button>
+    </div>
+  );
 });
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement>>(function Textarea(

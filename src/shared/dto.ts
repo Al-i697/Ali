@@ -398,11 +398,15 @@ export type DashboardDto = {
 };
 
 // ───────────── التقارير والنسخ الاحتياطي ─────────────
+export type BackupReason = 'manual' | 'auto' | 'pre-migration' | 'pre-restore';
+
 export type BackupDto = {
   name: string;
   size: number;
   createdAt: string;
   encrypted: boolean;
+  /** يدوية، تلقائية، قبل ترقية القاعدة، أو احتياط قبل استعادة */
+  reason: BackupReason;
 };
 
 export type AuditEntryDto = {

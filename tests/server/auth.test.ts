@@ -203,3 +203,19 @@ describe('الإعدادات', () => {
     expect(r.status).toBe(400);
   });
 });
+
+describe('سجل التدقيق', () => {
+  it('يعرضه للمدير فقط ويحتوي أحداث الدخول والإعداد', async () => {
+    const admin = new TestClient(env.app);
+    await admin.login('admin@school.om', PASSWORD);
+    const r = await admin.get('/api/audit?limit=50');
+    expect(r.status).toBe(200);
+    const actions = r.body.items.map((i: any) => i.action);
+    expect(actions).toEqual(expect.arrayContaining(['setup', 'login', 'login_failed']));
+    expect(r.body.total).toBeGreaterThan(3);
+    expect(r.body.items[0].at >= r.body.items[1].at).toBe(true); // الأحدث أولًا
+    const t = new TestClient(env.app);
+    await t.login('teacher@school.om', 'My-Own-Pass-77');
+    expect((await t.get('/api/audit')).status).toBe(403);
+  });
+});

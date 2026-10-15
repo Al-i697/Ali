@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import Database from 'better-sqlite3';
-import type { BackupDto } from '../../../shared/dto';
+import type { BackupDto, BackupReason } from '../../../shared/dto';
 import type { AppConfig } from '../../config';
 import type { AppDatabase } from '../../db/client';
 import { decryptFile, encryptFile, isEncryptedBackup } from '../../lib/crypto-file';
 import { badRequest, notFound } from '../../lib/errors';
 
-export type BackupReason = 'manual' | 'auto' | 'pre-migration' | 'pre-restore';
+export type { BackupReason };
 
 const NAME_RE = /^sijilli-(\d{8}-\d{6}-\d{3})-(manual|auto|pre-migration|pre-restore)\.sqlite(\.enc)?$/;
 const KEEP_OTHER = 5;
@@ -37,7 +37,7 @@ export class BackupService {
     return this.cfg.backupDir;
   }
 
-  list(): (BackupDto & { reason: BackupReason })[] {
+  list(): BackupDto[] {
     const dir = this.dir();
     return fs
       .readdirSync(dir)
@@ -83,7 +83,7 @@ export class BackupService {
       }
       this.prune();
       const st = fs.statSync(finalPath);
-      return { name: finalName, size: st.size, createdAt: st.mtime.toISOString(), encrypted: this.encrypted };
+      return { name: finalName, size: st.size, createdAt: st.mtime.toISOString(), encrypted: this.encrypted, reason };
     } catch (err) {
       fs.rmSync(plain, { force: true });
       throw err;

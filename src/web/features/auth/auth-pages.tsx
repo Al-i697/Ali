@@ -3,13 +3,13 @@ import { Navigate, useLocation, useNavigate } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, FileSpreadsheet, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { FileSpreadsheet, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { changePasswordSchema, loginSchema, setupSchema } from '@shared/schemas/auth';
 import { APP_NAME } from '@shared/constants';
 import { useAuth } from '@/context/auth';
 import { applyApiError } from '@/lib/forms';
 import { api } from '@/lib/api';
-import { Alert, Button, Checkbox, Field, Input, PageLoader } from '@/components/ui';
+import { Alert, Button, Checkbox, Field, Input, PageLoader, PasswordInput } from '@/components/ui';
 import { Wordmark } from '@/components/layout/logo';
 
 function AuthLayout({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
@@ -46,23 +46,6 @@ function AuthLayout({ title, subtitle, children }: { title: string; subtitle: st
         </ul>
         <div className="relative text-[13px] text-white/60">{APP_NAME} — السجل الإلكتروني للمعلم</div>
       </aside>
-    </div>
-  );
-}
-
-function PasswordInput(props: React.ComponentProps<typeof Input>) {
-  const [show, setShow] = useState(false);
-  return (
-    <div className="relative">
-      <Input {...props} type={show ? 'text' : 'password'} className="pe-3 ps-11" dir="ltr" />
-      <button
-        type="button"
-        onClick={() => setShow((s) => !s)}
-        className="absolute start-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted hover:bg-surface-3"
-        aria-label={show ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
-      >
-        {show ? <EyeOff className="size-[18px]" /> : <Eye className="size-[18px]" />}
-      </button>
     </div>
   );
 }

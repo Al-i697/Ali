@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { formatDate, formatTime, type DigitStyle } from '@shared/dates';
+import { formatDate, formatDateTime, formatTime, type DigitStyle } from '@shared/dates';
 import { formatNumber, formatPercent } from '@shared/format';
 import { useSettings } from './queries';
 
@@ -23,6 +23,7 @@ export function useFmt() {
       pct: (n: number | null | undefined, max = 1) => formatPercent(n ?? null, digits, max),
       date: (iso: string | null | undefined, style: 'short' | 'medium' | 'long' | 'full' = 'medium') => formatDate(iso, digits, style),
       time: (t: string | null | undefined) => formatTime(t, digits),
+      dateTime: (ts: string | null | undefined) => formatDateTime(ts, digits),
     }),
     [digits],
   );

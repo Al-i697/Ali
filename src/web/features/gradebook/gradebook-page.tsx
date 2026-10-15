@@ -7,7 +7,7 @@ import { pickCurrentTerm } from '@shared/academic';
 import { todayISO } from '@shared/dates';
 import type { AssessmentDto, AssignmentDto, GradebookDto } from '@shared/dto';
 import { useAcademic } from '@/context/academic';
-import { api, apiUrl } from '@/lib/api';
+import { api, apiUrl, downloadFile, errorMessage } from '@/lib/api';
 import { deleteWithForce } from '@/lib/destructive';
 import { useFmt } from '@/lib/hooks';
 import { useAppMutation } from '@/lib/mutation';
@@ -135,8 +135,8 @@ export default function GradebookPage() {
         <Button variant="secondary" icon={<Target className="size-4" />} onClick={() => setSkillsOpen(true)}>المهارات</Button>
         <Menu align="end" trigger={<Button variant="secondary" icon={<FileBarChart className="size-4" />}>التقارير</Button>}>
           <MenuLabel>كشف الدرجات</MenuLabel>
-          <MenuItem icon={<Download className="size-4" />} onSelect={() => { void api2.current?.flush().then(() => window.location.assign(apiUrl('/reports/class-gradebook/pdf', reportQuery))); }}>تنزيل PDF</MenuItem>
-          <MenuItem icon={<FileSpreadsheet className="size-4" />} onSelect={() => { void api2.current?.flush().then(() => window.location.assign(apiUrl('/reports/class-gradebook/xlsx', reportQuery))); }}>تنزيل Excel</MenuItem>
+          <MenuItem icon={<Download className="size-4" />} onSelect={() => { void api2.current?.flush().then(() => downloadFile('/reports/class-gradebook/pdf', reportQuery, 'gradebook.pdf')).catch((e) => toast.error(errorMessage(e))); }}>تنزيل PDF</MenuItem>
+          <MenuItem icon={<FileSpreadsheet className="size-4" />} onSelect={() => { void api2.current?.flush().then(() => downloadFile('/reports/class-gradebook/xlsx', reportQuery, 'gradebook.xlsx')).catch((e) => toast.error(errorMessage(e))); }}>تنزيل Excel</MenuItem>
           <MenuItem icon={<Printer className="size-4" />} onSelect={() => { void api2.current?.flush().then(() => window.open(apiUrl('/reports/class-gradebook/html', reportQuery), '_blank')); }}>طباعة</MenuItem>
           <MenuSeparator />
           <MenuItem icon={<FileBarChart className="size-4" />} onSelect={() => window.open(apiUrl('/reports/class-analysis/html', reportQuery), '_blank')}>تحليل أداء الشعبة</MenuItem>

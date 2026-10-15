@@ -7,7 +7,8 @@ import { todayISO } from '@shared/dates';
 import type { NoteDto, StudentProfileDto } from '@shared/dto';
 import { createNoteSchema } from '@shared/schemas/students';
 import { useAcademic } from '@/context/academic';
-import { api, apiUrl } from '@/lib/api';
+import { toast } from 'sonner';
+import { api, apiUrl, downloadFile, errorMessage } from '@/lib/api';
 import { useFmt } from '@/lib/hooks';
 import { useAppMutation } from '@/lib/mutation';
 import { qk } from '@/lib/queries';
@@ -104,7 +105,7 @@ export default function StudentProfilePage() {
           <>
             <Button variant="secondary" icon={<Pencil className="size-4" />} onClick={() => setEditing(true)}>تعديل</Button>
             <Button variant="secondary" icon={<Printer className="size-4" />} onClick={() => window.open(apiUrl('/reports/student/html', { ...reportParams, includeNotes: true }), '_blank')}>طباعة</Button>
-            <a href={apiUrl('/reports/student/pdf', { ...reportParams, includeNotes: true })} className="inline-flex h-10 items-center gap-2 rounded-ctl bg-brand px-4 text-[15px] font-medium text-brand-fg shadow-card hover:bg-brand-hover"><Download className="size-4" /> تقرير PDF</a>
+            <Button variant="primary" icon={<Download className="size-4" />} onClick={() => { downloadFile('/reports/student/pdf', { ...reportParams, includeNotes: true }, 'student-report.pdf').catch((e) => toast.error(errorMessage(e))); }}>تقرير PDF</Button>
           </>
         }
       />
