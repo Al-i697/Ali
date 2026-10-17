@@ -238,7 +238,7 @@ export function AppShell() {
         {user.isDemo ? (
           <div role="region" aria-label="تنبيه الحساب التجريبي" className="no-print bg-accent-soft px-4 py-1.5 text-center text-[13px] font-medium text-accent">
             {import.meta.env.VITE_DEMO
-              ? 'معاينة تفاعلية للتصفح: البيانات وهمية لأغراض التوضيح فقط، ولا تُحفظ أي تعديلات.'
+              ? 'معاينة تفاعلية: جرّب «إدارة الصف» فعليًا (تُمحى تجربتك عند إعادة التحميل)، وبقية الأقسام للتصفح. البيانات وهمية.'
               : 'حساب تجريبي: كل البيانات المعروضة وهمية لأغراض التوضيح فقط وليست لطلاب حقيقيين.'}
           </div>
         ) : null}

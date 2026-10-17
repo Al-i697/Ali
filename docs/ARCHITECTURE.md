@@ -30,7 +30,7 @@ src/server/
   db/              schema.ts (المخطط) · client.ts (الاتصال/النسخ/الاستبدال) · migrations/
   lib/             errors · validate · password · session · audit · context · crypto-file · sql
   modules/<وحدة>/  routes.ts (HTTP) + service.ts (المنطق) — انظر ADDING-A-MODULE
-  reports/         builders (محتوى التقارير) → html → pdf/xlsx
+  reports/         builders (استعلام القاعدة → محتوى التقارير) → render (HTML نقي) + html (خطوط الخادم) → pdf/xlsx
   cli/             أدوات الصيانة
   demo/            بيانات الحساب التجريبي
   ai/              المساعد الذكي: عقد المزوّد · مزوّد Claude · تنقية النص · قوالب المهام · ai-check
@@ -134,14 +134,15 @@ lib/*       ← أخطاء، جلسات، كلمات مرور، تدقيق
 
 ```
 builders.ts  ──▶  ReportDoc (كتل: عنوان، جدول، حقول، بطاقات…)
-                      │
-                      ├─▶ html.ts  : قالب HTML بهروب تلقائي + خطوط IBM Plex Sans Arabic مضمّنة base64
+ (يستعلم القاعدة)     │
+                      ├─▶ render.ts: قالب HTML بهروب تلقائي (دوال نقية بلا Node) — وhtml.ts يضيف إليه خطوط IBM Plex Sans Arabic مضمّنة base64
                       │              ├─▶ المعاينة في الواجهة (iframe بـsandbox)
                       │              └─▶ pdf.ts : Chromium بلا واجهة (بلا JS، وكل طلب شبكة مُجهَض)
                       └─▶ xlsx.ts  : ExcelJS بأرقام حقيقية وورقة RTL
 ```
 
 - المحتوى يُبنى **مرة واحدة** فتتطابق نسخ HTML وPDF وExcel.
+- بناء المستند من نتائج الخدمة ومن غير قاعدة بيانات دالة نقية لتقارير إدارة الصف (`class-docs.ts`) وللعرض (`render.ts`)، ليولّدهما المتصفح في المعاينة التفاعلية بالمخرجات نفسها.
 - أمان PDF: يُحمَّل HTML من الذاكرة، **JavaScript معطّل**، وكل طلب شبكة غير `data:` يُلغى (لا SSRF حتى لو دخل محتوى خبيث للنص).
 - الخطوط مضمّنة داخل HTML: لا تعتمد النتيجة على خطوط الخادم.
 - ترقيم الصفحات بـ`@page` margin boxes.

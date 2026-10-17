@@ -1,9 +1,13 @@
 // الطبقة الوسيطة للمعاينة التفاعلية: تعمل داخل الصفحة قبل التطبيق وتحلّ محل الخادم.
 //  • fetch('/api/...'): تعيد الاستجابات المسجَّلة من التطبيق الحقيقي (demo/record.mjs)، وترفض أي تعديل برسالة عربية واضحة.
 //  • الساعة: تُثبَّت على لحظة التسجيل (ثم تمضي طبيعيًا) كي تتطابق التواريخ التي يحسبها المتصفح مع بيانات اليوم المسجَّل.
+//  • إدارة الصف: محرّك في الذاكرة (demo/class-engine.ts) يخدم /api/class/* ويعدّل لوحة التحكم، فيسجّل المعلم المشاركة والسلوك فعلًا
+//    ويرى أثرهما في الملخص وتقرير الطالب؛ وتُمحى تجربته عند إعادة تحميل الصفحة.
 //  • المساعد الذكي: ردود جاهزة بلا أي اتصال، مع حمايات الإرسال نفسها (الأرقام وأسماء الطلاب) ليُجرَّب مسار النافذة كاملًا.
 // لا يُستعمل هذا الملف خارج بناء المعاينة (demo/build.mjs).
 import { CONTACT_MESSAGES, NAME_CONFIRM_MESSAGE, buildNameMatcher, cleanFreeText, detectContactData, mentionsStudent } from '../src/server/ai/sanitize';
+import type { DashboardDto, SettingsDto } from '../src/shared/dto';
+import { ClassEngine } from './class-engine';
 import { demoKey } from './key.mjs';
 
 declare const __DEMO_DATA__: string;
@@ -12,7 +16,7 @@ type Entry = { t: 'j' | 'h'; b: string };
 type Payload = { now: string; plexCss: string; entries: Record<string, Entry> };
 type Json = Record<string, unknown>;
 
-const READONLY = 'هذه معاينة للتصفح فقط: لا تُحفظ التعديلات. شغّل التطبيق على جهازك لتجرّب الحفظ والتعديل.';
+const READONLY = 'هذه معاينة للتصفح فقط: لا تُحفظ التعديلات في هذا القسم (جرّب «إدارة الصف» فهي تعمل فعليًا). شغّل التطبيق على جهازك لتجرّب الحفظ والتعديل.';
 const NOT_IN_PREVIEW = 'هذه الصفحة غير مضمّنة في المعاينة.';
 
 const data = JSON.parse(__DEMO_DATA__) as Payload;
@@ -56,6 +60,17 @@ function parse(entry: Entry): unknown {
   return JSON.parse(entry.b);
 }
 
+const reply = (r: { status: number; body: unknown }) => json(r.status, r.body);
+
+/** محرّك إدارة الصف: صفوفه الابتدائية من تقارير الطلاب المسجَّلة من التطبيق الحقيقي (null إن لم تُسجَّل فيعمل كل شيء للقراءة فقط) */
+const classEngine = ClassEngine.from(
+  (key) => {
+    const e = store.get(key);
+    return e ? parse(e) : undefined;
+  },
+  [...store.keys()],
+);
+
 function merge(base: unknown, patch: unknown): unknown {
   if (patch && typeof patch === 'object' && !Array.isArray(patch) && base && typeof base === 'object' && !Array.isArray(base)) {
     const out: Json = { ...(base as Json) };
@@ -89,10 +104,20 @@ function read(path: string, params: URLSearchParams): Response {
   // تنزيل PDF وExcel يحتاج الخادم (Chromium وExcelJS): نرفضه برسالة واضحة بدل «غير مضمَّن»
   if (/^\/reports\/[^/]+\/(pdf|xlsx)$/.test(path)) return fail(403, 'DEMO_DOWNLOAD', 'تنزيل ملفات PDF وExcel يعمل في التطبيق الكامل.');
   if (path === '/settings' && settingsOverride) return json(200, settingsOverride);
+  if (classEngine && path.startsWith('/class/')) return reply(classEngine.read(path, params));
+  // تقريرا إدارة الصف يُولَّدان حيّين من حالة المحرّك (فيظهر فيهما ما سجّله المعلم للتو) بعارض الخادم نفسه
+  const classReport = /^\/reports\/(class-student|class-section)\/html$/.exec(path);
+  if (classEngine && classReport) {
+    const settings = (settingsOverride ?? parse(store.get('/settings')!)) as SettingsDto;
+    const r = classEngine.report(classReport[1] as 'class-student' | 'class-section', params, { settings, fontCss: data.plexCss });
+    return 'html' in r ? new Response(r.html, { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } }) : reply(r);
+  }
 
   const key = demoKey(path, params);
   const hit = store.get(key);
   if (hit) {
+    // لوحة التحكم: ما يخص إدارة الصف فيها يتبع ما سجّله المعلم في هذه الجلسة
+    if (classEngine && path === '/dashboard') return json(200, classEngine.patchDashboard(parse(hit) as DashboardDto));
     // المعاينة تُظهر المساعد جاهزًا (بردود جاهزة)، وأزرار PDF تبقى ظاهرة كما في التطبيق (وتشرح عند الضغط أنها تعمل في التطبيق الكامل)
     if (path === '/system/info') return json(200, { ...(parse(hit) as Json), capabilities: { pdf: true, ai: true } });
     return respondEntry(hit);
@@ -139,7 +164,7 @@ function read(path: string, params: URLSearchParams): Response {
 }
 
 // ───────────── الكتابة ─────────────
-function write(method: string, path: string, body: unknown): Response | Promise<Response> {
+function write(method: string, path: string, body: unknown, query: URLSearchParams): Response | Promise<Response> {
   if (method === 'PATCH' && path === '/settings') {
     // التفضيلات (السمة، شكل الأرقام…) تعمل أثناء الجلسة فقط
     const current = settingsOverride ?? parse(store.get('/settings')!);
@@ -147,6 +172,7 @@ function write(method: string, path: string, body: unknown): Response | Promise<
     return json(200, settingsOverride);
   }
   if (method === 'POST' && path === '/ai/run') return runAi(body as Json);
+  if (classEngine && path.startsWith('/class/')) return reply(classEngine.write(method, path, body, query));
   return fail(403, 'DEMO_READONLY', READONLY);
 }
 
@@ -254,7 +280,7 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Res
   } catch {
     body = {};
   }
-  return write(method, path, body);
+  return write(method, path, body, u.searchParams);
 };
 
 window.open = () => {

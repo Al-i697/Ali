@@ -55,7 +55,8 @@ const freePort = () =>
   });
 
 const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sijilli-demo-'));
-const baseEnv = { ...process.env, NODE_ENV: 'production', DATA_DIR: dataDir, LOG_LEVEL: 'error', DEMO_NOW, AI_PROVIDER: 'none', BACKUP_INTERVAL_HOURS: '0' };
+// حدّ الطلبات مرفوع: الجولة تُرسل مئات الطلبات في الدقيقة من متصفحات متوازية (خادم مؤقت لا يصله أحد)
+const baseEnv = { ...process.env, NODE_ENV: 'production', DATA_DIR: dataDir, LOG_LEVEL: 'error', DEMO_NOW, AI_PROVIDER: 'none', BACKUP_INTERVAL_HOURS: '0', RATE_LIMIT_PER_MINUTE: '100000' };
 let server;
 const cleanup = async () => {
   if (server && server.exitCode === null) {
@@ -214,9 +215,11 @@ async function main() {
     const u = new URL(href, 'http://x');
     let p = u.pathname.replace(/\/+$/, '') || '/';
     if (p === '/lessons/new') return p; // تتعدد روابطه بالتاريخ والحصة دون بيانات مختلفة
+    if (/^\/students\/[^/]+$/.test(p)) return p; // تبويبات ملف الطالب تُنقَر كلها في الجولة، فلا حاجة لرابط لكل تبويب
     return p + u.search;
   };
-  const skip = (r) => r.startsWith('/login') || r.startsWith('/setup') || r.startsWith('/api');
+  // شاشات الحصص يخدمها محرّك المعاينة من الذاكرة (استجاباتها تُسقَط عند الكتابة)، فلا تُزار حصة حصة
+  const skip = (r) => r.startsWith('/login') || r.startsWith('/setup') || r.startsWith('/api') || r.startsWith('/class/session');
 
   async function exploreRoute(page, route) {
     await go(page, route);
@@ -297,6 +300,8 @@ async function main() {
 
   // ───── ج-2) تفاصيل نشاط المختبر (تُفتح في نافذة) والمهارات ─────
   for (const l of labs) await api(main, `/lab-activities/${l.id}`);
+  // إدارة الصف: تقرير كل طالب بكل حصصه (بلا نطاق) — منه تُبذر صفوف محرّك المعاينة (demo/class-engine.ts)
+  for (const s of students) await api(main, `/class/students/${s.id}?limit=500`);
   for (const subject of [...new Set(assignments.map((a) => a.subjectId))]) {
     await api(main, `/skills?subjectId=${subject}`);
     await api(main, `/skills?subjectId=${subject}&includeArchived=true`);
@@ -366,6 +371,11 @@ async function main() {
   await browser.close();
 
   // ───── و) تنقية وكتابة ─────
+  // إدارة الصف: يخدمها محرّك المعاينة من صفوف في الذاكرة (وتقاريرها تُولَّد حيّة)، فلا نحتفظ من الجولة إلا بتقارير الطلاب الخام التي يُبذر منها
+  const RAW_CLASS = /^\/class\/students\/[^/?]+\?limit=500$/;
+  for (const k of [...entries.keys()]) {
+    if ((k.startsWith('/class/') && !RAW_CLASS.test(k)) || /^\/reports\/class-(student|section)\//.test(k)) entries.delete(k);
+  }
   // الجلسات: عنوان IP ومتصفح المسجّل لا فائدة لهما في المعاينة
   for (const [k, v] of entries) {
     if (k === '/auth/sessions') {
@@ -378,7 +388,10 @@ async function main() {
   fs.writeFileSync(path.join(outDir, 'data.json'), JSON.stringify(out));
 
   const bytes = [...entries.values()].reduce((n, e) => n + e.b.length, 0);
+  const classKeys = [...entries.keys()].filter((k) => RAW_CLASS.test(k));
+  const classBytes = classKeys.reduce((n, k) => n + entries.get(k).b.length, 0);
   console.log(`\n✔ سُجّلت ${entries.size} استجابة (${(bytes / 1024).toFixed(0)} ك.ب نصًا) من ${visited.size} مسارًا في ${Math.round((Date.now() - t0) / 1000)}ث`);
+  console.log(`  إدارة الصف: ${classKeys.length} تقرير طالب خام (${(classBytes / 1024).toFixed(0)} ك.ب) لبذر المحرّك`);
   const uniqFailed = [...new Set(failed)];
   if (uniqFailed.length) console.log(`استجابات غير ناجحة (غير مسجّلة): ${uniqFailed.length}\n  ${uniqFailed.slice(0, 15).join('\n  ')}`);
   const uniqErrors = [...new Set(appErrors)];
