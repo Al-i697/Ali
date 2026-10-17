@@ -47,6 +47,10 @@ const axeSource = fs.existsSync(path.join(root, 'node_modules/axe-core/axe.min.j
 /** يفحص الصفحة المفتوحة (بما فيها النوافذ المنبثقة) بـ axe ويرمي عند أي مخالفة */
 async function expectNoAxe(page, what) {
   if (!axeSource) return;
+  // نوافذ تظهر بحركة دخول (شفافية متدرجة): قياس التباين أثناءها يعطي نتائج كاذبة، فننتظر انتهاء الحركات المنتهية
+  await page
+    .waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running' || a.effect?.getComputedTiming().iterations === Infinity), null, { timeout: 3000 })
+    .catch(() => undefined);
   await page.evaluate(axeSource);
   const violations = await page.evaluate(async () => {
     const res = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21aa', 'best-practice'] } });
@@ -177,6 +181,8 @@ async function startServer(label, { seed = false, env: extraEnv = {} } = {}) {
     BACKUP_INTERVAL_HOURS: '0',
     LOG_LEVEL: 'warn',
     PDF_NO_SANDBOX: 'true',
+    // المراحل تتتابع على الخادم نفسه بسرعة: حد 600/دقيقة الافتراضي يُظهر 429 عند أول صفحة بعد مرحلة كثيفة الطلبات
+    RATE_LIMIT_PER_MINUTE: '60000',
     ...(chromiumPath ? { CHROMIUM_PATH: chromiumPath } : {}),
     ...extraEnv,
   };

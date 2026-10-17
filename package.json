@@ -25,7 +25,10 @@
     "db:generate": "drizzle-kit generate",
     "cli": "tsx src/server/cli/index.ts",
     "cli:prod": "node dist/server/cli.js",
-    "docs:api": "tsx scripts/gen-api-doc.ts"
+    "docs:api": "tsx scripts/gen-api-doc.ts",
+    "demo:record": "node demo/record.mjs",
+    "demo:build": "node demo/build.mjs",
+    "demo:verify": "node demo/verify.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.134.0",

@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router';
+import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { Toaster } from 'sonner';
@@ -25,6 +25,10 @@ const SupportPlanPage = lazy(() => import('@/features/support/plan-page'));
 const LabPage = lazy(() => import('@/features/lab/lab-page'));
 const ReportsPage = lazy(() => import('@/features/reports/reports-page'));
 const SettingsPage = lazy(() => import('@/features/settings/settings-page'));
+
+// نسخة المعاينة التفاعلية (npm run demo:build) تعمل داخل إطار معزول لا يسمح بتغيير عنوان الصفحة، فيكون التنقل في الذاكرة.
+// في كل بناء آخر يُستبدل الثابت بـundefined عند التجميع فيبقى BrowserRouter وحده.
+const Router = import.meta.env.VITE_DEMO ? MemoryRouter : BrowserRouter;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,7 +68,7 @@ export function App() {
     <QueryClientProvider client={queryClient}>
       <DirectionProvider dir="rtl">
         <TooltipProvider delayDuration={200}>
-          <BrowserRouter>
+          <Router>
             <AuthProvider>
               <ConfirmProvider>
                 <Suspense fallback={<PageLoader />}>
@@ -102,7 +106,7 @@ export function App() {
                 </Suspense>
               </ConfirmProvider>
             </AuthProvider>
-          </BrowserRouter>
+          </Router>
         </TooltipProvider>
         <Toaster position="bottom-center" dir="rtl" richColors closeButton toastOptions={{ classNames: { toast: 'font-sans' } }} />
       </DirectionProvider>

@@ -30,6 +30,7 @@
 | `PDF_NO_SANDBOX` | `false` | `true` داخل الحاويات (لا يتوفر sandbox لـChromium فيها) |
 | `TZ_NAME` | `Asia/Muscat` | المنطقة الزمنية (الأسبوع الدراسي والحصص و«اليوم») |
 | `LOG_LEVEL` | `info` | `fatal`…`trace`، `silent` |
+| `RATE_LIMIT_PER_MINUTE` | `600` | حد الطلبات العام لكل عنوان IP في الدقيقة (الدخول والنسخ وغيرهما لها حدود أشد). ارفعه إن ظهر كل المستخدمين بعنوان واحد |
 | `WEB_ROOT` | `dist/web` | مجلد الواجهة المبنية (نادرًا ما يلزم) |
 | `AI_PROVIDER` | `none` | `none` أو `anthropic` — **المساعد الذكي** (اختياري). تفصيل المتغيرات `ANTHROPIC_API_KEY` و`AI_MODEL` و`AI_EFFORT` و`AI_BASE_URL` و`AI_TIMEOUT_MS` و`AI_DAILY_LIMIT` و`AI_RATE_PER_MINUTE` و`AI_MAX_CONCURRENCY` في [AI-EXTENSION](AI-EXTENSION.md#متغيرات-البيئة) |
 
@@ -194,6 +195,7 @@ TRUST_PROXY=true
 | `SQLITE_BUSY` / قفل | لا تفتح ملف القاعدة من برنامج آخر أثناء التشغيل بالكتابة. للقراءة استعمل نسخة احتياطية |
 | فشل الاستعادة «النسخة مشفّرة» | اضبط `BACKUP_PASSPHRASE` الأصلية نفسها |
 | بطء أول دخول | طبيعي: تجزئة scrypt مقصودة (~0.2–0.5 ثانية) |
+| «طلبات كثيرة جدًا» (429) لعدة مستخدمين معًا | كل الطلبات تصل بعنوان الوكيل نفسه. اضبط `TRUST_PROXY=true` ليُقرأ عنوان كل مستخدم، أو ارفع `RATE_LIMIT_PER_MINUTE` |
 | فحص الصحة | `curl http://127.0.0.1:3000/api/health` ← `{"status":"ok"}` |
 | المساعد: «مفتاح الخدمة غير صالح» (424) | `ANTHROPIC_API_KEY` خاطئ أو بلا صلاحية. نفّذ `ai-check` |
 | المساعد: «رفضت خدمة المساعد الطلب» | `AI_MODEL` غير صحيح أو غير متاح لحسابك، أو `AI_BASE_URL` لا يدعم الواجهة. نفّذ `ai-check` |

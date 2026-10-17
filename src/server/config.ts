@@ -45,6 +45,8 @@ export type AppConfig = {
   migrationsDir: string;
   assetsDir: string;
   scrypt: ScryptParams;
+  /** حد الطلبات العام لكل عنوان IP في الدقيقة */
+  rateLimitPerMinute: number;
   sessionHours: number;
   rememberDays: number;
   ai: AiConfig;
@@ -74,6 +76,8 @@ const envSchema = z.object({
   TZ_NAME: z.string().default('Asia/Muscat'),
   WEB_ROOT: z.string().optional(),
   SCRYPT_LOG_N: z.coerce.number().int().min(10).max(20).optional(),
+  // حد الطلبات العام لكل IP في الدقيقة. ارفعه إن كان كل المستخدمين يظهرون بعنوان واحد (وكيل عكسي بلا TRUST_PROXY، أو شبكة مدرسة خلف NAT)
+  RATE_LIMIT_PER_MINUTE: z.coerce.number().int().min(60).max(1_000_000).default(600),
   // ── المساعد الذكي (اختياري، معطّل افتراضيًا) ──
   AI_PROVIDER: z.enum(['none', 'anthropic']).default('none'),
   ANTHROPIC_API_KEY: z.string().optional(),
@@ -137,6 +141,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     ),
     assetsDir: firstExisting([path.join(here, 'assets')], 'assets'),
     scrypt: { N: 2 ** logN, r: 8, p: 1 },
+    rateLimitPerMinute: e.RATE_LIMIT_PER_MINUTE,
     sessionHours: 12,
     rememberDays: 30,
     ai: {

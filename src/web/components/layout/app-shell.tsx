@@ -237,7 +237,9 @@ export function AppShell() {
       <div className={cn('transition-[padding] duration-200', collapsed ? 'lg:ps-[84px]' : 'lg:ps-[268px]')}>
         {user.isDemo ? (
           <div role="region" aria-label="تنبيه الحساب التجريبي" className="no-print bg-accent-soft px-4 py-1.5 text-center text-[13px] font-medium text-accent">
-            حساب تجريبي: كل البيانات المعروضة وهمية لأغراض التوضيح فقط وليست لطلاب حقيقيين.
+            {import.meta.env.VITE_DEMO
+              ? 'معاينة تفاعلية للتصفح: البيانات وهمية لأغراض التوضيح فقط، ولا تُحفظ أي تعديلات.'
+              : 'حساب تجريبي: كل البيانات المعروضة وهمية لأغراض التوضيح فقط وليست لطلاب حقيقيين.'}
           </div>
         ) : null}
         <header className="no-print sticky top-0 z-20 flex h-[68px] items-center gap-3 border-b border-line bg-bg/85 px-4 backdrop-blur sm:px-6">

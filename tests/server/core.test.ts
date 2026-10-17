@@ -168,6 +168,16 @@ describe('الطلاب: التسجيل والاستيراد والترتيب', (
   });
 });
 
+describe('الإعدادات: حد الطلبات العام', () => {
+  it('الافتراضي 600 في الدقيقة، ويُضبط بمتغير بيئة ضمن حدود معقولة', async () => {
+    const { loadConfig } = await import('../../src/server/config');
+    expect(loadConfig({ NODE_ENV: 'production' }).rateLimitPerMinute).toBe(600);
+    expect(loadConfig({ NODE_ENV: 'production', RATE_LIMIT_PER_MINUTE: '3000' }).rateLimitPerMinute).toBe(3000);
+    expect(() => loadConfig({ NODE_ENV: 'production', RATE_LIMIT_PER_MINUTE: '10' })).toThrow();
+    expect(() => loadConfig({ NODE_ENV: 'production', RATE_LIMIT_PER_MINUTE: 'abc' })).toThrow();
+  });
+});
+
 describe('المساعد الذكي: الإعلان الافتراضي', () => {
   it('system/info يعلن أن المساعد غير متاح ما لم يُضبط مزوّد ويوافق المدير (التفاصيل في ai.test.ts)', async () => {
     const info = (await env.app.inject({ method: 'GET', url: '/api/system/info' })).json();

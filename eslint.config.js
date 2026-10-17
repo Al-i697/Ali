@@ -13,7 +13,7 @@ const serverToWeb = {
 };
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'data/**', 'e2e-output/**', 'src/server/db/migrations/**', 'coverage/**'] },
+  { ignores: ['dist/**', 'dist-demo/**', 'node_modules/**', 'data/**', 'e2e-output/**', 'src/server/db/migrations/**', 'coverage/**'] },
 
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -57,8 +57,8 @@ export default tseslint.config(
 
   // ───────── السكربتات وملفات الإعداد (Node، بلا أنواع صارمة) ─────────
   {
-    files: ['scripts/**/*.{mjs,ts}', '*.config.{js,ts}'],
-    languageOptions: { globals: { process: 'readonly', console: 'readonly', fetch: 'readonly', URL: 'readonly', setTimeout: 'readonly', document: 'readonly', window: 'readonly', Uint8Array: 'readonly', DataTransfer: 'readonly', ClipboardEvent: 'readonly', Blob: 'readonly', DOMParser: 'readonly', localStorage: 'readonly', location: 'readonly' } },
+    files: ['scripts/**/*.{mjs,ts}', 'demo/**/*.{mjs,ts}', '*.config.{js,ts}'],
+    languageOptions: { globals: { process: 'readonly', console: 'readonly', fetch: 'readonly', URL: 'readonly', setTimeout: 'readonly', document: 'readonly', window: 'readonly', Uint8Array: 'readonly', DataTransfer: 'readonly', ClipboardEvent: 'readonly', Blob: 'readonly', DOMParser: 'readonly', localStorage: 'readonly', location: 'readonly', PopStateEvent: 'readonly' } },
     rules: { 'no-console': 'off', '@typescript-eslint/no-floating-promises': 'off' },
   },
   {

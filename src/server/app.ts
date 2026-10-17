@@ -122,7 +122,7 @@ export async function buildApp(opts: BuildOptions): Promise<FastifyInstance> {
   await app.register(cookie);
   await app.register(rateLimit, {
     global: true,
-    max: config.env === 'test' ? 100_000 : 600,
+    max: config.env === 'test' ? 100_000 : config.rateLimitPerMinute,
     timeWindow: '1 minute',
     errorResponseBuilder: (_req, ctx) => {
       const err = new AppError(429, 'TOO_MANY_REQUESTS', 'طلبات كثيرة جدًا. انتظر قليلًا ثم حاول مجددًا');
