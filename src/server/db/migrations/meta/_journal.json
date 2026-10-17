@@ -29,6 +29,13 @@
       "when": 1792087282251,
       "tag": "0003_app_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792253518534,
+      "tag": "0004_class_management",
+      "breakpoints": true
     }
   ]
 }

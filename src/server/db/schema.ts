@@ -17,6 +17,7 @@ import {
 import type {
   AssessmentMode,
   AssessmentType,
+  ClassRecordKind,
   GradingSettings,
   Gender,
   LabKind,
@@ -547,6 +548,64 @@ export const labActivities = sqliteTable(
     check('lab_status_chk', sql`${t.status} in ('planned','done','cancelled')`),
     check('lab_period_chk', sql`${t.period} is null or ${t.period} between 1 and 12`),
     check('lab_participants_chk', sql`${t.participants} is null or ${t.participants} >= 0`),
+  ],
+);
+
+// ═════════════ إدارة الصف: المشاركة والسلوك داخل الحصة ═════════════
+/**
+ * مشاركة الطالب في حصة: صف واحد لكل (طالب × مقرر × تاريخ × حصة).
+ * count = 0 ⇒ «لم يشارك»، n ⇒ شارك n مرة، وغياب الصف ⇒ لم تُسجَّل مشاركته بعد.
+ * يبقى السجل بعد حذف المقرر (يصير «حصة بلا مقرر») وبعد نقل الطالب: هو توثيق لما جرى فعلًا، ويُحذف مع الطالب نفسه.
+ */
+export const classParticipation = sqliteTable(
+  'class_participation',
+  {
+    id: id(),
+    ownerId: owner(),
+    studentId: text('student_id')
+      .notNull()
+      .references(() => students.id, { onDelete: 'cascade' }),
+    assignmentId: text('assignment_id').references(() => assignments.id, { onDelete: 'set null' }),
+    date: text('date').notNull(),
+    /** 0 = لم تُحدَّد الحصة. تُخزَّن رقمًا لا NULL كي يعمل القيد الفريد (NULL يخالف كل NULL في SQLite) */
+    period: integer('period').notNull().default(0),
+    count: integer('count').notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    uniqueIndex('class_part_unique_uq').on(t.studentId, t.assignmentId, t.date, t.period),
+    index('class_part_session_idx').on(t.ownerId, t.assignmentId, t.date),
+    index('class_part_student_idx').on(t.ownerId, t.studentId, t.date),
+    // الحد الأقصى يطابق CLASS_LIMITS.maxParticipation
+    check('class_part_count_chk', sql`${t.count} between 0 and 50`),
+    check('class_part_period_chk', sql`${t.period} between 0 and 12`),
+  ],
+);
+
+/** سلوك إيجابي / غير حسن / ملاحظة على طالب في حصة. السبب المختصر هو ما يُجمَّع عليه في التقارير */
+export const classRecords = sqliteTable(
+  'class_records',
+  {
+    id: id(),
+    ownerId: owner(),
+    studentId: text('student_id')
+      .notNull()
+      .references(() => students.id, { onDelete: 'cascade' }),
+    assignmentId: text('assignment_id').references(() => assignments.id, { onDelete: 'set null' }),
+    date: text('date').notNull(),
+    period: integer('period').notNull().default(0),
+    kind: text('kind').$type<ClassRecordKind>().notNull(),
+    reason: text('reason'),
+    note: text('note'),
+    ...timestamps,
+  },
+  (t) => [
+    index('class_rec_session_idx').on(t.ownerId, t.assignmentId, t.date),
+    index('class_rec_student_idx').on(t.ownerId, t.studentId, t.date),
+    check('class_rec_kind_chk', sql`${t.kind} in ('positive','negative','note')`),
+    check('class_rec_period_chk', sql`${t.period} between 0 and 12`),
+    // تسجيل بلا سبب ولا ملاحظة بلا معنى
+    check('class_rec_text_chk', sql`${t.reason} is not null or ${t.note} is not null`),
   ],
 );
 

@@ -7,18 +7,19 @@ import type { ScryptParams } from '../config';
 import { schema, type Db } from '../db/client';
 import { addDays, nowInZone, weekdayOf } from '../../shared/dates';
 import { pickCurrentTerm } from '../../shared/academic';
-import type { ActivityPhase } from '../../shared/constants';
+import { CLASS_REASON_PRESETS, type ActivityPhase } from '../../shared/constants';
 import { createUser } from '../modules/users/service';
 import { createSection, createSubject, createYear } from '../modules/academic/service';
 import { addStudentsToSection } from '../modules/students/service';
 import { createAssessment, createSkill, saveResults } from '../modules/assessments/service';
+import { addRecord, setParticipation } from '../modules/classroom/service';
 import { copyLab, createLab, updateLab } from '../modules/lab/service';
 import { createLesson } from '../modules/lessons/service';
 import { addNote as addSupportNote, createPlan, suggestions } from '../modules/support/service';
 import { setSlot } from '../modules/timetable/service';
 import { createTask } from '../modules/tasks/service';
 import { createNote } from '../modules/students/service';
-import { updateSettings } from '../modules/settings/service';
+import { getSettings, updateSettings } from '../modules/settings/service';
 
 function rng(seed: number) {
   let a = seed >>> 0;
@@ -317,6 +318,43 @@ export async function seedDemo(db: Db, opts: DemoOptions): Promise<{ userId: str
   }, today);
   copyLab(db, owner, osmosis.id, { targets: [{ assignmentId: sci2, date: addDays(today, 4), period: 4 }] }, today);
   createLab(db, owner, { assignmentId: null, date: addDays(today, 12), kind: 'competition', title: 'معرض العلوم المدرسي', location: 'الساحة المدرسية', objectives: ['عرض مشاريع الطلاب العلمية أمام المجتمع المدرسي'] }, today);
+
+  // ───────── إدارة الصف: مشاركة الطلاب وسلوكهم في حصص الأسابيع الماضية ─────────
+  // آخر ما يُبذر: لا يستهلك من المولّد العشوائي ما يسبقه، فتبقى الأسماء والدرجات كما هي.
+  const periodEnd = new Map(getSettings(db, owner).schedule.periods.map((x) => [x.n, x.end]));
+  const traits = new Map<string, { part: number; neg: number; pos: number }>();
+  for (const c of created) {
+    c.students.forEach((id, i) => {
+      // مشاركة مرتبطة بقدرة الطالب، وقلة منهم صامتون تمامًا، وقلة كثيرو الملاحظات (قصة للتقرير)
+      const silent = i === 4 || i === 13;
+      const part = silent ? 0.03 : clamp(0.5 + (c.ability.get(id)! - 0.7) * 1.1 + normal() * 0.2, 0.08, 0.95);
+      const troubled = i === 7 || i === 18 || rand() < 0.06;
+      traits.set(id, { part, neg: troubled ? 0.2 : 0.012, pos: part > 0.6 ? 0.09 : 0.02 });
+    });
+  }
+  for (let offset = -28; offset <= 0; offset++) {
+    const date = addDays(today, offset);
+    if (date < term.startDate) continue;
+    for (const slot of slots.filter((x) => x.weekday === weekdayOf(date))) {
+      // حصة اليوم لا تُسجَّل إلا إن انتهت فعلًا
+      if (date === today && (periodEnd.get(slot.period) ?? '99:99') > now.time) continue;
+      const group = created.find((c) => c.assignmentId === slot.assignmentId)!;
+      for (const studentId of group.students) {
+        const tr = traits.get(studentId)!;
+        const base = { assignmentId: slot.assignmentId, studentId, date, period: slot.period };
+        if (rand() < 0.93) {
+          const count = rand() < tr.part ? 1 + (rand() < 0.35 ? 1 : 0) + (rand() < 0.12 ? 1 : 0) : 0;
+          setParticipation(db, owner, { ...base, count }, today);
+        }
+        if (rand() < tr.neg) {
+          const reason = pick(CLASS_REASON_PRESETS.negative);
+          addRecord(db, owner, { ...base, kind: 'negative', reason, note: rand() < 0.3 ? 'نُبّه شفهيًا أمام زملائه وتعهّد بعدم التكرار.' : null }, today);
+        }
+        if (rand() < tr.pos) addRecord(db, owner, { ...base, kind: 'positive', reason: pick(CLASS_REASON_PRESETS.positive) }, today);
+        if (rand() < 0.008) addRecord(db, owner, { ...base, kind: 'note', reason: pick(CLASS_REASON_PRESETS.note) }, today);
+      }
+    }
+  }
 
   return { userId: owner, email: opts.email };
 }

@@ -6,7 +6,7 @@ import { notFound } from '../../lib/errors';
 import { sectionLabel } from '../../../shared/constants';
 import type { AssignmentDto } from '../../../shared/dto';
 
-const { academicYears, terms, subjects, sections, assignments, students, assessments, lessonPlans, skills, tasks, studentNotes, supportPlans, supportPlanNotes, labActivities } = schema;
+const { academicYears, terms, subjects, sections, assignments, students, assessments, lessonPlans, skills, tasks, studentNotes, supportPlans, supportPlanNotes, labActivities, classRecords } = schema;
 
 export function requireYear(db: Db, ownerId: string, id: string) {
   const row = db.select().from(academicYears).where(and(eq(academicYears.id, id), eq(academicYears.ownerId, ownerId))).get();
@@ -87,6 +87,12 @@ export function requireSupportNote(db: Db, ownerId: string, planId: string, id: 
 export function requireLabActivity(db: Db, ownerId: string, id: string) {
   const row = db.select().from(labActivities).where(and(eq(labActivities.id, id), eq(labActivities.ownerId, ownerId))).get();
   if (!row) throw notFound('النشاط');
+  return row;
+}
+
+export function requireClassRecord(db: Db, ownerId: string, id: string) {
+  const row = db.select().from(classRecords).where(and(eq(classRecords.id, id), eq(classRecords.ownerId, ownerId))).get();
+  if (!row) throw notFound('التسجيل');
   return row;
 }
 

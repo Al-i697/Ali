@@ -4,6 +4,7 @@
 //   npm run build && npm run test:e2e
 //
 // خيارات:  --only=first-run,demo,admin,visual,ai   تشغيل مراحل محددة
+//          --grep=نص                              تشغيل الخطوات التي يحوي اسمها هذا النص فقط (مع الحرجة كالدخول)
 //          --keep                                 إبقاء مجلد البيانات المؤقت بعد الانتهاء
 //          --headed                               إظهار نافذة المتصفح
 //
@@ -31,6 +32,7 @@ const headed = argv.includes('--headed');
 const listArg = (name) => (argv.find((a) => a.startsWith(`--${name}=`)) ?? '').slice(name.length + 3).split(',').filter(Boolean);
 const onlyPages = listArg('pages'); // للمرحلة visual: --pages=section,gradebook
 const onlyCombos = listArg('combos'); // مثل: --combos=light-mobile
+const grep = (argv.find((a) => a.startsWith('--grep=')) ?? '').slice(7); // يشغّل الخطوات التي يحوي اسمها هذا النص فقط (والحرجة كالدخول) — لتسريع تطوير خطوة
 const shotsDir = path.join(root, 'e2e-output');
 
 const PW = {
@@ -72,6 +74,7 @@ let currentPhase = '';
 class PhaseAbort extends Error {}
 
 async function step(name, fn, { critical = false } = {}) {
+  if (grep && !critical && !name.includes(grep)) return true;
   const t0 = Date.now();
   try {
     await fn();
@@ -1176,6 +1179,254 @@ async function phaseDemo(browser, srv) {
     });
 
     // ───── المهام ─────
+    // ───── إدارة الصف: مشاركة الطلاب وسلوكهم في الحصة ─────
+    // الحصة المختبَرة بالرقم 11 في تاريخ اليوم: لا تتقاطع مع حصص البذرة (تُسجَّل بأرقام الجدول) ولا تعتمد على كون اليوم يوم دوام
+    const todayMuscat = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Muscat' });
+    const classUrl = `/class/session?assignment=${asg.id}&date=${todayMuscat}&period=11`;
+    const classApi = `/class/session?assignmentId=${asg.id}&date=${todayMuscat}&period=11`;
+    const classRow = (name) => page.locator('[data-student]').filter({ has: page.getByRole('link', { name, exact: true }) });
+    // أسماء أزرار الصف تشترك في الجزء «شارك — الاسم»: المطابقة التامة لازمة وإلا التبس «شارك» بـ«لم يشارك»
+    const act = (name, label) => classRow(name).getByRole('button', { name: `${label} — ${name}`, exact: true });
+    let classRoster = [];
+
+    await step('إدارة الصف: الحصص وملخص الشعبة يعرضان تسجيلات البذرة، ويمكن فرز الجدول وتصفيته', async () => {
+      await page.goto('/class');
+      await page.getByRole('heading', { name: 'إدارة الصف', level: 1 }).waitFor();
+      await page.getByText('آخر الحصص المسجّلة').waitFor();
+      expect((await page.locator('a[href^="/class/session"]').count()) >= 5, 'آخر الحصص المسجّلة لا تظهر');
+      await page.getByRole('tab', { name: /ملخص الشعبة/ }).click();
+      // تسمية «الشعبة والمادة» موجودة أيضًا في نموذج «حصة أخرى» بتبويب الحصص: ننتظر ظهور التبويب الجديد كي لا نختار في القائمة الخطأ
+      await page.getByRole('button', { name: 'تقرير الشعبة' }).waitFor();
+      await page.getByLabel('الشعبة والمادة').selectOption(asg.id);
+      const sum = await apiGet(page, `/class/summary?assignmentId=${asg.id}&from=${years[0].startDate}&to=${years[0].endDate}`);
+      expect(sum.rows.length >= 20 && sum.sessions >= 5, `ملخص البذرة: ${sum.rows.length} صفًا/${sum.sessions} حصة`);
+      const rowsNow = () => page.locator('tbody tr').count();
+      await until(async () => (await rowsNow()) === sum.rows.length, `عدد صفوف الجدول ${await rowsNow()} وفي الخادم ${sum.rows.length}`);
+      // الفرز بنسبة المشاركة (تنازليًا): أول صف هو الأعلى نسبة فعلًا
+      await page.getByRole('button', { name: 'نسبة المشاركة' }).first().click();
+      const top = [...sum.rows].filter((r) => r.counts.rate !== null).sort((a, b) => b.counts.rate - a.counts.rate || a.rollNo - b.rollNo)[0];
+      await expectText(page.locator('tbody tr').first(), new RegExp(top.fullName.split(' ')[0]), 'أعلى نسبة مشاركة');
+      expect((await page.locator('th[aria-sort="descending"]').count()) === 1, 'مؤشر الفرز غير مضبوط');
+      // «يحتاجون متابعة» يعزل من لهم مؤشر
+      const flagged = sum.rows.filter((r) => r.flags.length).length;
+      expect(flagged > 0, 'البذرة لا تحوي طلابًا بمؤشرات متابعة');
+      await page.getByRole('radio', { name: /يحتاجون متابعة/ }).click();
+      await until(async () => (await rowsNow()) === flagged, `بعد «يحتاجون متابعة»: ${await rowsNow()} صفًا والمتوقع ${flagged}`);
+    });
+
+    await step('إدارة الصف: «شارك» مرتين ثم «تراجع» ثم «لم يشارك» — تُحفظ في الخادم فورًا وتبقى بعد إعادة التحميل', async () => {
+      await page.goto(classUrl);
+      await page.locator('[data-student]').first().waitFor();
+      const sess = await apiGet(page, classApi);
+      classRoster = sess.students.map((x) => x.fullName);
+      expect(classRoster.length >= 20 && sess.students.every((x) => x.participation === null), 'الحصة الجديدة يجب أن تبدأ بلا تسجيل');
+      const [n1, n2, n3] = classRoster;
+      const serverPart = async (name) => (await apiGet(page, classApi)).students.find((x) => x.fullName === name).participation;
+
+      await act(n1, 'شارك').click();
+      await act(n1, 'شارك').click();
+      await act(n1, 'شارك').filter({ hasText: '2' }).waitFor(); // «شارك ×2» فورًا
+      await until(async () => (await serverPart(n1)) === 2, 'لم تُحفظ مشاركتان');
+      // «لم يشارك» معطّل لمن شارك (لا نمحو عدّه بنقرة عرضية)
+      expect(await act(n1, 'لم يشارك').isDisabled(), '«لم يشارك» يجب أن يُعطَّل لمن شارك');
+      await act(n1, 'تراجع عن مشاركة').click();
+      await until(async () => (await serverPart(n1)) === 1, 'لم يُحفظ التراجع إلى مشاركة واحدة');
+
+      await act(n2, 'لم يشارك').click();
+      await until(async () => (await serverPart(n2)) === 0, 'لم يُحفظ «لم يشارك»');
+      expect((await act(n2, 'لم يشارك').getAttribute('aria-pressed')) === 'true', 'الزر لا يعكس الحالة');
+      // نقرة ثانية تُلغي التسجيل (يعود «لم تُسجَّل»)
+      await act(n2, 'لم يشارك').click();
+      await until(async () => (await serverPart(n2)) === null, 'لم يُلغَ تسجيل «لم يشارك»');
+      await act(n2, 'لم يشارك').click();
+      await until(async () => (await serverPart(n2)) === 0, 'لم يُعد «لم يشارك»');
+
+      await page.reload();
+      await page.locator('[data-student]').first().waitFor();
+      expect((await act(n1, 'شارك').getAttribute('aria-pressed')) === 'true', 'المشاركة لم تبقَ بعد إعادة التحميل');
+      expect((await act(n2, 'لم يشارك').getAttribute('aria-pressed')) === 'true', '«لم يشارك» لم يبقَ بعد إعادة التحميل');
+      expect((await act(n3, 'شارك').getAttribute('aria-pressed')) !== 'true', 'طالب لم يُسجَّل ظهر كأنه شارك');
+    });
+
+    await step('إدارة الصف: «لم يشارك» لمن تبقّى بتأكيد — لا يمسّ من سُجّل له، ثم التصفية والبحث', async () => {
+      await page.goto(classUrl);
+      await page.locator('[data-student]').first().waitFor();
+      const before = await apiGet(page, classApi);
+      const unrecorded = before.students.filter((x) => x.participation === null).length;
+      expect(unrecorded >= 18, `لم يبقَ طلاب بلا تسجيل: ${unrecorded}`);
+      await page.getByRole('button', { name: /لمن تبقّى/ }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByText('يُسجَّل على من لم تُسجَّل مشاركته').waitFor();
+      await dlg.getByRole('button', { name: 'تسجيل', exact: true }).click();
+      await toast(page, /سُجِّل «لم يشارك»/).waitFor();
+      const after = await apiGet(page, classApi);
+      expect(after.students.every((x) => x.participation !== null), 'بقي طلاب بلا تسجيل');
+      expect(after.students.find((x) => x.fullName === classRoster[0]).participation === 1, 'مُسّت مشاركة من شارك');
+      expect(after.students.filter((x) => x.participation === 0).length === after.students.length - 1, 'عدد «لم يشاركوا» غير متسق');
+      await page.getByRole('button', { name: /لمن تبقّى/ }).waitFor({ state: 'visible' });
+      expect(await page.getByRole('button', { name: /لمن تبقّى/ }).isDisabled(), 'الزر يجب أن يُعطَّل بعد اكتمال التسجيل');
+      // التصفية: «شاركوا» تعرض طالبًا واحدًا، والبحث بالاسم
+      await page.getByRole('radio', { name: /^شاركوا/ }).click();
+      await page.waitForFunction(() => document.querySelectorAll('[data-student]').length === 1);
+      await page.getByRole('radio', { name: 'الكل' }).click();
+      await page.getByLabel('بحث في طلاب الحصة').fill(classRoster[4].split(' ')[0]);
+      const found = await page.locator('[data-student]').count();
+      expect(found >= 1 && found < classRoster.length, `البحث بالاسم لا يصفّي (${found})`);
+      await page.getByLabel('بحث في طلاب الحصة').fill('');
+    });
+
+    await step('إدارة الصف: سلوك غير حسن بسبب جاهز وتفاصيل ← شريحة في الصف ← تعديل ← إيجابي ← حذف مع «تراجع» — وتبقى بعد إعادة التحميل', async () => {
+      const name = classRoster[2];
+      const records = async () => (await apiGet(page, classApi)).students.find((x) => x.fullName === name).records;
+      await page.goto(classUrl);
+      await act(name, 'سلوك غير حسن').click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByText('سلوك غير حسن —').first().waitFor();
+      expect(await dlg.getByRole('button', { name: 'حفظ', exact: true }).isDisabled(), '«حفظ» يجب أن يُعطَّل بلا سبب ولا ملاحظة');
+      await expectNoAxe(page, 'نافذة تسجيل السلوك (فاتح)');
+      await dlg.getByRole('button', { name: 'حديث جانبي', exact: true }).click();
+      await dlg.getByLabel('تفاصيل (اختياري)').fill('تكرر أثناء الشرح — ملاحظة اختبار');
+      await dlg.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await toast(page, /سُجِّل/).waitFor();
+      await classRow(name).getByRole('button', { name: /^تعديل: .*حديث جانبي/ }).waitFor();
+      const saved = (await records())[0];
+      expect(saved?.kind === 'negative' && saved.reason === 'حديث جانبي' && saved.note.includes('ملاحظة اختبار'), `التسجيل المحفوظ: ${JSON.stringify(saved)}`);
+      await page.reload();
+      await classRow(name).getByRole('button', { name: /^تعديل: .*حديث جانبي/ }).waitFor();
+
+      // تعديل: تغيير السبب
+      await classRow(name).getByRole('button', { name: /^تعديل: / }).click();
+      const edit = page.getByRole('dialog');
+      await edit.getByText('تعديل التسجيل').first().waitFor();
+      await edit.getByRole('button', { name: 'إزعاج الزملاء', exact: true }).click();
+      await edit.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await toast(page, /حُدّث/).waitFor();
+      await until(async () => (await records())[0]?.reason === 'إزعاج الزملاء', 'لم يُحفظ تعديل السبب');
+
+      // سلوك إيجابي
+      await act(name, 'سلوك إيجابي').click();
+      const pos = page.getByRole('dialog');
+      await pos.getByRole('button', { name: 'مساعدة زميل', exact: true }).click();
+      await pos.getByRole('button', { name: 'حفظ', exact: true }).click();
+      await until(async () => (await records()).length === 2, 'لم يُحفظ السلوك الإيجابي');
+
+      // حذف بنقرة ثم «تراجع»
+      await classRow(name).getByRole('button', { name: /^حذف: .*إزعاج الزملاء/ }).click();
+      await toast(page, /حُذف التسجيل/).getByRole('button', { name: 'تراجع' }).click();
+      await until(async () => (await records()).some((r) => r.reason === 'إزعاج الزملاء'), 'لم يُستعد التسجيل بعد «تراجع»');
+      expect((await records()).length === 2, 'التراجع أنشأ تسجيلًا مكررًا');
+    });
+
+    await step('إدارة الصف: ملف الطالب (تبويب «الصف») يجمع ما سُجّل: الأعداد والأسباب والخط الزمني، وتقريره Excel وPDF وطباعته', async () => {
+      const name = classRoster[2];
+      const sess = await apiGet(page, classApi);
+      const studentId = sess.students.find((x) => x.fullName === name).studentId;
+      await page.goto(`/students/${studentId}?tab=class`);
+      await page.getByRole('tab', { name: 'الصف', selected: true }).waitFor();
+      await page.getByText('الخط الزمني').waitFor();
+      const rep = await apiGet(page, `/class/students/${studentId}`);
+      expect(rep.counts.negative >= 1 && rep.counts.positive >= 1 && rep.totalSessions >= 5, `أعداد التقرير: ${JSON.stringify(rep.counts)}`);
+      await page.getByText('إزعاج الزملاء').first().waitFor(); // السبب ظاهر في ملخص الأسباب والخط الزمني
+      await page.getByText(/الحصة\s*11/).first().waitFor();
+      // تصفية الخط الزمني بالنوع
+      await page.getByRole('radiogroup', { name: 'تصفية الخط الزمني' }).getByRole('radio', { name: 'غير حسن' }).click();
+      await page.waitForFunction((n) => document.querySelectorAll('ol > li').length === n, rep.sessions.filter((g) => g.records.some((r) => r.kind === 'negative')).length);
+      // التقرير: Excel وPDF حقيقيان، والطباعة تفتح تقرير HTML بالأرقام نفسها
+      await page.getByRole('button', { name: 'تقرير المشاركة والسلوك' }).click();
+      const [dx] = await Promise.all([page.waitForEvent('download'), page.getByRole('menuitem', { name: 'تنزيل Excel' }).click()]);
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(fs.readFileSync(await dx.path()));
+      const cells = [];
+      wb.worksheets[0].eachRow((r) => r.eachCell((c) => cells.push(String(c.value))));
+      expect(cells.includes(name) && cells.some((v) => v.includes('إزعاج الزملاء')), 'Excel لا يحمل اسم الطالب وأسباب سلوكه');
+      await page.getByRole('button', { name: 'تقرير المشاركة والسلوك' }).click();
+      const [dp] = await Promise.all([page.waitForEvent('download'), page.getByRole('menuitem', { name: 'تنزيل PDF' }).click()]);
+      expect(fs.readFileSync(await dp.path()).subarray(0, 4).toString() === '%PDF', 'تقرير الطالب المنزَّل ليس PDF');
+      await page.getByRole('button', { name: 'تقرير المشاركة والسلوك' }).click();
+      const [popup] = await Promise.all([page.context().waitForEvent('page'), page.getByRole('menuitem', { name: 'طباعة' }).click()]);
+      await popup.waitForLoadState();
+      const html = await popup.content();
+      expect(html.includes('تقرير المشاركة والسلوك الصفي') && html.includes(name) && html.includes('إزعاج الزملاء'), 'ورقة الطباعة ناقصة');
+      await popup.close();
+      // تبويب «الملاحظات» العامة يشير إلى مكان تسجيل السلوك
+      await page.getByRole('tab', { name: /الملاحظات/ }).click();
+      await page.getByRole('link', { name: 'إدارة الصف' }).first().waitFor();
+    });
+
+    await step('إدارة الصف: التقارير — النوعان الجديدان يُعاينان من صفحة التقارير بمعاييرهما، وتقرير الشعبة Excel بورقتين', async () => {
+      await page.goto(`/reports?type=class-section&assignment=${asg.id}`);
+      const frame = page.frameLocator('iframe');
+      await frame.getByText('سجل المشاركة والسلوك الصفي').first().waitFor({ timeout: 25_000 });
+      await frame.getByText(classRoster[0]).first().waitFor();
+      const [dx] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Excel' }).click()]);
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(fs.readFileSync(await dx.path()));
+      expect(wb.worksheets.length === 2 && wb.worksheets[1].name === 'الحصص', `أوراق Excel: ${wb.worksheets.map((w) => w.name).join('، ')}`);
+      // تقرير الطالب: الشعبة ← الطالب ← كل الفترات
+      await page.getByRole('radio', { name: /تقرير المشاركة والسلوك للطالب/ }).click();
+      await page.getByLabel('الشعبة', { exact: true }).selectOption({ index: 1 });
+      await page.getByLabel(/^الطالب/).selectOption({ index: 1 });
+      await page.getByLabel('كل الفترات').check();
+      await frame.getByText('تقرير المشاركة والسلوك الصفي').first().waitFor({ timeout: 25_000 });
+      const [dp] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'تنزيل PDF' }).click()]);
+      expect(fs.readFileSync(await dp.path()).subarray(0, 4).toString() === '%PDF', 'تقرير الطالب PDF ليس PDF');
+    });
+
+    await step('إدارة الصف: لوحة التحكم تعرض «إدارة الصف» وبطاقة «متابعة الصف» وتفتح ملف طالب في تبويبه', async () => {
+      await page.goto('/');
+      await page.getByRole('heading', { name: 'متابعة الصف' }).waitFor();
+      await page.getByRole('link', { name: 'إدارة الصف' }).first().waitFor();
+      const dash = await apiGet(page, '/dashboard');
+      expect(dash.classroom.total > 100 && dash.classroom.negativeRecent.length > 0, `لوحة الصف: ${dash.classroom.total}`);
+      await page.getByRole('link', { name: new RegExp(dash.classroom.negativeRecent[0].fullName.split(' ')[0]) }).first().click();
+      await page.getByRole('tab', { name: 'الصف', selected: true }).waitFor();
+      await page.getByText('الخط الزمني').waitFor();
+    });
+
+    await step('إدارة الصف: الجوال والوضع الداكن — لا تمرير أفقي، أزرار بحجم لمس كافٍ، والصفحة ونافذة السلوك بلا مخالفات axe', async () => {
+      const m = await newSession(browser, srv.base, 'class-mobile', { viewport: MOBILE, colorScheme: 'dark' });
+      try {
+        await login(m.page, PW.demo);
+        await m.page.goto(classUrl);
+        await m.page.locator('[data-student]').first().waitFor();
+        const overflow = await m.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow <= 1, `تمرير أفقي ${overflow}px`);
+        // أزرار التسجيل السريع (لا شرائح × الصغيرة) بحجم لمس لا يقل عن 38px
+        const small = await m.page.evaluate(() => [...document.querySelectorAll('[data-student] [role=group] button')].filter((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && (r.height < 38 || r.width < 38); }).length);
+        expect(small === 0, `${small} زرًّا أصغر من 38px`);
+        await expectNoAxe(m.page, 'حصة الصف على الجوال (داكن)');
+        await m.page.locator('[data-student]').first().getByRole('button', { name: /^سلوك غير حسن —/ }).click();
+        await m.page.getByRole('dialog').waitFor();
+        await expectNoAxe(m.page, 'نافذة تسجيل السلوك على الجوال (داكن)');
+        const dOverflow = await m.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(dOverflow <= 1, `تمرير أفقي مع النافذة ${dOverflow}px`);
+        await m.page.getByRole('dialog').getByRole('button', { name: 'إلغاء' }).click();
+        await m.page.goto('/class?tab=summary');
+        await m.page.locator('tbody tr').first().waitFor();
+        await expectNoAxe(m.page, 'ملخص الشعبة على الجوال (داكن)');
+      } finally {
+        await m.ctx.close();
+      }
+    });
+
+    await step('إدارة الصف: حصة مستقبلية ومقرر مجهول يُرفضان، ومسح تسجيلات الحصة بتأكيد', async () => {
+      allowProblem(/http 400: PUT \/api\/class\/participation/);
+      allowProblem(/http 404: GET \/api\/class\/session/);
+      const sid = (await apiGet(page, classApi)).students[0].studentId;
+      const future = await apiStatus(page, '/class/participation', 'PUT', { assignmentId: asg.id, studentId: sid, date: '2999-01-01', count: 1 });
+      expect(future === 400, `حصة مستقبلية: ${future}`);
+      expect((await apiStatus(page, '/class/session?assignmentId=00000000-0000-4000-8000-000000000000&date=2026-10-01')) === 404, 'مقرر مجهول يجب أن يكون 404');
+      // مسح تسجيلات الحصة التجريبية بتأكيد (تنظيف + اختبار الإجراء)
+      await page.goto(classUrl);
+      await page.locator('[data-student]').first().waitFor();
+      await page.getByRole('button', { name: 'المزيد', exact: true }).first().click();
+      await page.getByRole('menuitem', { name: 'مسح تسجيلات هذه الحصة' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'مسح', exact: true }).click();
+      await toast(page, /مُسحت تسجيلات هذه الحصة/).waitFor();
+      const left = (await apiGet(page, classApi)).students;
+      expect(left.every((x) => x.participation === null && x.records.length === 0), 'بقيت تسجيلات بعد المسح');
+    });
+
     await step('المهام: إضافة سريعة ← إنجاز ← تظهر في «المنجزة» ← حذف بتأكيد', async () => {
       await page.goto('/tasks');
       const title = 'تجهيز أوراق عمل الوحدة الثالثة';
@@ -1465,6 +1716,10 @@ async function phaseVisual(browser, srv) {
     ['support', '/support'],
     ['support-plan', `/support/${plans[0].id}`],
     ['lab', '/lab'],
+    ['class', '/class'],
+    ['class-summary', `/class?tab=summary&assignment=${asg.id}`],
+    ['class-session', `/class/session?assignment=${asg.id}&date=${new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Muscat' })}`],
+    ['student-class', `/students/${roster[0].student.id}?tab=class`],
     ['reports', '/reports'],
     ['settings', '/settings'],
   ];

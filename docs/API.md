@@ -1,7 +1,7 @@
 # مرجع الواجهة البرمجية (API)
 
 > **مولَّد تلقائيًا** من المسارات المسجّلة فعليًا بالأمر `npm run docs:api` — لا تعدّله يدويًا.
-> عدد المسارات: **111**.
+> عدد المسارات: **121**.
 
 ## قواعد عامة
 
@@ -163,6 +163,56 @@
 | `DELETE` | `/api/tasks/:id` | مسجَّل الدخول |
 | `PATCH` | `/api/tasks/:id` | مسجَّل الدخول |
 
+## الخطط العلاجية والإثرائية
+
+| الطريقة | المسار | الصلاحية |
+|---|---|---|
+| `GET` | `/api/support-plans` | مسجَّل الدخول |
+| `POST` | `/api/support-plans` | مسجَّل الدخول |
+| `DELETE` | `/api/support-plans/:id` | مسجَّل الدخول |
+| `GET` | `/api/support-plans/:id` | مسجَّل الدخول |
+| `PATCH` | `/api/support-plans/:id` | مسجَّل الدخول |
+| `POST` | `/api/support-plans/:id/notes` | مسجَّل الدخول |
+| `DELETE` | `/api/support-plans/:id/notes/:noteId` | مسجَّل الدخول |
+| `PATCH` | `/api/support-plans/:id/notes/:noteId` | مسجَّل الدخول |
+| `POST` | `/api/support-plans/bulk` | مسجَّل الدخول |
+| `GET` | `/api/support-plans/suggestions` | مسجَّل الدخول |
+
+## سجل المختبر والأنشطة
+
+| الطريقة | المسار | الصلاحية |
+|---|---|---|
+| `GET` | `/api/lab-activities` | مسجَّل الدخول |
+| `POST` | `/api/lab-activities` | مسجَّل الدخول |
+| `DELETE` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `GET` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `PATCH` | `/api/lab-activities/:id` | مسجَّل الدخول |
+| `POST` | `/api/lab-activities/:id/copy` | مسجَّل الدخول |
+
+## إدارة الصف
+
+| الطريقة | المسار | الصلاحية |
+|---|---|---|
+| `GET` | `/api/class/overview` | مسجَّل الدخول |
+| `PUT` | `/api/class/participation` | مسجَّل الدخول |
+| `POST` | `/api/class/records` | مسجَّل الدخول |
+| `DELETE` | `/api/class/records/:id` | مسجَّل الدخول |
+| `PATCH` | `/api/class/records/:id` | مسجَّل الدخول |
+| `DELETE` | `/api/class/session` | مسجَّل الدخول |
+| `GET` | `/api/class/session` | مسجَّل الدخول |
+| `POST` | `/api/class/session/mark-rest` | مسجَّل الدخول |
+| `GET` | `/api/class/students/:id` | مسجَّل الدخول |
+| `GET` | `/api/class/summary` | مسجَّل الدخول |
+
+## المساعد الذكي
+
+| الطريقة | المسار | الصلاحية |
+|---|---|---|
+| `POST` | `/api/ai/run` | مسجَّل الدخول |
+| `GET` | `/api/ai/settings` | المدير فقط |
+| `PATCH` | `/api/ai/settings` | المدير فقط |
+| `GET` | `/api/ai/status` | مسجَّل الدخول |
+
 ## لوحة التحكم
 
 | الطريقة | المسار | الصلاحية |
@@ -198,29 +248,4 @@
 |---|---|---|
 | `GET` | `/api/health` | عام |
 | `GET` | `/api/system/info` | عام |
-
-## أخرى
-
-| الطريقة | المسار | الصلاحية |
-|---|---|---|
-| `POST` | `/api/ai/run` | مسجَّل الدخول |
-| `GET` | `/api/ai/settings` | المدير فقط |
-| `PATCH` | `/api/ai/settings` | المدير فقط |
-| `GET` | `/api/ai/status` | مسجَّل الدخول |
-| `GET` | `/api/lab-activities` | مسجَّل الدخول |
-| `POST` | `/api/lab-activities` | مسجَّل الدخول |
-| `DELETE` | `/api/lab-activities/:id` | مسجَّل الدخول |
-| `GET` | `/api/lab-activities/:id` | مسجَّل الدخول |
-| `PATCH` | `/api/lab-activities/:id` | مسجَّل الدخول |
-| `POST` | `/api/lab-activities/:id/copy` | مسجَّل الدخول |
-| `GET` | `/api/support-plans` | مسجَّل الدخول |
-| `POST` | `/api/support-plans` | مسجَّل الدخول |
-| `DELETE` | `/api/support-plans/:id` | مسجَّل الدخول |
-| `GET` | `/api/support-plans/:id` | مسجَّل الدخول |
-| `PATCH` | `/api/support-plans/:id` | مسجَّل الدخول |
-| `POST` | `/api/support-plans/:id/notes` | مسجَّل الدخول |
-| `DELETE` | `/api/support-plans/:id/notes/:noteId` | مسجَّل الدخول |
-| `PATCH` | `/api/support-plans/:id/notes/:noteId` | مسجَّل الدخول |
-| `POST` | `/api/support-plans/bulk` | مسجَّل الدخول |
-| `GET` | `/api/support-plans/suggestions` | مسجَّل الدخول |
 

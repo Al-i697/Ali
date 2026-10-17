@@ -5,6 +5,7 @@ import type {
   AiTaskName,
   AssessmentMode,
   AssessmentType,
+  ClassRecordKind,
   Gender,
   GradingSettings,
   LabKind,
@@ -439,6 +440,209 @@ export type LabStats = { planned: number; done: number; cancelled: number; overd
 
 export type LabActivitiesPage = { items: LabActivitySummaryDto[]; total: number; stats: LabStats };
 
+// ───────────── إدارة الصف: المشاركة والسلوك داخل الحصة ─────────────
+/** سلوك إيجابي / غير حسن / ملاحظة سُجّلت على طالب في حصة */
+export type ClassRecordDto = {
+  id: string;
+  studentId: string;
+  /** null ⇒ حُذف مقرر الحصة بعد التسجيل (يبقى التسجيل توثيقًا لما جرى) */
+  assignmentId: string | null;
+  date: string;
+  /** null ⇒ لم تُحدَّد الحصة */
+  period: number | null;
+  kind: ClassRecordKind;
+  reason: string | null;
+  note: string | null;
+  createdAt: string;
+};
+
+/** مجموع ما سُجّل لطالب (في حصة واحدة أو فترة أو مقرر) */
+export type ClassCountsDto = {
+  /** حصص فيها أي تسجيل لهذا الطالب */
+  sessions: number;
+  /** حصص شارك فيها */
+  participatedSessions: number;
+  /** حصص سُجّل له فيها «لم يشارك» */
+  noParticipationSessions: number;
+  /** مجموع مرات المشاركة */
+  participations: number;
+  positive: number;
+  negative: number;
+  notes: number;
+  /** نسبة الحصص التي شارك فيها من الحصص التي سُجّلت له فيها المشاركة (شارك + لم يشارك)؛ null إن لم تُسجَّل مشاركة */
+  rate: number | null;
+};
+
+/** تنبيهات المتابعة في الملخص: لم يشارك مطلقًا / قليل المشاركة / ملاحظات غير حسنة كثيرة */
+export type ClassFlag = 'silent' | 'low' | 'concern';
+
+export type ClassSessionStudentDto = {
+  studentId: string;
+  rollNo: number;
+  fullName: string;
+  gender: Gender | null;
+  /** null ⇒ لم تُسجَّل بعد، 0 ⇒ لم يشارك، n ⇒ شارك n مرة */
+  participation: number | null;
+  /** تسجيلات هذه الحصة (الأقدم أولًا) */
+  records: ClassRecordDto[];
+  /** ما سُجّل له في هذا المقرر قبل هذه الحصة — سياق للمعلم أثناء الحصة، ولا يتغير بما يسجّله فيها */
+  before: ClassCountsDto;
+};
+
+export type ClassSessionTotals = {
+  students: number;
+  /** شاركوا مرة فأكثر */
+  participating: number;
+  /** سُجّل لهم «لم يشارك» */
+  didNotParticipate: number;
+  /** لم يُسجَّل لهم شيء في المشاركة */
+  unrecorded: number;
+  participations: number;
+  positive: number;
+  negative: number;
+  notes: number;
+};
+
+export type ClassSessionDto = {
+  assignment: AssignmentDto;
+  date: string;
+  period: number | null;
+  /** تحضير الدرس لهذه الحصة إن وُجد */
+  lesson: { id: string; title: string } | null;
+  students: ClassSessionStudentDto[];
+  totals: ClassSessionTotals;
+};
+
+export type ClassSessionSummaryDto = {
+  key: string;
+  assignmentId: string | null;
+  sectionLabel: string | null;
+  subjectName: string | null;
+  subjectColor: string | null;
+  date: string;
+  period: number | null;
+  lessonTitle: string | null;
+  /** طلاب سُجّل لهم أي شيء في هذه الحصة */
+  recordedStudents: number;
+  participating: number;
+  didNotParticipate: number;
+  participations: number;
+  positive: number;
+  negative: number;
+  notes: number;
+};
+
+export type ClassSlotDto = {
+  slotId: string;
+  period: number;
+  start: string | null;
+  end: string | null;
+  assignment: AssignmentDto;
+  room: string | null;
+  /** طلاب الشعبة المقيَّدون */
+  studentCount: number;
+  /** ما سُجّل لهذه الحصة اليوم (null ⇒ لم يبدأ التسجيل) */
+  session: ClassSessionSummaryDto | null;
+  state: 'past' | 'current' | 'upcoming' | 'unknown';
+};
+
+export type ClassOverviewDto = {
+  today: string;
+  weekday: number;
+  slots: ClassSlotDto[];
+  /** آخر الحصص المسجّلة (الأحدث أولًا) */
+  recent: ClassSessionSummaryDto[];
+  /** إجمالي ما سُجّل — لإخفاء الإرشادات عمّن بدأ الاستعمال */
+  total: number;
+};
+
+export type ClassSummaryRowDto = {
+  studentId: string;
+  rollNo: number;
+  fullName: string;
+  gender: Gender | null;
+  counts: ClassCountsDto;
+  flags: ClassFlag[];
+  lastDate: string | null;
+};
+
+export type ClassSummaryDto = {
+  sectionId: string;
+  sectionLabel: string;
+  /** null ⇒ كل مواد الشعبة */
+  assignmentId: string | null;
+  subjectName: string | null;
+  from: string | null;
+  to: string | null;
+  /** حصص مختلفة سُجّل فيها شيء */
+  sessions: number;
+  totals: Omit<ClassCountsDto, 'sessions'>;
+  rows: ClassSummaryRowDto[];
+  recent: ClassSessionSummaryDto[];
+};
+
+export type ClassSessionGroupDto = {
+  key: string;
+  date: string;
+  period: number | null;
+  assignmentId: string | null;
+  sectionLabel: string | null;
+  subjectName: string | null;
+  subjectColor: string | null;
+  lessonTitle: string | null;
+  /** null ⇒ لم تُسجَّل مشاركة في هذه الحصة */
+  participation: number | null;
+  records: ClassRecordDto[];
+};
+
+export type ClassReasonCount = { kind: ClassRecordKind; reason: string; count: number };
+
+export type ClassStudentSubjectDto = {
+  assignmentId: string | null;
+  sectionLabel: string | null;
+  subjectName: string | null;
+  subjectColor: string | null;
+  counts: ClassCountsDto;
+};
+
+export type ClassStudentReportDto = {
+  student: StudentDto;
+  assignmentId: string | null;
+  from: string | null;
+  to: string | null;
+  counts: ClassCountsDto;
+  /** نسبة مشاركة شعبته في الفترة نفسها للمقارنة (null ⇒ لا بيانات أو لا شعبة) */
+  sectionRate: number | null;
+  bySubject: ClassStudentSubjectDto[];
+  /** كل المقررات التي سُجّل له فيها شيء في الفترة (لتصفية التقرير) */
+  assignments: { id: string; label: string }[];
+  reasons: ClassReasonCount[];
+  /** الأحدث أولًا، بحد أقصى limit */
+  sessions: ClassSessionGroupDto[];
+  totalSessions: number;
+};
+
+export type ClassAttentionDto = {
+  studentId: string;
+  fullName: string;
+  sectionLabel: string;
+  /** عدد الملاحظات «غير الحسنة» (للسلوك) أو الحصص التي سُجّلت مشاركتها (لقلة المشاركة) */
+  count: number;
+  /** نسبة المشاركة (لقلة المشاركة فقط) */
+  rate: number | null;
+  /** أحدث سبب أو ملاحظة (للسلوك فقط) */
+  reason: string | null;
+};
+
+export type ClassDashboardDto = {
+  /** إجمالي ما سُجّل — لإخفاء البطاقة عمّن لم يستعمل الوحدة بعد */
+  total: number;
+  /** طلاب لهم ملاحظات «غير حسنة» في آخر 14 يومًا */
+  negativeRecent: ClassAttentionDto[];
+  /** قليلو المشاركة في آخر 30 يومًا */
+  lowParticipation: ClassAttentionDto[];
+};
+
 // ───────────── المساعد الذكي ─────────────
 export type AiProviderInfo = {
   id: string;
@@ -509,6 +713,8 @@ export type DashboardTodaySlot = {
   lesson: { id: string; title: string; status: LessonStatus } | null;
   /** آخر تحضير سابق لنفس المقرر يمكن نسخه */
   lastLesson: { id: string; title: string; date: string } | null;
+  /** طلاب سُجّل لهم شيء في إدارة الصف لهذه الحصة اليوم */
+  classRecorded: number;
   state: 'past' | 'current' | 'upcoming' | 'unknown';
 };
 
@@ -549,6 +755,7 @@ export type DashboardDto = {
   support: { open: number; due: number };
   /** أنشطة المختبر: القادمة (اليوم فما بعد)، وعدد ما فات موعده دون تسجيل تنفيذه، وإجمالي ما سُجِّل (لإخفاء البطاقة عمّن لا يستخدمها) */
   lab: { upcoming: LabActivitySummaryDto[]; overdue: number; total: number };
+  classroom: ClassDashboardDto;
 };
 
 // ───────────── التقارير والنسخ الاحتياطي ─────────────

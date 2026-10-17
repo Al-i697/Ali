@@ -417,6 +417,44 @@ export type AiTaskName = (typeof AI_TASK.values)[number];
 /** حدود ما يُرسَل إلى المساعد (حروف). المجموع ≤ totalChars يُفرض في الخادم بعد التنقية */
 export const AI_LIMITS = { totalChars: 4000, title: 200, objective: 400, objectives: 8, notes: 800, focus: 1200 } as const;
 
+// ───────────── إدارة الصف: المشاركة والسلوك داخل الحصة ─────────────
+/**
+ * التسجيلات النصية على الطالب في الحصة. أما المشاركة فعدّاد لكل (طالب × حصة) في جدول مستقل:
+ * لم يُسجَّل شيء ← لم يشارك (0) ← شارك مرة أو أكثر (n).
+ */
+export const CLASS_RECORD_KIND = defineEnum([
+  { value: 'positive', label: 'سلوك إيجابي' },
+  { value: 'negative', label: 'سلوك غير حسن' },
+  { value: 'note', label: 'ملاحظة' },
+] as const);
+export type ClassRecordKind = (typeof CLASS_RECORD_KIND.values)[number];
+
+export const CLASS_LIMITS = {
+  /** السبب المختصر (من القائمة الجاهزة أو يكتبه المعلم) — يُجمَّع عليه في التقارير */
+  reason: 80,
+  /** تفاصيل إضافية حرة */
+  note: 500,
+  /** أقصى عدد مرات مشاركة لطالب في حصة واحدة (يطابق قيد القاعدة class_part_count_chk) */
+  maxParticipation: 50,
+} as const;
+
+/** أسباب جاهزة تُسجَّل بنقرة ويمكن كتابة غيرها (لا تقيّد المعلم) */
+export const CLASS_REASON_PRESETS: Record<ClassRecordKind, readonly string[]> = {
+  positive: ['مشاركة متميزة', 'تعاون مع زملائه', 'مساعدة زميل', 'التزام بالهدوء والنظام', 'مبادرة وحماس', 'أداء الواجب بإتقان', 'احترام المعلم والزملاء', 'قيادة مجموعته'],
+  negative: ['حديث جانبي', 'عدم إحضار الكتاب أو الأدوات', 'عدم أداء الواجب', 'إزعاج الزملاء', 'استخدام الجوال', 'خروج من الصف دون إذن', 'عدم الانتباه', 'عدم احترام المعلم أو الزملاء', 'مشاجرة'],
+  note: ['يحتاج إلى متابعة', 'تحسّن ملحوظ', 'يحتاج إلى مساعدة في الفهم', 'تواصل مع ولي الأمر', 'ظروف خاصة'],
+};
+
+/** عتبات التنبيه في ملخص الشعبة. هي مؤشرات للمتابعة لا أحكام، وتُعرض للمعلم بمعناها */
+export const CLASS_FLAGS = {
+  /** لا يُنبَّه على قلة المشاركة قبل تسجيلها في هذا العدد من الحصص على الأقل */
+  minSessions: 4,
+  /** نسبة مشاركة (%) أقل منها = قليل المشاركة */
+  lowRate: 25,
+  /** عدد الملاحظات «غير الحسنة» الذي يستدعي المتابعة */
+  concernNegative: 3,
+} as const;
+
 // ───────────── التقارير ─────────────
 export const REPORT_TYPE = defineEnum([
   { value: 'class-gradebook', label: 'كشف درجات الشعبة' },
@@ -426,6 +464,8 @@ export const REPORT_TYPE = defineEnum([
   { value: 'lesson-plan', label: 'ورقة تحضير الدرس' },
   { value: 'support-plans', label: 'الخطط العلاجية والإثرائية' },
   { value: 'lab-log', label: 'سجل المختبر والأنشطة' },
+  { value: 'class-student', label: 'تقرير المشاركة والسلوك للطالب' },
+  { value: 'class-section', label: 'سجل المشاركة والسلوك للشعبة' },
 ] as const);
 export type ReportType = (typeof REPORT_TYPE.values)[number];
 

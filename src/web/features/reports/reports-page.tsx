@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, FlaskConical, HeartHandshake, Loader2, Printer, TrendingUp, UserRound } from 'lucide-react';
+import { BookOpenCheck, ClipboardList, Download, ExternalLink, FileBarChart, FileSpreadsheet, FileText, FlaskConical, HeartHandshake, ListChecks, Loader2, MessagesSquare, Printer, TrendingUp, UserRound } from 'lucide-react';
 import { LAB_KIND, LAB_STATUS, REPORT_TYPE, SUPPORT_KIND, SUPPORT_STATUS, type LabKind, type LabStatus, type ReportType, type SupportKind, type SupportStatus } from '@shared/constants';
 import { useAcademic } from '@/context/academic';
 import { useAuth } from '@/context/auth';
@@ -21,6 +21,8 @@ const TYPES: { value: ReportType; icon: typeof FileText; desc: string }[] = [
   { value: 'lesson-plan', icon: FileText, desc: 'أوراق تحضير مفصلة لفترة (كل درس في صفحة) جاهزة للطباعة.' },
   { value: 'support-plans', icon: HeartHandshake, desc: 'قائمة الخطط العلاجية والإثرائية بحالتها وأثرها على نسب الطلاب. (الخطة الفردية تُطبع من صفحتها).' },
   { value: 'lab-log', icon: FlaskConical, desc: 'سجل التجارب والأنشطة العملية لفترة: نوعها ومكانها وحالتها وعدد المشاركين. (ورقة النشاط الواحد تُطبع من صفحة المختبر).' },
+  { value: 'class-student', icon: MessagesSquare, desc: 'كل ما سُجّل على طالب في الحصص: مشاركته ونسبتها وسلوكه وملاحظاته بخط زمني كامل.' },
+  { value: 'class-section', icon: ListChecks, desc: 'مشاركة وسلوك كل طلاب الشعبة في جدول واحد مع مؤشرات من يحتاج متابعة وقائمة الحصص.' },
 ];
 
 type Params = {
@@ -37,6 +39,8 @@ type Params = {
   supportStatus: '' | SupportStatus;
   labKind: '' | LabKind;
   labStatus: '' | LabStatus;
+  /** تقارير إدارة الصف: كل الفترات بدل المدى من/إلى */
+  classAll: boolean;
 };
 
 function ready(type: ReportType, p: Params): boolean {
@@ -54,6 +58,10 @@ function ready(type: ReportType, p: Params): boolean {
       return true;
     case 'lab-log':
       return !!p.from && !!p.to && p.to >= p.from;
+    case 'class-student':
+      return !!p.studentId && (p.classAll || (!!p.from && !!p.to && p.to >= p.from));
+    case 'class-section':
+      return !!p.assignmentId && (p.classAll || (!!p.from && !!p.to && p.to >= p.from));
   }
 }
 
@@ -71,6 +79,10 @@ function queryFor(type: ReportType, p: Params) {
       return { assignmentId: p.assignmentFilter || undefined, kind: p.supportKind || undefined, status: p.supportStatus || undefined };
     case 'lab-log':
       return { from: p.from, to: p.to, assignmentId: p.assignmentFilter || undefined, labKind: p.labKind || undefined, labStatus: p.labStatus || undefined };
+    case 'class-student':
+      return { studentId: p.studentId, assignmentId: p.assignmentFilter || undefined, ...(p.classAll ? { classAll: true } : { from: p.from, to: p.to }), includeNotes: p.includeNotes, includeGuardian: p.includeGuardian };
+    case 'class-section':
+      return { assignmentId: p.assignmentId, ...(p.classAll ? { classAll: true } : { from: p.from, to: p.to }) };
   }
 }
 
@@ -111,6 +123,19 @@ function PrintPreview({ html, title, frameRef }: { html: string; title: string; 
   );
 }
 
+/** فترة تقارير إدارة الصف: مدى من/إلى، أو «كل الفترات» */
+function PeriodFields({ p, set }: { p: Params; set: <K extends keyof Params>(k: K, v: Params[K]) => void }) {
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="من" required={!p.classAll}>{(f) => <Input {...f} type="date" value={p.from} disabled={p.classAll} onChange={(e) => set('from', e.target.value)} />}</Field>
+        <Field label="إلى" required={!p.classAll}>{(f) => <Input {...f} type="date" value={p.to} disabled={p.classAll} onChange={(e) => set('to', e.target.value)} />}</Field>
+      </div>
+      <Checkbox label="كل الفترات" checked={p.classAll} onChange={(e) => set('classAll', e.target.checked)} />
+    </>
+  );
+}
+
 export default function ReportsPage() {
   const [sp] = useSearchParams();
   const { year, term } = useAcademic();
@@ -135,6 +160,7 @@ export default function ReportsPage() {
     supportStatus: '',
     labKind: '',
     labStatus: '',
+    classAll: false,
   });
 
   // قيم افتراضية عند وصول البيانات
@@ -149,7 +175,7 @@ export default function ReportsPage() {
     }));
   }, [firstAssignment, term]);
 
-  const roster = useQuery({ queryKey: qk.roster(p.sectionId), queryFn: () => api.get<RosterEntryDto[]>(`/sections/${p.sectionId}/students`), enabled: type === 'student' && !!p.sectionId });
+  const roster = useQuery({ queryKey: qk.roster(p.sectionId), queryFn: () => api.get<RosterEntryDto[]>(`/sections/${p.sectionId}/students`), enabled: (type === 'student' || type === 'class-student') && !!p.sectionId });
   const set = <K extends keyof Params>(k: K, v: Params[K]) => setP((c) => ({ ...c, [k]: v }));
 
   const isReady = ready(type, p);
@@ -230,7 +256,7 @@ export default function ReportsPage() {
                 </Field>
               </>
             )}
-            {type === 'student' && (
+            {(type === 'student' || type === 'class-student') && (
               <>
                 <Field label="الشعبة">
                   {(f) => (
@@ -249,18 +275,45 @@ export default function ReportsPage() {
                     </Select>
                   )}
                 </Field>
-                <Field label="الفصل الدراسي">
-                  {(f) => (
-                    <Select {...f} value={p.termId} onChange={(e) => set('termId', e.target.value)}>
-                      {year?.terms.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-                    </Select>
-                  )}
-                </Field>
+                {type === 'student' ? (
+                  <Field label="الفصل الدراسي">
+                    {(f) => (
+                      <Select {...f} value={p.termId} onChange={(e) => set('termId', e.target.value)}>
+                        {year?.terms.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                      </Select>
+                    )}
+                  </Field>
+                ) : (
+                  <>
+                    <PeriodFields p={p} set={set} />
+                    <Field label="المادة">
+                      {(f) => (
+                        <Select {...f} value={p.assignmentFilter} onChange={(e) => set('assignmentFilter', e.target.value)}>
+                          <option value="">كل المواد</option>
+                          {(assignments.data ?? []).map((a) => <option key={a.id} value={a.id}>{a.sectionLabel} — {a.subjectName}</option>)}
+                        </Select>
+                      )}
+                    </Field>
+                  </>
+                )}
                 <div className="space-y-2.5 rounded-xl bg-surface-2 p-3">
                   <Checkbox label="تضمين ملاحظات المعلم" checked={p.includeNotes} onChange={(e) => set('includeNotes', e.target.checked)} />
                   <Checkbox label="تضمين بيانات ولي الأمر" checked={p.includeGuardian} onChange={(e) => set('includeGuardian', e.target.checked)} />
                   <p className="text-[12.5px] text-muted">بيانات الطلاب الشخصية لا تُطبع إلا إن اخترت ذلك.</p>
                 </div>
+              </>
+            )}
+            {type === 'class-section' && (
+              <>
+                <Field label="الشعبة والمادة" required>
+                  {(f) => (
+                    <Select {...f} value={p.assignmentId} onChange={(e) => set('assignmentId', e.target.value)}>
+                      <option value="">اختر…</option>
+                      {(assignments.data ?? []).map((a) => <option key={a.id} value={a.id}>{a.sectionLabel} — {a.subjectName}</option>)}
+                    </Select>
+                  )}
+                </Field>
+                <PeriodFields p={p} set={set} />
               </>
             )}
             {type === 'support-plans' && (

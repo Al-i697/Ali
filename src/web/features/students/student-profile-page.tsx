@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { Link, useParams, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Download, FileText, Pencil, Phone, Plus, Printer, Trash2, UserRound } from 'lucide-react';
 import { NOTE_CATEGORY, STUDENT_STATUS, GENDER, MASTERY_LEVELS, type NoteCategory } from '@shared/constants';
@@ -20,6 +20,7 @@ import { Alert, Avatar, Badge, Button, Card, CardHeader, EmptyState, Field, Inpu
 import { MasteryBar, Ring } from '@/components/charts/charts';
 import { useAuth } from '@/context/auth';
 import { levelForPercent } from '@shared/gradebook';
+import { StudentClassTab } from '@/features/classroom/student-class-tab';
 import { StudentFormDialog } from './student-form';
 
 const catTone: Record<NoteCategory, 'info' | 'warn' | 'good' | 'neutral' | 'bad'> = { academic: 'info', behavior: 'warn', positive: 'good', attendance: 'neutral', other: 'neutral' };
@@ -87,6 +88,8 @@ export default function StudentProfilePage() {
   const confirm = useConfirm();
   const { year, term } = useAcademic();
   const { settings } = useAuth();
+  const [sp, setSp] = useSearchParams();
+  const tab = sp.get('tab') ?? 'performance';
   const q = useQuery({
     queryKey: qk.profile(studentId, term?.id),
     queryFn: () => api.get<StudentProfileDto>(`/students/${studentId}/profile`, { yearId: year?.id, termId: term?.id }),
@@ -130,9 +133,10 @@ export default function StudentProfilePage() {
         }
       />
 
-      <Tabs defaultValue="performance">
+      <Tabs value={tab} onValueChange={(v) => setSp({ tab: v }, { replace: true })}>
         <TabsList>
           <TabsTrigger value="performance">الأداء</TabsTrigger>
+          <TabsTrigger value="class">الصف</TabsTrigger>
           <TabsTrigger value="skills">المهارات {p.skills.length ? <Badge className="tnum">{fmt.num(p.skills.length)}</Badge> : null}</TabsTrigger>
           <TabsTrigger value="plans">الخطط</TabsTrigger>
           <TabsTrigger value="notes">الملاحظات {p.notes.length ? <Badge className="tnum">{fmt.num(p.notes.length)}</Badge> : null}</TabsTrigger>
@@ -196,6 +200,8 @@ export default function StudentProfilePage() {
           )}
         </TabsContent>
 
+        <TabsContent value="class"><StudentClassTab studentId={s.id} /></TabsContent>
+
         <TabsContent value="skills">
           {p.skills.length === 0 ? (
             <EmptyState icon={<UserRound className="size-6" />} title="لا مهارات مقيّمة بعد" description="أنشئ تقويمًا بنمط «مستوى إتقان» واربطه بمهارات المادة، فتظهر مهارات الطالب هنا وتتجمّع لتحديد من يحتاج علاجًا أو إثراءً." />
@@ -215,6 +221,9 @@ export default function StudentProfilePage() {
         <TabsContent value="plans"><PlansTab studentId={s.id} assignmentId={p.subjects[0]?.assignment.id} /></TabsContent>
 
         <TabsContent value="notes">
+          <Alert tone="info" className="mb-4">
+            هذه ملاحظاتك العامة عن الطالب. أما مشاركته وسلوكه داخل الحصص فتُسجَّل من <Link to="/class" className="font-semibold underline underline-offset-2">إدارة الصف</Link> وتظهر في تبويب «الصف».
+          </Alert>
           <div className="mb-4 flex justify-end"><Button variant="primary" icon={<Plus className="size-4" />} onClick={() => setNoteDlg({ note: null })}>إضافة ملاحظة</Button></div>
           {p.notes.length === 0 ? (
             <EmptyState icon={<FileText className="size-6" />} title="لا ملاحظات" description="دوّن ملاحظاتك الأكاديمية والسلوكية والإيجابية لتبقى مرجعًا في تقارير الطالب واجتماعات أولياء الأمور." />

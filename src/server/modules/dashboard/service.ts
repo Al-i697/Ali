@@ -16,6 +16,7 @@ import { getGradebook } from '../assessments/service';
 import { summarizeGradebook } from '../assessments/summary';
 import { listSections, listYears } from '../academic/service';
 import { getSettings } from '../settings/service';
+import { dashboardClass, todayRecorded } from '../classroom/service';
 import { dashboardLab } from '../lab/service';
 import { dashboardCounts as supportCounts } from '../support/service';
 import { listTasks } from '../tasks/service';
@@ -51,6 +52,8 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
     .where(and(eq(lessonPlans.ownerId, ownerId), eq(lessonPlans.isTemplate, false), eq(lessonPlans.date, today)))
     .all();
   const nowMin = timeToMinutes(now.time);
+  // طلاب سُجّل لهم شيء في إدارة الصف اليوم: بمطابقة رقم الحصة، وإلا بما سُجّل لمقررها بلا رقم حصة
+  const classToday = todayRecorded(db, ownerId, today);
   const todaySlots: DashboardTodaySlot[] = slots
     .filter((s) => s.weekday === now.weekday)
     .sort((a, b) => a.period - b.period)
@@ -85,6 +88,7 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
           room: s.room,
           lesson: lesson ? { id: lesson.id, title: lesson.title, status: lesson.status } : null,
           lastLesson: last,
+          classRecorded: classToday.get(`${s.assignmentId}|${s.period}`) ?? classToday.get(`${s.assignmentId}|0`) ?? 0,
           state,
         },
       ];
@@ -216,6 +220,7 @@ export function buildDashboard(db: Db, ownerId: string, now: { date: string; tim
     attention: attention.slice(0, 8),
     support: supportCounts(db, ownerId, today),
     lab: dashboardLab(db, ownerId, today, year?.startDate),
+    classroom: dashboardClass(db, ownerId, today),
   };
 }
 

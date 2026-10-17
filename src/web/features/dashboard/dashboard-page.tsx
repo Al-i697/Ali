@@ -14,6 +14,7 @@ import {
   FlaskConical,
   GraduationCap,
   HeartHandshake,
+  MessagesSquare,
   Plus,
   Rocket,
   Target,
@@ -167,11 +168,19 @@ function TodaySlots({ data }: { data: DashboardDto }) {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
+                <ButtonLink
+                  to={`/class/session?assignment=${s.assignment.id}&date=${data.today}&period=${s.period}`}
+                  variant={s.classRecorded ? 'soft' : 'primary'}
+                  size="sm"
+                  icon={<MessagesSquare className="size-4" />}
+                >
+                  {s.classRecorded ? <>إدارة الصف <span className="tnum">({fmt.num(s.classRecorded, 0)})</span></> : 'إدارة الصف'}
+                </ButtonLink>
                 {s.lesson ? (
                   <ButtonLink to={`/lessons/${s.lesson.id}`} variant="secondary" size="sm" icon={<BookOpenCheck className="size-4" />}>فتح التحضير</ButtonLink>
                 ) : (
                   <>
-                    <ButtonLink to={`/lessons/new?assignment=${s.assignment.id}&date=${data.today}&period=${s.period}`} variant="primary" size="sm" icon={<Plus className="size-4" />}>تحضير</ButtonLink>
+                    <ButtonLink to={`/lessons/new?assignment=${s.assignment.id}&date=${data.today}&period=${s.period}`} variant="secondary" size="sm" icon={<Plus className="size-4" />}>تحضير</ButtonLink>
                     {s.lastLesson ? (
                       <Button variant="soft" size="sm" icon={<Copy className="size-4" />} loading={copy.isPending && copy.variables?.slotId === s.slotId} onClick={() => copy.mutate(s)} title={`نسخ: ${s.lastLesson.title}`}>
                         نسخ الأخير
@@ -185,6 +194,64 @@ function TodaySlots({ data }: { data: DashboardDto }) {
           ))}
         </ul>
       )}
+    </Card>
+  );
+}
+
+// ───────────── متابعة الصف ─────────────
+/** سلوك يحتاج متابعة وقليلو المشاركة. تُخفى عمّن لم يسجّل شيئًا بعد كي لا تزدحم لوحته ببطاقة فارغة */
+function ClassCard({ data }: { data: DashboardDto }) {
+  const fmt = useFmt();
+  const { total, negativeRecent, lowParticipation } = data.classroom;
+  if (total === 0) return null;
+  const empty = negativeRecent.length === 0 && lowParticipation.length === 0;
+  return (
+    <Card>
+      <CardHeader
+        icon={<MessagesSquare className="size-[18px]" />}
+        title="متابعة الصف"
+        description="من تسجيلاتك في إدارة الصف"
+        action={<ButtonLink to="/class?tab=summary" variant="soft" size="sm">ملخص الشعب</ButtonLink>}
+      />
+      <div className="space-y-4 px-5 pb-4">
+        {empty ? <p className="py-3 text-center text-[14.5px] text-muted">لا ملاحظات غير حسنة مؤخرًا ولا قليلو مشاركة. 👌</p> : null}
+        {negativeRecent.length ? (
+          <div>
+            <div className="mb-1 flex items-center gap-2"><Badge tone="bad">سلوك غير حسن</Badge><span className="text-[12.5px] text-muted">آخر 14 يومًا</span></div>
+            <ul className="divide-y divide-line">
+              {negativeRecent.map((a) => (
+                <li key={a.studentId}>
+                  <Link to={`/students/${a.studentId}?tab=class`} className="flex items-center justify-between gap-3 py-2 hover:text-brand">
+                    <div className="min-w-0">
+                      <div className="truncate text-[14.5px] font-medium">{a.fullName}</div>
+                      <div className="truncate text-[12.5px] text-muted"><span className="tnum">{a.sectionLabel}</span>{a.reason ? <> — {a.reason}</> : null}</div>
+                    </div>
+                    <Badge tone="bad" className="tnum">×{fmt.num(a.count, 0)}</Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {lowParticipation.length ? (
+          <div>
+            <div className="mb-1 flex items-center gap-2"><Badge tone="warn">قليلو المشاركة</Badge><span className="text-[12.5px] text-muted">آخر 30 يومًا</span></div>
+            <ul className="divide-y divide-line">
+              {lowParticipation.map((a) => (
+                <li key={a.studentId}>
+                  <Link to={`/students/${a.studentId}?tab=class`} className="flex items-center justify-between gap-3 py-2 hover:text-brand">
+                    <div className="min-w-0">
+                      <div className="truncate text-[14.5px] font-medium">{a.fullName}</div>
+                      <div className="text-[12.5px] text-muted"><span className="tnum">{a.sectionLabel}</span> · <span className="tnum">{fmt.num(a.count, 0)}</span> حصة سُجّلت مشاركتها</div>
+                    </div>
+                    <Badge tone="warn" className="tnum">{fmt.pct(a.rate)}</Badge>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </div>
     </Card>
   );
 }
@@ -326,7 +393,8 @@ export default function DashboardPage() {
         }
         actions={
           <>
-            <ButtonLink to="/lessons/new" variant="primary" icon={<Plus className="size-4" />}>تحضير جديد</ButtonLink>
+            <ButtonLink to="/class" variant="primary" icon={<MessagesSquare className="size-4" />}>إدارة الصف</ButtonLink>
+            <ButtonLink to="/lessons/new" variant="secondary" icon={<Plus className="size-4" />}>تحضير جديد</ButtonLink>
             <ButtonLink to="/assessments" variant="secondary" icon={<GraduationCap className="size-4" />}>رصد الدرجات</ButtonLink>
             <ButtonLink to="/reports" variant="secondary" icon={<FileBarChart className="size-4" />}>التقارير</ButtonLink>
           </>
@@ -357,6 +425,8 @@ export default function DashboardPage() {
       <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="space-y-6">
           <TodaySlots data={data} />
+
+          <ClassCard data={data} />
 
           <Card>
             <CardHeader icon={<ClipboardList className="size-[18px]" />} title="سجلات غير مكتملة" description="تقويمات مضى موعدها ولم تُرصد درجات كل الطلاب" />

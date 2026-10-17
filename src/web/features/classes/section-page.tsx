@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowDownAZ, ArrowRight, BookOpenCheck, ClipboardList, FileBarChart, FileUp, History, MoveRight, Pencil, Plus, Trash2, UserMinus, UserRound, Users, UserPlus } from 'lucide-react';
+import { ArrowDownAZ, ArrowRight, BookOpenCheck, ClipboardList, FileBarChart, FileUp, History, MessagesSquare, MoveRight, Pencil, Plus, Trash2, UserMinus, UserRound, Users, UserPlus } from 'lucide-react';
 import { STUDENT_STATUS, gradeLabel } from '@shared/constants';
+import { todayISO } from '@shared/dates';
 import type { RosterEntryDto, SectionDto, SubjectDto, YearDto } from '@shared/dto';
 import { useAcademic } from '@/context/academic';
 import { api } from '@/lib/api';
@@ -146,6 +147,7 @@ function SubjectsTab({ section }: { section: SectionDto }) {
                 />
               </div>
               <div className="ms-auto flex flex-wrap items-center gap-1.5">
+                <ButtonLink to={`/class/session?assignment=${a.id}&date=${todayISO()}`} variant="soft" size="sm" icon={<MessagesSquare className="size-4" />}>إدارة الصف</ButtonLink>
                 <ButtonLink to={`/lessons/new?assignment=${a.id}`} variant="ghost" size="sm" icon={<BookOpenCheck className="size-4" />}>تحضير</ButtonLink>
                 <ButtonLink to={`/assessments/${a.id}`} variant="soft" size="sm" icon={<ClipboardList className="size-4" />}>الدرجات</ButtonLink>
                 <IconButton
@@ -218,6 +220,7 @@ export default function SectionPage() {
         description={<span className="flex flex-wrap items-center gap-2 pt-1">{s.assignments.map((a) => <SubjectChip key={a.id} name={a.subjectName} color={a.subjectColor} />)}<span className="text-muted">· {fmt.num(s.studentCount)} طالبًا</span></span>}
         actions={
           <>
+            {s.assignments[0] ? <ButtonLink to={`/class?tab=summary&assignment=${s.assignments[0].id}`} variant="secondary" icon={<MessagesSquare className="size-4" />}>إدارة الصف</ButtonLink> : null}
             {s.assignments[0] ? <ButtonLink to={`/reports?type=class-gradebook&assignment=${s.assignments[0].id}`} variant="secondary" icon={<FileBarChart className="size-4" />}>كشف الدرجات</ButtonLink> : null}
             <Button variant="secondary" icon={<Pencil className="size-4" />} onClick={() => setEditSection(true)}>تعديل</Button>
             <Button
@@ -305,6 +308,7 @@ export default function SectionPage() {
                         <td className="px-2 py-2">
                           <Menu align="end" trigger={<IconButton label={`إجراءات ${r.student.fullName}`} size="iconSm"><span className="text-xl leading-none">⋯</span></IconButton>}>
                             <MenuItem icon={<UserRound className="size-4" />} onSelect={() => navigate(`/students/${r.student.id}`)}>ملف الطالب</MenuItem>
+                            <MenuItem icon={<MessagesSquare className="size-4" />} onSelect={() => navigate(`/students/${r.student.id}?tab=class`)}>المشاركة والسلوك</MenuItem>
                             <MenuItem icon={<Pencil className="size-4" />} onSelect={() => setStudentForm({ student: r.student })}>تعديل البيانات</MenuItem>
                             <MenuItem icon={<MoveRight className="size-4" />} onSelect={() => setMoving(r.student)}>نقل إلى شعبة أخرى</MenuItem>
                             <MenuSeparator />

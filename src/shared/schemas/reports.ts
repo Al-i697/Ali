@@ -20,6 +20,8 @@ export const reportQuery = z.object({
   labStatus: z.enum(LAB_STATUS.values).optional(),
   /** كل الفترات: يتجاهل from/to (وإلا فالافتراضي الفصل الحالي) */
   labAll: bool.optional(),
+  /** كل الفترات في تقارير إدارة الصف (وإلا فالافتراضي الفصل الحالي) */
+  classAll: bool.optional(),
   from: dateSchema.optional(),
   to: dateSchema.optional(),
   includeNotes: bool.optional(),

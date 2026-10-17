@@ -21,7 +21,7 @@ export function Segmented<T extends string>({
   label?: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={label} className={cn('inline-flex rounded-xl bg-surface-3 p-1', className)}>
+    <div role="radiogroup" aria-label={label} className={cn('inline-flex max-w-full overflow-x-auto rounded-xl bg-surface-3 p-1', className)}>
       {options.map((o) => (
         <button
           key={o.value}
