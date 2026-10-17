@@ -57,6 +57,21 @@ const expect = (c, m) => {
   if (!c) throw new Error(m);
 };
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+/** ينتظر (حتى 8ث) أن تصدق الدالة: الكتابات في المحرّك تصل بعد زمن شبكة مصطنع وبالترتيب، فلا نفحص لحظة ظهورها في الواجهة فقط */
+async function until(fn, message, timeout = 8000) {
+  const end = Date.now() + timeout;
+  for (;;) {
+    let v;
+    try {
+      v = await fn();
+    } catch {
+      v = false;
+    }
+    if (v) return v;
+    if (Date.now() > end) throw new Error(message);
+    await pause(120);
+  }
+}
 
 const executablePath = ['/opt/pw-browsers/chromium', '/usr/bin/chromium', '/usr/bin/chromium-browser', process.env.CHROMIUM_PATH].find((p) => p && fs.existsSync(p));
 const browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
@@ -169,15 +184,13 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       await act(a.fullName, 'شارك').click();
       await act(a.fullName, 'شارك').click();
       await act(a.fullName, 'شارك').filter({ hasText: '2' }).waitFor();
-      expect((await part(a.studentId)).participation === 2, 'مشاركتان لم تُحسبا في المحرّك');
+      await until(async () => (await part(a.studentId)).participation === 2, 'مشاركتان لم تُحسبا في المحرّك');
       expect(await act(a.fullName, 'لم يشارك').isDisabled(), '«لم يشارك» يجب أن يُعطَّل لمن شارك');
       await act(a.fullName, 'تراجع عن مشاركة').click();
-      await pause(250);
-      expect((await part(a.studentId)).participation === 1, 'التراجع لم يُنقص المشاركة');
+      await until(async () => (await part(a.studentId)).participation === 1, 'التراجع لم يُنقص المشاركة');
 
       await act(b.fullName, 'لم يشارك').click();
-      await pause(250);
-      expect((await part(b.studentId)).participation === 0, '«لم يشارك» لم يُسجَّل');
+      await until(async () => (await part(b.studentId)).participation === 0, '«لم يشارك» لم يُسجَّل');
       expect((await act(b.fullName, 'لم يشارك').getAttribute('aria-pressed')) === 'true', 'الزر لا يعكس الحالة');
 
       await act(c.fullName, 'سلوك غير حسن').click();
@@ -188,6 +201,7 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       await dlg.getByLabel('تفاصيل (اختياري)').fill('تكرر أثناء الشرح');
       await dlg.getByRole('button', { name: 'حفظ', exact: true }).click();
       await classRow(c.fullName).getByRole('button', { name: /^تعديل: .*حديث جانبي/ }).waitFor();
+      await until(async () => (await part(c.studentId)).records.length === 1, 'سلوك الحصة لم يصل إلى المحرّك');
       const rec = (await part(c.studentId)).records[0];
       expect(rec?.kind === 'negative' && rec.reason === 'حديث جانبي' && rec.note === 'تكرر أثناء الشرح', `التسجيل المحفوظ: ${JSON.stringify(rec)}`);
       await expectClean(f, 'شاشة الحصة');
@@ -197,8 +211,8 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       await f.getByRole('button', { name: /لمن تبقّى/ }).click();
       await f.getByRole('dialog').getByRole('button', { name: 'تسجيل', exact: true }).click();
       await f.getByText(/سُجِّل «لم يشارك»/).first().waitFor();
+      await until(async () => (await apiGet(f, `/class/session?${q}`)).students.every((x) => x.participation !== null), 'بقي طلاب بلا تسجيل');
       const after = await apiGet(f, `/class/session?${q}`);
-      expect(after.students.every((x) => x.participation !== null), 'بقي طلاب بلا تسجيل');
       expect(after.students.find((x) => x.studentId === a.studentId).participation === 1, 'مُسّت مشاركة من شارك');
     });
 
@@ -250,6 +264,70 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       expect(foreign.status === 404, `طالب مجهول: ${foreign.status}`);
       const malformed = await call('PUT', '/class/participation', { ...base, studentId: 'not-a-student', count: 1 });
       expect(malformed.status === 400, `معرّف غير صالح: ${malformed.status}`);
+    });
+
+    await step('اللوحة العائمة: زر في كل صفحة ← تُفتح بحصة اليوم ← «شارك» وتراجع و«لم يشارك» وسلوك بسبب جاهز ← تبقى مفتوحة عند التنقل ← النافذة المنفصلة تشرح أنها في التطبيق الكامل', async () => {
+      await goto('/');
+      const fab = f.getByRole('button', { name: 'فتح لوحة المشاركة العائمة' });
+      await fab.waitFor();
+      await fab.click();
+      const fp = f.getByRole('region', { name: 'لوحة المشاركة العائمة' });
+      await fp.waitFor();
+      await fp.locator('[data-float-student]').first().waitFor();
+      const ov = await apiGet(f, '/class/overview');
+      const value = await fp.getByLabel('الحصة', { exact: true }).inputValue();
+      expect(ov.slots.some((s) => `${s.assignment.id}:${s.period}` === value), `الحصة الافتراضية ليست من جدول اليوم: ${value}`);
+      // حصص اليوم سُجّلت في خطوة سابقة: نعمل على حصة غير محددة لشعبة أخرى (نظيفة)
+      const otherValue = await fp.locator('optgroup[label="شعب أخرى (حصة غير محددة)"] option').first().getAttribute('value');
+      await fp.getByLabel('الحصة', { exact: true }).selectOption(otherValue);
+      await fp.locator('[data-float-student]').first().waitFor();
+      const [assignmentId, period] = otherValue.split(':');
+      const q = `assignmentId=${assignmentId}&date=${ov.today}${Number(period) ? `&period=${period}` : ''}`;
+      const stu = async (id) => (await apiGet(f, `/class/session?${q}`)).students.find((x) => x.studentId === id);
+      const fresh = (await apiGet(f, `/class/session?${q}`)).students.filter((x) => x.participation === null && x.records.length === 0);
+      expect(fresh.length >= 3, `طلاب بلا تسجيل: ${fresh.length}`);
+      const [a, b, c] = fresh;
+      const act = (name, label) => fp.getByRole('button', { name: `${label} — ${name}`, exact: true });
+
+      await act(a.fullName, 'شارك').click();
+      await act(a.fullName, 'شارك').click();
+      await until(async () => (await stu(a.studentId)).participation === 2, 'مشاركتان لم تُحسبا');
+      await act(a.fullName, 'تراجع عن مشاركة').click();
+      await until(async () => (await stu(a.studentId)).participation === 1, 'التراجع لم يُنقص المشاركة');
+      await act(b.fullName, 'لم يشارك').click();
+      await until(async () => (await stu(b.studentId)).participation === 0, '«لم يشارك» لم يُسجَّل');
+      await act(c.fullName, 'سلوك غير حسن').click();
+      await fp.getByRole('button', { name: 'حديث جانبي', exact: true }).click();
+      await fp.getByRole('button', { name: /^حذف تسجيل سلوك غير حسن/ }).waitFor();
+      await until(async () => (await stu(c.studentId)).records[0]?.reason === 'حديث جانبي', 'سلوك اللوحة لم يُسجَّل');
+      await expectClean(f, 'اللوحة العائمة');
+      await p.screenshot({ path: path.join(shotsDir, 'float-panel.png') });
+
+      // تبقى مفتوحة عند التنقل بين الصفحات (والحالة نفسها)
+      await goto('/lessons');
+      await fp.waitFor();
+      expect((await act(a.fullName, 'شارك').getAttribute('aria-pressed')) === 'true', 'المشاركة لم تظهر بعد التنقل');
+
+      // النافذة المنفصلة (فوق البرامج) لا تُفتح داخل إطار المعاينة: رسالة تشرح، واللوحة تبقى
+      await fp.getByRole('button', { name: /فتح في نافذة منفصلة/ }).click();
+      await f.getByText(/نافذة مستقلة.*في التطبيق الكامل/).first().waitFor();
+      await fp.waitFor();
+
+      // «لم يشارك» لمن تبقّى بتأكيد داخل اللوحة (لا حوار منبثق)
+      await fp.getByRole('button', { name: /لمن تبقّى/ }).click();
+      await fp.getByRole('group', { name: /تأكيد تسجيل/ }).getByRole('button', { name: 'تسجيل', exact: true }).click();
+      await until(async () => (await apiGet(f, `/class/session?${q}`)).students.every((x) => x.participation !== null), 'بقي طلاب بلا تسجيل بعد «لمن تبقّى»');
+      expect((await stu(a.studentId)).participation === 1, 'مُسّت مشاركة من شارك');
+
+      // تُغطّي اللوحة جزءًا من الصفحة (كأي نافذة عائمة): نغلقها لنفتح صفحة الحصة الكاملة، وفيها زر «نافذة عائمة» بلا زر عائم
+      await fp.getByRole('button', { name: 'إغلاق اللوحة' }).click();
+      await f.getByRole('button', { name: 'فتح لوحة المشاركة العائمة' }).waitFor();
+      await goto('/class');
+      await f.getByRole('link', { name: /تابع التسجيل|ابدأ التسجيل/ }).first().click();
+      await f.locator('[data-student]').first().waitFor();
+      expect((await f.getByRole('button', { name: 'فتح لوحة المشاركة العائمة' }).count()) === 0, 'الزر العائم ظاهر في صفحة الحصة الكاملة');
+      await f.getByRole('button', { name: 'نافذة عائمة' }).click();
+      await f.getByText(/نافذة مستقلة.*في التطبيق الكامل/).first().waitFor();
     });
 
     await step('تقارير الصف حيّة: تقرير الطالب وتقرير الشعبة يحويان ما سجّلتَه للتو (الاسم والسبب والمشاركة)', async () => {

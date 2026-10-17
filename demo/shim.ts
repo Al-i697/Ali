@@ -284,7 +284,7 @@ window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Res
 };
 
 window.open = () => {
-  notify('الطباعة وفتح التقارير في نافذة مستقلة تعملان في التطبيق الكامل.');
+  notify('فتح نافذة مستقلة (للتقارير أو لوحة المشاركة العائمة) يعمل في التطبيق الكامل.');
   return null;
 };
 window.print = () => notify('الطباعة تعمل في التطبيق الكامل.');

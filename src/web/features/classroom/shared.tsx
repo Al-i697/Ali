@@ -12,7 +12,7 @@ import { Badge, ProgressBar } from '@/components/ui';
 export const recordIcon: Record<ClassRecordKind, LucideIcon> = { positive: ThumbsUp, negative: ThumbsDown, note: MessageSquareText };
 export const recordTone = { positive: 'info', negative: 'bad', note: 'neutral' } as const;
 
-const chipTone = {
+export const chipTone = {
   positive: 'border-info/30 bg-info-soft text-info',
   negative: 'border-bad/30 bg-bad-soft text-bad',
   note: 'border-line-strong bg-surface-3 text-ink-2',

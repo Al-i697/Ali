@@ -1,22 +1,19 @@
-import { memo, useCallback, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
-import { ArrowRight, BookOpenCheck, CalendarDays, CheckCheck, CircleSlash, Eraser, FileBarChart, Hand, MessageSquarePlus, Minus, MoreHorizontal, Search, ThumbsDown, ThumbsUp, UserRound, Users } from 'lucide-react';
+import { ArrowRight, BookOpenCheck, CalendarDays, CheckCheck, CircleSlash, Eraser, FileBarChart, Hand, MessageSquarePlus, Minus, MoreHorizontal, PictureInPicture2, Search, ThumbsDown, ThumbsUp, UserRound, Users } from 'lucide-react';
 import { MAX_PERIODS, weekdayName } from '@shared/constants';
 import { isISODate, todayISO, weekdayOf } from '@shared/dates';
 import { normalizeArabic } from '@shared/arabic';
-import { sessionTotals } from '@shared/classroom';
-import type { ClassRecordDto, ClassSessionDto, ClassSessionStudentDto } from '@shared/dto';
+import type { ClassRecordDto, ClassSessionStudentDto } from '@shared/dto';
 import { useAcademic } from '@/context/academic';
-import { api, errorMessage } from '@/lib/api';
 import { cn } from '@/lib/cn';
 import { useFmt } from '@/lib/hooks';
-import { useAppMutation } from '@/lib/mutation';
-import { qk, useAssignments, useSettings } from '@/lib/queries';
+import { useAssignments, useSettings } from '@/lib/queries';
 import { Avatar, Badge, Button, ButtonLink, Card, EmptyState, Field, IconButton, Input, Menu, MenuItem, MenuSeparator, PageHeader, PageLoader, ProgressBar, QueryError, Segmented, Select, Stat, SubjectChip, useConfirm } from '@/components/ui';
 import { RecordDialog, type RecordTarget } from './record-dialog';
 import { ActionButton, HistoryLine, ParticipationBadge, RecordChip } from './shared';
+import { useFloatingClass } from './float/state';
+import { useClassSession } from './use-session';
 
 type Filter = 'all' | 'unrecorded' | 'participated' | 'silent' | 'behavior';
 
@@ -101,8 +98,8 @@ export default function ClassSessionPage() {
   const [sp, setSp] = useSearchParams();
   const fmt = useFmt();
   const confirm = useConfirm();
-  const qc = useQueryClient();
   const navigate = useNavigate();
+  const floating = useFloatingClass();
   const { year } = useAcademic();
   const assignments = useAssignments(year?.id);
   const settings = useSettings();
@@ -112,72 +109,17 @@ export default function ClassSessionPage() {
   const rawDate = sp.get('date') ?? '';
   const date = isISODate(rawDate) && rawDate <= today ? rawDate : today;
   const period = periodOf(sp.get('period'));
-  const key = qk.classSession(assignmentId, date, period);
 
   const [filter, setFilter] = useState<Filter>('all');
   const [q, setQ] = useState('');
   const [picker, setPicker] = useState(false);
   const [dialog, setDialog] = useState<RecordTarget | null>(null);
 
-  const query = useQuery({
-    queryKey: key,
-    queryFn: () => api.get<ClassSessionDto>('/class/session', { assignmentId, date, period }),
-    enabled: !!assignmentId,
-  });
-  const data = query.data;
-
-  // كل ما عدا الحصة نفسها يُبطَل بعد التسجيل (الحصة تُحدَّث محليًا فلا ترتدّ الأرقام)
-  const refreshAround = useCallback(() => {
-    void qc.invalidateQueries({ queryKey: ['class'], predicate: (qy) => qy.queryKey[1] !== 'session' });
-    void qc.invalidateQueries({ queryKey: qk.dashboard });
-  }, [qc]);
-
-  // المشاركة بالحالة المطلوبة: تُطبَّق فورًا في الواجهة ثم تُرسل بالترتيب نفسه، فلا يفسد التكرار السريع العدّ
-  const chain = useRef<Promise<unknown>>(Promise.resolve());
-  const setPart = useMutation({
-    mutationFn: (v: { studentId: string; count: number | null }) => {
-      const run = () => api.put<ClassSessionStudentDto>('/class/participation', { assignmentId, date, period, studentId: v.studentId, count: v.count });
-      const next = chain.current.then(run, run);
-      chain.current = next.catch(() => undefined);
-      return next;
-    },
-    onMutate: async (v) => {
-      await qc.cancelQueries({ queryKey: key });
-      qc.setQueryData<ClassSessionDto>(key, (cur) => cur && { ...cur, students: cur.students.map((s) => (s.studentId === v.studentId ? { ...s, participation: v.count } : s)) });
-    },
-    onError: (err) => {
-      toast.error(errorMessage(err));
-      void qc.invalidateQueries({ queryKey: key }); // نعيد الحقيقة من الخادم
-    },
-    onSettled: refreshAround,
-  });
-  const onSet = useCallback((studentId: string, count: number | null) => setPart.mutate({ studentId, count }), [setPart]);
-
-  const restore = useMutation({
-    mutationFn: (r: ClassRecordDto) => api.post('/class/records', { assignmentId: r.assignmentId ?? assignmentId, date: r.date, period: r.period, studentId: r.studentId, kind: r.kind, reason: r.reason, note: r.note }),
-    onSuccess: () => void qc.invalidateQueries({ queryKey: ['class'] }),
-    onError: (e) => toast.error(errorMessage(e)),
-  });
-  const remove = useMutation({
-    mutationFn: (r: ClassRecordDto) => api.del(`/class/records/${r.id}`),
-    onSuccess: (_d, r) => {
-      void qc.invalidateQueries({ queryKey: ['class'] });
-      void qc.invalidateQueries({ queryKey: qk.dashboard });
-      toast('حُذف التسجيل', { action: { label: 'تراجع', onClick: () => restore.mutate(r) } });
-    },
-    onError: (e) => toast.error(errorMessage(e)),
-  });
-  const onRemove = useCallback((r: ClassRecordDto) => remove.mutate(r), [remove]);
-
-  const fill = useAppMutation(() => api.post<{ added: number; session: ClassSessionDto }>('/class/session/mark-rest', { assignmentId, date, period }), {
-    invalidate: [['class', 'overview'], ['class', 'summary'], ['class', 'student'], qk.dashboard],
-    success: (r) => (r.added ? `سُجِّل «لم يشارك» لـ ${fmt.num(r.added, 0)} ${r.added === 1 ? 'طالب' : 'طلاب'}` : 'لا طلاب بلا تسجيل'),
-    onSuccess: (r) => qc.setQueryData(key, r.session),
-  });
-  const clear = useAppMutation(() => api.del('/class/session', { assignmentId, date, period }), {
-    invalidate: [['class'], qk.dashboard],
-    success: 'مُسحت تسجيلات هذه الحصة',
-  });
+  // الاستعلام والمشاركة المتسلسلة وحذف التسجيلات واستعادتها و«لم يشارك» لمن تبقّى والمسح: في الخطّاف المشترك مع اللوحة العائمة
+  const session = useClassSession(assignmentId ? { assignmentId, date, period } : null);
+  const { query, data, students, totals, fill, clear } = session;
+  const onSet = session.setParticipation;
+  const onRemove = session.removeRecord;
 
   const onOpen = useCallback(
     (s: ClassSessionStudentDto, kind: RecordTarget['kind'], record?: ClassRecordDto) =>
@@ -185,8 +127,6 @@ export default function ClassSessionPage() {
     [assignmentId, date, period],
   );
 
-  const students = useMemo(() => data?.students ?? [], [data]);
-  const totals = useMemo(() => sessionTotals(students), [students]);
   const counts = useMemo(
     () => ({
       unrecorded: totals.unrecorded,
@@ -275,6 +215,9 @@ export default function ClassSessionPage() {
         actions={
           <>
             <Button variant="secondary" icon={<CalendarDays className="size-4" />} aria-expanded={picker} onClick={() => setPicker((v) => !v)}>تغيير الحصة</Button>
+            <Button variant="secondary" className="hidden sm:inline-flex" icon={<PictureInPicture2 className="size-4" />} onClick={() => floating.popOut({ assignmentId, date, period })} title="نافذة صغيرة تبقى فوق البرامج الأخرى، فتسجّل المشاركة وأنت تعرض الدرس">
+              نافذة عائمة
+            </Button>
             <Menu align="end" trigger={<Button variant="secondary" icon={<MoreHorizontal className="size-4" />}>المزيد</Button>}>
               <MenuItem icon={<FileBarChart className="size-4" />} onSelect={() => navigate(`/class?tab=summary&assignment=${assignmentId}`)}>ملخص الشعبة والتقرير</MenuItem>
               <MenuSeparator />

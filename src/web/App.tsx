@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactNode } from 'react';
-import { BrowserRouter, MemoryRouter, Navigate, Route, Routes, useLocation } from 'react-router';
+import { BrowserRouter, MemoryRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { Toaster } from 'sonner';
@@ -7,6 +7,7 @@ import { ApiError } from '@/lib/api';
 import { AuthProvider, useAuth } from '@/context/auth';
 import { AcademicProvider } from '@/context/academic';
 import { AppShell } from '@/components/layout/app-shell';
+import { FloatingClassProvider } from '@/features/classroom/float/state';
 import { Alert, ConfirmProvider, PageLoader, TooltipProvider } from '@/components/ui';
 import { ForcePasswordChangePage, LoginPage, SetupPage } from '@/features/auth/auth-pages';
 
@@ -25,6 +26,7 @@ const SupportPlanPage = lazy(() => import('@/features/support/plan-page'));
 const LabPage = lazy(() => import('@/features/lab/lab-page'));
 const ClassPage = lazy(() => import('@/features/classroom/class-page'));
 const ClassSessionPage = lazy(() => import('@/features/classroom/session-page'));
+const FloatPage = lazy(() => import('@/features/classroom/float/float-page'));
 const ReportsPage = lazy(() => import('@/features/reports/reports-page'));
 const SettingsPage = lazy(() => import('@/features/settings/settings-page'));
 
@@ -77,11 +79,25 @@ export function App() {
                   <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/setup" element={<SetupPage />} />
+                    {/* نافذة المشاركة المنفصلة: بلا غلاف التطبيق (تُفتح كنافذة متصفح صغيرة حيث لا يدعم المتصفح PiP) */}
                     <Route
                       element={
                         <RequireAuth>
                           <AcademicProvider>
-                            <AppShell />
+                            <Outlet />
+                          </AcademicProvider>
+                        </RequireAuth>
+                      }
+                    >
+                      <Route path="class/float" element={<FloatPage />} />
+                    </Route>
+                    <Route
+                      element={
+                        <RequireAuth>
+                          <AcademicProvider>
+                            <FloatingClassProvider>
+                              <AppShell />
+                            </FloatingClassProvider>
                           </AcademicProvider>
                         </RequireAuth>
                       }

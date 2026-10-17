@@ -433,7 +433,9 @@ async function phaseFirstRun(browser) {
       lessonUrl = page.url();
       await page.getByLabel('ناتج التعلم 1').fill('يفسّر وظيفة كل نسيج');
       await page.getByText('محفوظ تلقائيًا').waitFor();
-      await page.waitForTimeout(1900); // مهلة الحفظ التلقائي 1.2 ثانية
+      // مهلة الحفظ التلقائي 1.2 ثانية ثم زمن الطلب: ننتظر وصول التعديل إلى الخادم فعلًا (لا نومًا ثابتًا يتعثر عند ضغط الجهاز)
+      const lessonId = new URL(page.url()).pathname.split('/').pop();
+      await until(async () => JSON.stringify(await apiGet(page, `/lessons/${lessonId}`)).includes('يفسّر وظيفة كل نسيج'), 'ناتج التعلم لم يصل إلى الخادم بالحفظ التلقائي');
       await page.getByText('محفوظ تلقائيًا').waitFor();
       await page.reload();
       await page.getByLabel('عنوان الدرس').waitFor();
@@ -1427,6 +1429,360 @@ async function phaseDemo(browser, srv) {
       expect(left.every((x) => x.participation === null && x.records.length === 0), 'بقيت تسجيلات بعد المسح');
     });
 
+    // ───── لوحة المشاركة العائمة ─────
+    // تُثبَّت حصة الاختبار (الحصة 11 اليوم، كحصص الخطوات السابقة) في تفضيل اللوحة قبل فتحها فلا تتقاطع مع حصص البذرة
+    const FLOAT_KEY = 'sijilli-class-float';
+    const fabBtn = (p) => p.getByRole('button', { name: 'فتح لوحة المشاركة العائمة' });
+    const floatPanel = (p) => p.getByRole('region', { name: 'لوحة المشاركة العائمة' });
+    // المحدِّد الداخلي لـhas يُبنى من الصفحة نفسها (نسبيًا للصف) لا من لوحة النطاق
+    const floatRow = (scope, name) => scope.locator('[data-float-student]').filter({ has: (scope.page?.() ?? scope).getByRole('button', { name: `شارك — ${name}`, exact: true }) });
+    const fAct = (scope, name, label) => scope.getByRole('button', { name: `${label} — ${name}`, exact: true });
+    const pinFloat = async (p, open = false) => {
+      await p.evaluate(([k, v]) => localStorage.setItem(k, JSON.stringify(v)), [FLOAT_KEY, { open, pos: null, ref: { assignmentId: asg.id, date: todayMuscat, period: 11 }, hideBehavior: false }]);
+      await p.reload();
+    };
+    const classNow = async () => (await apiGet(page, classApi)).students;
+    // DELETE بلا جسم: لا نرسل content-type JSON (وإلا رفض الخادم الجسم الفارغ)
+    const clearTestSession = () => page.evaluate(async (u) => (await fetch(`/api${u}`, { method: 'DELETE', credentials: 'same-origin', headers: { 'x-sijilli-client': 'web' } })).status, `/class/session?assignmentId=${asg.id}&date=${todayMuscat}&period=11`);
+
+    await step('اللوحة العائمة: زر في كل صفحة ← تُفتح بالحصة المثبّتة ← «شارك» ×2 وتراجع و«لم يشارك» وسلوك بسبب جاهز تُحفظ فورًا ← إخفاء السلوك والبحث', async () => {
+      await page.goto('/');
+      await pinFloat(page);
+      await page.locator('h1').first().waitFor();
+      for (const url of ['/', '/lessons', '/classes', '/tasks']) {
+        await page.goto(url);
+        await fabBtn(page).waitFor();
+      }
+      await page.goto('/');
+      await fabBtn(page).click();
+      const fp = floatPanel(page);
+      await fp.waitFor();
+      await until(async () => (await fp.getByLabel('الحصة', { exact: true }).inputValue()) === `${asg.id}:11`, 'لم تُعرض الحصة المثبّتة');
+      await fp.locator('[data-float-student]').first().waitFor();
+      const roster = (await classNow()).map((x) => x.fullName);
+      expect(roster.length >= 20 && (await classNow()).every((x) => x.participation === null && x.records.length === 0), 'حصة الاختبار يجب أن تبدأ نظيفة');
+      const [n1, n2, n3] = roster;
+      const mine = async (name) => (await classNow()).find((x) => x.fullName === name);
+
+      // النقر على الاسم نفسه = «شارك»
+      await fAct(fp, n1, 'شارك').click();
+      await fAct(fp, n1, 'شارك').click();
+      await until(async () => (await mine(n1)).participation === 2, 'لم تُحفظ مشاركتان');
+      await expectText(floatRow(fp, n1), /2/, 'عدّاد المشاركة في الصف');
+      await fAct(fp, n1, 'تراجع عن مشاركة').click();
+      await until(async () => (await mine(n1)).participation === 1, 'لم يُحفظ التراجع');
+      await fAct(fp, n2, 'لم يشارك').click();
+      await until(async () => (await mine(n2)).participation === 0, 'لم يُحفظ «لم يشارك»');
+      expect((await fAct(fp, n2, 'لم يشارك').getAttribute('aria-pressed')) === 'true', 'الزر لا يعكس الحالة');
+      await fAct(fp, n2, 'لم يشارك').click();
+      await until(async () => (await mine(n2)).participation === null, 'لم يُلغَ «لم يشارك»');
+
+      // سلوك: زر النوع ← سبب جاهز ← شريحة في الصف
+      await fAct(fp, n3, 'سلوك غير حسن').click();
+      await fp.getByRole('button', { name: 'حديث جانبي', exact: true }).click();
+      await floatRow(fp, n3).getByRole('button', { name: /^حذف تسجيل سلوك غير حسن/ }).waitFor();
+      const rec = (await mine(n3)).records[0];
+      expect(rec?.kind === 'negative' && rec.reason === 'حديث جانبي', `التسجيل المحفوظ: ${JSON.stringify(rec)}`);
+      // سبب يكتبه المعلم
+      await fAct(fp, n3, 'سلوك إيجابي').click();
+      await fp.getByLabel(`سبب آخر — ${n3}`).fill('إجابة مميزة');
+      await fp.getByLabel(`سبب آخر — ${n3}`).press('Enter');
+      await until(async () => (await mine(n3)).records.some((r) => r.kind === 'positive' && r.reason === 'إجابة مميزة'), 'لم يُحفظ السبب المكتوب');
+
+      // إخفاء السلوك عن الشاشة المعروضة للطلاب
+      await fp.getByRole('button', { name: /إخفاء تسجيلات السلوك/ }).click();
+      expect((await floatRow(fp, n3).getByRole('button', { name: /^حذف تسجيل/ }).count()) === 0, 'السلوك ظاهر رغم الإخفاء');
+      await fp.getByRole('button', { name: /إظهار تسجيلات السلوك/ }).click();
+      await floatRow(fp, n3).getByRole('button', { name: /^حذف تسجيل/ }).first().waitFor();
+
+      // حذف شريحة ثم «تراجع» من شريط الرسائل داخل اللوحة
+      await floatRow(fp, n3).getByRole('button', { name: /^حذف تسجيل سلوك إيجابي/ }).click();
+      await until(async () => !(await mine(n3)).records.some((r) => r.reason === 'إجابة مميزة'), 'لم يُحذف التسجيل');
+      await fp.getByRole('status').getByRole('button', { name: 'تراجع' }).click();
+      await until(async () => (await mine(n3)).records.some((r) => r.reason === 'إجابة مميزة'), 'لم يُستعد التسجيل بعد «تراجع»');
+      expect((await mine(n3)).records.length === 2, 'التراجع أنشأ تسجيلًا مكررًا');
+
+      // البحث وتصفية «لم تُسجَّل»
+      const total = await fp.locator('[data-float-student]').count();
+      await fp.getByLabel('بحث في طلاب اللوحة').fill(n1.split(' ').slice(0, 3).join(' '));
+      const found = await fp.locator('[data-float-student]').count();
+      expect(found >= 1 && found < total, `البحث بالاسم لا يصفّي (${found}/${total})`);
+      await fp.getByLabel('بحث في طلاب اللوحة').fill('');
+      await fp.getByRole('button', { name: /^لم تُسجَّل/ }).click();
+      const unrec = (await classNow()).filter((x) => x.participation === null).length;
+      await until(async () => (await fp.locator('[data-float-student]').count()) === unrec, `تصفية «لم تُسجَّل»: ${await fp.locator('[data-float-student]').count()} والمتوقع ${unrec}`);
+      await fp.getByRole('button', { name: /^لم تُسجَّل/ }).click();
+    });
+
+    await step('اللوحة العائمة: تبقى مفتوحة بحالتها عند التنقل بين الصفحات وإعادة التحميل، وتُسحب بالمؤشر وبالأسهم وتبقى في الشاشة، و«لم يشارك» لمن تبقّى بتأكيد داخلها', async () => {
+      await page.goto('/');
+      const fp = floatPanel(page);
+      await fp.waitFor(); // بقيت مفتوحة بعد التنقل (الحالة محفوظة)
+      await page.locator('nav[aria-label="التنقل الرئيسي"] a[href="/reports"]').click();
+      await page.waitForURL(/\/reports/);
+      await fp.waitFor();
+      await page.reload();
+      await fp.waitFor();
+      const roster = (await classNow()).map((x) => x.fullName);
+      expect((await fAct(fp, roster[0], 'شارك').getAttribute('aria-pressed')) === 'true', 'المشاركة لم تبقَ ظاهرة بعد إعادة التحميل');
+
+      // السحب بالمؤشر
+      const before = await fp.boundingBox();
+      const grip = fp.getByRole('button', { name: /تحريك اللوحة/ });
+      const g = await grip.boundingBox();
+      await page.mouse.move(g.x + g.width / 2, g.y + g.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(g.x + g.width / 2 + 240, g.y + g.height / 2 - 100, { steps: 8 });
+      await page.mouse.up();
+      const moved = await fp.boundingBox();
+      expect(Math.abs(moved.x - before.x) > 150 && Math.abs(moved.y - before.y) > 60, `لم تتحرك اللوحة: ${JSON.stringify([before, moved])}`);
+      expect(moved.x >= 0 && moved.y >= 0 && moved.x + moved.width <= DESKTOP.width && moved.y + moved.height <= DESKTOP.height, `خرجت اللوحة من الشاشة: ${JSON.stringify(moved)}`);
+      // سحب بعيد جدًا يبقيها داخل الشاشة
+      const g2 = await grip.boundingBox();
+      await page.mouse.move(g2.x + g2.width / 2, g2.y + g2.height / 2);
+      await page.mouse.down();
+      await page.mouse.move(-500, -500, { steps: 6 });
+      await page.mouse.up();
+      const corner = await fp.boundingBox();
+      expect(corner.x >= 0 && corner.y >= 0, `خرجت اللوحة من الزاوية: ${JSON.stringify(corner)}`);
+      // الأسهم على المقبض
+      await grip.focus();
+      await page.keyboard.press('ArrowRight');
+      await page.keyboard.press('ArrowDown');
+      const nudged = await fp.boundingBox();
+      expect(Math.abs(nudged.x - corner.x) > 10 && Math.abs(nudged.y - corner.y) > 10, `مفاتيح الأسهم لم تحرّك اللوحة: ${JSON.stringify([corner, nudged])}`);
+      // الموضع محفوظ بعد إعادة التحميل
+      await page.reload();
+      await fp.waitFor();
+      await page.waitForTimeout(300);
+      const kept = await fp.boundingBox();
+      expect(Math.abs(kept.x - nudged.x) <= 1 && Math.abs(kept.y - nudged.y) <= 1, `الموضع لم يُحفظ: ${JSON.stringify([nudged, kept])}`);
+
+      // «لم يشارك» لمن تبقّى: تأكيد داخل اللوحة لا حوار، ولا يمسّ من سُجّل له
+      await fp.getByRole('button', { name: /لمن تبقّى/ }).click();
+      await fp.getByRole('group', { name: /تأكيد تسجيل/ }).waitFor();
+      await fp.getByRole('group', { name: /تأكيد تسجيل/ }).getByRole('button', { name: 'إلغاء' }).click();
+      expect((await classNow()).some((x) => x.participation === null), 'الإلغاء سجّل لمن تبقّى');
+      await fp.getByRole('button', { name: /لمن تبقّى/ }).click();
+      await fp.getByRole('group', { name: /تأكيد تسجيل/ }).getByRole('button', { name: 'تسجيل', exact: true }).click();
+      await until(async () => (await classNow()).every((x) => x.participation !== null), 'بقي طلاب بلا تسجيل');
+      const after = await classNow();
+      expect(after.find((x) => x.fullName === roster[0]).participation === 1, 'مُسّت مشاركة من شارك');
+      await fp.getByRole('status').getByText(/سُجِّل «لم يشارك»/).waitFor();
+      await fp.getByRole('button', { name: 'إغلاق اللوحة' }).click();
+      await fabBtn(page).waitFor();
+      expect((await floatPanel(page).count()) === 0, 'اللوحة لم تُغلق');
+    });
+
+    await step('اللوحة العائمة: خيارات الحصة = حصص اليوم + بقية الشعب، وتُثبَّت حصة الجدول عند أول فتح، والاختيار يُحفظ لليوم', async () => {
+      await page.goto('/');
+      await page.evaluate((k) => localStorage.removeItem(k), FLOAT_KEY);
+      await page.reload();
+      const ov = await apiGet(page, '/class/overview');
+      await fabBtn(page).click();
+      const fp = floatPanel(page);
+      await fp.waitFor();
+      const sel = fp.getByLabel('الحصة', { exact: true });
+      const inSlots = new Set(ov.slots.map((x) => x.assignment.id));
+      const expected = ov.slots.length + assignments.filter((a) => !inSlots.has(a.id)).length;
+      const optionValues = () => sel.locator('option').evaluateAll((os) => os.map((o) => o.value).filter(Boolean));
+      await until(async () => (await optionValues()).length === expected, `عدد خيارات الحصة ${(await optionValues()).length} والمتوقع ${expected}`);
+      if (ov.slots.length) {
+        const slotValues = ov.slots.map((x) => `${x.assignment.id}:${x.period}`);
+        await until(async () => slotValues.includes(await sel.inputValue()), 'لم تُثبَّت حصة من جدول اليوم');
+        const stored = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), FLOAT_KEY);
+        expect(`${stored.ref.assignmentId}:${stored.ref.period}` === (await sel.inputValue()), `الحصة المثبّتة لم تُحفظ: ${JSON.stringify(stored)}`);
+      } else {
+        expect((await sel.inputValue()) === '', 'لا حصص اليوم: يجب أن يطلب اختيار الحصة');
+        await fp.getByText('اختر الحصة من القائمة').waitFor();
+      }
+      // اختيار مقرر آخر: تتبدّل القائمة وتُحفظ الحصة
+      const mineValue = (await optionValues()).find((v) => v.startsWith(`${asg.id}:`));
+      await sel.selectOption(mineValue);
+      await fp.locator('[data-float-student]').first().waitFor();
+      const stored = await page.evaluate((k) => JSON.parse(localStorage.getItem(k)), FLOAT_KEY);
+      expect(stored.ref.assignmentId === asg.id && stored.ref.date === todayMuscat, `الاختيار لم يُحفظ: ${JSON.stringify(stored)}`);
+      await page.reload();
+      await fp.waitFor();
+      await until(async () => (await sel.inputValue()) === mineValue, 'الحصة المختارة لم تبقَ بعد إعادة التحميل');
+      // الحصة المحفوظة ليوم سابق تُهمَل
+      await page.evaluate(([k, v]) => localStorage.setItem(k, JSON.stringify(v)), [FLOAT_KEY, { open: true, pos: null, ref: { assignmentId: asg.id, date: '2020-01-01', period: 2 }, hideBehavior: false }]);
+      await page.reload();
+      await fp.waitFor();
+      await until(async () => (await sel.inputValue()) !== `${asg.id}:2` || ov.slots.some((x) => x.assignment.id === asg.id && x.period === 2), 'حصة ليوم سابق ما زالت مثبّتة');
+      await fp.getByRole('button', { name: 'إغلاق اللوحة' }).click();
+    });
+
+    await step('اللوحة العائمة: صفحة الحصة الكاملة بلا زر عائم لكن بزر «نافذة عائمة»، وبطاقات حصص اليوم تفتح اللوحة بحصتها', async () => {
+      await page.goto(classUrl);
+      await page.locator('[data-student]').first().waitFor();
+      expect((await fabBtn(page).count()) === 0, 'الزر العائم ظاهر في صفحة الحصة الكاملة');
+      await page.getByRole('button', { name: 'نافذة عائمة' }).waitFor();
+      await page.goto('/class');
+      await page.getByText('آخر الحصص المسجّلة').waitFor();
+      const ov = await apiGet(page, '/class/overview');
+      if (ov.slots.length) {
+        const slot = ov.slots[0];
+        await page.getByRole('button', { name: 'لوحة عائمة' }).first().click();
+        const fp = floatPanel(page);
+        await fp.waitFor();
+        await until(async () => (await fp.getByLabel('الحصة', { exact: true }).inputValue()) === `${slot.assignment.id}:${slot.period}`, 'لوحة بطاقة الحصة لم تفتح بحصتها');
+        await fp.getByRole('button', { name: 'إغلاق اللوحة' }).click();
+      }
+    });
+
+    await step('اللوحة العائمة: الجوال والوضع الداكن — ورقة سفلية داخل الشاشة فوق شريط التنقل، أسماء مقروءة، أزرار بحجم لمس، بلا مخالفات axe', async () => {
+      const m = await newSession(browser, srv.base, 'float-mobile', { viewport: MOBILE, colorScheme: 'dark' });
+      try {
+        await login(m.page, PW.demo);
+        await m.page.goto('/');
+        await pinFloat(m.page);
+        const fab = fabBtn(m.page);
+        await fab.waitFor();
+        const nav = await m.page.locator('nav[aria-label="تنقل سريع"]').boundingBox();
+        const fb = await fab.boundingBox();
+        expect(fb.y + fb.height <= nav.y + 1, `الزر العائم يغطي شريط التنقل: ${JSON.stringify([fb, nav])}`);
+        await fab.click();
+        const fp = floatPanel(m.page);
+        await fp.waitFor();
+        await fp.locator('[data-float-student]').first().waitFor();
+        await m.page.waitForTimeout(300);
+        const box = await fp.boundingBox();
+        expect(box.x >= 0 && box.x + box.width <= MOBILE.width + 0.5 && box.y >= 0 && box.y + box.height <= nav.y + 1, `الورقة خارج الشاشة أو تغطي الشريط: ${JSON.stringify([box, nav])}`);
+        const overflow = await m.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+        expect(overflow <= 1, `تمرير أفقي ${overflow}px`);
+        // الاسم لا يُقتطع في الصفوف الأولى (تنزل الأزرار إلى سطر تحته عند ضيق المكان)
+        const clipped = await m.page.evaluate(() => [...document.querySelectorAll('[data-float-student]')].slice(0, 8).filter((r) => { const s = r.querySelector('button span.truncate'); return s && s.scrollWidth > s.clientWidth + 1; }).length);
+        expect(clipped === 0, `${clipped} أسماء مقتطعة في الصفوف الأولى على الجوال`);
+        const small = await m.page.evaluate(() => [...document.querySelectorAll('[data-float-student] > div:first-child button')].filter((b) => { const r = b.getBoundingClientRect(); return r.width > 0 && (r.height < 38 || r.width < 38); }).length);
+        expect(small === 0, `${small} زرًّا أصغر من 38px`);
+        await expectNoAxe(m.page, 'اللوحة العائمة على الجوال (داكن)');
+        const first = (await (await apiGet(m.page, classApi)).students)[0].fullName;
+        await fAct(fp, first, 'سلوك إيجابي').click();
+        await fp.getByRole('group', { name: new RegExp(`سلوك إيجابي — ${first}`) }).waitFor();
+        await expectNoAxe(m.page, 'منتقي السبب في اللوحة العائمة على الجوال (داكن)');
+        // لا زر «نافذة منفصلة» على الجوال (النوافذ المنبثقة تُفتح كتبويبات)
+        expect((await fp.getByRole('button', { name: /فتح في نافذة منفصلة/ }).count()) === 0, 'زر النافذة المنفصلة ظاهر على الجوال');
+      } finally {
+        await m.ctx.close();
+      }
+    });
+
+    await step('اللوحة العائمة: الحاسوب (فاتح) — منتقي السبب والصفوف بلا مخالفات axe', async () => {
+      await page.goto('/');
+      await pinFloat(page, true);
+      const fp = floatPanel(page);
+      await fp.waitFor();
+      await fp.locator('[data-float-student]').first().waitFor();
+      const first = (await classNow())[0].fullName;
+      await fAct(fp, first, 'سلوك غير حسن').click();
+      await fp.getByRole('group', { name: new RegExp(`سلوك غير حسن — ${first}`) }).waitFor();
+      await expectNoAxe(page, 'اللوحة العائمة على الحاسوب (فاتح)');
+      await fp.getByRole('group', { name: new RegExp(`سلوك غير حسن — ${first}`) }).getByRole('button', { name: new RegExp(`إغلاق — ${first}`) }).click();
+    });
+
+    await step('اللوحة العائمة: «نافذة منفصلة» PiP تبقى فوق البرامج — المحتوى نفسه، التسجيل منها يُحفظ، تبقى عند التنقل وتتبع السمة، و«العودة» و«إغلاق» يعملان', async () => {
+      await page.goto('/');
+      await clearTestSession(); // بداية نظيفة قبل أن يحمّل التطبيق الحصة (وإلا بنى «شارك» على عدّ قديم)
+      await pinFloat(page, true);
+      const fp = floatPanel(page);
+      await fp.waitFor();
+      expect(await page.evaluate(() => 'documentPictureInPicture' in window), 'المتصفح لا يدعم PiP');
+      const names = (await classNow()).map((x) => x.fullName);
+      const [pip] = await Promise.all([ctx.waitForEvent('page'), fp.getByRole('button', { name: /فتح في نافذة منفصلة/ }).click()]);
+      watch(pip, 'float-pip');
+      await pip.getByRole('heading', { name: 'المشاركة' }).waitFor();
+      expect((await pip.evaluate(() => `${document.documentElement.dir}/${document.documentElement.lang}`)) === 'rtl/ar', 'اتجاه نافذة PiP ولغتها');
+      expect((await floatPanel(page).count()) === 0 && (await fabBtn(page).count()) === 0, 'اللوحة ظلّت في التطبيق مع نافذة PiP');
+      await pip.locator('[data-float-student]').first().waitFor();
+      expect((await pip.locator('[data-float-student]').count()) === names.length, 'عدد طلاب نافذة PiP');
+
+      // التسجيل من النافذة المنفصلة يصل إلى الخادم
+      const mine = async (name) => (await classNow()).find((x) => x.fullName === name);
+      await fAct(pip, names[0], 'شارك').click();
+      await until(async () => (await mine(names[0])).participation === 1, 'مشاركة PiP لم تُحفظ');
+      await fAct(pip, names[1], 'سلوك إيجابي').click();
+      await pip.getByRole('button', { name: 'مساعدة زميل', exact: true }).click();
+      await until(async () => (await mine(names[1])).records.some((r) => r.reason === 'مساعدة زميل'), 'سلوك PiP لم يُحفظ');
+      await pip.getByRole('button', { name: /^حذف تسجيل سلوك إيجابي/ }).waitFor();
+      await expectNoAxe(pip, 'نافذة PiP');
+
+      // التنقل في التطبيق لا يغلقها، والسمة تُنقل إليها
+      await page.locator('nav[aria-label="التنقل الرئيسي"] a[href="/lessons"]').click();
+      await page.waitForURL(/\/lessons/);
+      expect(!pip.isClosed(), 'أُغلقت نافذة PiP عند التنقل');
+      await page.evaluate(() => { document.documentElement.dataset.theme = 'dark'; });
+      await until(async () => (await pip.evaluate(() => document.documentElement.dataset.theme)) === 'dark', 'السمة لم تنتقل إلى نافذة PiP');
+      await page.evaluate(() => { document.documentElement.dataset.theme = 'light'; });
+
+      // «نافذة عائمة» من صفحة الحصة الكاملة وPiP مفتوحة: لا تُفتح ثانية بل تتبدّل حصة المفتوحة (التنقل داخل التطبيق لا بتحميل كامل كي لا تُغلق)
+      const pagesBefore = ctx.pages().length;
+      await page.evaluate((u) => {
+        window.history.pushState({}, '', u);
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }, `/class/session?assignment=${asg.id}&date=${todayMuscat}`);
+      await page.getByRole('button', { name: 'نافذة عائمة' }).click();
+      await until(async () => (await pip.getByLabel('الحصة', { exact: true }).inputValue()) === `${asg.id}:0`, 'حصة نافذة PiP لم تتبدّل');
+      expect(ctx.pages().length === pagesBefore && !pip.isClosed(), 'فُتحت نافذة ثانية أو أُغلقت الأولى');
+
+      // «العودة إلى التطبيق»: تُغلق النافذة وتعود اللوحة داخل التطبيق
+      await pip.getByRole('button', { name: 'العودة إلى التطبيق' }).click();
+      await floatPanel(page).waitFor();
+      await until(() => pip.isClosed(), 'لم تُغلق نافذة PiP بعد «العودة»');
+      // اللوحة العائدة تتابع من حيث انتهت النافذة المنفصلة (حصتها الأخيرة)
+      await until(async () => (await floatPanel(page).getByLabel('الحصة', { exact: true }).inputValue()) === `${asg.id}:0`, 'اللوحة العائدة لم تتبع حصة النافذة المنفصلة');
+
+      // «إغلاق النافذة»: تُغلق ولا تعود اللوحة (يبقى الزر العائم). نغادر صفحة الحصة الكاملة أولًا (لا زر عائم فيها)
+      await page.locator('nav[aria-label="التنقل الرئيسي"] a[href="/lessons"]').click();
+      await page.waitForURL(/\/lessons/);
+      const [pip2] = await Promise.all([ctx.waitForEvent('page'), floatPanel(page).getByRole('button', { name: /فتح في نافذة منفصلة/ }).click()]);
+      await pip2.getByRole('heading', { name: 'المشاركة' }).waitFor();
+      await pip2.getByRole('button', { name: 'إغلاق النافذة' }).click();
+      await until(() => pip2.isClosed(), 'لم تُغلق نافذة PiP بزر الإغلاق');
+      await fabBtn(page).waitFor();
+      expect((await floatPanel(page).count()) === 0, 'عادت اللوحة بعد الإغلاق المقصود');
+    });
+
+    await step('اللوحة العائمة: بلا PiP تُفتح نافذة متصفح صغيرة (/class/float) بالحصة نفسها بلا غلاف التطبيق، تعمل وتبقى بعد إعادة التحميل', async () => {
+      const w = await newSession(browser, srv.base, 'float-window');
+      try {
+        await w.ctx.addInitScript(() => Object.defineProperty(window, 'documentPictureInPicture', { value: undefined, configurable: true }));
+        await login(w.page, PW.demo);
+        await w.page.goto('/');
+        await pinFloat(w.page, true);
+        const fp = floatPanel(w.page);
+        await fp.waitFor();
+        const [pop] = await Promise.all([w.ctx.waitForEvent('page'), fp.getByRole('button', { name: /فتح في نافذة منفصلة/ }).click()]);
+        watch(pop, 'float-popup');
+        await pop.waitForLoadState();
+        await pop.getByRole('heading', { name: 'المشاركة' }).waitFor();
+        const url = new URL(pop.url());
+        expect(url.pathname === '/class/float' && url.searchParams.get('assignment') === asg.id && url.searchParams.get('period') === '11', `عنوان النافذة: ${pop.url()}`);
+        expect((await pop.title()).includes('المشاركة'), 'عنوان النافذة');
+        expect((await pop.locator('nav[aria-label="التنقل الرئيسي"]').count()) === 0, 'غلاف التطبيق ظهر في النافذة المنفصلة');
+        await fabBtn(w.page).waitFor(); // في نافذة التطبيق: يبقى الزر العائم وتُغلق اللوحة
+        expect((await floatPanel(w.page).count()) === 0, 'اللوحة ظلّت مفتوحة في التطبيق');
+        await pop.locator('[data-float-student]').first().waitFor();
+        const names = (await classNow()).map((x) => x.fullName);
+        const mine = async (name) => (await classNow()).find((x) => x.fullName === name);
+        await fAct(pop, names[2], 'شارك').click();
+        await until(async () => (await mine(names[2])).participation === 1, 'مشاركة النافذة المنفصلة لم تُحفظ');
+        await expectNoAxe(pop, 'نافذة المشاركة المنفصلة');
+        await pop.reload();
+        await pop.getByRole('heading', { name: 'المشاركة' }).waitFor();
+        await until(async () => (await fAct(pop, names[2], 'شارك').getAttribute('aria-pressed')) === 'true', 'المشاركة لم تبقَ بعد إعادة تحميل النافذة');
+        expect((await pop.getByLabel('الحصة', { exact: true }).inputValue()) === `${asg.id}:11`, 'الحصة لم تبقَ بعد إعادة التحميل');
+        await pop.close();
+      } finally {
+        await w.ctx.close();
+      }
+    });
+
+    await step('اللوحة العائمة: تنظيف حصة الاختبار', async () => {
+      expect((await clearTestSession()) === 200, 'تعذّر مسح حصة الاختبار');
+      expect((await classNow()).every((x) => x.participation === null && x.records.length === 0), 'بقيت تسجيلات في حصة الاختبار');
+    });
+
     await step('المهام: إضافة سريعة ← إنجاز ← تظهر في «المنجزة» ← حذف بتأكيد', async () => {
       await page.goto('/tasks');
       const title = 'تجهيز أوراق عمل الوحدة الثالثة';
@@ -1720,6 +2076,8 @@ async function phaseVisual(browser, srv) {
     ['class-summary', `/class?tab=summary&assignment=${asg.id}`],
     ['class-session', `/class/session?assignment=${asg.id}&date=${new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Muscat' })}`],
     ['student-class', `/students/${roster[0].student.id}?tab=class`],
+    // لوحة المشاركة العائمة مفتوحة فوق لوحة التحكم (بحصة الشعبة اليوم): تُمسح بما تُمسح به الصفحات في الأحجام والسمتين
+    ['float-panel', '/', { float: { open: true, pos: null, ref: { assignmentId: asg.id, date: new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Muscat' }), period: null }, hideBehavior: false } }],
     ['reports', '/reports'],
     ['settings', '/settings'],
   ];
@@ -1736,9 +2094,11 @@ async function phaseVisual(browser, srv) {
     // التفضيل المحفوظ في الحساب «حسب النظام» فتتبع الواجهة ‎prefers-color-scheme‎ الخاص بالسياق (الاختبار الطبيعي للسمة)
     await login(page, PW.demo);
     await page.evaluate(async () => { await fetch('/api/settings', { method: 'PATCH', credentials: 'same-origin', headers: { 'content-type': 'application/json', 'x-sijilli-client': 'web' }, body: JSON.stringify({ preferences: { theme: 'system' } }) }); });
-    for (const [name, url] of pages) {
+    for (const [name, url, opts] of pages) {
       if (onlyPages.length && !onlyPages.includes(name)) continue;
       await step(`${name} — ${theme}/${vp}: يُرسم بلا تمرير أفقي ولا مخالفات وصول (axe)`, async () => {
+        // حالة اللوحة العائمة المحفوظة: مفتوحة لصفحتها وحدها، ومحذوفة لغيرها (فيظهر زرها العائم فقط)
+        await page.evaluate(([k, v]) => (v ? localStorage.setItem(k, JSON.stringify(v)) : localStorage.removeItem(k)), ['sijilli-class-float', opts?.float ?? null]);
         await page.goto(url, { waitUntil: 'networkidle' });
         await page.locator('main :is(h1, h2, table, [role=tablist], input)').first().waitFor();
         await page.waitForTimeout(350);

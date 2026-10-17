@@ -11,6 +11,7 @@ import { useLocalState } from '@/lib/hooks';
 import { applyTheme, readThemePref } from '@/lib/theme';
 import { api } from '@/lib/api';
 import { Avatar, Badge, Menu, MenuItem, MenuLabel, MenuRadioGroup, MenuRadioItem, MenuSeparator, IconButton, Tip } from '@/components/ui';
+import { FloatingClass } from '@/features/classroom/float/host';
 import { Wordmark, LogoMark } from './logo';
 
 function SideNav({ collapsed, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
@@ -261,6 +262,7 @@ export function AppShell() {
         </main>
       </div>
       <MobileBottomNav onMore={() => setDrawer(true)} />
+      <FloatingClass />
     </div>
   );
 }

@@ -282,7 +282,10 @@ describe('التكامل: لوحة التحكم والتقويم والتقار�
     const d = (await ctx.c.get('/api/dashboard')).body;
     const upcoming = d.lab.upcoming.map((i: any) => i.title) as string[];
     expect(upcoming).toContain('قادم غدًا');
-    expect(upcoming.indexOf('قادم غدًا')).toBeLessThan(upcoming.indexOf('قادم بعد أسبوع'));
+    // مرتّبة بالتاريخ تصاعديًا. (لا نشترط ظهور «قادم بعد أسبوع»: القائمة خمسة عناصر كحد أقصى، وفي القاعدة أنشطة أخرى بتواريخ مطلقة
+    // قد تسبقه كلما اقترب اليوم الحقيقي منها — فكان الاختبار ينكسر في أيام دون أيام)
+    const dates = d.lab.upcoming.map((i: any) => i.date) as string[];
+    expect(dates).toEqual([...dates].sort());
     expect(upcoming).not.toContain('فاتَ ولم يُسجَّل');
     expect(d.lab.upcoming.length).toBeLessThanOrEqual(5);
     expect(d.lab.overdue).toBeGreaterThanOrEqual(1);

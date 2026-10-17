@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { ArrowDown, ArrowUp, ArrowUpDown, CalendarClock, ChevronLeft, Download, FileSpreadsheet, FileText, Hand, History, ListChecks, MessagesSquare, Play, Printer, Search, ThumbsDown, ThumbsUp, Users } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, CalendarClock, ChevronLeft, Download, FileSpreadsheet, FileText, Hand, History, ListChecks, MessagesSquare, PictureInPicture2, Play, Printer, Search, ThumbsDown, ThumbsUp, Users } from 'lucide-react';
 import { MAX_PERIODS, weekdayName } from '@shared/constants';
 import { CLASS_FLAG_LABELS, classFlagHint } from '@shared/classroom';
 import { todayISO } from '@shared/dates';
@@ -15,6 +15,7 @@ import { cn } from '@/lib/cn';
 import { useFmt, useLocalState } from '@/lib/hooks';
 import { qk, useAssignments, useSettings } from '@/lib/queries';
 import { Alert, Avatar, Badge, ButtonLink, Button, Card, CardHeader, EmptyState, Field, Input, Menu, MenuItem, PageHeader, PageLoader, ProgressBar, QueryError, Segmented, Select, Stat, SubjectChip, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
+import { useFloatingClass } from './float/state';
 import { DateTile, FlagBadges, RateMeter, sessionHref } from './shared';
 
 // ───────────── شريط ملخص حصة مسجّلة ─────────────
@@ -92,6 +93,12 @@ function HowItWorks() {
           </li>
         ))}
       </ol>
+      <p className="flex items-start gap-2 border-t border-line bg-surface-2 px-5 py-3 text-[13.5px] leading-6 text-muted">
+        <PictureInPicture2 className="mt-1 size-4 shrink-0 text-brand" aria-hidden />
+        <span>
+          أثناء الشرح: افتح <b className="font-semibold text-ink-2">«لوحة المشاركة العائمة»</b> (الزر الأخضر أسفل الشاشة) لتسجّل من أي صفحة دون أن تغادر درسك، أو اضغط <b className="font-semibold text-ink-2">«نافذة منفصلة»</b> فتبقى فوق برنامج العرض.
+        </span>
+      </p>
     </Card>
   );
 }
@@ -144,6 +151,7 @@ function OtherLesson() {
 
 function LessonsTab() {
   const fmt = useFmt();
+  const floating = useFloatingClass();
   const overview = useQuery({ queryKey: qk.classOverview, queryFn: () => api.get<ClassOverviewDto>('/class/overview') });
   const data = overview.data;
   if (overview.error) return <QueryError error={overview.error} onRetry={() => void overview.refetch()} />;
@@ -192,9 +200,14 @@ function LessonsTab() {
                     </div>
                     {s.session && s.studentCount > 0 ? <ProgressBar value={done} max={s.studentCount} tone={done >= s.studentCount ? 'good' : 'brand'} className="mt-2 h-1.5 max-w-xs" label="اكتمال التسجيل" /> : null}
                   </div>
-                  <ButtonLink to={sessionHref(s.assignment.id, data.today, s.period)} variant={s.session ? 'secondary' : 'primary'} icon={<Play className="size-4" />}>
-                    {s.session ? 'تابع التسجيل' : 'ابدأ التسجيل'}
-                  </ButtonLink>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button variant="ghost" icon={<Hand className="size-4" />} onClick={() => floating.openPanel({ assignmentId: s.assignment.id, date: data.today, period: s.period })} title="لوحة صغيرة عائمة تبقى مفتوحة وأنت تتنقل بين الصفحات">
+                      لوحة عائمة
+                    </Button>
+                    <ButtonLink to={sessionHref(s.assignment.id, data.today, s.period)} variant={s.session ? 'secondary' : 'primary'} icon={<Play className="size-4" />}>
+                      {s.session ? 'تابع التسجيل' : 'ابدأ التسجيل'}
+                    </ButtonLink>
+                  </div>
                 </li>
               );
             })}
