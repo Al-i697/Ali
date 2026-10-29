@@ -1,0 +1,10 @@
+/* ألوان الصفحة كمتغيرات (نفس ألوان برنامجك: رمادي مخضرّ فاتح / داكن) */
+:root{--bg:#F7F8F7;--fg:#2F3534}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#101817;--fg:#F3F4F6;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#101817;--fg:#F3F4F6;color-scheme:dark}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Cairo',sans-serif}
+.num{unicode-bidi:isolate;direction:ltr;display:inline-block;font-variant-numeric:tabular-nums}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+details>summary::before{content:"\25C2";display:inline-block;margin-inline-end:6px;transition:transform .15s}
+details[open]>summary::before{transform:rotate(-90deg)}

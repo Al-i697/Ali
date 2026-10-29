@@ -1,0 +1,47 @@
+
+        body { font-family: 'Cairo', sans-serif; -webkit-tap-highlight-color: transparent; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c7ccca; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #474d4b; }
+        
+        .sidebar-transition { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #app-sidebar.collapsed { width: 88px !important; }
+        #app-sidebar.collapsed .sidebar-text { display: none !important; }
+        #app-sidebar.collapsed .menu-btn { justify-content: center; padding-left: 0; padding-right: 0; }
+        #app-sidebar.collapsed .menu-icon { font-size: 1.5rem; }
+        #app-sidebar.collapsed #sidebar-header-container { justify-content: center; padding-left: 0; padding-right: 0; }
+        
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop { animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .prod-card { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+        /* ===== ثبات التمرير على iPad / تطبيق الشاشة الرئيسية ===== */
+        @media screen {
+            html { height: 100%; overflow: hidden; overscroll-behavior: none; }
+            body { overscroll-behavior: none; }
+            #main-content-area, #pos-products-grid { overscroll-behavior: contain; }
+        }
+        /* ===== نقطة البيع: ملء الشاشة بدون تمرير للصفحة =====
+           المنتجات تتمرر داخل بطاقتها فقط، والسلة وزر الدفع ثابتين دائماً. هذا يلغي تداخل التمرير (صفحة داخل شبكة داخل سلة) اللي يعلّق اللمس على iOS. */
+        #main-content-area.pos-mode { overflow: hidden; }
+        #main-content-area.pos-mode #view-pos { height: 100%; }
+        #main-content-area.pos-mode #pos-layout { height: 100%; min-height: 0; padding-bottom: 0; }
+        #main-content-area.pos-mode #pos-products-card { height: auto; min-height: 0; }
+        @media (min-width: 1024px) { #main-content-area.pos-mode #pos-products-card, #main-content-area.pos-mode #cart-panel-container { height: 100%; } }
+        @media (max-width: 1023.98px) { #cart-panel-container { height: 85dvh; } }
+        #pos-products-grid, #cart-items { overscroll-behavior: contain; }
+        /* لمس الخلفية المعتمة لا يحرّك أي شيء خلف النافذة؛ والتمرير داخل محتوى النافذة نفسه يبقى شغّال */
+        .fixed.inset-0[id$="-modal"], #mobile-cart-overlay, #sidebar-overlay { touch-action: none; overscroll-behavior: contain; }
+    

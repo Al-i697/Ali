@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>برنامج المقهى</title>
+<meta name="description" content="برنامج مبيعات وحسابات للمقهى يعمل على الآيباد بدون إنترنت">
+<meta name="theme-color" content="#17707A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="المقهى">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<script>try{var _t=document.documentElement.getAttribute('data-theme');if(_t?_t==='dark':matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')}catch(e){}</script>
+<link rel="stylesheet" href="app.css?v=2026.10.29-b1f68b50">
+<script defer src="vendor/qrcode.min.js"></script>
+</head>
+<body>
+<div id="fatal-view" dir="rtl" lang="ar" class="hidden fixed inset-0 z-[200] flex items-center justify-center bg-gray-50 dark:bg-darkBg p-6 text-center"><div class="bg-white dark:bg-darkCard rounded-3xl shadow-2xl p-8 max-w-md space-y-3"><i class="fas fa-triangle-exclamation text-4xl text-red-500"></i><h2 class="text-lg font-black text-gray-800 dark:text-white">تعذّر فتح التخزين على هذا الجهاز</h2><p class="text-xs text-gray-500 font-bold leading-6">البرنامج يحفظ بياناتك على الآيباد نفسه. افتحه من Safari (مو في التصفح الخاص) أو من أيقونة الشاشة الرئيسية، وتأكد أن مساحة الجهاز ما هي ممتلئة.</p><p id="fatal-msg" class="text-[10px] text-gray-400 font-mono" dir="ltr"></p></div></div>
+<div id="persist-banner" dir="rtl" class="hidden fixed top-0 inset-x-0 z-[190] bg-red-600 text-white text-xs font-black text-center px-4 py-3 flex items-center justify-center gap-3 no-print"><span>تعذّر حفظ آخر عملية على الآيباد!</span><button data-a="bk-save" class="bg-white text-red-600 rounded-xl px-3 py-1.5">خذ نسخة احتياطية الآن</button></div>
+<div id="update-banner" dir="rtl" class="hidden fixed bottom-4 inset-x-4 sm:inset-x-auto sm:left-4 z-[190] bg-gray-900 text-white text-xs font-bold rounded-2xl px-4 py-3 flex items-center justify-between gap-4 shadow-2xl no-print"><span>تم تحديث البرنامج</span><button data-a="reload" class="bg-primary rounded-xl px-3 py-1.5 font-black">تطبيق التحديث</button></div>
+<div id="toast-container" dir="rtl" class="fixed top-5 left-1/2 transform -translate-x-1/2 z-[150] flex flex-col gap-2 no-print w-[90%] max-w-sm pointer-events-none"></div>
+
+<!-- واجهة تسجيل الدخول (نفس بطاقة برنامجك، بحقل اسم المستخدم) -->
+<div id="auth-view" dir="rtl" lang="ar" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-50 dark:bg-darkBg no-print px-4 overflow-y-auto py-8">
+    <div class="bg-white dark:bg-darkCard p-8 rounded-[2rem] shadow-2xl w-full max-w-md border border-gray-100 dark:border-gray-800/80 transition-all duration-300 relative">
+        <div class="absolute top-5 left-5 flex items-center gap-1 p-1 rounded-full bg-gray-100/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/60 dark:border-gray-700/60 shadow-sm">
+            <button type="button" data-theme-btn title="تغيير المظهر" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:shadow-sm active:scale-90 transition-all"><i class="fas fa-moon text-xs" id="auth-theme-icon"></i></button>
+        </div>
+        <div class="text-center mb-6 mt-4">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-50 dark:bg-blue-900/30 text-primary mb-4 shadow-inner"><i class="fas fa-fingerprint text-4xl"></i></div>
+            <h2 class="text-2xl font-black text-gray-800 dark:text-white" id="auth-title">برنامج المقهى</h2>
+            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1" id="auth-sub">ادخل باسم المستخدم للمتابعة</p>
+        </div>
+        <div id="install-tip" class="mb-4"></div>
+        <form id="login-form" class="space-y-4 hidden" autocomplete="on">
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="login-user">اسم المستخدم</label>
+                <div class="relative">
+                    <input type="text" id="login-user" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" class="w-full pl-5 pr-10 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="username">
+                    <i class="fas fa-user-shield absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="login-pass">الرمز</label>
+                <div class="relative">
+                    <input type="password" id="login-pass" name="password" autocomplete="current-password" class="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="••••••••">
+                    <button type="button" data-a="eye" data-t="login-pass" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><i class="fas fa-eye-slash text-xs" id="login-eye"></i></button>
+                </div>
+            </div>
+            <div class="flex items-center justify-between text-xs font-bold">
+                <label class="flex items-center gap-2 cursor-pointer text-gray-500 dark:text-gray-400"><input type="checkbox" id="login-remember" checked class="w-4 h-4 rounded text-primary focus:ring-0 border-gray-200 dark:border-gray-700 dark:bg-gray-800"><span>تذكرني على هذا الجهاز (دخول مباشر)</span></label>
+            </div>
+            <p id="login-err" class="hidden text-center text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/40 rounded-2xl py-3"></p>
+            <button type="submit" class="w-full bg-primary hover:bg-blue-600 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 text-xs transition-all">تسجيل الدخول</button>
+            <p class="text-center text-xs font-bold text-gray-500 pt-1"><button type="button" data-a="auth-mode" data-m="forgot" class="text-primary hover:underline">نسيت الرمز؟</button></p>
+        </form>
+        <form id="forgot-form" class="space-y-4 hidden" autocomplete="off">
+            <p class="text-[11px] font-bold text-gray-500 leading-6 text-center">اكتب اسم مستخدم المدير ورمز الاسترجاع اللي ظهر لك أول مرة، ثم اختر رمزاً جديداً.</p>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="fg-user">اسم مستخدم المدير</label>
+                <input type="text" id="fg-user" autocapitalize="none" autocorrect="off" spellcheck="false" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="fg-code">رمز الاسترجاع</label>
+                <input type="text" id="fg-code" autocapitalize="characters" autocorrect="off" spellcheck="false" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-black font-mono tracking-wider text-left" dir="ltr" placeholder="XXXX-XXXX-XXXX-XXXX">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div><label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="fg-pass">الرمز الجديد</label><input type="password" id="fg-pass" autocomplete="new-password" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr"></div>
+                <div><label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="fg-pass2">تأكيد الرمز</label><input type="password" id="fg-pass2" autocomplete="new-password" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr"></div>
+            </div>
+            <p id="fg-err" class="hidden text-center text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/40 rounded-2xl py-3"></p>
+            <button type="submit" class="w-full bg-primary hover:bg-blue-600 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-500/20 text-xs transition-all">تغيير الرمز</button>
+            <p class="text-center text-xs font-bold text-gray-500"><button type="button" data-a="auth-mode" data-m="login" class="text-primary hover:underline">رجوع لتسجيل الدخول</button></p>
+        </form>
+        <form id="setup-form" class="space-y-4 hidden" autocomplete="off">
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-store">اسم المتجر / المشروع</label>
+                <input type="text" id="reg-store" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold" placeholder="مثال: مقهى النخبة">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-name">اسمك</label>
+                    <input type="text" id="reg-name" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold" placeholder="يظهر في الفواتير">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-phone">رقم الهاتف</label>
+                    <input type="tel" id="reg-phone" inputmode="tel" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="968xxxxxxxx">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-user">اسم المستخدم (بالإنجليزية، بدون مسافات)</label>
+                <div class="relative">
+                    <input type="text" id="reg-user" autocapitalize="none" autocorrect="off" spellcheck="false" class="w-full pl-5 pr-10 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="owner">
+                    <i class="fas fa-user-shield absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-pass">الرمز (٤ أحرف أو أرقام على الأقل)</label>
+                <div class="relative">
+                    <input type="password" id="reg-pass" autocomplete="new-password" class="w-full pl-12 pr-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="••••••••">
+                    <button type="button" data-a="eye" data-t="reg-pass" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"><i class="fas fa-eye-slash text-xs"></i></button>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1.5 text-gray-500 dark:text-gray-400" for="reg-pass2">تأكيد الرمز</label>
+                <input type="password" id="reg-pass2" autocomplete="new-password" class="w-full px-5 py-3.5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 outline-none focus:border-primary transition-all text-xs font-semibold text-left" dir="ltr" placeholder="••••••••">
+            </div>
+            <p id="reg-err" class="hidden text-center text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/40 rounded-2xl py-3"></p>
+            <button type="submit" class="w-full bg-secondary hover:bg-emerald-600 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-500/20 text-xs transition-all">إنشاء الحساب وبدء العمل</button>
+            <p class="text-center text-[11px] font-bold text-gray-400 leading-6">كل بياناتك تُحفظ على هذا الآيباد فقط، ما في سيرفر ولا إنترنت مطلوب بعد التثبيت.</p>
+            <div class="relative"><div class="w-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold py-3 rounded-2xl text-xs text-center pointer-events-none"><i class="fas fa-upload ml-1.5"></i> عندي نسخة احتياطية، أبغى أسترجعها</div><input type="file" id="bk-file-setup" accept=".json,.txt,application/json,text/plain" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"></div>
+        </form>
+    </div>
+</div>
+
+<div id="app-view" dir="rtl" lang="ar" class="flex w-full overflow-hidden relative hidden" style="height:100%">
+    <div id="sidebar-overlay" data-a="sidebar-close" class="hidden fixed inset-0 bg-slate-900/60 z-[45] lg:hidden transition-opacity"></div>
+
+    <aside id="app-sidebar" class="sidebar-transition flex flex-col fixed inset-y-0 right-0 z-50 w-64 bg-white dark:bg-darkCard shadow-2xl transform translate-x-full lg:translate-x-0 lg:static lg:h-full shrink-0 border-l border-gray-100 dark:border-gray-800/80">
+        <div id="sidebar-header-container" class="h-20 flex items-center justify-between px-6 border-b border-gray-100 dark:border-gray-800/80 transition-all shrink-0">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <div class="w-10 h-10 bg-primary/10 text-primary rounded-2xl flex items-center justify-center shrink-0"><i class="fas fa-cubes text-xl"></i></div>
+                <div class="flex flex-col">
+                    <span class="font-black text-lg text-gray-800 dark:text-white truncate sidebar-text" id="sidebar-store-title">برنامج المقهى</span>
+                    <span class="text-[9px] text-emerald-500 font-bold sidebar-text">نظام المبيعات والحسابات</span>
+                </div>
+            </div>
+            <button data-a="sidebar-close" class="lg:hidden text-gray-400 hover:text-gray-600 p-2 rounded-xl"><i class="fas fa-times text-lg"></i></button>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2 scroll-smooth" id="sidebar-nav"></nav>
+        <div class="p-4 border-t border-gray-100 dark:border-gray-800/80 space-y-2 shrink-0">
+            <div class="flex items-center gap-1.5 p-1.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700/50">
+                <button data-theme-btn title="المظهر" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-[11px] text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-700/60 shadow-sm hover:shadow active:scale-95 transition-all">
+                    <i class="fas fa-moon text-xs text-gray-400" id="sidebar-theme-icon"></i><span class="sidebar-text" id="btn-theme-label">ليلي</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-1.5 p-1.5 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700/50">
+                <button data-a="logout" title="تسجيل الخروج" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-black text-[11px] text-red-500 bg-red-50 dark:bg-red-950/40 shadow-sm hover:shadow active:scale-95 transition-all">
+                    <i class="fas fa-power-off text-xs"></i><span class="sidebar-text">تسجيل الخروج</span>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full bg-gray-50 dark:bg-darkBg overflow-hidden relative">
+        <header class="h-20 bg-white dark:bg-darkCard shadow-sm flex items-center justify-between px-4 lg:px-6 shrink-0 z-30 border-b border-gray-100 dark:border-gray-800/80 transition-all duration-300">
+            <div class="flex items-center gap-4">
+                <button data-a="sidebar" class="w-11 h-11 flex items-center justify-center bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700/50 transition-all"><i class="fas fa-bars-staggered text-lg"></i></button>
+                <div>
+                    <h2 class="text-lg lg:text-xl font-black text-gray-800 dark:text-white" id="page-title">الرئيسية</h2>
+                    <p class="text-[11px] text-gray-400 hidden lg:block" id="page-subtitle"></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div id="shift-chip" class="hidden sm:flex items-center gap-2 bg-white dark:bg-gray-800 px-3 py-2 rounded-full border border-gray-200 dark:border-gray-700 text-[11px] font-bold text-gray-600 dark:text-gray-300 shadow-sm"></div>
+                <div class="flex items-center gap-2 bg-white dark:bg-gray-800 p-1.5 pl-3.5 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm">
+                    <div class="w-9 h-9 bg-gradient-to-tr from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center font-black text-sm shadow-md" id="profile-avatar">م</div>
+                    <div class="text-right hidden sm:block">
+                        <div class="flex items-center gap-1.5 mb-0.5"><p class="text-[11px] font-black text-gray-800 dark:text-white" id="profile-name">المدير</p><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span></div>
+                        <p class="text-[9px] text-gray-400 font-bold" id="profile-badge">صلاحية مدير</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-4 lg:p-6 pb-28 lg:pb-6" id="main-content-area"></div>
+
+        <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-darkCard border-t border-gray-100 dark:border-gray-800/80 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40 px-6 py-2 flex justify-between items-center" id="mobile-bottom-nav"></div>
+    </div>
+</div>
+
+<!-- النوافذ المنبثقة -->
+<div id="app-modal" dir="rtl" lang="ar" class="hidden fixed inset-0 z-[140] bg-slate-900/60 flex items-center justify-center p-4"><div id="modal-box" class="bg-white dark:bg-darkCard rounded-3xl shadow-2xl w-full max-w-md p-6 max-h-[90dvh] overflow-y-auto"></div></div>
+
+<div id="whatsapp-modal" dir="rtl" lang="ar" class="hidden fixed inset-0 z-[160] bg-slate-900/80 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard rounded-3xl shadow-2xl w-full max-w-sm p-6 max-h-[90dvh] overflow-y-auto">
+        <h3 class="text-lg font-black mb-1 text-gray-800 dark:text-white"><i class="fab fa-whatsapp text-emerald-500 ml-1.5"></i> <span id="wa-title">إرسال الفاتورة</span></h3>
+        <p class="text-[11px] font-bold text-gray-400 mb-4">أدخل رقم العميل وسيفتح واتساب بالفاتورة جاهزة</p>
+        <form id="wa-form" class="space-y-4">
+            <div>
+                <label class="block text-[11px] font-bold text-gray-400 mb-1.5">رقم الجوال</label>
+                <div class="flex gap-2" dir="ltr">
+                    <span class="px-3 py-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-xs font-bold text-gray-500 shrink-0">+968</span>
+                    <input type="tel" id="wa-phone" data-in="waphone" required inputmode="numeric" placeholder="9XXXXXXX" class="w-full px-4 py-3 rounded-2xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 text-xs font-bold outline-none text-left">
+                </div>
+                <p class="text-[10px] font-bold text-gray-400 mt-1.5">لرقم خارج عُمان اكتبه كاملاً مع مفتاح الدولة</p>
+            </div>
+            <div>
+                <label class="block text-[11px] font-bold text-gray-400 mb-1.5">معاينة الرسالة</label>
+                <pre id="wa-preview" class="bg-gray-50 dark:bg-gray-800 rounded-2xl p-3 text-[10px] leading-relaxed max-h-40 overflow-y-auto whitespace-pre-wrap font-sans text-gray-600 dark:text-gray-300 border dark:border-gray-700"></pre>
+            </div>
+            <div class="flex gap-3 pt-1">
+                <a id="wa-send" data-a="wa-send" href="#" target="_blank" rel="noopener" class="flex-1 text-center bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-xs shadow-lg"><i class="fab fa-whatsapp ml-1"></i> إرسال</a>
+                <button type="button" data-a="wa-copy" title="نسخ النص" class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-4 py-3.5 rounded-2xl font-bold text-xs"><i class="fas fa-copy"></i></button>
+                <button type="button" data-a="wa-close" class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-4 py-3.5 rounded-2xl font-bold text-xs">إلغاء</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="invoice-preview-modal" dir="rtl" lang="ar" class="hidden fixed inset-0 z-[150] bg-slate-900/80 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-darkCard rounded-3xl shadow-2xl w-full max-w-sm flex flex-col border border-slate-100 dark:border-gray-800 max-h-[90vh]">
+        <div class="p-4 border-b dark:border-gray-800 bg-slate-50 dark:bg-gray-800/50 flex justify-between items-center rounded-t-3xl shrink-0">
+            <h3 class="font-black text-sm text-gray-800 dark:text-white"><i class="fas fa-receipt text-primary ml-1.5"></i> الفاتورة</h3>
+            <div class="flex gap-2">
+                <button data-a="pv-wa" id="btn-whatsapp-preview" class="bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md" title="إرسال عبر واتساب"><i class="fab fa-whatsapp"></i></button>
+                <button data-a="pv-share" id="btn-share-preview" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-md" title="مشاركة كملف PDF"><i class="fas fa-share-nodes"></i></button>
+                <button data-a="pv-print" id="btn-print-preview" class="bg-primary hover:bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md"><i class="fas fa-print ml-1"></i> طباعة</button>
+                <button data-a="pv-close" class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 px-3 py-2 rounded-xl text-xs transition-all"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1 flex justify-center bg-gray-100 dark:bg-gray-900/50 rounded-b-3xl" style="-webkit-overflow-scrolling: touch;">
+            <div id="invoice-preview-content" class="bg-white p-4 text-black shadow-lg w-[270px] max-w-full h-fit shrink-0" style="font-family: 'Cairo', 'Tahoma', sans-serif; direction: rtl; box-sizing: border-box;"></div>
+        </div>
+    </div>
+</div>
+
+<script defer src="app.js?v=2026.10.29-b1f68b50"></script>
+</body>
+</html>
