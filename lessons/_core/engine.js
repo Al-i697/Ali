@@ -1,11 +1,7 @@
 /* ---------- engine: helpers, interaction kit, navigation ---------- */
 var SLIDES=[], CUR=-1, SC={};
-var CHAPTERS=['مدخل','لماذا نقيس الكميات؟','الكتلة الذرية النسبية Ar','كتلة الصيغة النسبية Mr','الصيغة من نموذج أو مخطط','نشاط عملي','أسئلة على نمط الامتحان','ختام'];
-/* background theme per chapter (a slide id can override it) */
-var BGMAP=['atomic','reactions','atomic','bonds','bonds','reactions','periodic','organic'], BGID={table:'periodic',balance:'periodic',q32:'periodic',final:'reactions'};
-/* colour palette per chapter (a slide id can override it): navy, emerald, ember (orange), gold (black and gold), violet */
-var PALCH=['navy','emerald','navy','emerald','navy','ember','gold','violet'],
-    PALID={imp:'emerald',npk:'ember',shop:'navy',c12:'violet',balance:'gold',q32:'gold',table:'gold',isoH:'violet',iso:'navy',tk1:'ember',race:'ember',tk2:'ember',final:'ember',hw:'violet'};
+/* lesson settings come from the lesson's config.js: chapters, a background scene and a colour palette per chapter (and per slide id) */
+var CHAPTERS=LESSON.chapters, BGMAP=LESSON.bgMap, BGID=LESSON.bgId||{}, PALCH=LESSON.palCh, PALID=LESSON.palId||{};
 function slide(o){SLIDES.push(o)}
 function $(s,r){return (r||document).querySelector(s)}
 function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
@@ -222,7 +218,7 @@ function paintChrome(){
   var s=SLIDES[CUR];
   $$('.seg',PROG).forEach(function(b,j){b.classList.toggle('cur',j===CUR); b.classList.toggle('done',j<CUR); b.classList.toggle('act',!!SLIDES[j].tag && j!==CUR)});
   BTN_P.disabled=CUR===0; BTN_N.disabled=CUR===SLIDES.length-1;
-  WHERE.innerHTML='<b>'+(s.title||'الكتل النسبية')+'</b><small>'+CHAPTERS[s.ch]+' · '+ar(CUR+1)+' من '+ar(SLIDES.length)+'</small>';
+  WHERE.innerHTML='<b>'+(s.title||LESSON.short)+'</b><small>'+CHAPTERS[s.ch]+' · '+ar(CUR+1)+' من '+ar(SLIDES.length)+'</small>';
   NOTE.innerHTML='<h4>ملاحظة المعلم</h4>'+(s.note||'<p>لا توجد ملاحظة لهذه الشريحة.</p>');
   $$('.it',IDX).forEach(function(b,j){b.classList.toggle('cur',j===CUR)});
 }
@@ -233,8 +229,9 @@ function fit(){
 function boot(){
   document.body.insertAdjacentHTML('afterbegin',
    '<div class="app">'+
-    '<header class="top"><div class="brand"><i><small>6</small>C</i><span>كيمياء<em>الدرس ٣-١ · الكتل النسبية</em></span></div>'+
+    '<header class="top"><div class="brand"><i><small>6</small>C</i><span>كيمياء<em>'+LESSON.brand+'</em></span></div>'+
     '<div class="prog" id="prog" role="tablist" aria-label="شرائح الدرس"></div>'+
+    (LESSON.home?'<a class="tbtn" id="bHome" href="'+LESSON.home+'" aria-label="كل الدروس"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>الدروس</span></a>':'')+
     '<button class="tbtn" id="bFx" type="button" aria-label="الخلفية"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/></svg><span>كاملة</span></button>'+
     '<button class="tbtn" id="bNote" type="button" aria-label="ملاحظة المعلم"><svg viewBox="0 0 24 24"><path d="M5 4h14v12H9l-4 4z"/></svg><span>المعلم</span></button>'+
     '<button class="tbtn" id="bIdx" type="button" aria-label="فهرس الدرس"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>'+

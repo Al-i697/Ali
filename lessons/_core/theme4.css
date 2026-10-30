@@ -78,3 +78,5 @@
 .qd .id{color:var(--accent-ink)}
 .rd{color:var(--ink); background:rgba(var(--d2),.7)}
 .rd.cur{color:#fff; background:rgba(var(--t1),.38)}
+
+a.tbtn{text-decoration:none}
