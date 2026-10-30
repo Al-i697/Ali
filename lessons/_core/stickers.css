@@ -1,28 +1,81 @@
-/* ---------- stickers: decoration under the content, praise pop-ups, sparkles ---------- */
-.slide>*{z-index:1} .slide>.stk{z-index:0}
-.stk{position:absolute; pointer-events:none; user-select:none; -webkit-user-drag:none; transform-origin:50% 70%; opacity:0; transform:rotate(var(--r,0deg));
-  filter:drop-shadow(0 7px 9px rgba(0,0,0,.35)); will-change:transform,opacity}
-.stk svg{display:block; width:100%; height:100%; overflow:visible}
-.slide.on .stk,.stk.free{opacity:1;
-  animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,.9s) backwards, stkFloat var(--fd,6s) ease-in-out calc(var(--sd,.9s) + .75s) infinite alternate}
+/* ---------- stickers: placed in free space under the content, alive, never on text ---------- */
+.slide>*{z-index:1} .slide>.stk{z-index:2}
+.stk{position:absolute; pointer-events:none; user-select:none; -webkit-user-drag:none; opacity:0; transform:rotate(var(--r,0deg)); transform-origin:50% 70%}
+.stk .in{width:100%; height:100%; transform-origin:50% 92%; filter:drop-shadow(0 7px 9px rgba(0,0,0,.35)); will-change:transform}
+.stk .in img,.stk .in svg{display:block; width:100%; height:100%; -webkit-user-drag:none}
+.stk .in svg{overflow:visible}
+.stk.placed{opacity:1; pointer-events:auto; cursor:pointer; transition:left .7s cubic-bezier(.3,.8,.3,1), top .7s cubic-bezier(.3,.8,.3,1);
+  animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,0s) backwards, stkFloat var(--fd,6s) ease-in-out calc(var(--sd,0s) + .75s) infinite alternate}
+.stk.free{opacity:1; cursor:pointer; pointer-events:auto;
+  animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,0s) backwards, stkFloat var(--fd,6s) ease-in-out calc(var(--sd,0s) + .75s) infinite alternate}
+.stk.nospot{opacity:0; pointer-events:none}
 @keyframes stkIn{from{opacity:0; transform:translateY(26px) scale(.15) rotate(calc(var(--r,0deg) - 24deg))} to{opacity:1; transform:translateY(0) scale(1) rotate(var(--r,0deg))}}
-@keyframes stkFloat{from{transform:translateY(0) rotate(var(--r,0deg))} to{transform:translateY(-9px) rotate(calc(var(--r,0deg) + 2.5deg))}}
-html[data-fx="1"] .slide.on .stk,html[data-fx="1"] .stk.free{animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,.9s) backwards}
-html[data-fx="0"] .slide.on .stk,html[data-fx="0"] .stk.free{animation:none}
+@keyframes stkFloat{from{transform:translateY(0) rotate(var(--r,0deg))} to{transform:translateY(-8px) rotate(calc(var(--r,0deg) + 2deg))}}
+/* how each sticker moves when idle */
+.stk[data-mv=breathe] .in{animation:mvBreathe 3.8s ease-in-out var(--bd,0s) infinite alternate}
+.stk[data-mv=sway] .in{animation:mvSway 4.6s ease-in-out var(--bd,0s) infinite alternate}
+.stk[data-mv=bob] .in{animation:mvBob 3.2s ease-in-out var(--bd,0s) infinite alternate}
+.stk[data-mv=hop] .in{animation:mvHop 4.8s ease-in-out var(--bd,0s) infinite}
+.stk[data-mv=wiggle] .in{animation:mvWiggle 5.6s ease-in-out var(--bd,0s) infinite}
+.stk.poked .in{animation:mvPoke .9s cubic-bezier(.3,.7,.4,1) 1!important}
+@keyframes mvBreathe{from{transform:scale(1,1)} to{transform:scale(1.045,.97)}}
+@keyframes mvSway{from{transform:rotate(-2.6deg)} to{transform:rotate(2.6deg)}}
+@keyframes mvBob{from{transform:translateY(0) rotate(-1deg)} to{transform:translateY(-7px) rotate(1.2deg)}}
+@keyframes mvHop{0%,66%,100%{transform:none} 72%{transform:scale(1.07,.9)} 80%{transform:translateY(-22px) scale(.95,1.07)} 88%{transform:translateY(0) scale(1.08,.89)} 94%{transform:scale(.98,1.03)}}
+@keyframes mvWiggle{0%,58%,100%{transform:rotate(0)} 64%{transform:rotate(-7deg)} 70%{transform:rotate(7deg)} 76%{transform:rotate(-5deg)} 82%{transform:rotate(3deg)} 88%{transform:rotate(0)}}
+@keyframes mvPoke{0%{transform:none} 28%{transform:translateY(-38px) scale(.92,1.1) rotate(-9deg)} 58%{transform:translateY(0) scale(1.12,.86)} 78%{transform:scale(.97,1.04) rotate(3deg)} 100%{transform:none}}
+/* drawn stickers: faces blink and look at the pointer, things inside move */
+.stk svg .eg{transform:translate(var(--ex,0px),var(--ey,0px)); transition:transform .18s ease-out}
+.stk svg .eye{transform-box:fill-box; transform-origin:center; animation:blink 5.2s infinite; animation-delay:var(--bd,0s)}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)} 96%{transform:scaleY(.08)}}
+.stk svg .bu{transform-box:fill-box; transform-origin:center; animation:bubRise 2.8s ease-in infinite}
+.stk svg .b2{animation-delay:.9s; animation-duration:3.3s} .stk svg .b3{animation-delay:1.7s; animation-duration:2.4s}
+@keyframes bubRise{0%{transform:translateY(0) scale(.6); opacity:0} 18%{opacity:1} 100%{transform:translateY(-52px) scale(1.15); opacity:0}}
+.stk svg .liq{transform-box:fill-box; transform-origin:50% 100%; animation:liqW 3.4s ease-in-out infinite alternate}
+@keyframes liqW{from{transform:skewX(-2.5deg) scaleY(.97)} to{transform:skewX(2.5deg) scaleY(1.03)}}
+.stk svg .orb{animation:orbit 16s linear infinite}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.stk svg .pulse{animation:pulseS 1.8s ease-in-out infinite alternate}
+@keyframes pulseS{from{transform:scale(1) rotate(-4deg)} to{transform:scale(1.07) rotate(4deg)}}
+.stk svg .tw{animation:twk 1.6s ease-in-out infinite} .stk svg .t2{animation-delay:.7s}
+@keyframes twk{0%,100%{transform:scale(.2); opacity:0} 50%{transform:scale(1); opacity:1}}
+.stk svg .rays{animation:rayP 1.4s ease-in-out infinite alternate}
+@keyframes rayP{from{opacity:.35} to{opacity:1}}
+.stk svg .glow{animation:glowP 1.4s ease-in-out infinite alternate}
+@keyframes glowP{from{fill:#ffe66b} to{fill:#fff6a8}}
+.stk svg .fl{animation:flick .5s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(1,.95) skewX(-2deg)} to{transform:scale(1.03,1.06) skewX(2deg)}}
+.stk svg .fl2{animation:flick2 .38s ease-in-out infinite alternate}
+@keyframes flick2{from{transform:scale(.92,.9)} to{transform:scale(1.05,1.08)}}
+.stk svg .ear{animation:earW 3.6s ease-in-out infinite} .stk svg .ear.e2{animation-delay:.5s}
+@keyframes earW{0%,70%,100%{transform:rotate(0)} 78%{transform:rotate(-9deg)} 86%{transform:rotate(5deg)}}
+.stk svg .hand{animation:waveH 4.2s ease-in-out infinite} .stk svg .hand.h2{animation-delay:1.6s}
+@keyframes waveH{0%,60%,100%{transform:rotate(0)} 70%{transform:rotate(-16deg)} 80%{transform:rotate(8deg)} 90%{transform:rotate(-8deg)}}
+.stk svg .nose{transform-box:fill-box; transform-origin:center; animation:noseW 3s ease-in-out infinite}
+@keyframes noseW{0%,80%,100%{transform:scale(1)} 88%{transform:scale(1.12,.92)}}
+/* calm and still modes, hidden slides */
+html[data-fx="1"] .stk.placed,html[data-fx="1"] .stk.free{animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,0s) backwards}
+html[data-fx="0"] .stk,html[data-fx="0"] .stk *{animation:none!important}
+.slide:not(.on) .stk,.slide:not(.on) .stk *{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.stk,.stk *{animation:none!important}}
+/* praise sticker and sparkles */
 .stk-pop{position:absolute; z-index:60; pointer-events:none; transform:rotate(var(--r,0deg)); filter:drop-shadow(0 12px 18px rgba(0,0,0,.45)); animation:popIn .6s cubic-bezier(.2,1.6,.35,1) both}
 .stk-pop img,.stk-pop svg{display:block; width:100%; height:100%}
 .stk-pop.out{animation:popOut .55s ease-in both}
 @keyframes popIn{from{opacity:0; transform:translateY(70px) scale(.2) rotate(-26deg)} to{opacity:1; transform:translateY(0) scale(1) rotate(var(--r,0deg))}}
 @keyframes popOut{to{opacity:0; transform:translateY(-34px) scale(.72) rotate(var(--r,0deg))}}
-.spk{position:absolute; z-index:61; width:0; height:0; pointer-events:none}
+.spk{position:absolute; z-index:61; width:0; height:0; pointer-events:none} .spk.fixed{position:fixed}
 .spk i{position:absolute; left:0; top:0; width:var(--z); height:var(--z); margin:calc(var(--z)/-2) 0 0 calc(var(--z)/-2); background:var(--c); animation:spk .95s cubic-bezier(.15,.7,.3,1) var(--o) both}
 .spk i:nth-child(3n+1){clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
 .spk i:nth-child(3n+2){border-radius:50%}
 .spk i:nth-child(3n){clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
 @keyframes spk{0%{opacity:0; transform:translate(0,0) scale(.2) rotate(0)} 14%{opacity:1} 100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1) rotate(200deg)}}
 html.stk-off .stk,html.stk-off .stk-pop,html.stk-off .spk{display:none!important}
-@media (prefers-reduced-motion:reduce){.slide.on .stk,.stk.free{animation:none}}
-/* narrow windows: the sticker button keeps only its icon so the top bar still fits */
+/* narrow windows: top-bar buttons keep only their icon so the bar still fits */
 @media (max-width:1180px){#bStk span{display:none} #bStk{min-width:44px; padding:0 10px}}
 @media (max-width:1100px){#bFx span{display:none} #bFx{min-width:44px; padding:0 10px}}
 @media (max-width:1100px){#bHome span{display:none} #bHome{min-width:44px; padding:0 10px}}
+/* arrows between steps breathe so the flow reads as moving */
+.slide.on .arw{animation:arwPulse 1.7s ease-in-out infinite}
+@keyframes arwPulse{0%,100%{transform:scale(1); opacity:.8} 50%{transform:scale(1.18); opacity:1}}
+html[data-fx="0"] .arw{animation:none!important}

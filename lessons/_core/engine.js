@@ -201,6 +201,7 @@ function show(i,dir){
     var pe=SLIDES[prev].el; pe.classList.remove('on'); pe.classList.add('off'); MOT.mark(pe,pl,dir);
     (function(p){var t=p._tk=(p._tk||0)+1; later(function(){if(p._tk===t){p.classList.remove('off'); MOT.unmark(p)}},pl.ms)})(pe);
     if(SLIDES[prev].leave) SLIDES[prev].leave(pe);
+    if(typeof STK!=='undefined') STK.leave(pe);
   }
   MOT.mark(el,pl,dir); void el.offsetWidth; el.classList.add('on');
   (function(e){var t=e._tk=(e._tk||0)+1; later(function(){if(e._tk===t) MOT.unmark(e)},pl.ms+60)})(el);
@@ -210,6 +211,7 @@ function show(i,dir){
   BG.go(BGID[s.id]||BGMAP[s.ch]||'atomic',pal,dir);
   APP.setAttribute('data-pal',pal);
   MOT.enter(el,pl);
+  if(typeof STK!=='undefined') STK.arrive(el);
   if(s.enter) s.enter(el);
   paintChrome();
   try{history.replaceState(null,'','#s'+(i+1))}catch(e){}

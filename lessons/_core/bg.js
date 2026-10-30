@@ -10,7 +10,7 @@ var BG=(function(){
 
   function hx(s){return [parseInt(s.substr(1,2),16)/255,parseInt(s.substr(3,2),16)/255,parseInt(s.substr(5,2),16)/255]}
   /* shader shape per scene, colours per palette */
-  var SCN={atomic:[2.0,.040,1.7],reactions:[2.4,.055,2.0],periodic:[1.7,.030,1.2],bonds:[2.2,.045,1.8],organic:[2.0,.038,1.5]};
+  var SCN={atomic:[2.0,.040,1.7],reactions:[2.4,.055,2.0],periodic:[1.7,.030,1.2],bonds:[2.2,.045,1.8],organic:[2.0,.038,1.5],bubbles:[2.2,.050,1.9],doodles:[1.5,.028,1.1],waves:[2.0,.040,1.6],hexes:[1.8,.035,1.3]};
   var PAL={
     emerald:{a:'#032419',b:'#08563f',c:'#1bab82',m:'90,240,190',s:'190,255,230',s2:'120,235,225'},
     navy:   {a:'#030c20',b:'#0a2a5c',c:'#1d62bd',m:'96,190,255',s:'190,225,255',s2:'130,210,255'},
@@ -286,6 +286,127 @@ var BG=(function(){
       ctx.globalAlpha=.05*sa;ctx.drawImage(hexc,hx_,((T*1.5*U)%(hp*.5))-hp*.5+oy*.1);
       for(i=0;i<rings.length;i++)ring(rings[i]);
       for(i=0;i<chains.length;i++)chain(chains[i]);
+      dust.draw();
+    }
+    return {init:init,step:step,draw:draw};
+  })();
+
+  /* ================= scene 6: bubbles rising in a liquid ================= */
+  SC.bubbles=(function(){
+    var bb,dust;
+    function init(){
+      var r=rng(61),i; dust=mkDust(r,14); bb=[];
+      for(i=0;i<Math.round(34*Q);i++)bb.push({x:r()*W,y:r()*H*1.1,r:(5+Math.pow(r(),2)*30)*U,v:(14+r()*34)*U,ph:r()*6,wa:(6+r()*16)*U,ws:.5+r()*1.1,gold:r()<.18});
+    }
+    function step(dt){
+      for(var i=0;i<bb.length;i++){var b=bb[i];b.y-=b.v*dt;if(b.y<-b.r*2){b.y=H+b.r*2+Math.random()*60*U;b.x=Math.random()*W}}
+      dust.step(dt);
+    }
+    function wave(y0,amp,k,sp,ph,rgb,al){
+      ctx.beginPath();ctx.moveTo(0,H);
+      for(var x=0;x<=W+16;x+=16)ctx.lineTo(x+ox*.15,y0+Math.sin(x*k+T*sp+ph)*amp+Math.sin(x*k*2.3-T*sp*.7)*amp*.35);
+      ctx.lineTo(W+16,H);ctx.closePath();ctx.globalAlpha=al*sa;ctx.fillStyle='rgb('+rgb+')';ctx.fill();
+    }
+    function draw(){
+      var i,b,x,y,c;
+      wave(H*.90,16*U,.006/U,.8,0,PC.m,.07);wave(H*.935,12*U,.008/U,-.6,2,PC.s2,.07);
+      ctx.lineWidth=1.6*U;
+      for(i=0;i<bb.length;i++){
+        b=bb[i];x=b.x+Math.sin(T*b.ws+b.ph)*b.wa+ox*.2;y=b.y;c=b.gold?'255,214,128':PC.s;
+        ctx.globalAlpha=sa*.30;ctx.strokeStyle='rgb('+c+')';ctx.beginPath();ctx.arc(x,y,b.r,0,PI2);ctx.stroke();
+        G(x,y,b.r*1.6,b.gold?'255,214,128':PC.m,.10);
+        ctx.globalAlpha=sa*.55;ctx.beginPath();ctx.arc(x,y,b.r*.68,3.5,4.4);ctx.stroke();
+      }
+      dust.draw();
+    }
+    return {init:init,step:step,draw:draw};
+  })();
+
+  /* ================= scene 7: flat line doodles (flasks, atoms, DNA) over soft flat discs ================= */
+  var ICONS={
+    flask:function(g){g.beginPath();g.moveTo(38,10);g.lineTo(58,10);g.moveTo(41,10);g.lineTo(41,38);g.lineTo(18,78);g.quadraticCurveTo(14,88,26,88);g.lineTo(70,88);g.quadraticCurveTo(82,88,78,78);g.lineTo(55,38);g.lineTo(55,10);g.moveTo(25,66);g.lineTo(71,66);g.stroke()},
+    tube:function(g){g.beginPath();g.moveTo(32,12);g.lineTo(64,12);g.moveTo(36,12);g.lineTo(36,72);g.arc(48,72,12,Math.PI,0,true);g.lineTo(60,12);g.moveTo(36,50);g.lineTo(60,50);g.stroke()},
+    beaker:function(g){g.beginPath();g.moveTo(24,14);g.lineTo(28,84);g.lineTo(68,84);g.lineTo(72,14);g.moveTo(20,14);g.lineTo(76,14);g.moveTo(27,40);g.lineTo(40,40);g.moveTo(27,56);g.lineTo(36,56);g.moveTo(27,72);g.lineTo(40,72);g.stroke()},
+    atom:function(g){var i;for(i=0;i<3;i++){g.beginPath();g.ellipse(48,48,40,14,i*Math.PI/3,0,Math.PI*2);g.stroke()}g.beginPath();g.arc(48,48,5,0,Math.PI*2);g.fill()},
+    hex:function(g){var k;g.beginPath();for(k=0;k<6;k++){var a=k*Math.PI/3+Math.PI/6;g.lineTo(48+34*Math.cos(a),48+34*Math.sin(a))}g.closePath();g.stroke();g.beginPath();g.arc(48,48,19,0,Math.PI*2);g.stroke()},
+    dna:function(g){var t,i;for(i=0;i<2;i++){g.beginPath();for(t=0;t<=1.001;t+=.03){var x=48+(i?-1:1)*16*Math.sin(t*Math.PI*3),y=6+t*84;if(t===0)g.moveTo(x,y);else g.lineTo(x,y)}g.stroke()}
+      g.lineWidth=2;for(t=.08;t<1;t+=.166){var xx=16*Math.sin(t*Math.PI*3);g.beginPath();g.moveTo(48-xx,6+t*84);g.lineTo(48+xx,6+t*84);g.stroke()}},
+    mol:function(g){g.beginPath();g.moveTo(22,66);g.lineTo(48,28);g.lineTo(76,62);g.stroke();[[22,66,9],[48,28,12],[76,62,8]].forEach(function(b){g.beginPath();g.arc(b[0],b[1],b[2],0,Math.PI*2);g.fillStyle='rgba(0,0,0,0)';g.stroke()})},
+    drop:function(g){g.beginPath();g.moveTo(48,10);g.quadraticCurveTo(80,52,68,72);g.quadraticCurveTo(48,96,28,72);g.quadraticCurveTo(16,52,48,10);g.stroke()},
+    plus:function(g){g.beginPath();g.moveTo(48,26);g.lineTo(48,70);g.moveTo(26,48);g.lineTo(70,48);g.stroke()},
+    ring:function(g){g.beginPath();g.arc(48,48,14,0,Math.PI*2);g.stroke()}
+  };
+  var IK=Object.keys(ICONS);
+  function iconSpr(kind,rgb){
+    var k='i'+kind+rgb;if(SPR[k])return SPR[k];
+    var c=document.createElement('canvas');c.width=c.height=Math.ceil(96*S);var g=c.getContext('2d');g.scale(S,S);
+    g.strokeStyle=g.fillStyle='rgb('+rgb+')';g.lineWidth=3.4;g.lineCap=g.lineJoin='round';ICONS[kind](g);
+    return SPR[k]=c;
+  }
+  SC.doodles=(function(){
+    var ic,ds,dust;
+    function init(){
+      var r=rng(71),i; dust=mkDust(r,10); ic=[]; ds=[];
+      for(i=0;i<4;i++)ds.push({x:r()*W,y:r()*H,r:(110+r()*130)*U,ph:r()*6,sp:.05+r()*.06,gold:i===1});
+      for(i=0;i<Math.round(20*Q);i++)ic.push({k:IK[i%IK.length],x:r()*W,y:r()*H,s:(34+r()*40)*U,vx:(r()-.5)*14*U,vy:(-3-r()*9)*U,rot:r()*6.28,rs:(r()-.5)*.35,ph:r()*6,gold:r()<.2});
+    }
+    function step(dt){
+      for(var i=0;i<ic.length;i++){var q=ic[i];q.x+=q.vx*dt;q.y+=q.vy*dt;q.rot+=q.rs*dt;
+        if(q.y<-q.s)q.y=H+q.s;if(q.x<-q.s)q.x=W+q.s;if(q.x>W+q.s)q.x=-q.s}
+      dust.step(dt);
+    }
+    function draw(){
+      var i,q,d,al;
+      for(i=0;i<ds.length;i++){d=ds[i];var x=d.x+Math.sin(T*d.sp+d.ph)*60*U+ox*.1,y=d.y+Math.cos(T*d.sp*.8+d.ph)*30*U;
+        ctx.globalAlpha=sa*.055;ctx.fillStyle='rgb('+(d.gold?'255,214,128':PC.m)+')';ctx.beginPath();ctx.arc(x,y,d.r,0,PI2);ctx.fill();
+        ctx.globalAlpha=sa*.14;ctx.strokeStyle='rgb('+(d.gold?'255,214,128':PC.s)+')';ctx.lineWidth=2*U;ctx.beginPath();ctx.arc(x,y,d.r*1.12,0,PI2);ctx.stroke()}
+      for(i=0;i<ic.length;i++){q=ic[i];al=.20+.12*Math.sin(T*.8+q.ph);ctx.globalAlpha=sa*al;
+        ctx.save();ctx.translate(q.x+ox*.2,q.y);ctx.rotate(q.rot);ctx.drawImage(iconSpr(q.k,q.gold?'255,214,128':PC.s),-q.s/2,-q.s/2,q.s,q.s);ctx.restore()}
+      dust.draw();
+    }
+    return {init:init,step:step,draw:draw};
+  })();
+
+  /* ================= scene 8: flowing waves with travelling electrons ================= */
+  SC.waves=(function(){
+    var L,dust;
+    function wy(w,x){return w.y+Math.sin(x*w.k+T*w.sp+w.ph)*w.a+Math.sin(x*w.k*2.1-T*w.sp*.8)*w.a*.4}
+    function init(){
+      var r=rng(91),i,n=Math.max(3,Math.round(5*Q)); dust=mkDust(r,16); L=[];
+      for(i=0;i<n;i++)L.push({y:H*(.2+.13*i+r()*.04),a:(22+r()*40)*U,k:(.004+r()*.004)/U,sp:(.5+r()*.7)*(i%2?-1:1),ph:r()*6,c:i%3===1?'255,214,128':(i%2?PC.s2:PC.m),w:(1.6+r()*2.2)*U,v:(40+r()*50)*U*(i%2?-1:1),o:r()*W});
+    }
+    function step(dt){dust.step(dt)}
+    function draw(){
+      var i,w,x,first,ex,ey;
+      ctx.lineCap='round';ctx.lineJoin='round';
+      for(i=0;i<L.length;i++){
+        w=L[i];first=true;ctx.beginPath();
+        for(x=-10;x<=W+10;x+=14){var px=x+ox*.2*(1+i*.2),py=wy(w,x);if(first){ctx.moveTo(px,py);first=false}else ctx.lineTo(px,py)}
+        ctx.globalAlpha=sa*.22;ctx.strokeStyle='rgb('+w.c+')';ctx.lineWidth=w.w;ctx.stroke();
+        ctx.globalAlpha=sa*.06;ctx.lineWidth=w.w*5;ctx.stroke();
+        ex=((w.o+T*w.v)%(W+60)+(W+60))%(W+60)-30;ey=wy(w,ex);
+        G(ex+ox*.2,ey,14*U,w.c,.55);B(ex+ox*.2,ey,3.4*U,'255,255,255',.8);
+      }
+      dust.draw();
+    }
+    return {init:init,step:step,draw:draw};
+  })();
+
+  /* ================= scene 9: a honeycomb lattice with a travelling pulse and glowing rings ================= */
+  SC.hexes=(function(){
+    var cells,dust,R;
+    function init(){
+      var r=rng(81),c,rr,dx,dy; dust=mkDust(r,12); R=44*U; cells=[]; dx=R*1.5; dy=R*Math.sqrt(3);
+      for(c=-1;c*dx<W+R*2;c++)for(rr=-1;rr*dy<H+R*2;rr++)cells.push({x:c*dx,y:rr*dy+(c&1?dy/2:0),ph:r()*6,ben:r()<.07});
+    }
+    function step(dt){dust.step(dt)}
+    function hex(x,y,r){ctx.moveTo(x+r,y);for(var k=1;k<6;k++)ctx.lineTo(x+r*Math.cos(k*Math.PI/3),y+r*Math.sin(k*Math.PI/3));ctx.closePath()}
+    function draw(){
+      var i,c,a,q,B4=[[],[],[],[]],AL=[.05,.09,.15,.26],ofx=ox*.15;
+      for(i=0;i<cells.length;i++){c=cells[i];a=Math.max(0,Math.sin((c.x*.006+c.y*.004)/U-T*.9+c.ph*.25));q=a>.75?3:a>.45?2:a>.15?1:0;B4[q].push(c)}
+      ctx.lineWidth=1.2*U;
+      for(q=0;q<4;q++){ctx.globalAlpha=sa*AL[q];ctx.strokeStyle='rgb('+(q===3?PC.s2:PC.s)+')';ctx.beginPath();for(i=0;i<B4[q].length;i++)hex(B4[q][i].x+ofx,B4[q][i].y,R*.92);ctx.stroke()}
+      for(i=0;i<cells.length;i++){c=cells[i];if(c.ben){var p=.5+.5*Math.sin(T*.8+c.ph);G(c.x+ofx,c.y,R*1.5,PC.m,.10+.12*p);ctx.globalAlpha=sa*(.25+.2*p);ctx.strokeStyle='rgb('+PC.s+')';ctx.lineWidth=2*U;ctx.beginPath();ctx.arc(c.x+ofx,c.y,R*.45,0,PI2);ctx.stroke()}}
       dust.draw();
     }
     return {init:init,step:step,draw:draw};

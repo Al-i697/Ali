@@ -9,12 +9,13 @@ from scipy import ndimage as ndi
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(HERE, '..', 'art-src', 'stickers')
-SHEETS = {'k': 'sheet1_kids.jpg', 'p': 'sheet2_praise.jpg', 's': 'sheet3_science.jpg', 'n': 'sheet4_night.jpg'}
+SHEETS = {'k': 'sheet1_kids.jpg', 'p': 'sheet2_praise.jpg', 's': 'sheet3_science.jpg', 'n': 'sheet4_night.jpg', 'f': 'sheet5_flatatom.jpg', 'x': 'sheet6_scientists.jpg', 'y': 'sheet7_safety.jpg'}
 # thr: colour distance from the paper that counts as ink; merge: px that joins the parts of one sticker; amin: smaller blobs are decoration (stars, bubbles) and are attached to the nearest sticker; attach: how far
 PARAMS = {'k': dict(thr=14, merge=2, amin=4000, attach=26), 'p': dict(thr=30, merge=2, amin=6000, attach=26),
-          's': dict(thr=30, merge=2, amin=6000, attach=16), 'n': dict(thr=14, merge=2, amin=2500, attach=24)}
+          's': dict(thr=30, merge=2, amin=6000, attach=16), 'n': dict(thr=14, merge=2, amin=2500, attach=24),
+          'f': dict(thr=60, merge=3, amin=20000, attach=10), 'x': dict(thr=40, merge=3, amin=9000, attach=14), 'y': dict(thr=60, merge=3, amin=3000, attach=14)}
 
-SM = {'k': 3, 'p': 3, 's': 3, 'n': 6}  # smoothing of the cut line per sheet
+SM = {'k': 3, 'p': 3, 's': 3, 'n': 6, 'f': 3, 'x': 3, 'y': 3}  # smoothing of the cut line per sheet
 
 def disk(r):
     y, x = np.ogrid[-r:r + 1, -r:r + 1]
