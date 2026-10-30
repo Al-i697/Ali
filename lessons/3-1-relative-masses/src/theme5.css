@@ -1,0 +1,139 @@
+/* ===== motion: slide transitions (one per slide change) and element entrances (varied per slide) ===== */
+@property --ang{syntax:"<angle>"; inherits:false; initial-value:0deg}
+@property --bw{syntax:"<percentage>"; inherits:false; initial-value:0%}
+@property --wa{syntax:"<angle>"; inherits:false; initial-value:0deg}
+@property --wb{syntax:"<percentage>"; inherits:false; initial-value:0%}
+
+/* resting states: every transition below animates away from / towards these */
+.stage{perspective:2200px}
+.slide{opacity:0; transform:none; filter:none}
+.tr-flip{backface-visibility:hidden}
+.slide.back{transform:none}
+.slide.on{opacity:1; z-index:2; transition:none}
+.slide.off{opacity:0; z-index:1; transform:none; transition:none}
+.slide.on:where([class*="tr-"]),.slide.off:where([class*="tr-"]){animation-duration:var(--tdur,640ms); animation-timing-function:var(--ease-out); animation-fill-mode:both}
+.slide.off:where([class*="tr-"]){animation-timing-function:cubic-bezier(.5,0,.75,0)}
+
+/* fade with a soft focus pull */
+.tr-fade.on{animation-name:trFadeIn}
+.tr-fade.off{animation-name:trFadeOut; animation-duration:240ms!important}
+@keyframes trFadeIn{from{opacity:0; transform:scale(.985); filter:blur(5px)}to{opacity:1; transform:none; filter:blur(0)}}
+@keyframes trFadeOut{from{opacity:1}to{opacity:0; filter:blur(3px)}}
+
+/* push: the new slide pushes the old one out */
+.tr-push.on{animation-name:trPushIn}
+.tr-push.off{animation-name:trPushOut; animation-timing-function:var(--ease-out)}
+@keyframes trPushIn{from{opacity:1; transform:translateX(calc(var(--dx)*100%))}to{opacity:1; transform:none}}
+@keyframes trPushOut{from{opacity:1; transform:none}to{opacity:1; transform:translateX(calc(var(--dx)*-100%))}}
+
+/* cover: the new slide slides over the old one, which dims */
+.tr-cover.on{animation-name:trCoverIn; box-shadow:0 0 60px rgba(0,0,0,.55)}
+.tr-cover.off{animation-name:trCoverOut; animation-timing-function:var(--ease-out)}
+@keyframes trCoverIn{from{opacity:1; transform:translateX(calc(var(--dx)*100%))}to{opacity:1; transform:none}}
+@keyframes trCoverOut{from{opacity:1; transform:none}to{opacity:.35; transform:translateX(calc(var(--dx)*-14%)) scale(.97)}}
+
+/* uncover: the old slide slides away and shows the new one under it */
+.tr-uncover.on{animation-name:trHoldIn; z-index:1}
+.tr-uncover.off{animation-name:trUncoverOut; z-index:3; animation-timing-function:var(--ease-out)}
+@keyframes trHoldIn{from{opacity:1}to{opacity:1}}
+@keyframes trUncoverOut{from{opacity:1; transform:none}to{opacity:1; transform:translateX(calc(var(--dx)*-100%))}}
+
+/* zoom and fly-through */
+.tr-zoom.on{animation-name:trZoomIn}
+.tr-zoom.off{animation-name:trZoomOut; animation-duration:360ms!important}
+@keyframes trZoomIn{from{opacity:0; transform:scale(.88)}to{opacity:1; transform:none}}
+@keyframes trZoomOut{from{opacity:1}to{opacity:0; transform:scale(1.1)}}
+.tr-flythrough.on{animation-name:trFlyIn}
+.tr-flythrough.off{animation-name:trFlyOut; animation-duration:520ms!important}
+@keyframes trFlyIn{from{opacity:0; transform:scale(.55); filter:blur(8px)}55%{opacity:1}to{opacity:1; transform:none; filter:blur(0)}}
+@keyframes trFlyOut{from{opacity:1}to{opacity:0; transform:scale(1.7); filter:blur(8px)}}
+
+/* wipe, split, circle, clock, blinds: the new slide is revealed while the old one waits underneath */
+.tr-wipe.on{animation-name:trWipeIn}
+.tr-split.on{animation-name:trSplitIn}
+.tr-circle.on{animation-name:trCircleIn}
+.tr-clock.on{animation-name:trClockIn; -webkit-mask-image:conic-gradient(from -90deg at 50% 50%,#000 var(--ang),transparent calc(var(--ang) + .4deg)); mask-image:conic-gradient(from -90deg at 50% 50%,#000 var(--ang),transparent calc(var(--ang) + .4deg))}
+.tr-blinds.on{animation-name:trBlindsIn; -webkit-mask-image:repeating-linear-gradient(90deg,#000 0,#000 var(--bw),transparent var(--bw),transparent 12.5%); mask-image:repeating-linear-gradient(90deg,#000 0,#000 var(--bw),transparent var(--bw),transparent 12.5%)}
+.tr-wipe.off,.tr-split.off,.tr-circle.off,.tr-clock.off,.tr-blinds.off{animation-name:trFadeOut; animation-duration:calc(var(--tdur,700ms)*.55)!important; animation-timing-function:ease-out}
+@keyframes trWipeIn{from{opacity:1; clip-path:inset(0 calc(50% - var(--dx)*50%) 0 calc(50% + var(--dx)*50%))}to{opacity:1; clip-path:inset(0 0 0 0)}}
+@keyframes trSplitIn{from{opacity:1; clip-path:inset(0 50% 0 50%)}to{opacity:1; clip-path:inset(0 0 0 0)}}
+@keyframes trCircleIn{from{opacity:1; clip-path:circle(0% at 50% 50%)}to{opacity:1; clip-path:circle(142% at 50% 50%)}}
+@keyframes trClockIn{from{opacity:1; --ang:0deg}to{opacity:1; --ang:361deg}}
+@keyframes trBlindsIn{from{opacity:1; --bw:0%}to{opacity:1; --bw:12.5%}}
+
+/* flip, gallery, rotate, pan, flash */
+.tr-flip.on{animation-name:trFlipIn}
+.tr-flip.off{animation-name:trFlipOut; animation-timing-function:ease-in}
+@keyframes trFlipIn{0%{opacity:0; transform:perspective(1800px) rotateY(calc(var(--dx)*-90deg))}49%{opacity:0}50%{opacity:1; transform:perspective(1800px) rotateY(calc(var(--dx)*-90deg))}100%{opacity:1; transform:perspective(1800px) rotateY(0)}}
+@keyframes trFlipOut{0%{opacity:1; transform:perspective(1800px) rotateY(0)}50%{opacity:1; transform:perspective(1800px) rotateY(calc(var(--dx)*90deg))}51%,100%{opacity:0}}
+.tr-gallery.on{animation-name:trGalIn}
+.tr-gallery.off{animation-name:trGalOut}
+@keyframes trGalIn{from{opacity:0; transform:perspective(1800px) translateX(calc(var(--dx)*55%)) rotateY(calc(var(--dx)*-40deg)) scale(.78)}to{opacity:1; transform:none}}
+@keyframes trGalOut{from{opacity:1}to{opacity:0; transform:perspective(1800px) translateX(calc(var(--dx)*-55%)) rotateY(calc(var(--dx)*40deg)) scale(.78)}}
+.tr-rotate.on{animation-name:trRotIn}
+.tr-rotate.off{animation-name:trRotOut}
+@keyframes trRotIn{from{opacity:0; transform:rotate(calc(var(--dx)*-7deg)) scale(.88)}to{opacity:1; transform:none}}
+@keyframes trRotOut{from{opacity:1}to{opacity:0; transform:rotate(calc(var(--dx)*7deg)) scale(.9)}}
+.tr-pan.on{animation-name:trPanIn}
+.tr-pan.off{animation-name:trPanOut}
+@keyframes trPanIn{from{opacity:0; transform:translateX(calc(var(--dx)*45%)) scale(1.06)}to{opacity:1; transform:none}}
+@keyframes trPanOut{from{opacity:1}to{opacity:0; transform:translateX(calc(var(--dx)*-45%))}}
+.tr-flash.on{animation-name:trFlashIn}
+.tr-flash.off{animation-name:trFadeOut; animation-duration:160ms!important}
+@keyframes trFlashIn{0%{opacity:0; filter:brightness(3) blur(4px)}35%{opacity:1; filter:brightness(1.8) blur(1px)}100%{opacity:1; filter:brightness(1) blur(0)}}
+
+/* one gold glint travels along the title rule when a slide opens */
+.hd::before{content:""; position:absolute; right:0; bottom:-1px; width:22%; height:4px; border-radius:2px; opacity:0; pointer-events:none;
+  background:linear-gradient(90deg,transparent,#fff6cf,transparent); box-shadow:0 0 14px rgba(255,226,150,.9)}
+.slide.on .hd::before{animation:glint 1.5s 200ms var(--ease-io) 1 both}
+@keyframes glint{0%{transform:translateX(120%); opacity:0}12%{opacity:1}85%{opacity:1}100%{transform:translateX(-520%); opacity:0}}
+
+/* ---- element entrances: a different effect and direction for each block, chosen per slide ---- */
+.fx{animation-duration:var(--fd,680ms); animation-delay:var(--fdl,0ms); animation-timing-function:var(--fe,cubic-bezier(.22,1,.36,1)); animation-fill-mode:backwards}
+.e-fade{animation-name:fxFade}
+.e-float{animation-name:fxFloat}
+.e-flyR{animation-name:fxFlyR}
+.e-flyL{animation-name:fxFlyL}
+.e-flyT{animation-name:fxFlyT}
+.e-flyB{animation-name:fxFlyB}
+.e-zoom{animation-name:fxZoom}
+.e-growTurn{animation-name:fxGrowTurn}
+.e-swivel{animation-name:fxSwivel; transform-origin:50% 0}
+.e-bounce{animation-name:fxBounce; --fe:cubic-bezier(.3,1.35,.5,1)}
+.e-wipeR{animation-name:fxWipeR}
+.e-wipeL{animation-name:fxWipeL}
+.e-wipeB{animation-name:fxWipeB}
+.e-wipeT{animation-name:fxWipeT}
+.e-splitH{animation-name:fxSplitH}
+.e-splitV{animation-name:fxSplitV}
+.e-shape{animation-name:fxShape}
+.e-diamond{animation-name:fxDiamond}
+.e-wheel{animation-name:fxWheel; -webkit-mask-image:conic-gradient(from -90deg,#000 var(--wa),transparent calc(var(--wa) + .4deg)); mask-image:conic-gradient(from -90deg,#000 var(--wa),transparent calc(var(--wa) + .4deg))}
+.e-bars{animation-name:fxBars; -webkit-mask-image:repeating-linear-gradient(0deg,#000 0,#000 var(--wb),transparent var(--wb),transparent 14.2857%); mask-image:repeating-linear-gradient(0deg,#000 0,#000 var(--wb),transparent var(--wb),transparent 14.2857%)}
+@keyframes fxFade{from{opacity:0}to{opacity:1}}
+@keyframes fxFloat{from{opacity:0; transform:translateY(22px)}to{opacity:1; transform:none}}
+@keyframes fxFlyR{from{opacity:0; transform:translateX(90px)}to{opacity:1; transform:none}}
+@keyframes fxFlyL{from{opacity:0; transform:translateX(-90px)}to{opacity:1; transform:none}}
+@keyframes fxFlyT{from{opacity:0; transform:translateY(-70px)}to{opacity:1; transform:none}}
+@keyframes fxFlyB{from{opacity:0; transform:translateY(70px)}to{opacity:1; transform:none}}
+@keyframes fxZoom{from{opacity:0; transform:scale(.8)}to{opacity:1; transform:none}}
+@keyframes fxGrowTurn{from{opacity:0; transform:scale(.7) rotate(-7deg)}to{opacity:1; transform:none}}
+@keyframes fxSwivel{from{opacity:0; transform:perspective(900px) rotateX(-80deg)}to{opacity:1; transform:perspective(900px) rotateX(0)}}
+@keyframes fxBounce{0%{opacity:0; transform:translateY(46px)}100%{opacity:1; transform:none}}
+@keyframes fxWipeR{from{opacity:1; clip-path:inset(-24px -24px -24px 100%)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxWipeL{from{opacity:1; clip-path:inset(-24px 100% -24px -24px)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxWipeB{from{opacity:1; clip-path:inset(100% -24px -24px -24px)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxWipeT{from{opacity:1; clip-path:inset(-24px -24px 100% -24px)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxSplitH{from{opacity:1; clip-path:inset(-24px 50% -24px 50%)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxSplitV{from{opacity:1; clip-path:inset(50% -24px 50% -24px)}to{opacity:1; clip-path:inset(-24px)}}
+@keyframes fxShape{from{opacity:1; clip-path:circle(0% at 50% 50%)}to{opacity:1; clip-path:circle(150% at 50% 50%)}}
+@keyframes fxDiamond{from{opacity:1; clip-path:polygon(50% 50%,50% 50%,50% 50%,50% 50%)}to{opacity:1; clip-path:polygon(50% -60%,160% 50%,50% 160%,-60% 50%)}}
+@keyframes fxWheel{from{opacity:1; --wa:0deg}to{opacity:1; --wa:361deg}}
+@keyframes fxBars{from{opacity:1; --wb:0%}to{opacity:1; --wb:14.2857%}}
+[data-fx="0"] .fx{animation:none}
+
+/* emphasis: a short pulse when an answer is right, a bold flash on key results */
+.ok-b{animation:okPulse 520ms var(--ease-out)}
+@keyframes okPulse{0%{transform:scale(1)}35%{transform:scale(1.045)}100%{transform:scale(1)}}
+.gbox.ok-b,.gbar.pulse{animation:boldFlash 700ms ease-out}
+@keyframes boldFlash{0%{filter:brightness(1)}30%{filter:brightness(1.55)}100%{filter:brightness(1)}}

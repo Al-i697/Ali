@@ -1,0 +1,78 @@
+/* ===== design pass 3: richer light, real artwork layers, larger type, cleaner header ===== */
+:root{--font-body:"Cairo","Tajawal",system-ui,sans-serif; --font-display:"Cairo","Tajawal",system-ui,sans-serif}
+body{font-weight:600}
+.stage{background:
+   radial-gradient(760px 460px at 86% 6%, rgba(22,160,125,.42), transparent 62%),
+   radial-gradient(620px 420px at 4% 98%, rgba(18,120,96,.30), transparent 64%),
+   radial-gradient(420px 300px at 50% 52%, rgba(10,70,56,.35), transparent 70%),
+   linear-gradient(160deg,#0c4a3c 0%,#07322a 52%,#04211b 100%)}
+.stage::before{opacity:.62;
+   background-image:
+     linear-gradient(rgba(var(--t2),.075) 1px,transparent 1px),
+     linear-gradient(90deg,rgba(var(--t2),.075) 1px,transparent 1px),
+     radial-gradient(circle at 94% 10%, transparent 0 110px, rgba(var(--t1),.20) 111px 112px, transparent 113px 180px, rgba(var(--t1),.13) 181px 182px, transparent 183px 260px, rgba(var(--t1),.08) 261px 262px, transparent 263px),
+     radial-gradient(circle at 4% 96%, transparent 0 150px, rgba(var(--t1),.14) 151px 152px, transparent 153px 240px, rgba(var(--t1),.09) 241px 242px, transparent 243px),
+     radial-gradient(circle at 18% 22%, rgba(var(--t2),.16) 0 3px, transparent 4px),
+     radial-gradient(circle at 72% 78%, rgba(var(--t2),.14) 0 4px, transparent 5px),
+     radial-gradient(circle at 40% 90%, rgba(228,188,75,.18) 0 3px, transparent 4px),
+     radial-gradient(circle at 90% 56%, rgba(var(--t2),.12) 0 5px, transparent 6px);
+   background-size:64px 64px,64px 64px,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%,100% 100%}
+.stage::after{content:""; display:block; position:absolute; inset:0; pointer-events:none; z-index:3; background:radial-gradient(ellipse at 50% 46%, transparent 58%, rgba(var(--d1),.55) 100%)}
+
+/* header: just the title, a luminous rule and a small tag */
+.hd{border-bottom:0; margin-bottom:18px; padding-bottom:14px; position:relative}
+.hd::after{content:""; position:absolute; inset-inline:0; bottom:0; height:2px; background:linear-gradient(to left,var(--cyan),rgba(var(--t1),.35) 45%,transparent); box-shadow:0 0 12px rgba(var(--t1),.5)}
+.hd .chip{display:none}
+.hd h2{font-size:44px; font-weight:800; color:#fff; text-shadow:0 0 22px rgba(var(--t1),.35)}
+.hd .tag{height:34px; font-size:16px; font-weight:800}
+
+/* glass: brighter, with depth */
+.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq{background:linear-gradient(145deg,rgba(var(--t2),.22),rgba(var(--t2),.06)); border:1.5px solid rgba(var(--t2),.58); box-shadow:0 12px 36px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.16), 0 0 24px rgba(var(--t1),.10)}
+.frm>.fh{background:linear-gradient(90deg,rgba(var(--t1),.20),rgba(var(--t1),.07)); font-size:26px; font-weight:800; padding:11px 18px}
+.frm.gold{box-shadow:0 12px 36px rgba(0,0,0,.38), 0 0 26px rgba(228,188,75,.22)}
+.gbar{font-size:30px; font-weight:800; padding:14px 26px; background:linear-gradient(90deg,rgba(228,188,75,.50),rgba(228,188,75,.20)); text-shadow:0 1px 10px rgba(0,0,0,.4)}
+.cbox{font-size:26px; font-weight:700}
+.gbox{font-size:30px; font-weight:800}
+.brk::before,.brk::after{width:26px; height:26px; filter:drop-shadow(0 0 6px rgba(var(--t1),.85))}
+.gold.brk::before,.gold.brk::after{filter:drop-shadow(0 0 6px rgba(228,188,75,.85))}
+
+/* type: larger and heavier */
+.lead{font-size:34px; font-weight:700}
+.big{font-size:36px; font-weight:700}
+.sm{font-size:24px}
+.opt{font-size:29px; font-weight:600; min-height:70px}
+.pr .t{font-size:29px; font-weight:600}
+.tq h4{font-size:36px; font-weight:700}
+.tq .opt{font-size:29px; min-height:66px}
+.nin input{font-size:34px; height:64px; width:160px}
+.nin .go{height:64px; min-width:64px}
+.btn{font-size:25px; min-height:60px}
+.fb{font-size:25px; font-weight:700}
+.gi{font-size:23px; line-height:1.6}
+.gi .ck{width:38px; height:38px; font-size:24px}
+
+/* artwork layers (cut from the deck) */
+.pic{display:block; max-width:100%; height:auto; user-select:none; -webkit-user-drag:none; pointer-events:none}
+.pic.fade{-webkit-mask-image:radial-gradient(closest-side,#000 74%,transparent 100%); mask-image:radial-gradient(closest-side,#000 74%,transparent 100%)}
+.pic.fill{width:100%; height:100%; object-fit:cover; border-radius:0 0 8px 8px}
+.pic.tile{border-radius:14px; border:1.5px solid rgba(var(--t2),.4); box-shadow:0 0 22px rgba(var(--t1),.18)}
+.spot{position:absolute; border-radius:50%; cursor:pointer; background:transparent}
+.spot:hover{box-shadow:0 0 0 3px rgba(228,188,75,.6)}
+.imgwrap{position:relative}
+
+/* wider cards/flows when there is room */
+.slide.roomy .fr{min-height:54px; font-size:29px; padding:3px 16px}
+.slide.roomy .fr .cin{width:92px; height:42px; font-size:26px}
+.slide.roomy .fcmp .ff{font-size:44px}
+.slide.roomy .fcmp small{font-size:20px}
+.slide.roomy .fsum{font-size:28px}
+.slide.roomy .fblk{gap:14px}
+
+.gi{font-size:21.5px; line-height:1.5}
+.gl{gap:9px 22px}
+.pr{min-height:84px; padding:12px 18px}
+.pr .cnt button{width:54px; height:54px}
+.body>.col{justify-content:center!important}
+.pic.fill{object-position:50% 38%}
+
+#cs svg{width:100%;height:100%}

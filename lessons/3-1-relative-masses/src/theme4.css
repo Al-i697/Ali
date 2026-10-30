@@ -1,0 +1,80 @@
+/* ===== living background layers and solid glass panels; every colour comes from the slide's palette ===== */
+
+/* page chrome follows the palette of the current slide, fading between palettes */
+.top,.bot{background-color:var(--c-bar); background-image:none; transition:background-color 900ms ease; position:relative; z-index:5}
+.top{border-bottom:1px solid rgba(var(--t1),.18)}
+.bot{border-top:1px solid rgba(var(--t1),.18)}
+.tbtn{background:rgba(var(--t1),.12); box-shadow:inset 0 0 0 1px rgba(var(--t1),.2)}
+.tbtn:hover{background:rgba(var(--t1),.24)}
+#bFx[data-tier="0"]{opacity:.72}
+#bFx[data-tier="2"] svg{color:var(--gold)}
+.nav.prev{background:rgba(var(--t1),.14)}
+.prog .seg{background:rgba(var(--t1),.18)}
+.prog .seg.done{background:var(--c-muted)}
+.prog .seg.cur{box-shadow:0 0 12px rgba(228,188,75,.7)}
+
+/* the stage no longer paints its own ground: the background engine sits behind it */
+.stage,.stage.lab{background:transparent!important; border-radius:0}
+.stage::before,.stage::after{content:none!important; display:none!important}
+
+/* ---- background layers ---- */
+.bgfx{position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none;
+  background:radial-gradient(900px 560px at 82% 6%,var(--f1) 0%,transparent 62%),radial-gradient(760px 480px at 6% 98%,var(--f2) 0%,transparent 64%),linear-gradient(160deg,var(--f3) 0%,var(--ground) 55%,var(--f4) 100%)}
+.bgc{position:absolute; inset:0; width:100%; height:100%; display:block}
+.nogl .gl{display:none}
+.bgb{display:none}
+.nogl .bgb{display:block; position:absolute; width:70%; height:90%; border-radius:50%; will-change:transform}
+.nogl .b1{right:-12%; top:-25%; background:radial-gradient(closest-side,rgba(var(--t1),.4),transparent); animation:bgd1 26s ease-in-out infinite alternate}
+.nogl .b2{left:-16%; bottom:-35%; background:radial-gradient(closest-side,rgba(var(--t1),.3),transparent); animation:bgd2 32s ease-in-out infinite alternate}
+@keyframes bgd1{from{transform:translate(0,0) scale(1)}to{transform:translate(-14%,18%) scale(1.12)}}
+@keyframes bgd2{from{transform:translate(0,0) scale(1)}to{transform:translate(18%,-14%) scale(1.1)}}
+
+/* slow beams of light (transform only, so they cost almost nothing) */
+.bgl{position:absolute; inset:0; overflow:hidden}
+.bgl::before,.bgl::after{content:""; position:absolute; top:-35%; bottom:-35%; width:30%; will-change:transform;
+  background:linear-gradient(90deg,transparent,rgba(255,226,150,.075),rgba(var(--t2),.05),transparent)}
+.bgl::before{left:-20%; animation:beam1 38s ease-in-out infinite alternate}
+.bgl::after{right:-14%; width:22%; animation:beam2 52s ease-in-out infinite alternate}
+@keyframes beam1{from{transform:translateX(0) rotate(18deg)}to{transform:translateX(420%) rotate(18deg)}}
+@keyframes beam2{from{transform:translateX(0) rotate(18deg)}to{transform:translateX(-520%) rotate(18deg)}}
+[data-fx="0"] .bgl{display:none}
+
+/* a soft sweep of light whenever the background changes */
+.bgwipe{position:absolute; inset:0; opacity:0; transform:translateX(110%);
+  background:linear-gradient(100deg,transparent 36%,rgba(255,226,150,.05) 43%,rgba(255,238,175,.20) 50%,rgba(var(--t2),.12) 57%,transparent 64%)}
+.bgwipe.go{animation:bgwipe 1.5s var(--ease-io) both}
+@keyframes bgwipe{0%{transform:translateX(110%);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(-110%);opacity:0}}
+
+/* keeps text calm: a dark pool behind the content and a vignette at the edges */
+.bgscrim{position:absolute; inset:0;
+  background:radial-gradient(ellipse 62% 68% at 50% 54%,rgba(var(--d1),.46) 0%,rgba(var(--d1),.26) 58%,rgba(var(--d1),0) 100%),radial-gradient(ellipse at 50% 50%,transparent 56%,rgba(0,0,0,.5) 100%)}
+
+/* ---- solid glass panels: readable over moving light ---- */
+.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq{
+  background:linear-gradient(145deg,rgba(var(--p1),.80),rgba(var(--p2),.74));
+  border:1.5px solid rgba(var(--t2),.48);
+  box-shadow:0 14px 38px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.14), 0 0 26px rgba(var(--t1),.10)}
+.frm>.fh{background:linear-gradient(90deg,rgba(var(--t1),.26),rgba(var(--t1),.08))}
+/* gold-edged panels: deep amber fading into the palette ground */
+.panel.dark,.stp.final,.frm.gold,.team.b,.score{background:linear-gradient(135deg,rgba(104,78,12,.82),rgba(var(--p2),.86))}
+.frm.gold>.fh{background:rgba(228,188,75,.22)}
+.opt,.pr,.pill{background:rgba(var(--d2),.72)}
+.hd h2,.lead,.big{text-shadow:0 2px 14px rgba(var(--d1),.7), 0 0 22px rgba(var(--t1),.28)}
+.sm,.muted,.fb{text-shadow:0 1px 8px rgba(var(--d1),.85)}
+.hd::after{background:linear-gradient(to left,var(--cyan),rgba(var(--t1),.35) 45%,transparent); box-shadow:0 0 12px rgba(var(--t1),.5)}
+
+/* lab step list and chips: darker ground so small text keeps its contrast */
+.ls{background:rgba(var(--d2),.72); color:#e8ecef}
+.ls i{color:#fff; background:rgba(var(--t1),.30)}
+.ls.cur{background:rgba(94,70,12,.8)}
+
+/* per-palette versions of the shaded "Cyan" ball used in the atom drawings */
+[data-pal="navy"] [fill="url(#gCyan)"]{fill:url(#gCyan_navy)}
+[data-pal="ember"] [fill="url(#gCyan)"]{fill:url(#gCyan_ember)}
+[data-pal="gold"] [fill="url(#gCyan)"]{fill:url(#gCyan_gold)}
+[data-pal="violet"] [fill="url(#gCyan)"]{fill:url(#gCyan_violet)}
+
+/* small labels that sit on tinted chips: dark ink on the gold badge, light ink on the dark chips */
+.qd .id{color:var(--accent-ink)}
+.rd{color:var(--ink); background:rgba(var(--d2),.7)}
+.rd.cur{color:#fff; background:rgba(var(--t1),.38)}
