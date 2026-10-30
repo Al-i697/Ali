@@ -64,6 +64,7 @@ function renderChrome(){
   const sh=curShift(),open=!sh.end;
   $('#shift-chip').innerHTML=`<span class="w-1.5 h-1.5 ${open?'bg-emerald-500':'bg-red-500'} rounded-full"></span>${open?'وردية مفتوحة منذ '+hm(sh.start):'لا توجد وردية'}`;
   const nb=(id,icon,label,cls='')=>`<button data-a="go" data-p="${id}" class="flex flex-col items-center p-2 ${S.page===id?'text-primary':'text-gray-400 hover:text-primary'} transition-colors"><i class="fas ${icon} text-xl mb-1"></i><span class="text-[10px] font-bold">${label}</span></button>`;
+  syChip();
   $('#mobile-bottom-nav').innerHTML=(isMgr()?nb('dashboard','fa-chart-pie','الرئيسية')+nb('products','fa-box','الأصناف'):nb('customers','fa-users','العملاء')+nb('shift','fa-clock','الوردية'))
    +`<div class="relative -top-6"><button data-a="go" data-p="pos" class="w-16 h-16 bg-primary text-white rounded-full flex flex-col items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-gray-50 dark:border-darkBg hover:scale-105 active:scale-95 transition-all"><i class="fas fa-cash-register text-2xl"></i></button></div>`
    +nb('invoices','fa-receipt','المبيعات')+`<button data-a="sidebar" class="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors"><i class="fas fa-bars text-xl mb-1"></i><span class="text-[10px] font-bold">المزيد</span></button>`;
@@ -94,7 +95,7 @@ function pgDashboard(){
    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-coins','ml-1.5 text-primary')} تفصيل الوردية</h4><div class="grid grid-cols-2 lg:grid-cols-4 gap-3">${tile('كاش',mt(st.cash))}${tile('فيزا',mt(st.visa))}${tile('آجل',mt(st.credit),'على العملاء')}${tile('الكاش المتوقع بالصندوق',mt(drawer(sh.id)),'يشمل رصيد الافتتاح')}</div></div>
    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="${CARD} p-5 lg:col-span-2"><h4 class="font-black text-xs text-red-500 mb-3 flex items-center gap-1.5">${ic('fa-triangle-exclamation')} تحتاج انتباهك</h4><div class="space-y-2">${al.map(a=>`<div class="flex items-center gap-3 p-3 rounded-2xl text-xs font-bold ${AL[a[1]]}">${ic(a[0])}<span class="flex-1">${a[2]}</span><span class="text-[10px] opacity-80">${a[3]}</span></div>`).join('')||'<p class="text-xs text-gray-400">لا شيء الآن.</p>'}</div></div>
-    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-receipt','ml-1.5 text-primary')} آخر الفواتير</h4><table class="w-full text-right text-xs"><tbody class="divide-y divide-gray-100 dark:divide-gray-800">${last.map(i=>`<tr class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" data-a="inv" data-id="${i.id}"><td class="py-2.5 font-bold text-primary">${i.id}</td><td class="py-2.5 text-gray-500">${hm(i.t)}</td><td class="py-2.5 text-left font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td></tr>`).join('')||`<tr><td class="py-6 text-center text-gray-400 font-bold">لا فواتير بعد</td></tr>`}</tbody></table></div>
+    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-receipt','ml-1.5 text-primary')} آخر الفواتير</h4><table class="w-full text-right text-xs"><tbody class="divide-y divide-gray-100 dark:divide-gray-800">${last.map(i=>`<tr class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" data-a="inv" data-id="${i.id}"><td class="py-2.5 font-bold text-primary">${invNo(i.id)}</td><td class="py-2.5 text-gray-500">${hm(i.t)}</td><td class="py-2.5 text-left font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td></tr>`).join('')||`<tr><td class="py-6 text-center text-gray-400 font-bold">لا فواتير بعد</td></tr>`}</tbody></table></div>
    </div></div>`;
 }
 
@@ -261,7 +262,7 @@ function receiptInner(inv){
   const rows=inv.lines.map(l=>`<tr style="border-bottom:1px dashed #ccc"><td style="padding:4px 0;word-break:break-word">${esc(l.name)}</td><td style="text-align:center">${qtyStr(Math.round(l.qty*1000)/1000)}</td><td style="text-align:left">${fmt(l.amt)}</td></tr>`).join('');
   const cust=inv.customerId?custName(inv.customerId):'عميل نقدي';
   return `<div style="text-align:center;border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px">${logo}<h2 style="margin:0;font-size:15px">${esc(st.name)}</h2><p style="margin:2px 0;font-size:10px">${esc(st.desc)}</p><p style="margin:2px 0;font-size:10px">${invDate(inv.t)}</p></div>
-  <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:10.5px"><p style="margin:2px 0"><strong>رقم:</strong> #${inv.id}</p><p style="margin:2px 0"><strong>العميل:</strong> ${esc(cust)}</p><p style="margin:2px 0"><strong>دفع:</strong> ${payText(inv)}</p>${inv.type==='car'&&inv.ref?`<p style="margin:2px 0;font-size:12px"><strong>رقم السيارة:</strong> ${esc(inv.ref)}</p>`:''}${inv.note?`<p style="margin:2px 0;font-size:11px"><strong>ملاحظات:</strong> ${esc(inv.note)}</p>`:''}<p style="margin:2px 0"><strong>كاشير:</strong> ${esc(inv.by)}</p></div>
+  <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:10.5px"><p style="margin:2px 0"><strong>رقم:</strong> #${invNo(inv.id)}</p><p style="margin:2px 0"><strong>العميل:</strong> ${esc(cust)}</p><p style="margin:2px 0"><strong>دفع:</strong> ${payText(inv)}</p>${inv.type==='car'&&inv.ref?`<p style="margin:2px 0;font-size:12px"><strong>رقم السيارة:</strong> ${esc(inv.ref)}</p>`:''}${inv.note?`<p style="margin:2px 0;font-size:11px"><strong>ملاحظات:</strong> ${esc(inv.note)}</p>`:''}<p style="margin:2px 0"><strong>كاشير:</strong> ${esc(inv.by)}</p></div>
   <table style="width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10.5px"><thead><tr><th style="text-align:right;border-bottom:1px solid #000">صنف</th><th style="text-align:center;border-bottom:1px solid #000">الكمية</th><th style="text-align:left;border-bottom:1px solid #000">مجموع</th></tr></thead><tbody>${rows}</tbody></table>
   <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:11px">${inv.discount>0?`<div style="display:flex;justify-content:space-between"><span>الخصم:</span><span>${fmt(inv.discount)}</span></div>`:''}${inv.vat>0?`<div style="display:flex;justify-content:space-between"><span>منها ضريبة 5%:</span><span>${fmt(inv.vat)}</span></div>`:''}<div style="display:flex;justify-content:space-between;margin-top:5px;font-weight:bold"><span>الصافي:</span><span>${fmt(inv.total)} ر.ع</span></div></div>
   ${inv.status!=='ok'?`<div style="text-align:center;margin:6px 0;color:#b34a3e;font-weight:900;border:2px solid #b34a3e;border-radius:6px;padding:3px 0">فاتورة ملغاة</div>`:''}
@@ -292,9 +293,9 @@ async function makeInvoiceFile(inv){
   const png=S.store.shareFmt==='png',h2=await ensureHtml2pdf();
   const el=document.createElement('div');el.innerHTML=`<div style="width:${png?'270px':'72mm'};padding:10px;font-family:'Cairo',sans-serif;direction:rtl;background:#fff;color:#000;box-sizing:border-box">${receiptInner(inv)}</div>`;
   if(png){const cv=await h2().set({html2canvas:{scale:576/290,useCORS:true,backgroundColor:'#ffffff'}}).from(el).toCanvas().get('canvas');
-    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));return new File([blob],`Invoice_${inv.id}.png`,{type:'image/png'});}
-  const blob=await h2().set({margin:0,filename:`Invoice_${inv.id}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:[72,200],orientation:'portrait'}}).from(el).output('blob');
-  return new File([blob],`Invoice_${inv.id}.pdf`,{type:'application/pdf'});
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));return new File([blob],`Invoice_${invNo(inv.id)}.png`,{type:'image/png'});}
+  const blob=await h2().set({margin:0,filename:`Invoice_${invNo(inv.id)}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:[72,200],orientation:'portrait'}}).from(el).output('blob');
+  return new File([blob],`Invoice_${invNo(inv.id)}.pdf`,{type:'application/pdf'});
 }
 function prepShare(inv){const fm=S.store.shareFmt==='png'?'png':'pdf';S.sharePre={id:inv.id,fmt:fm,p:null};setTimeout(()=>{if(S.sharePre&&S.sharePre.id===inv.id)S.sharePre.p=makeInvoiceFile(inv).catch(()=>null);},500);}
 async function shareInvoiceFile(inv){
@@ -302,7 +303,7 @@ async function shareInvoiceFile(inv){
   try{
     const fm=S.store.shareFmt==='png'?'png':'pdf',pre=S.sharePre&&S.sharePre.id===inv.id&&S.sharePre.fmt===fm&&S.sharePre.p;
     let file=pre?await pre:null;if(!file)file=await makeInvoiceFile(inv);
-    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:`فاتورة #${inv.id}`,files:[file]});}catch(err){if(err.name!=='AbortError')console.log('Share error:',err);}}
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:`فاتورة #${invNo(inv.id)}`,files:[file]});}catch(err){if(err.name!=='AbortError')console.log('Share error:',err);}}
     else{const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),15000);showToast('جُهّز ملف الفاتورة للمشاركة');}
   }catch(e){showToast((e&&e.message)||'حدث خطأ أثناء المعالجة','error');}
   finally{btn.innerHTML=orig;btn.disabled=false;}
@@ -311,7 +312,7 @@ function normalizePhone(raw){if(!raw)return '';let d=String(raw).replace(/[^\d]/
 function invoiceText(inv){
   const st=S.store,L=[];
   L.push(`*${st.name}*`);if(st.desc)L.push(st.desc);L.push('');
-  L.push(`فاتورة رقم: #${inv.id}`);L.push(`التاريخ: ${invDate(inv.t,true)}`);
+  L.push(`فاتورة رقم: #${invNo(inv.id)}`);L.push(`التاريخ: ${invDate(inv.t,true)}`);
   if(inv.customerId)L.push(`العميل: ${custName(inv.customerId)}`);
   if(inv.type==='car'&&inv.ref)L.push(`رقم السيارة: ${inv.ref}`);
   if(inv.note)L.push(`ملاحظات: ${inv.note}`);
@@ -335,16 +336,16 @@ function waRefresh(){$('#wa-send').href=waHref();}
 /* ── الفواتير ── */
 function invList(){
   const u=S.ui.inv,cur=curShift().id,sid=u.shift==='cur'?cur:Number(u.shift),q=u.q.trim();
-  if(/^\d{4,}$/.test(q)){const i=ix().inv.get(+q);return i?[i]:[];}   /* رقم فاتورة كامل: يُبحث في كل الورديات */
+  if(invId(q)!=null){const i=ix().inv.get(invId(q));return i?[i]:[];}   /* رقم فاتورة كامل: يُبحث في كل الورديات */
   let l=(ix().invBy.get(sid)||[]).slice();
   if(u.f==='cancelled')l=l.filter(i=>!ok(i));else if(u.f!=='all')l=l.filter(i=>i.pay[u.f]>0&&ok(i));
-  if(u.q.trim())l=l.filter(i=>String(i.id).includes(u.q.trim()));
+  if(u.q.trim())l=l.filter(i=>invNo(i.id).toLowerCase().includes(u.q.trim().toLowerCase()));
   return l.slice().reverse();
 }
 function invBody(){
   const l=invList(),shown=l.slice(0,80),good=l.filter(ok);
   $('#inv-count').textContent=good.length;$('#inv-total').textContent=mt(good.reduce((a,i)=>a+i.total,0));
-  $('#invoices-table-body').innerHTML=shown.map(i=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-800 ${ok(i)?'':'opacity-60'}"><td class="p-4 font-bold text-primary">${i.id}</td><td class="p-4">${dm(i.t)} ${hm(i.t)}</td><td class="p-4 text-center font-bold text-gray-500">${esc(i.by)}</td><td class="p-4 text-center">${payBadges(i)}</td><td class="p-4 text-center text-red-500">${i.discount?fmt(i.discount):'0'}</td><td class="p-4 text-center font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td><td class="p-4 flex gap-2"><button data-a="inv-prev" data-id="${i.id}" title="عرض وطباعة" class="text-emerald-500 hover:bg-emerald-50 p-2 rounded-lg transition-colors">${ic('fa-eye')}</button><button data-a="inv-wa" data-id="${i.id}" title="مشاركة الفاتورة عبر واتساب" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition-colors"><i class="fab fa-whatsapp"></i></button>${ok(i)?'':'<span class="text-xs text-rose-500 bg-rose-50 px-2 py-1 rounded">ملغاة</span>'}${isMgr()?`<button data-a="inv" data-id="${i.id}" title="${ok(i)?'إلغاء / تفاصيل':'تفاصيل'}" class="${ok(i)?'text-amber-500 hover:bg-amber-50':'text-gray-400 hover:bg-gray-100'} p-2 rounded-lg transition-colors">${ic(ok(i)?'fa-undo':'fa-info-circle')}</button>`:''}</td></tr>`).join('')||empty(7,'لا يوجد مبيعات');
+  $('#invoices-table-body').innerHTML=shown.map(i=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-800 ${ok(i)?'':'opacity-60'}"><td class="p-4 font-bold text-primary">${invNo(i.id)}</td><td class="p-4">${dm(i.t)} ${hm(i.t)}</td><td class="p-4 text-center font-bold text-gray-500">${esc(i.by)}</td><td class="p-4 text-center">${payBadges(i)}</td><td class="p-4 text-center text-red-500">${i.discount?fmt(i.discount):'0'}</td><td class="p-4 text-center font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td><td class="p-4 flex gap-2"><button data-a="inv-prev" data-id="${i.id}" title="عرض وطباعة" class="text-emerald-500 hover:bg-emerald-50 p-2 rounded-lg transition-colors">${ic('fa-eye')}</button><button data-a="inv-wa" data-id="${i.id}" title="مشاركة الفاتورة عبر واتساب" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition-colors"><i class="fab fa-whatsapp"></i></button>${ok(i)?'':'<span class="text-xs text-rose-500 bg-rose-50 px-2 py-1 rounded">ملغاة</span>'}${isMgr()?`<button data-a="inv" data-id="${i.id}" title="${ok(i)?'إلغاء / تفاصيل':'تفاصيل'}" class="${ok(i)?'text-amber-500 hover:bg-amber-50':'text-gray-400 hover:bg-gray-100'} p-2 rounded-lg transition-colors">${ic(ok(i)?'fa-undo':'fa-info-circle')}</button>`:''}</td></tr>`).join('')||empty(7,'لا يوجد مبيعات');
 }
 function pgInvoices(){
   const u=S.ui.inv,cur=curShift().id;
@@ -358,7 +359,7 @@ function pgInvoices(){
 function showInvoice(id,cancelling=false){
   const i=ix().inv.get(id);S.m={type:'inv',id,reason:''};
   const canCancel=ok(i)&&i.shift===curShift().id&&shiftOpen();
-  modal(`${mHead(ic('fa-receipt','text-primary ml-2'),'فاتورة '+i.id)}<div class="space-y-4">
+  modal(`${mHead(ic('fa-receipt','text-primary ml-2'),'فاتورة '+invNo(i.id))}<div class="space-y-4">
    <p class="text-[11px] text-gray-400 font-bold">${dm(i.t)} ${hm(i.t)} · ${typeText(i)} · ${esc(i.by)}${i.customerId?' · العميل: '+esc(custName(i.customerId)):''}</p>
    <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-2 text-xs">${i.lines.map(l=>`<div class="flex justify-between"><span>${esc(l.name)} × ${qtyStr(Math.round(l.qty*1000)/1000)}</span><span class="font-bold">${fmt(l.amt)}</span></div>`).join('')}
     ${i.discount?`<div class="flex justify-between text-red-500"><span>خصم</span><span>−${fmt(i.discount)}</span></div>`:''}${i.vat?`<div class="flex justify-between text-gray-500"><span>منها ضريبة 5%</span><span>${fmt(i.vat)}</span></div>`:''}
@@ -374,7 +375,7 @@ function showInvoice(id,cancelling=false){
 /* ── العملاء ── */
 function statement(id){
   const rows=[];
-  S.invoices.forEach(i=>{if(i.customerId===id&&i.pay.credit>0)rows.push({t:i.t,txt:`فاتورة #${i.id}`+(ok(i)?'':' (ملغاة)'),dr:ok(i)?i.pay.credit:0,cr:0,void:!ok(i),raw:i.pay.credit});});
+  S.invoices.forEach(i=>{if(i.customerId===id&&i.pay.credit>0)rows.push({t:i.t,txt:`فاتورة #${invNo(i.id)}`+(ok(i)?'':' (ملغاة)'),dr:ok(i)?i.pay.credit:0,cr:0,void:!ok(i),raw:i.pay.credit});});
   S.custPays.forEach(p=>{if(p.customerId===id)rows.push({t:p.t,txt:p.amount<0?'رد مبلغ للعميل':'سداد '+({cash:'كاش',visa:'فيزا',transfer:'تحويل'}[p.method]),dr:p.amount<0?-p.amount:0,cr:p.amount>0?p.amount:0});});
   rows.sort((a,b)=>a.t-b.t);let b=0;rows.forEach(r=>{b+=r.dr-r.cr;r.bal=b;});return rows;
 }
@@ -558,8 +559,8 @@ function pgWatch(){
   const ev=[];
   const since=Date.now()-90*864e5;
   for(let n=S.invoices.length-1;n>=0;n--){const i=S.invoices[n];if(i.t<since)break;
-    if(!ok(i))ev.push({t:i.cancel.t,k:'إلغاء فاتورة',c:'amber',ic:'fa-undo',txt:`فاتورة ${i.id} بقيمة ${mt(i.total)} · السبب: ${i.cancel.reason} · ${i.cancel.by}`});
-    if(ok(i)&&i.discount>0&&i.discount>=i.sub*.1)ev.push({t:i.t,k:'خصم كبير',c:'amber',ic:'fa-coins',txt:`فاتورة ${i.id}: خصم ${mt(i.discount)} من ${mt(i.sub)} · ${i.by}`});
+    if(!ok(i))ev.push({t:i.cancel.t,k:'إلغاء فاتورة',c:'amber',ic:'fa-undo',txt:`فاتورة ${invNo(i.id)} بقيمة ${mt(i.total)} · السبب: ${i.cancel.reason} · ${i.cancel.by}`});
+    if(ok(i)&&i.discount>0&&i.discount>=i.sub*.1)ev.push({t:i.t,k:'خصم كبير',c:'amber',ic:'fa-coins',txt:`فاتورة ${invNo(i.id)}: خصم ${mt(i.discount)} من ${mt(i.sub)} · ${i.by}`});
   }
   S.shifts.forEach(s=>{if(s.end&&s.diff)ev.push({t:s.end,k:'فرق صندوق',c:s.diff<0?'red':'amber',ic:'fa-clock',txt:`وردية ${dm(s.start)}: المتوقع ${mt(s.expected)}، الفعلي ${mt(s.counted)}، الفرق ${mt(s.diff)}`});});
   S.customers.forEach(c=>{if(c.gone)return;const b=custBal(c.id);if(b<0)ev.push({t:Date.now(),k:'رصيد دائن لعميل',c:'emerald',ic:'fa-hand-holding-usd',txt:`${c.n}: له عندنا ${mt(-b)} بسبب فاتورة أُلغيت بعد السداد`});});
@@ -624,7 +625,8 @@ function pgSettings(){
       <div class="md:col-span-2"><label class="${LBL}">شعار المؤسسة (Logo)</label><div class="flex gap-2"><input type="file" id="st-logo" accept="image/*" class="w-full px-4 py-2 rounded-2xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 text-xs outline-none cursor-pointer"><div id="st-logo-prev" class="w-11 h-11 bg-white border rounded-xl flex items-center justify-center overflow-hidden shrink-0">${st.logo?`<img src="${st.logo}" class="w-full h-full object-cover">`:'🖼️'}</div></div></div>
      </div>
      <div class="pt-2"><button data-a="set-save" class="bg-primary hover:bg-blue-600 text-white py-3 px-6 rounded-2xl font-black text-xs transition-all">حفظ البيانات العامة</button></div></div>
-    <div class="${CARD} p-6 space-y-4"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">${ic('fa-download')}</div><div><h3 class="font-black text-sm">النسخ الاحتياطي</h3><p class="text-[11px] text-gray-400">بياناتك كلها على هذا الآيباد فقط، ما في سيرفر. النسخة هي أمانك لو ضاع الجهاز أو انمسحت بياناته</p></div></div><hr class="dark:border-gray-800">
+    ${syncCard()}
+    <div class="${CARD} p-6 space-y-4"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">${ic('fa-download')}</div><div><h3 class="font-black text-sm">النسخ الاحتياطي</h3><p class="text-[11px] text-gray-400">${SY.on?'بياناتك على هذا الآيباد ونسخة مشفّرة منها في خدمة الربط. النسخة الاحتياطية تبقى أماناً إضافياً':'بياناتك كلها على هذا الآيباد فقط، ما في سيرفر. النسخة هي أمانك لو ضاع الجهاز أو انمسحت بياناته'}</p></div></div><hr class="dark:border-gray-800">
      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">${tile('آخر نسخة',bkTxt)}${tile('عدد الفواتير',String(S.invoices.length))}<div id="storage-info" class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4"><p class="text-[11px] text-gray-400 font-bold mb-1">التخزين</p><p class="text-lg font-black text-gray-800 dark:text-white">…</p></div></div>
      <div class="flex flex-wrap gap-3"><button data-a="bk-save" class="${BTN_GREEN}">${ic('fa-download')}<span>حفظ نسخة احتياطية الآن</span></button><div class="relative"><div class="${BTN_GRAY} px-6 flex items-center gap-2 pointer-events-none">${ic('fa-upload')}<span>استرجاع من نسخة</span></div><input type="file" id="bk-file" accept=".json,application/json" class="${FILE}"></div></div>
      <p class="text-[11px] text-gray-400 font-bold leading-6">اضغط «حفظ نسخة» وبتطلع لك قائمة المشاركة: احفظها في «الملفات» (iCloud) أو أرسلها لنفسك على واتساب. خذ نسخة بعد إقفال كل وردية.</p>
@@ -701,7 +703,7 @@ const A={
  inv:e=>showInvoice(+e.dataset.id),
  'cancel-start':e=>showInvoice(+e.dataset.id,true),
  reason:e=>{S.m.reason=e.dataset.r;document.querySelectorAll('[data-a="reason"]').forEach(b=>{b.className=`px-3 py-2 rounded-xl text-[11px] font-bold border-2 ${b===e?'border-primary bg-blue-50 text-primary':'border-transparent bg-white dark:bg-gray-700 text-gray-500'}`;});$('#cancel-ok').disabled=false;},
- 'cancel-ok':()=>{const id=S.m.id,r=S.m.reason;cancelInvoice(id,r,roleName(),tick());closeModal();render();showToast(`أُلغيت الفاتورة ${id} وبقي لها أثر`);},
+ 'cancel-ok':()=>{const id=S.m.id,r=S.m.reason;cancelInvoice(id,r,roleName(),tick());closeModal();render();showToast(`أُلغيت الفاتورة ${invNo(id)} وبقي لها أثر`);},
  cstmt:e=>showStatement(+e.dataset.id),
  newcust:()=>{S.m={type:'nc'};modal(`${mHead(ic('fa-user-plus','text-primary ml-2'),'عميل جديد')}<div class="space-y-4"><div><label class="${LBL}">الاسم</label><input id="nc-n" class="${INP}"></div><div><label class="${LBL}">الجوال</label><input id="nc-p" inputmode="tel" class="${INP}"></div>${mActions('data-a="nc-ok"','حفظ')}</div>`);},
  'nc-ok':()=>{const n=$('#nc-n').value.trim();if(!n)return;S.customers.push({id:uid(),n,ph:$('#nc-p').value.trim()||'—'});closeModal();render();showToast('أُضيف العميل');},
@@ -799,7 +801,7 @@ document.addEventListener('change',ev=>{
   else if(el.id==='st-logo'&&el.files&&el.files[0]){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),k=Math.min(1,128/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.logoDraft=c.toDataURL('image/png');$('#st-logo-prev').innerHTML=`<img src="${S.logoDraft}" class="w-full h-full object-cover">`;};im.src=r.result;};r.readAsDataURL(el.files[0]);}
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden)persist();});window.addEventListener('pagehide',()=>{persist();});
-document.addEventListener('submit',ev=>{if(ev.target.id==='login-form'){ev.preventDefault();tryLogin();}else if(ev.target.id==='setup-form'){ev.preventDefault();trySetup();}else if(ev.target.id==='forgot-form'){ev.preventDefault();tryForgot();}else if(ev.target.id==='wa-form'){ev.preventDefault();$('#wa-send').click();}});
+document.addEventListener('submit',ev=>{if(ev.target.id==='login-form'){ev.preventDefault();tryLogin();}else if(ev.target.id==='setup-form'){ev.preventDefault();trySetup();}else if(ev.target.id==='forgot-form'){ev.preventDefault();tryForgot();}else if(ev.target.id==='join-form'){ev.preventDefault();tryJoin();}else if(ev.target.id==='wa-form'){ev.preventDefault();$('#wa-send').click();}});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){if(!$('#whatsapp-modal').classList.contains('hidden'))$('#whatsapp-modal').classList.add('hidden');else if(!$('#invoice-preview-modal').classList.contains('hidden'))closePreview();else if(!$('#app-modal').classList.contains('hidden')&&!(S.m&&S.m.type==='rec'))closeModal();}});
 
 /* الوضع الليلي: يتبع إعداد الجهاز ويمكن تبديله من القائمة (نفس زر "ليلي" في برنامجك) */
@@ -836,11 +838,11 @@ function showRecModal(code,after){
 
 const SESS_KEY='cafe-sess';let loginFails=0,lockUntil=0;
 function authMode(mode){
-  ['login','setup','forgot'].forEach(m=>$('#'+m+'-form').classList.toggle('hidden',m!==mode));
-  $('#auth-sub').textContent={login:'ادخل باسم المستخدم للمتابعة',setup:'إعداد المتجر لأول مرة',forgot:'استعادة الدخول برمز الاسترجاع'}[mode];
-  ['#login-err','#reg-err','#fg-err'].forEach(i=>$(i).classList.add('hidden'));
+  ['login','setup','forgot','join'].forEach(m=>$('#'+m+'-form').classList.toggle('hidden',m!==mode));
+  $('#auth-sub').textContent={login:'ادخل باسم المستخدم للمتابعة',setup:'إعداد المتجر لأول مرة',forgot:'استعادة الدخول برمز الاسترجاع',join:'ربط هذا الجهاز بمحل موجود'}[mode];
+  ['#login-err','#reg-err','#fg-err','#jn-err'].forEach(i=>$(i).classList.add('hidden'));
   $('#auth-view').classList.remove('hidden');$('#app-view').classList.add('hidden');
-  setTimeout(()=>{const f=$({login:'#login-user',setup:'#reg-store',forgot:'#fg-user'}[mode]);f&&f.focus();},60);
+  setTimeout(()=>{const f=$({login:'#login-user',setup:'#reg-store',forgot:'#fg-user',join:'#jn-code'}[mode]);f&&f.focus();},60);
 }
 function showAuth(){$('#login-pass').value='';authMode('login');}
 function showSetup(){authMode('setup');}
@@ -903,6 +905,7 @@ async function shareBackup(){
 }
 const readText=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsText(f);});
 function confirmRestore(b){
+  if(SY.on){showToast('أوقف الربط بين الأجهزة أولاً (الإعدادات ← ربط الأجهزة)','error');return;}
   if(!backupOk(b)){showToast('هذا الملف ليس نسخة احتياطية من هذا البرنامج','error');return;}
   S.pendingRestore=b;S.m={type:'rs'};
   modal(`${mHead(ic('fa-upload','text-red-500 ml-2'),'استرجاع نسخة احتياطية')}<div class="space-y-4"><div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 text-xs font-bold space-y-2"><div class="flex justify-between"><span class="text-gray-500">تاريخ النسخة</span><span>${dm(b.at)} ${hm(b.at)}</span></div><div class="flex justify-between"><span class="text-gray-500">المتجر</span><span>${esc(b.kv.store&&b.kv.store.name||'—')}</span></div><div class="flex justify-between"><span class="text-gray-500">الفواتير</span><span>${b.invoices.length}</span></div><div class="flex justify-between"><span class="text-gray-500">الأصناف</span><span>${Object.keys(b.kv.products||{}).length}</span></div></div>
@@ -950,4 +953,5 @@ function registerSW(){
   else{let rid=null;try{rid=localStorage.getItem(SESS_KEY);}catch(e){}const ru=rid&&S.users.find(x=>String(x.id)===rid&&x.on);if(ru)enter(ru,true);else showAuth();}
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   registerSW();
+  try{await SY.start();syChip();}catch(e){console.error(e);}
 })();

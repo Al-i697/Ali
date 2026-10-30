@@ -22,35 +22,44 @@ const DB=(()=>{
 })();
 
 const PS={lens:{},kv:{},err:null};
-const imgFp=(k,v)=>k==='img'&&typeof v==='string'?v.length+':'+v.slice(-24):v;
+const imgFp=(k,v)=>(k==='img'||k==='logo')&&typeof v==='string'?v.length+':'+v.slice(-24):v;
 const kvVals=()=>({
-  meta:{uid:S.meta.uid,nextInv:S.nextInv,vat:S.vat,created:S.meta.created,lastBackup:S.meta.lastBackup,rec:S.meta.rec,v:1},
+  meta:{uid:S.meta.uid,nextInv:S.nextInv,vat:S.vat,created:S.meta.created,lastBackup:S.meta.lastBackup,rec:S.meta.rec,dx:S.meta.dx,v:1},
   store:S.store,users:S.users,customers:S.customers,suppliers:S.suppliers,products:PROD,stock:STOCK});
 
 function applyKV(K){
-  const m=K.meta;S.meta={uid:m.uid||1,created:m.created||0,lastBackup:m.lastBackup||0,rec:m.rec||null};S.nextInv=m.nextInv||1001;S.vat=!!m.vat;
+  const m=K.meta;S.meta={uid:m.uid||1,created:m.created||0,lastBackup:m.lastBackup||0,rec:m.rec||null,dx:m.dx||0};S.nextInv=m.nextInv||1001;S.vat=!!m.vat;
   Object.assign(S.store,K.store||{});S.users=K.users||[];S.customers=K.customers||[];S.suppliers=K.suppliers||[];
   Object.keys(PROD).forEach(k=>delete PROD[k]);Object.assign(PROD,K.products||{});STOCK.length=0;(K.stock||[]).forEach(x=>STOCK.push(x));
 }
+/* ترتيب زمني (الأجهزة المرتبطة تأخذ أرقاماً من نطاقات مختلفة، فالرقم وحده ما يعطي الترتيب) */
+const byTime=(a,b)=>((a.t!=null?a.t:a.start)-(b.t!=null?b.t:b.start))||(a.id-b.id);
 async function loadState(){
   await DB.open();
   const rows=await DB.all('kv'),K={};rows.forEach(r=>K[r.k]=r.v);
   const had=!!K.meta;
-  if(had){applyKV(K);for(const c of DB.APPEND)S[c]=(await DB.all(c)).sort((a,b)=>a.id-b.id);S.ui.close.float=S.store.float||'0.000';
+  if(had){applyKV(K);for(const c of DB.APPEND)S[c]=(await DB.all(c)).sort(byTime);S.ui.close.float=S.store.float||'0.000';
+    if(K.sync&&K.sync.cfg)SY.load(K.sync);
     const v=kvVals();for(const k in v)PS.kv[k]=JSON.stringify(v[k],imgFp);}
   for(const c of DB.APPEND)PS.lens[c]=S[c].length;
   return had;
 }
 let pchain=Promise.resolve(),FROZEN=false;
-function persist(){
-  if(FROZEN)return pchain;   /* أثناء الاسترجاع: ما نكتب حالة الذاكرة القديمة فوق النسخة */
-  const ops=[];
-  for(const c of DB.APPEND){const a=S[c],n=PS.lens[c]||0;if(a.length>n){for(let i=n;i<a.length;i++)ops.push([c,a[i]]);PS.lens[c]=a.length;}}
-  while(TOUCH.length)ops.push(TOUCH.shift());
-  const v=kvVals();for(const k in v){const j=JSON.stringify(v[k],imgFp);if(j!==PS.kv[k]){PS.kv[k]=j;ops.push(['kv',{k,v:v[k]}]);}}
+/* كتابة مباشرة في القاعدة بعد الطابور الحالي (مثل دمج سجلات جاءت من جهاز آخر) */
+function enqueueWrite(ops){
   if(!ops.length)return pchain;
   pchain=pchain.then(()=>DB.putMany(ops)).then(()=>{PS.err=null;},e=>{PS.err=e;if(window.onPersistError)window.onPersistError(e);});
   return pchain;
+}
+function persist(){
+  if(FROZEN)return pchain;   /* أثناء الاسترجاع: ما نكتب حالة الذاكرة القديمة فوق النسخة */
+  const ops=[],ln=SY.on;
+  for(const c of DB.APPEND){const a=S[c],n=PS.lens[c]||0;if(a.length>n){for(let i=n;i<a.length;i++){ops.push([c,a[i]]);if(ln)SY.mark(c,a[i].id,false,a[i]);}PS.lens[c]=a.length;}}
+  while(TOUCH.length){const t=TOUCH.shift();ops.push(t);if(ln)SY.mark(t[0],t[1].id);}
+  const v=kvVals();for(const k in v){const j=JSON.stringify(v[k],imgFp);if(j!==PS.kv[k]){PS.kv[k]=j;ops.push(['kv',{k,v:v[k]}]);if(ln)SY.kvChanged(k);}}
+  if(ln&&SY.dirty){SY.dirty=false;ops.push(['kv',{k:'sync',v:SY.state()}]);}
+  if(ln&&SY.out.size)SY.kick();
+  return enqueueWrite(ops);
 }
 
 /* ───────── نسخة احتياطية واسترجاع ───────── */

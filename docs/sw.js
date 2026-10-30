@@ -1,6 +1,6 @@
-/* يخزّن ملفات البرنامج على الآيباد ليشتغل بدون إنترنت. الإصدار: 2026.10.29-b1f68b50 */
-const CACHE = 'cafe-2026.10.29-b1f68b50';
-const FILES = ["./", "index.html", "app.css?v=2026.10.29-b1f68b50", "app.js?v=2026.10.29-b1f68b50", "manifest.webmanifest", "fonts/cairo-arabic-400-normal.woff2", "fonts/cairo-arabic-600-normal.woff2", "fonts/cairo-arabic-700-normal.woff2", "fonts/cairo-arabic-800-normal.woff2", "fonts/cairo-arabic-900-normal.woff2", "fonts/cairo-latin-400-normal.woff2", "fonts/cairo-latin-600-normal.woff2", "fonts/cairo-latin-700-normal.woff2", "fonts/cairo-latin-800-normal.woff2", "fonts/cairo-latin-900-normal.woff2", "vendor/html2pdf.bundle.min.js", "vendor/qrcode.min.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"];
+/* يخزّن ملفات البرنامج على الآيباد ليشتغل بدون إنترنت. الإصدار: 2026.10.30-7843f57b */
+const CACHE = 'cafe-2026.10.30-7843f57b';
+const FILES = ["./", "index.html", "app.css?v=2026.10.30-7843f57b", "app.js?v=2026.10.30-7843f57b", "manifest.webmanifest", "fonts/cairo-arabic-400-normal.woff2", "fonts/cairo-arabic-600-normal.woff2", "fonts/cairo-arabic-700-normal.woff2", "fonts/cairo-arabic-800-normal.woff2", "fonts/cairo-arabic-900-normal.woff2", "fonts/cairo-latin-400-normal.woff2", "fonts/cairo-latin-600-normal.woff2", "fonts/cairo-latin-700-normal.woff2", "fonts/cairo-latin-800-normal.woff2", "fonts/cairo-latin-900-normal.woff2", "vendor/html2pdf.bundle.min.js", "vendor/qrcode.min.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
 });

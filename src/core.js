@@ -28,13 +28,16 @@ const unitPrice=l=>{const v=prodVar(l.pid,l.vid);return v?v.p:PROD[l.pid].p;};
 const S={
  user:null,page:'dashboard',vat:false,nextInv:1001,rev:0,
  store:{name:'',desc:'',phone:'',qr:'',logo:'',float:'0.000'},
- meta:{uid:1,created:0,lastBackup:0,rec:null},
+ meta:{uid:1,created:0,lastBackup:0,rec:null,dx:0},
  users:[],shifts:[],invoices:[],custPays:[],expenses:[],purchases:[],suppPays:[],adjusts:[],customers:[],suppliers:[],
  cart:{lines:[],type:'table',ref:'',disc:'',note:''},posQ:'',
  ui:{exp:{amount:'',cat:'ثلج',note:'',from:'cash'},close:{counted:'',float:'0.000'},inv:{shift:'cur',f:'all',q:''},cust:{sel:null,q:''},pur:{tab:'inv'},profit:{range:'cur'},prod:{q:''}},
  m:null
 };
-const uid=()=>S.meta.uid++;
+/* كل جهاز مرتبط له رقم (dx)، وأرقام سجلاته من نطاق خاص به فلا يتكرر رقم بين جهازين: dx×مليار للسجلات، dx×مليون للفواتير */
+const uid=()=>S.meta.dx*1e9+S.meta.uid++;
+const invNo=id=>id<1e6?String(id):String.fromCharCode(65+Math.floor(id/1e6))+(id%1e6);
+const invId=q=>{q=String(q).trim();const m=/^([A-Za-z])(\d{4,})$/.exec(q);return m?(m[1].toUpperCase().charCodeAt(0)-65)*1e6+ +m[2]:/^\d{4,}$/.test(q)?+q:null;};
 const curShift=()=>S.shifts[S.shifts.length-1];
 const shiftOpen=()=>{const s=curShift();return !!s&&!s.end;};
 const realShifts=()=>S.shifts.filter(s=>!s.init);

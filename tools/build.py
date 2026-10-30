@@ -6,7 +6,7 @@ SRC, OUT = os.path.join(R, 'src'), os.path.join(R, 'docs')
 rd = lambda *p: open(os.path.join(SRC, *p), encoding='utf-8').read()
 
 css = '\n'.join(rd('css', n) for n in ['fonts.css', 'fa.css', 'custom.css', 'tw.css', 'base.css', 'extra.css'])
-js_parts = rd('core.js') + '\n' + rd('db.js') + '\n' + rd('ui.js')
+js_parts = '\n'.join(rd(n) for n in ['core.js', 'db.js', 'sync.js', 'ui.js', 'syncui.js']).replace('__SYNC_SQL__', json.dumps(rd('sync.sql'), ensure_ascii=False))
 sig = hashlib.sha1((css + js_parts + rd('body.html')).encode('utf-8')).hexdigest()[:8]
 BUILD = datetime.date.today().strftime('%Y.%m.%d') + '-' + sig
 js = "(function(){\n'use strict';\n" + js_parts.replace('__BUILD__', BUILD) + "\n})();\n"

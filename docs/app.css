@@ -267,3 +267,11 @@ html,body{touch-action:manipulation}
 .inset-x-4{left:1rem;right:1rem}
 .tracking-wider{letter-spacing:.05em}
 @media (min-width:640px){.sm\:inset-x-auto{left:auto;right:auto}.sm\:left-4{left:1rem}}
+/* أصناف واجهة الربط بين الأجهزة */
+.h-2\.5{height:.625rem}
+.w-2\.5{width:.625rem}
+.leading-7{line-height:1.75rem}
+.list-decimal{list-style-type:decimal}
+.select-all{-webkit-user-select:all;user-select:all}
+.disabled\:opacity-60:disabled{opacity:.6}
+@media (min-width:640px){.sm\:inline{display:inline}}

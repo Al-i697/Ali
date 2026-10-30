@@ -30,13 +30,16 @@ const unitPrice=l=>{const v=prodVar(l.pid,l.vid);return v?v.p:PROD[l.pid].p;};
 const S={
  user:null,page:'dashboard',vat:false,nextInv:1001,rev:0,
  store:{name:'',desc:'',phone:'',qr:'',logo:'',float:'0.000'},
- meta:{uid:1,created:0,lastBackup:0,rec:null},
+ meta:{uid:1,created:0,lastBackup:0,rec:null,dx:0},
  users:[],shifts:[],invoices:[],custPays:[],expenses:[],purchases:[],suppPays:[],adjusts:[],customers:[],suppliers:[],
  cart:{lines:[],type:'table',ref:'',disc:'',note:''},posQ:'',
  ui:{exp:{amount:'',cat:'ثلج',note:'',from:'cash'},close:{counted:'',float:'0.000'},inv:{shift:'cur',f:'all',q:''},cust:{sel:null,q:''},pur:{tab:'inv'},profit:{range:'cur'},prod:{q:''}},
  m:null
 };
-const uid=()=>S.meta.uid++;
+/* كل جهاز مرتبط له رقم (dx)، وأرقام سجلاته من نطاق خاص به فلا يتكرر رقم بين جهازين: dx×مليار للسجلات، dx×مليون للفواتير */
+const uid=()=>S.meta.dx*1e9+S.meta.uid++;
+const invNo=id=>id<1e6?String(id):String.fromCharCode(65+Math.floor(id/1e6))+(id%1e6);
+const invId=q=>{q=String(q).trim();const m=/^([A-Za-z])(\d{4,})$/.exec(q);return m?(m[1].toUpperCase().charCodeAt(0)-65)*1e6+ +m[2]:/^\d{4,}$/.test(q)?+q:null;};
 const curShift=()=>S.shifts[S.shifts.length-1];
 const shiftOpen=()=>{const s=curShift();return !!s&&!s.end;};
 const realShifts=()=>S.shifts.filter(s=>!s.init);
@@ -149,35 +152,44 @@ const DB=(()=>{
 })();
 
 const PS={lens:{},kv:{},err:null};
-const imgFp=(k,v)=>k==='img'&&typeof v==='string'?v.length+':'+v.slice(-24):v;
+const imgFp=(k,v)=>(k==='img'||k==='logo')&&typeof v==='string'?v.length+':'+v.slice(-24):v;
 const kvVals=()=>({
-  meta:{uid:S.meta.uid,nextInv:S.nextInv,vat:S.vat,created:S.meta.created,lastBackup:S.meta.lastBackup,rec:S.meta.rec,v:1},
+  meta:{uid:S.meta.uid,nextInv:S.nextInv,vat:S.vat,created:S.meta.created,lastBackup:S.meta.lastBackup,rec:S.meta.rec,dx:S.meta.dx,v:1},
   store:S.store,users:S.users,customers:S.customers,suppliers:S.suppliers,products:PROD,stock:STOCK});
 
 function applyKV(K){
-  const m=K.meta;S.meta={uid:m.uid||1,created:m.created||0,lastBackup:m.lastBackup||0,rec:m.rec||null};S.nextInv=m.nextInv||1001;S.vat=!!m.vat;
+  const m=K.meta;S.meta={uid:m.uid||1,created:m.created||0,lastBackup:m.lastBackup||0,rec:m.rec||null,dx:m.dx||0};S.nextInv=m.nextInv||1001;S.vat=!!m.vat;
   Object.assign(S.store,K.store||{});S.users=K.users||[];S.customers=K.customers||[];S.suppliers=K.suppliers||[];
   Object.keys(PROD).forEach(k=>delete PROD[k]);Object.assign(PROD,K.products||{});STOCK.length=0;(K.stock||[]).forEach(x=>STOCK.push(x));
 }
+/* ترتيب زمني (الأجهزة المرتبطة تأخذ أرقاماً من نطاقات مختلفة، فالرقم وحده ما يعطي الترتيب) */
+const byTime=(a,b)=>((a.t!=null?a.t:a.start)-(b.t!=null?b.t:b.start))||(a.id-b.id);
 async function loadState(){
   await DB.open();
   const rows=await DB.all('kv'),K={};rows.forEach(r=>K[r.k]=r.v);
   const had=!!K.meta;
-  if(had){applyKV(K);for(const c of DB.APPEND)S[c]=(await DB.all(c)).sort((a,b)=>a.id-b.id);S.ui.close.float=S.store.float||'0.000';
+  if(had){applyKV(K);for(const c of DB.APPEND)S[c]=(await DB.all(c)).sort(byTime);S.ui.close.float=S.store.float||'0.000';
+    if(K.sync&&K.sync.cfg)SY.load(K.sync);
     const v=kvVals();for(const k in v)PS.kv[k]=JSON.stringify(v[k],imgFp);}
   for(const c of DB.APPEND)PS.lens[c]=S[c].length;
   return had;
 }
 let pchain=Promise.resolve(),FROZEN=false;
-function persist(){
-  if(FROZEN)return pchain;   /* أثناء الاسترجاع: ما نكتب حالة الذاكرة القديمة فوق النسخة */
-  const ops=[];
-  for(const c of DB.APPEND){const a=S[c],n=PS.lens[c]||0;if(a.length>n){for(let i=n;i<a.length;i++)ops.push([c,a[i]]);PS.lens[c]=a.length;}}
-  while(TOUCH.length)ops.push(TOUCH.shift());
-  const v=kvVals();for(const k in v){const j=JSON.stringify(v[k],imgFp);if(j!==PS.kv[k]){PS.kv[k]=j;ops.push(['kv',{k,v:v[k]}]);}}
+/* كتابة مباشرة في القاعدة بعد الطابور الحالي (مثل دمج سجلات جاءت من جهاز آخر) */
+function enqueueWrite(ops){
   if(!ops.length)return pchain;
   pchain=pchain.then(()=>DB.putMany(ops)).then(()=>{PS.err=null;},e=>{PS.err=e;if(window.onPersistError)window.onPersistError(e);});
   return pchain;
+}
+function persist(){
+  if(FROZEN)return pchain;   /* أثناء الاسترجاع: ما نكتب حالة الذاكرة القديمة فوق النسخة */
+  const ops=[],ln=SY.on;
+  for(const c of DB.APPEND){const a=S[c],n=PS.lens[c]||0;if(a.length>n){for(let i=n;i<a.length;i++){ops.push([c,a[i]]);if(ln)SY.mark(c,a[i].id,false,a[i]);}PS.lens[c]=a.length;}}
+  while(TOUCH.length){const t=TOUCH.shift();ops.push(t);if(ln)SY.mark(t[0],t[1].id);}
+  const v=kvVals();for(const k in v){const j=JSON.stringify(v[k],imgFp);if(j!==PS.kv[k]){PS.kv[k]=j;ops.push(['kv',{k,v:v[k]}]);if(ln)SY.kvChanged(k);}}
+  if(ln&&SY.dirty){SY.dirty=false;ops.push(['kv',{k:'sync',v:SY.state()}]);}
+  if(ln&&SY.out.size)SY.kick();
+  return enqueueWrite(ops);
 }
 
 /* ───────── نسخة احتياطية واسترجاع ───────── */
@@ -192,6 +204,262 @@ async function restoreBackup(b){
   for(let i=0;i<ops.length;i+=3000)await DB.putMany(ops.slice(i,i+3000));
   }catch(e){FROZEN=false;throw e;}
 }
+
+/* ───────── الربط بين الأجهزة (اختياري) ─────────
+   كل جهاز يشتغل على بياناته المحلية حتى لو انقطع النت. الربط يرسل كل سجل جديد أو معدّل لخدمة سحابية (Supabase)
+   بعد تشفيره على الجهاز نفسه (الخدمة ما تقرأ شيئاً)، ويستقبل سجلات الأجهزة الأخرى ويدمجها.
+   • آخر تعديل على السجل يغلب (بترتيب الخدمة). الفواتير والسداد والمصروفات حركات جديدة فلا تتعارض أصلاً
+   • الأرصدة والمخزون والورديات تُحسب من الحركات، فتتطابق في كل الأجهزة تلقائياً
+   • ما يُرفع: حركات جديدة/معدّلة فقط (صندوق صادر محفوظ في القاعدة مع السجل نفسه، فلا يضيع شيء لو انقطع التطبيق) */
+const SY={on:false,cfg:null,key:null,shop:'',cursor:0,seed:null,dirty:false,out:new Map(),fp:{},seen:new Map(),idx:{},devs:new Map(),
+  st:'off',err:'',warn:'',last:0,fails:0,nextTry:0,joining:false,running:false,again:false,pt:0,onChange:null,onStatus:null};
+const SY_LISTS={customers:()=>S.customers,suppliers:()=>S.suppliers,users:()=>S.users,stock:()=>STOCK};
+const SY_KV=['customers','suppliers','users','products','stock'];
+const SY_SEED=['shop','devs',...SY_KV,...DB.APPEND];
+const SY_PAGE=400,SY_AGE=30,SY_PUSH=150;
+const syKey=(s,id)=>s+':'+id;
+const syT=r=>r.t!=null?r.t:r.start;
+
+/* ── التشفير: المفتاح والمعرّف السري للمحل يُشتقان من الرمز السري الذي ينتقل بين الأجهزة فقط ── */
+const syTE=new TextEncoder(),syTD=new TextDecoder();
+const syHex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const syB64=u=>{let s='';for(let i=0;i<u.length;i+=0x8000)s+=String.fromCharCode.apply(null,u.subarray(i,i+0x8000));return btoa(s);};
+const syUn64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const syRand=n=>syHex(crypto.getRandomValues(new Uint8Array(n)));
+async function syKeys(){
+  const sha=s=>crypto.subtle.digest('SHA-256',syTE.encode(s));
+  SY.shop=syHex(await sha('shop|'+SY.cfg.s));
+  SY.key=await crypto.subtle.importKey('raw',await sha('key|'+SY.cfg.s),'AES-GCM',false,['encrypt','decrypt']);
+}
+async function syEnc(o){
+  const iv=crypto.getRandomValues(new Uint8Array(12)),ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},SY.key,syTE.encode(JSON.stringify(o)))),r=new Uint8Array(12+ct.length);
+  r.set(iv);r.set(ct,12);return syB64(r);
+}
+async function syDec(s){
+  let r;try{r=syUn64(s);return JSON.parse(syTD.decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:r.subarray(0,12)},SY.key,r.subarray(12))));}
+  catch(e){throw new Error('تعذّر فك التشفير — رمز الربط غير صحيح أو البيانات تالفة');}
+}
+
+/* ── رمز الربط: رابط المشروع + المفتاح العام + الرمز السري ── */
+const syUrl=u=>{u=String(u||'').trim().replace(/\/+$/,'').replace(/\/rest\/v1$/,'');if(!/^https?:\/\/[A-Za-z0-9.-]+(:\d+)?$/.test(u))throw new Error('رابط المشروع غير صحيح، لازم يبدأ بـ https://');return u;};
+const syCode=()=>'CAFE1.'+btoa(JSON.stringify({u:SY.cfg.u,k:SY.cfg.k,s:SY.cfg.s})).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+function syParse(t){
+  const m=/^CAFE1\.([A-Za-z0-9_-]+)$/.exec(String(t||'').replace(/\s+/g,''));let o=null;
+  if(m)try{const b=m[1].replace(/-/g,'+').replace(/_/g,'/');o=JSON.parse(atob(b+'='.repeat((4-b.length%4)%4)));}catch(e){}
+  if(!o||typeof o.u!=='string'||typeof o.k!=='string'||typeof o.s!=='string'||o.s.length<16)throw new Error('رمز الربط غير صحيح، انسخه كاملاً من الجهاز الأول');
+  return {u:syUrl(o.u),k:o.k,s:o.s};
+}
+
+/* ── الاتصال بالخدمة (دوال SQL عبر REST) ── */
+async function syRpc(fn,args){
+  const c=SY.cfg,ctl=new AbortController(),tm=setTimeout(()=>ctl.abort(),25000),h={apikey:c.k,'Content-Type':'application/json'};
+  if(c.k.startsWith('eyJ'))h.Authorization='Bearer '+c.k;
+  try{
+    const r=await fetch(c.u+'/rest/v1/rpc/'+fn,{method:'POST',headers:h,body:JSON.stringify(args),signal:ctl.signal});
+    if(!r.ok){let j=null;try{j=await r.json();}catch(e){}const m=(j&&(j.message||j.hint||j.error_description||j.msg))||'';
+      if(/PGRST202|Could not find the function/.test(JSON.stringify(j||'')))throw new Error('كود الإعداد ما نُفّذ في Supabase بعد (SQL Editor ← Run)');
+      if(r.status===401||r.status===403)throw new Error('المفتاح غير صحيح أو غير مسموح');
+      throw new Error('الخدمة ردّت بخطأ '+r.status+(m?' · '+m:''));}
+    return r.status===204?null:await r.json();
+  }catch(e){if(e&&e.name==='AbortError')throw new TypeError('انتهت مهلة الاتصال');throw e;}
+  finally{clearTimeout(tm);}
+}
+const syNet=e=>!!e&&(e.name==='TypeError'||navigator.onLine===false);
+
+/* ── السجلات: كل شيء يُرفع كسجل (المخزن + الرقم) ── */
+const syShop=()=>({store:S.store,vat:S.vat,rec:S.meta.rec,created:S.meta.created});
+const syMap=s=>SY.idx[s]||(SY.idx[s]=new Map(S[s].map(r=>[r.id,r])));
+const syRecs=k=>k==='products'?Object.entries(PROD):SY_LISTS[k]().map(r=>[r.id,r]);
+function syFind(s,id){
+  if(s==='shop')return syShop();
+  if(s==='devs')return id===SY.cfg.dev?{id,dx:SY.cfg.dx,name:SY.cfg.name,at:SY.cfg.at}:null;
+  if(s==='products')return PROD[id]||null;
+  if(SY_LISTS[s])return SY_LISTS[s]().find(r=>r.id===id)||null;
+  return syMap(s).get(id)||null;
+}
+const syPayload=e=>{if(e.del)return {s:e.s,id:e.id,del:1};const r=syFind(e.s,e.id);return r?{s:e.s,id:e.id,v:r}:null;};
+SY.mark=(s,id,del,rec)=>{const k=syKey(s,id),e=SY.out.get(k);SY.out.set(k,{s,id,del:!!del,ver:(e?e.ver:0)+1});SY.dirty=true;if(rec&&SY.idx[s])SY.idx[s].set(id,rec);};
+function syDiff(k){   /* القوائم الصغيرة (عملاء، أصناف...): نكتشف أي سجل تغيّر أو انحذف */
+  const old=SY.fp[k]||(SY.fp[k]=new Map()),seen=new Set();
+  for(const [id,r] of syRecs(k)){seen.add(id);const f=JSON.stringify(r,imgFp);if(old.get(id)!==f){old.set(id,f);SY.mark(k,id);}}
+  for(const id of [...old.keys()])if(!seen.has(id)){old.delete(id);SY.mark(k,id,true);}
+}
+function syShopDiff(){const f=JSON.stringify(syShop(),imgFp);if(f!==SY.fp.shop){SY.fp.shop=f;SY.mark('shop','shop');}}
+SY.kvChanged=k=>{if(k==='store'||k==='meta')syShopDiff();else if(SY_KV.includes(k))syDiff(k);};
+function syInitFp(){SY.fp={};SY.idx={};for(const k of SY_KV)SY.fp[k]=new Map(syRecs(k).map(([id,r])=>[id,JSON.stringify(r,imgFp)]));SY.fp.shop=JSON.stringify(syShop(),imgFp);}
+
+/* ── حالة الربط المحفوظة ── */
+SY.state=()=>({cfg:SY.cfg,cursor:SY.cursor,seed:SY.seed,out:[...SY.out.values()].map(e=>[e.s,e.id,e.del?1:0])});
+SY.load=v=>{SY.cfg=v.cfg;SY.cursor=v.cursor||0;SY.seed=v.seed||null;SY.out=new Map();for(const [s,id,d] of v.out||[])SY.out.set(syKey(s,id),{s,id,del:!!d,ver:1});SY.on=!!SY.cfg;};
+SY.status=()=>{if(SY.onStatus)SY.onStatus();};
+
+/* ── الإرسال ── */
+async function syPushList(list){
+  const rows=[];
+  await Promise.all(list.map(async e=>{const p=syPayload(e);if(p)rows.push({k:syKey(e.s,e.id),dev:SY.cfg.dev,d:await syEnc(p)});}));
+  let chunk=[],sz=0;const send=async()=>{if(chunk.length)await syRpc('cafe_push',{p_shop:SY.shop,p_rows:chunk});chunk=[];sz=0;};
+  for(const r of rows){if(sz+r.d.length>1200000)await send();chunk.push(r);sz+=r.d.length;}
+  await send();
+}
+async function syFlush(){
+  while(SY.out.size){
+    const batch=[...SY.out.values()].slice(0,SY_PUSH),vers=batch.map(e=>[syKey(e.s,e.id),e.ver]);
+    await syPushList(batch);
+    for(const [k,v] of vers){const e=SY.out.get(k);if(e&&e.ver===v)SY.out.delete(k);}
+    SY.dirty=true;
+  }
+}
+const syIds=s=>s==='shop'?['shop']:s==='devs'?[SY.cfg.dev]:s==='products'?Object.keys(PROD):(SY_LISTS[s]?SY_LISTS[s]():S[s]).map(r=>r.id);
+async function sySeed(prog){   /* رفع كل البيانات الموجودة أول مرة؛ يكمل من حيث وقف لو انقطع */
+  let tot=0,done=0;const ids=SY_SEED.map(syIds);ids.forEach(a=>tot+=a.length);
+  for(let n=0;n<SY.seed.n;n++)done+=ids[n].length;
+  for(let n=SY.seed.n;n<SY_SEED.length;n++){
+    const s=SY_SEED[n],a=ids[n];
+    for(let i=n===SY.seed.n?SY.seed.i:0;i<a.length;i+=SY_PUSH){
+      await syPushList(a.slice(i,i+SY_PUSH).map(id=>({s,id})));
+      SY.seed={n,i:i+SY_PUSH};SY.dirty=true;persist();done=Math.min(tot,done+SY_PUSH);prog&&prog(done,tot);
+    }
+    SY.seed={n:n+1,i:0};
+  }
+  SY.cursor=await syRpc('cafe_head',{p_shop:SY.shop});   /* ما نحتاج نسحب ما رفعناه نحن */
+  SY.seed=null;SY.dirty=true;persist();
+}
+
+/* ── الاستقبال والدمج ── */
+const syReplace=(o,v)=>{for(const k in o)delete o[k];Object.assign(o,v);};
+function syInsert(a,r){let i=a.length;const t=syT(r);while(i>0&&syT(a[i-1])>t)i--;a.splice(i,0,r);return i;}
+function syApply(items){   /* items بترتيب الخدمة؛ كله متزامن حتى ما يتخلل تعديل محلي بين الدمج وتسجيل البصمات */
+  persist();   /* أي تغيير محلي معلّق يدخل الصادر قبل ما ندمج */
+  const w=[],kvT=new Set(),apT=new Set(),ch=new Set();let rebuild=false;
+  for(const {seq,p} of items){
+    const {s,id}=p;if(SY.out.has(syKey(s,id)))continue;   /* عندنا تعديل أحدث لم يُرفع بعد، فيغلب */
+    if(s==='devs'){SY.devs.set(id,{...p.v,seq});ch.add(s);continue;}
+    if(s==='shop'){syReplace(S.store,p.v.store);S.vat=!!p.v.vat;S.meta.rec=p.v.rec||null;S.meta.created=p.v.created||0;kvT.add('store');kvT.add('meta');SY.fp.shop=JSON.stringify(syShop(),imgFp);}
+    else if(s==='products'){if(p.del)delete PROD[id];else if(PROD[id])syReplace(PROD[id],p.v);else PROD[id]=p.v;kvT.add(s);}
+    else if(SY_LISTS[s]){const a=SY_LISTS[s](),i=a.findIndex(r=>r.id===id);if(p.del){if(i>=0)a.splice(i,1);}else if(i>=0)syReplace(a[i],p.v);else a.push(p.v);kvT.add(s);}
+    else if(DB.APPEND.includes(s)&&!p.del){
+      const m=syMap(s),old=m.get(id);
+      if(old){syReplace(old,p.v);w.push([s,old]);rebuild=true;}
+      else{const at=syInsert(S[s],p.v);m.set(id,p.v);w.push([s,p.v]);apT.add(s);if(s==='invoices'&&at<S.invoices.length-1)rebuild=true;}
+    }else continue;
+    ch.add(s);
+  }
+  if(!ch.size)return;
+  const v=kvVals();
+  for(const k of kvT){
+    if(SY_KV.includes(k))SY.fp[k]=new Map(syRecs(k).map(([id,r])=>[id,JSON.stringify(r,imgFp)]));
+    PS.kv[k]=JSON.stringify(v[k],imgFp);w.push(['kv',{k,v:v[k]}]);
+  }
+  for(const c of apT)PS.lens[c]=S[c].length;
+  if(rebuild||kvT.size)S.rev++;
+  if(!SY.joining)enqueueWrite(w);
+  if(ch.has('shifts'))syFixShifts();
+  if(SY.onChange&&!SY.joining)SY.onChange(ch);
+}
+function syFixShifts(){   /* لو انفتحت ورديتان في نفس اللحظة من جهازين: نقفل الأقدم تلقائياً والأحدث تبقى */
+  const open=S.shifts.filter(s=>!s.end);if(open.length<2)return;
+  const last=open[open.length-1];
+  for(const s of open.slice(0,-1)){s.end=last.start;s.auto=true;s.expected=drawer(s.id);s.counted=s.expected;s.diff=0;touch('shifts',s);}
+  persist();
+}
+async function syPull(prog,total){
+  let n=0;
+  for(;;){
+    const rows=await syRpc('cafe_pull',{p_shop:SY.shop,p_after:SY.cursor,p_lim:SY_PAGE}),more=rows.length>=SY_PAGE;
+    const fresh=rows.filter(r=>r.dev!==SY.cfg.dev&&r.seq>(SY.seen.get(r.k)||0));
+    let bad=0;const dec=await Promise.all(fresh.map(async r=>{try{return {seq:r.seq,p:await syDec(r.d)};}catch(e){if(SY.joining)throw e;bad++;return null;}}));
+    const items=dec.filter(Boolean);   /* سجل تالف ما يوقف المزامنة كلها: نتجاوزه ونعرض تنبيه */
+    if(bad)SY.warn=`تعذّرت قراءة ${bad} سجل من الخدمة وتم تجاوزها`;
+    if(items.length)syApply(items);
+    for(const r of rows)SY.seen.set(r.k,r.seq);
+    /* السجلات الأحدث من 30 ثانية نعيد سحبها مرة ثانية للاحتياط (قد تتأخر عملية كتابة أخذت رقماً أقدم) */
+    let j=-1;for(let i=0;i<rows.length;i++)if(rows[i].age>=SY_AGE)j=i;
+    if(more&&j<0)j=rows.length-1;
+    if(j>=0){SY.cursor=rows[j].seq;SY.dirty=true;for(const [k,q] of SY.seen)if(q<=SY.cursor)SY.seen.delete(k);}
+    n+=rows.length;prog&&prog(n,total||n);
+    if(!more)return n;
+  }
+}
+
+/* ── الدورة: إرسال ثم استقبال ── */
+async function syRun(){
+  if(!SY.on||SY.joining)return;
+  if(SY.running){SY.again=true;return;}
+  SY.running=true;SY.st='busy';SY.status();
+  try{
+    if(SY.seed)await sySeed();
+    await syFlush();await syPull();
+    SY.err='';SY.fails=0;SY.nextTry=0;SY.last=Date.now();SY.st=SY.out.size?'pend':'ok';
+  }catch(e){
+    SY.fails++;SY.err=(e&&e.message)||String(e);SY.st=syNet(e)?'offline':'err';SY.nextTry=Date.now()+Math.min(60000,5000*2**Math.min(SY.fails,4));
+    if(!syNet(e))console.error(e);
+  }
+  finally{SY.running=false;SY.status();}
+  if(SY.dirty)persist();
+  if(SY.again){SY.again=false;syRun();}
+}
+SY.kick=()=>{if(!SY.on||SY.joining||Date.now()<SY.nextTry)return;clearTimeout(SY.pt);SY.pt=setTimeout(syRun,300);};
+SY.start=async()=>{
+  if(!SY.on)return;
+  try{await syKeys();}catch(e){SY.on=false;return;}
+  syInitFp();SY.st='busy';startTimers();syRun();
+};
+
+/* ── تفعيل الربط على جهاز فيه بيانات (الجهاز الأول) ── */
+async function syEnable(url,key,name,prog){
+  if(SY.on)throw new Error('الربط مفعّل مسبقاً');
+  SY.cfg={u:syUrl(url),k:String(key||'').trim(),s:btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(18)))).replace(/\+/g,'-').replace(/\//g,'_'),dev:syRand(4),dx:0,name:name||'الجهاز الرئيسي',at:Date.now()};
+  if(!SY.cfg.k)throw new Error('الصق المفتاح العام (Publishable key أو anon)');
+  if(/^sb_secret_/.test(SY.cfg.k)||(SY.cfg.k.startsWith('eyJ')&&/"role"\s*:\s*"service_role"/.test((()=>{try{return atob(SY.cfg.k.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'));}catch(e){return '';}})())))throw new Error('هذا مفتاح سري (secret / service_role) — لا تستخدمه هنا أبداً. انسخ المفتاح العام Publishable أو anon');
+  try{
+    await syKeys();
+    const n=await syRpc('cafe_count',{p_shop:SY.shop});if(n)throw new Error('هذا المحل فيه بيانات مسبقة');
+  }catch(e){SY.cfg=null;throw e;}
+  SY.cursor=0;SY.out=new Map();SY.seen=new Map();SY.devs=new Map();SY.seed={n:0,i:0};SY.on=true;SY.dirty=true;syInitFp();persist();
+  startTimers();
+  await sySeed(prog);
+  SY.st='ok';SY.last=Date.now();SY.status();syRun();
+}
+let syTimers=false;
+function startTimers(){if(syTimers)return;syTimers=true;setInterval(()=>{if(SY.on&&!document.hidden&&Date.now()>=SY.nextTry)syRun();},5000);window.addEventListener('online',()=>{SY.nextTry=0;syRun();});document.addEventListener('visibilitychange',()=>{if(!document.hidden){SY.nextTry=0;syRun();}});}
+
+/* ── ربط جهاز جديد (فارغ) برمز من الجهاز الأول: يسحب كل البيانات ثم يسجّل نفسه ── */
+async function syJoin(code,name,prog){
+  if(S.users.length)throw new Error('هذا الجهاز فيه بيانات، الربط للجهاز الجديد فقط');
+  const o=syParse(code);SY.cfg={...o,dev:syRand(4),dx:0,name:name||'جهاز جديد',at:Date.now()};
+  const reset=()=>{S.users=[];S.customers=[];S.suppliers=[];Object.keys(PROD).forEach(k=>delete PROD[k]);STOCK.length=0;for(const c of DB.APPEND)S[c]=[];S.meta={uid:1,created:0,lastBackup:0,rec:null,dx:0};S.nextInv=1001;S.vat=false;S.store={name:'',desc:'',phone:'',qr:'',logo:'',float:'0.000'};S.rev++;};
+  let total=0;
+  try{await syKeys();total=await syRpc('cafe_count',{p_shop:SY.shop});}catch(e){SY.cfg=null;throw e;}
+  if(!total){SY.cfg=null;throw new Error('ما لقيت بيانات بهذا الرمز، تأكد أنه رمز المحل الصحيح');}
+  FROZEN=true;SY.joining=true;SY.on=true;SY.cursor=0;SY.out=new Map();SY.seen=new Map();SY.devs=new Map();SY.idx={};SY.fp={};
+  try{
+    await pchain;reset();
+    await syPull(prog,total);
+    if(!S.users.length||!S.meta.created)throw new Error('بيانات المحل ناقصة، حاول مرة ثانية بعد قليل');
+    const used=new Set([...SY.devs.values()].map(d=>d.dx));let dx=1;while(used.has(dx))dx++;
+    SY.cfg.dx=dx;S.meta.dx=dx;S.meta.uid=1;S.nextInv=dx*1e6+1001;S.ui.close.float=S.store.float||'0.000';
+    syInitFp();SY.mark('devs',SY.cfg.dev);
+    const v=kvVals(),ops=[];
+    for(const k in v)if(k!=='meta')ops.push(['kv',{k,v:v[k]}]);
+    for(const c of DB.APPEND)S[c].forEach(r=>ops.push([c,r]));
+    ops.push(['kv',{k:'sync',v:SY.state()}]);
+    for(let i=0;i<ops.length;i+=3000)await DB.putMany(ops.slice(i,i+3000));
+    await DB.putMany([['kv',{k:'meta',v:v.meta}]]);   /* الأخير: وجوده يعني أن الانضمام اكتمل */
+    for(const k in v)PS.kv[k]=JSON.stringify(v[k],imgFp);for(const c of DB.APPEND)PS.lens[c]=S[c].length;
+    SY.dirty=false;
+  }catch(e){reset();SY.on=false;SY.cfg=null;SY.joining=false;FROZEN=false;throw e;}
+  SY.joining=false;FROZEN=false;startTimers();SY.st='busy';SY.status();
+  await syRun();
+  /* لو جهازان انضمّا بنفس اللحظة وأخذا نفس الرقم: صاحب المعرّف الأكبر يأخذ رقماً جديداً */
+  const clash=[...SY.devs.values()].find(d=>d.dx===SY.cfg.dx&&d.id!==SY.cfg.dev&&d.id<SY.cfg.dev);
+  if(clash){const used=new Set([...SY.devs.values()].map(d=>d.dx));let dx=1;while(used.has(dx))dx++;SY.cfg.dx=dx;S.meta.dx=dx;S.nextInv=dx*1e6+1001;SY.mark('devs',SY.cfg.dev);SY.dirty=true;persist();}
+}
+function syOff(){
+  SY.on=false;SY.cfg=null;SY.key=null;SY.out=new Map();SY.seed=null;SY.warn='';SY.fp={};SY.idx={};SY.seen=new Map();SY.devs=new Map();SY.st='off';SY.err='';clearTimeout(SY.pt);
+  enqueueWrite([['kv',{k:'sync',v:null}]]);SY.status();
+}
+SY.view=()=>({on:SY.on,warn:SY.warn,st:SY.running?'busy':SY.err?(SY.st==='offline'?'offline':'err'):SY.out.size?'pend':SY.st,err:SY.err,pend:SY.out.size,last:SY.last,seed:!!SY.seed,dx:SY.cfg?SY.cfg.dx:0,name:SY.cfg?SY.cfg.name:'',
+  devs:SY.on?[{id:SY.cfg.dev,dx:SY.cfg.dx,name:SY.cfg.name,me:true},...[...SY.devs.values()].filter(d=>d.id!==SY.cfg.dev)]:[]});
 
 /* ───────── واجهة بنفس تصميم برنامجك القديم (نفس الكلاسات ونفس القوالب) ───────── */
 const CARD='bg-white dark:bg-darkCard rounded-3xl border border-gray-100 dark:border-gray-800/80 shadow-sm';
@@ -259,6 +527,7 @@ function renderChrome(){
   const sh=curShift(),open=!sh.end;
   $('#shift-chip').innerHTML=`<span class="w-1.5 h-1.5 ${open?'bg-emerald-500':'bg-red-500'} rounded-full"></span>${open?'وردية مفتوحة منذ '+hm(sh.start):'لا توجد وردية'}`;
   const nb=(id,icon,label,cls='')=>`<button data-a="go" data-p="${id}" class="flex flex-col items-center p-2 ${S.page===id?'text-primary':'text-gray-400 hover:text-primary'} transition-colors"><i class="fas ${icon} text-xl mb-1"></i><span class="text-[10px] font-bold">${label}</span></button>`;
+  syChip();
   $('#mobile-bottom-nav').innerHTML=(isMgr()?nb('dashboard','fa-chart-pie','الرئيسية')+nb('products','fa-box','الأصناف'):nb('customers','fa-users','العملاء')+nb('shift','fa-clock','الوردية'))
    +`<div class="relative -top-6"><button data-a="go" data-p="pos" class="w-16 h-16 bg-primary text-white rounded-full flex flex-col items-center justify-center shadow-lg shadow-blue-500/40 border-4 border-gray-50 dark:border-darkBg hover:scale-105 active:scale-95 transition-all"><i class="fas fa-cash-register text-2xl"></i></button></div>`
    +nb('invoices','fa-receipt','المبيعات')+`<button data-a="sidebar" class="flex flex-col items-center p-2 text-gray-400 hover:text-primary transition-colors"><i class="fas fa-bars text-xl mb-1"></i><span class="text-[10px] font-bold">المزيد</span></button>`;
@@ -289,7 +558,7 @@ function pgDashboard(){
    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-coins','ml-1.5 text-primary')} تفصيل الوردية</h4><div class="grid grid-cols-2 lg:grid-cols-4 gap-3">${tile('كاش',mt(st.cash))}${tile('فيزا',mt(st.visa))}${tile('آجل',mt(st.credit),'على العملاء')}${tile('الكاش المتوقع بالصندوق',mt(drawer(sh.id)),'يشمل رصيد الافتتاح')}</div></div>
    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="${CARD} p-5 lg:col-span-2"><h4 class="font-black text-xs text-red-500 mb-3 flex items-center gap-1.5">${ic('fa-triangle-exclamation')} تحتاج انتباهك</h4><div class="space-y-2">${al.map(a=>`<div class="flex items-center gap-3 p-3 rounded-2xl text-xs font-bold ${AL[a[1]]}">${ic(a[0])}<span class="flex-1">${a[2]}</span><span class="text-[10px] opacity-80">${a[3]}</span></div>`).join('')||'<p class="text-xs text-gray-400">لا شيء الآن.</p>'}</div></div>
-    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-receipt','ml-1.5 text-primary')} آخر الفواتير</h4><table class="w-full text-right text-xs"><tbody class="divide-y divide-gray-100 dark:divide-gray-800">${last.map(i=>`<tr class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" data-a="inv" data-id="${i.id}"><td class="py-2.5 font-bold text-primary">${i.id}</td><td class="py-2.5 text-gray-500">${hm(i.t)}</td><td class="py-2.5 text-left font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td></tr>`).join('')||`<tr><td class="py-6 text-center text-gray-400 font-bold">لا فواتير بعد</td></tr>`}</tbody></table></div>
+    <div class="${CARD} p-5"><h4 class="font-bold text-xs mb-3 text-gray-600 dark:text-gray-300">${ic('fa-receipt','ml-1.5 text-primary')} آخر الفواتير</h4><table class="w-full text-right text-xs"><tbody class="divide-y divide-gray-100 dark:divide-gray-800">${last.map(i=>`<tr class="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" data-a="inv" data-id="${i.id}"><td class="py-2.5 font-bold text-primary">${invNo(i.id)}</td><td class="py-2.5 text-gray-500">${hm(i.t)}</td><td class="py-2.5 text-left font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td></tr>`).join('')||`<tr><td class="py-6 text-center text-gray-400 font-bold">لا فواتير بعد</td></tr>`}</tbody></table></div>
    </div></div>`;
 }
 
@@ -456,7 +725,7 @@ function receiptInner(inv){
   const rows=inv.lines.map(l=>`<tr style="border-bottom:1px dashed #ccc"><td style="padding:4px 0;word-break:break-word">${esc(l.name)}</td><td style="text-align:center">${qtyStr(Math.round(l.qty*1000)/1000)}</td><td style="text-align:left">${fmt(l.amt)}</td></tr>`).join('');
   const cust=inv.customerId?custName(inv.customerId):'عميل نقدي';
   return `<div style="text-align:center;border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px">${logo}<h2 style="margin:0;font-size:15px">${esc(st.name)}</h2><p style="margin:2px 0;font-size:10px">${esc(st.desc)}</p><p style="margin:2px 0;font-size:10px">${invDate(inv.t)}</p></div>
-  <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:10.5px"><p style="margin:2px 0"><strong>رقم:</strong> #${inv.id}</p><p style="margin:2px 0"><strong>العميل:</strong> ${esc(cust)}</p><p style="margin:2px 0"><strong>دفع:</strong> ${payText(inv)}</p>${inv.type==='car'&&inv.ref?`<p style="margin:2px 0;font-size:12px"><strong>رقم السيارة:</strong> ${esc(inv.ref)}</p>`:''}${inv.note?`<p style="margin:2px 0;font-size:11px"><strong>ملاحظات:</strong> ${esc(inv.note)}</p>`:''}<p style="margin:2px 0"><strong>كاشير:</strong> ${esc(inv.by)}</p></div>
+  <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:10.5px"><p style="margin:2px 0"><strong>رقم:</strong> #${invNo(inv.id)}</p><p style="margin:2px 0"><strong>العميل:</strong> ${esc(cust)}</p><p style="margin:2px 0"><strong>دفع:</strong> ${payText(inv)}</p>${inv.type==='car'&&inv.ref?`<p style="margin:2px 0;font-size:12px"><strong>رقم السيارة:</strong> ${esc(inv.ref)}</p>`:''}${inv.note?`<p style="margin:2px 0;font-size:11px"><strong>ملاحظات:</strong> ${esc(inv.note)}</p>`:''}<p style="margin:2px 0"><strong>كاشير:</strong> ${esc(inv.by)}</p></div>
   <table style="width:100%;border-collapse:collapse;margin-bottom:10px;font-size:10.5px"><thead><tr><th style="text-align:right;border-bottom:1px solid #000">صنف</th><th style="text-align:center;border-bottom:1px solid #000">الكمية</th><th style="text-align:left;border-bottom:1px solid #000">مجموع</th></tr></thead><tbody>${rows}</tbody></table>
   <div style="border-bottom:1px dashed #000;margin-bottom:8px;padding-bottom:8px;font-size:11px">${inv.discount>0?`<div style="display:flex;justify-content:space-between"><span>الخصم:</span><span>${fmt(inv.discount)}</span></div>`:''}${inv.vat>0?`<div style="display:flex;justify-content:space-between"><span>منها ضريبة 5%:</span><span>${fmt(inv.vat)}</span></div>`:''}<div style="display:flex;justify-content:space-between;margin-top:5px;font-weight:bold"><span>الصافي:</span><span>${fmt(inv.total)} ر.ع</span></div></div>
   ${inv.status!=='ok'?`<div style="text-align:center;margin:6px 0;color:#b34a3e;font-weight:900;border:2px solid #b34a3e;border-radius:6px;padding:3px 0">فاتورة ملغاة</div>`:''}
@@ -487,9 +756,9 @@ async function makeInvoiceFile(inv){
   const png=S.store.shareFmt==='png',h2=await ensureHtml2pdf();
   const el=document.createElement('div');el.innerHTML=`<div style="width:${png?'270px':'72mm'};padding:10px;font-family:'Cairo',sans-serif;direction:rtl;background:#fff;color:#000;box-sizing:border-box">${receiptInner(inv)}</div>`;
   if(png){const cv=await h2().set({html2canvas:{scale:576/290,useCORS:true,backgroundColor:'#ffffff'}}).from(el).toCanvas().get('canvas');
-    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));return new File([blob],`Invoice_${inv.id}.png`,{type:'image/png'});}
-  const blob=await h2().set({margin:0,filename:`Invoice_${inv.id}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:[72,200],orientation:'portrait'}}).from(el).output('blob');
-  return new File([blob],`Invoice_${inv.id}.pdf`,{type:'application/pdf'});
+    const blob=await new Promise(r=>cv.toBlob(r,'image/png'));return new File([blob],`Invoice_${invNo(inv.id)}.png`,{type:'image/png'});}
+  const blob=await h2().set({margin:0,filename:`Invoice_${invNo(inv.id)}.pdf`,image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:[72,200],orientation:'portrait'}}).from(el).output('blob');
+  return new File([blob],`Invoice_${invNo(inv.id)}.pdf`,{type:'application/pdf'});
 }
 function prepShare(inv){const fm=S.store.shareFmt==='png'?'png':'pdf';S.sharePre={id:inv.id,fmt:fm,p:null};setTimeout(()=>{if(S.sharePre&&S.sharePre.id===inv.id)S.sharePre.p=makeInvoiceFile(inv).catch(()=>null);},500);}
 async function shareInvoiceFile(inv){
@@ -497,7 +766,7 @@ async function shareInvoiceFile(inv){
   try{
     const fm=S.store.shareFmt==='png'?'png':'pdf',pre=S.sharePre&&S.sharePre.id===inv.id&&S.sharePre.fmt===fm&&S.sharePre.p;
     let file=pre?await pre:null;if(!file)file=await makeInvoiceFile(inv);
-    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:`فاتورة #${inv.id}`,files:[file]});}catch(err){if(err.name!=='AbortError')console.log('Share error:',err);}}
+    if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({title:`فاتورة #${invNo(inv.id)}`,files:[file]});}catch(err){if(err.name!=='AbortError')console.log('Share error:',err);}}
     else{const u=URL.createObjectURL(file),a=document.createElement('a');a.href=u;a.download=file.name;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(u),15000);showToast('جُهّز ملف الفاتورة للمشاركة');}
   }catch(e){showToast((e&&e.message)||'حدث خطأ أثناء المعالجة','error');}
   finally{btn.innerHTML=orig;btn.disabled=false;}
@@ -506,7 +775,7 @@ function normalizePhone(raw){if(!raw)return '';let d=String(raw).replace(/[^\d]/
 function invoiceText(inv){
   const st=S.store,L=[];
   L.push(`*${st.name}*`);if(st.desc)L.push(st.desc);L.push('');
-  L.push(`فاتورة رقم: #${inv.id}`);L.push(`التاريخ: ${invDate(inv.t,true)}`);
+  L.push(`فاتورة رقم: #${invNo(inv.id)}`);L.push(`التاريخ: ${invDate(inv.t,true)}`);
   if(inv.customerId)L.push(`العميل: ${custName(inv.customerId)}`);
   if(inv.type==='car'&&inv.ref)L.push(`رقم السيارة: ${inv.ref}`);
   if(inv.note)L.push(`ملاحظات: ${inv.note}`);
@@ -530,16 +799,16 @@ function waRefresh(){$('#wa-send').href=waHref();}
 /* ── الفواتير ── */
 function invList(){
   const u=S.ui.inv,cur=curShift().id,sid=u.shift==='cur'?cur:Number(u.shift),q=u.q.trim();
-  if(/^\d{4,}$/.test(q)){const i=ix().inv.get(+q);return i?[i]:[];}   /* رقم فاتورة كامل: يُبحث في كل الورديات */
+  if(invId(q)!=null){const i=ix().inv.get(invId(q));return i?[i]:[];}   /* رقم فاتورة كامل: يُبحث في كل الورديات */
   let l=(ix().invBy.get(sid)||[]).slice();
   if(u.f==='cancelled')l=l.filter(i=>!ok(i));else if(u.f!=='all')l=l.filter(i=>i.pay[u.f]>0&&ok(i));
-  if(u.q.trim())l=l.filter(i=>String(i.id).includes(u.q.trim()));
+  if(u.q.trim())l=l.filter(i=>invNo(i.id).toLowerCase().includes(u.q.trim().toLowerCase()));
   return l.slice().reverse();
 }
 function invBody(){
   const l=invList(),shown=l.slice(0,80),good=l.filter(ok);
   $('#inv-count').textContent=good.length;$('#inv-total').textContent=mt(good.reduce((a,i)=>a+i.total,0));
-  $('#invoices-table-body').innerHTML=shown.map(i=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-800 ${ok(i)?'':'opacity-60'}"><td class="p-4 font-bold text-primary">${i.id}</td><td class="p-4">${dm(i.t)} ${hm(i.t)}</td><td class="p-4 text-center font-bold text-gray-500">${esc(i.by)}</td><td class="p-4 text-center">${payBadges(i)}</td><td class="p-4 text-center text-red-500">${i.discount?fmt(i.discount):'0'}</td><td class="p-4 text-center font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td><td class="p-4 flex gap-2"><button data-a="inv-prev" data-id="${i.id}" title="عرض وطباعة" class="text-emerald-500 hover:bg-emerald-50 p-2 rounded-lg transition-colors">${ic('fa-eye')}</button><button data-a="inv-wa" data-id="${i.id}" title="مشاركة الفاتورة عبر واتساب" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition-colors"><i class="fab fa-whatsapp"></i></button>${ok(i)?'':'<span class="text-xs text-rose-500 bg-rose-50 px-2 py-1 rounded">ملغاة</span>'}${isMgr()?`<button data-a="inv" data-id="${i.id}" title="${ok(i)?'إلغاء / تفاصيل':'تفاصيل'}" class="${ok(i)?'text-amber-500 hover:bg-amber-50':'text-gray-400 hover:bg-gray-100'} p-2 rounded-lg transition-colors">${ic(ok(i)?'fa-undo':'fa-info-circle')}</button>`:''}</td></tr>`).join('')||empty(7,'لا يوجد مبيعات');
+  $('#invoices-table-body').innerHTML=shown.map(i=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-800 ${ok(i)?'':'opacity-60'}"><td class="p-4 font-bold text-primary">${invNo(i.id)}</td><td class="p-4">${dm(i.t)} ${hm(i.t)}</td><td class="p-4 text-center font-bold text-gray-500">${esc(i.by)}</td><td class="p-4 text-center">${payBadges(i)}</td><td class="p-4 text-center text-red-500">${i.discount?fmt(i.discount):'0'}</td><td class="p-4 text-center font-black ${ok(i)?'text-emerald-500':'text-gray-400 line-through'}">${fmt(i.total)}</td><td class="p-4 flex gap-2"><button data-a="inv-prev" data-id="${i.id}" title="عرض وطباعة" class="text-emerald-500 hover:bg-emerald-50 p-2 rounded-lg transition-colors">${ic('fa-eye')}</button><button data-a="inv-wa" data-id="${i.id}" title="مشاركة الفاتورة عبر واتساب" class="text-emerald-600 hover:bg-emerald-50 p-2 rounded-lg transition-colors"><i class="fab fa-whatsapp"></i></button>${ok(i)?'':'<span class="text-xs text-rose-500 bg-rose-50 px-2 py-1 rounded">ملغاة</span>'}${isMgr()?`<button data-a="inv" data-id="${i.id}" title="${ok(i)?'إلغاء / تفاصيل':'تفاصيل'}" class="${ok(i)?'text-amber-500 hover:bg-amber-50':'text-gray-400 hover:bg-gray-100'} p-2 rounded-lg transition-colors">${ic(ok(i)?'fa-undo':'fa-info-circle')}</button>`:''}</td></tr>`).join('')||empty(7,'لا يوجد مبيعات');
 }
 function pgInvoices(){
   const u=S.ui.inv,cur=curShift().id;
@@ -553,7 +822,7 @@ function pgInvoices(){
 function showInvoice(id,cancelling=false){
   const i=ix().inv.get(id);S.m={type:'inv',id,reason:''};
   const canCancel=ok(i)&&i.shift===curShift().id&&shiftOpen();
-  modal(`${mHead(ic('fa-receipt','text-primary ml-2'),'فاتورة '+i.id)}<div class="space-y-4">
+  modal(`${mHead(ic('fa-receipt','text-primary ml-2'),'فاتورة '+invNo(i.id))}<div class="space-y-4">
    <p class="text-[11px] text-gray-400 font-bold">${dm(i.t)} ${hm(i.t)} · ${typeText(i)} · ${esc(i.by)}${i.customerId?' · العميل: '+esc(custName(i.customerId)):''}</p>
    <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800/80 space-y-2 text-xs">${i.lines.map(l=>`<div class="flex justify-between"><span>${esc(l.name)} × ${qtyStr(Math.round(l.qty*1000)/1000)}</span><span class="font-bold">${fmt(l.amt)}</span></div>`).join('')}
     ${i.discount?`<div class="flex justify-between text-red-500"><span>خصم</span><span>−${fmt(i.discount)}</span></div>`:''}${i.vat?`<div class="flex justify-between text-gray-500"><span>منها ضريبة 5%</span><span>${fmt(i.vat)}</span></div>`:''}
@@ -569,7 +838,7 @@ function showInvoice(id,cancelling=false){
 /* ── العملاء ── */
 function statement(id){
   const rows=[];
-  S.invoices.forEach(i=>{if(i.customerId===id&&i.pay.credit>0)rows.push({t:i.t,txt:`فاتورة #${i.id}`+(ok(i)?'':' (ملغاة)'),dr:ok(i)?i.pay.credit:0,cr:0,void:!ok(i),raw:i.pay.credit});});
+  S.invoices.forEach(i=>{if(i.customerId===id&&i.pay.credit>0)rows.push({t:i.t,txt:`فاتورة #${invNo(i.id)}`+(ok(i)?'':' (ملغاة)'),dr:ok(i)?i.pay.credit:0,cr:0,void:!ok(i),raw:i.pay.credit});});
   S.custPays.forEach(p=>{if(p.customerId===id)rows.push({t:p.t,txt:p.amount<0?'رد مبلغ للعميل':'سداد '+({cash:'كاش',visa:'فيزا',transfer:'تحويل'}[p.method]),dr:p.amount<0?-p.amount:0,cr:p.amount>0?p.amount:0});});
   rows.sort((a,b)=>a.t-b.t);let b=0;rows.forEach(r=>{b+=r.dr-r.cr;r.bal=b;});return rows;
 }
@@ -753,8 +1022,8 @@ function pgWatch(){
   const ev=[];
   const since=Date.now()-90*864e5;
   for(let n=S.invoices.length-1;n>=0;n--){const i=S.invoices[n];if(i.t<since)break;
-    if(!ok(i))ev.push({t:i.cancel.t,k:'إلغاء فاتورة',c:'amber',ic:'fa-undo',txt:`فاتورة ${i.id} بقيمة ${mt(i.total)} · السبب: ${i.cancel.reason} · ${i.cancel.by}`});
-    if(ok(i)&&i.discount>0&&i.discount>=i.sub*.1)ev.push({t:i.t,k:'خصم كبير',c:'amber',ic:'fa-coins',txt:`فاتورة ${i.id}: خصم ${mt(i.discount)} من ${mt(i.sub)} · ${i.by}`});
+    if(!ok(i))ev.push({t:i.cancel.t,k:'إلغاء فاتورة',c:'amber',ic:'fa-undo',txt:`فاتورة ${invNo(i.id)} بقيمة ${mt(i.total)} · السبب: ${i.cancel.reason} · ${i.cancel.by}`});
+    if(ok(i)&&i.discount>0&&i.discount>=i.sub*.1)ev.push({t:i.t,k:'خصم كبير',c:'amber',ic:'fa-coins',txt:`فاتورة ${invNo(i.id)}: خصم ${mt(i.discount)} من ${mt(i.sub)} · ${i.by}`});
   }
   S.shifts.forEach(s=>{if(s.end&&s.diff)ev.push({t:s.end,k:'فرق صندوق',c:s.diff<0?'red':'amber',ic:'fa-clock',txt:`وردية ${dm(s.start)}: المتوقع ${mt(s.expected)}، الفعلي ${mt(s.counted)}، الفرق ${mt(s.diff)}`});});
   S.customers.forEach(c=>{if(c.gone)return;const b=custBal(c.id);if(b<0)ev.push({t:Date.now(),k:'رصيد دائن لعميل',c:'emerald',ic:'fa-hand-holding-usd',txt:`${c.n}: له عندنا ${mt(-b)} بسبب فاتورة أُلغيت بعد السداد`});});
@@ -790,7 +1059,7 @@ function closeRes(){
 }
 
 /* ── الإعدادات ── */
-const APP_BUILD='2026.10.29-b1f68b50';
+const APP_BUILD='2026.10.30-7843f57b';
 const isStandalone=()=>!!(navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches));
 const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const stampNow=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'_'+pad(d.getHours())+pad(d.getMinutes());};
@@ -819,7 +1088,8 @@ function pgSettings(){
       <div class="md:col-span-2"><label class="${LBL}">شعار المؤسسة (Logo)</label><div class="flex gap-2"><input type="file" id="st-logo" accept="image/*" class="w-full px-4 py-2 rounded-2xl bg-gray-50 dark:bg-gray-800 border dark:border-gray-700 text-xs outline-none cursor-pointer"><div id="st-logo-prev" class="w-11 h-11 bg-white border rounded-xl flex items-center justify-center overflow-hidden shrink-0">${st.logo?`<img src="${st.logo}" class="w-full h-full object-cover">`:'🖼️'}</div></div></div>
      </div>
      <div class="pt-2"><button data-a="set-save" class="bg-primary hover:bg-blue-600 text-white py-3 px-6 rounded-2xl font-black text-xs transition-all">حفظ البيانات العامة</button></div></div>
-    <div class="${CARD} p-6 space-y-4"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">${ic('fa-download')}</div><div><h3 class="font-black text-sm">النسخ الاحتياطي</h3><p class="text-[11px] text-gray-400">بياناتك كلها على هذا الآيباد فقط، ما في سيرفر. النسخة هي أمانك لو ضاع الجهاز أو انمسحت بياناته</p></div></div><hr class="dark:border-gray-800">
+    ${syncCard()}
+    <div class="${CARD} p-6 space-y-4"><div class="flex items-center gap-3"><div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-950 text-emerald-500 rounded-2xl flex items-center justify-center text-xl">${ic('fa-download')}</div><div><h3 class="font-black text-sm">النسخ الاحتياطي</h3><p class="text-[11px] text-gray-400">${SY.on?'بياناتك على هذا الآيباد ونسخة مشفّرة منها في خدمة الربط. النسخة الاحتياطية تبقى أماناً إضافياً':'بياناتك كلها على هذا الآيباد فقط، ما في سيرفر. النسخة هي أمانك لو ضاع الجهاز أو انمسحت بياناته'}</p></div></div><hr class="dark:border-gray-800">
      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">${tile('آخر نسخة',bkTxt)}${tile('عدد الفواتير',String(S.invoices.length))}<div id="storage-info" class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4"><p class="text-[11px] text-gray-400 font-bold mb-1">التخزين</p><p class="text-lg font-black text-gray-800 dark:text-white">…</p></div></div>
      <div class="flex flex-wrap gap-3"><button data-a="bk-save" class="${BTN_GREEN}">${ic('fa-download')}<span>حفظ نسخة احتياطية الآن</span></button><div class="relative"><div class="${BTN_GRAY} px-6 flex items-center gap-2 pointer-events-none">${ic('fa-upload')}<span>استرجاع من نسخة</span></div><input type="file" id="bk-file" accept=".json,application/json" class="${FILE}"></div></div>
      <p class="text-[11px] text-gray-400 font-bold leading-6">اضغط «حفظ نسخة» وبتطلع لك قائمة المشاركة: احفظها في «الملفات» (iCloud) أو أرسلها لنفسك على واتساب. خذ نسخة بعد إقفال كل وردية.</p>
@@ -896,7 +1166,7 @@ const A={
  inv:e=>showInvoice(+e.dataset.id),
  'cancel-start':e=>showInvoice(+e.dataset.id,true),
  reason:e=>{S.m.reason=e.dataset.r;document.querySelectorAll('[data-a="reason"]').forEach(b=>{b.className=`px-3 py-2 rounded-xl text-[11px] font-bold border-2 ${b===e?'border-primary bg-blue-50 text-primary':'border-transparent bg-white dark:bg-gray-700 text-gray-500'}`;});$('#cancel-ok').disabled=false;},
- 'cancel-ok':()=>{const id=S.m.id,r=S.m.reason;cancelInvoice(id,r,roleName(),tick());closeModal();render();showToast(`أُلغيت الفاتورة ${id} وبقي لها أثر`);},
+ 'cancel-ok':()=>{const id=S.m.id,r=S.m.reason;cancelInvoice(id,r,roleName(),tick());closeModal();render();showToast(`أُلغيت الفاتورة ${invNo(id)} وبقي لها أثر`);},
  cstmt:e=>showStatement(+e.dataset.id),
  newcust:()=>{S.m={type:'nc'};modal(`${mHead(ic('fa-user-plus','text-primary ml-2'),'عميل جديد')}<div class="space-y-4"><div><label class="${LBL}">الاسم</label><input id="nc-n" class="${INP}"></div><div><label class="${LBL}">الجوال</label><input id="nc-p" inputmode="tel" class="${INP}"></div>${mActions('data-a="nc-ok"','حفظ')}</div>`);},
  'nc-ok':()=>{const n=$('#nc-n').value.trim();if(!n)return;S.customers.push({id:uid(),n,ph:$('#nc-p').value.trim()||'—'});closeModal();render();showToast('أُضيف العميل');},
@@ -994,7 +1264,7 @@ document.addEventListener('change',ev=>{
   else if(el.id==='st-logo'&&el.files&&el.files[0]){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),k=Math.min(1,128/Math.max(im.width,im.height));c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));c.getContext('2d').drawImage(im,0,0,c.width,c.height);S.logoDraft=c.toDataURL('image/png');$('#st-logo-prev').innerHTML=`<img src="${S.logoDraft}" class="w-full h-full object-cover">`;};im.src=r.result;};r.readAsDataURL(el.files[0]);}
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden)persist();});window.addEventListener('pagehide',()=>{persist();});
-document.addEventListener('submit',ev=>{if(ev.target.id==='login-form'){ev.preventDefault();tryLogin();}else if(ev.target.id==='setup-form'){ev.preventDefault();trySetup();}else if(ev.target.id==='forgot-form'){ev.preventDefault();tryForgot();}else if(ev.target.id==='wa-form'){ev.preventDefault();$('#wa-send').click();}});
+document.addEventListener('submit',ev=>{if(ev.target.id==='login-form'){ev.preventDefault();tryLogin();}else if(ev.target.id==='setup-form'){ev.preventDefault();trySetup();}else if(ev.target.id==='forgot-form'){ev.preventDefault();tryForgot();}else if(ev.target.id==='join-form'){ev.preventDefault();tryJoin();}else if(ev.target.id==='wa-form'){ev.preventDefault();$('#wa-send').click();}});
 document.addEventListener('keydown',ev=>{if(ev.key==='Escape'){if(!$('#whatsapp-modal').classList.contains('hidden'))$('#whatsapp-modal').classList.add('hidden');else if(!$('#invoice-preview-modal').classList.contains('hidden'))closePreview();else if(!$('#app-modal').classList.contains('hidden')&&!(S.m&&S.m.type==='rec'))closeModal();}});
 
 /* الوضع الليلي: يتبع إعداد الجهاز ويمكن تبديله من القائمة (نفس زر "ليلي" في برنامجك) */
@@ -1031,11 +1301,11 @@ function showRecModal(code,after){
 
 const SESS_KEY='cafe-sess';let loginFails=0,lockUntil=0;
 function authMode(mode){
-  ['login','setup','forgot'].forEach(m=>$('#'+m+'-form').classList.toggle('hidden',m!==mode));
-  $('#auth-sub').textContent={login:'ادخل باسم المستخدم للمتابعة',setup:'إعداد المتجر لأول مرة',forgot:'استعادة الدخول برمز الاسترجاع'}[mode];
-  ['#login-err','#reg-err','#fg-err'].forEach(i=>$(i).classList.add('hidden'));
+  ['login','setup','forgot','join'].forEach(m=>$('#'+m+'-form').classList.toggle('hidden',m!==mode));
+  $('#auth-sub').textContent={login:'ادخل باسم المستخدم للمتابعة',setup:'إعداد المتجر لأول مرة',forgot:'استعادة الدخول برمز الاسترجاع',join:'ربط هذا الجهاز بمحل موجود'}[mode];
+  ['#login-err','#reg-err','#fg-err','#jn-err'].forEach(i=>$(i).classList.add('hidden'));
   $('#auth-view').classList.remove('hidden');$('#app-view').classList.add('hidden');
-  setTimeout(()=>{const f=$({login:'#login-user',setup:'#reg-store',forgot:'#fg-user'}[mode]);f&&f.focus();},60);
+  setTimeout(()=>{const f=$({login:'#login-user',setup:'#reg-store',forgot:'#fg-user',join:'#jn-code'}[mode]);f&&f.focus();},60);
 }
 function showAuth(){$('#login-pass').value='';authMode('login');}
 function showSetup(){authMode('setup');}
@@ -1098,6 +1368,7 @@ async function shareBackup(){
 }
 const readText=f=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(r.error);r.readAsText(f);});
 function confirmRestore(b){
+  if(SY.on){showToast('أوقف الربط بين الأجهزة أولاً (الإعدادات ← ربط الأجهزة)','error');return;}
   if(!backupOk(b)){showToast('هذا الملف ليس نسخة احتياطية من هذا البرنامج','error');return;}
   S.pendingRestore=b;S.m={type:'rs'};
   modal(`${mHead(ic('fa-upload','text-red-500 ml-2'),'استرجاع نسخة احتياطية')}<div class="space-y-4"><div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4 text-xs font-bold space-y-2"><div class="flex justify-between"><span class="text-gray-500">تاريخ النسخة</span><span>${dm(b.at)} ${hm(b.at)}</span></div><div class="flex justify-between"><span class="text-gray-500">المتجر</span><span>${esc(b.kv.store&&b.kv.store.name||'—')}</span></div><div class="flex justify-between"><span class="text-gray-500">الفواتير</span><span>${b.invoices.length}</span></div><div class="flex justify-between"><span class="text-gray-500">الأصناف</span><span>${Object.keys(b.kv.products||{}).length}</span></div></div>
@@ -1145,6 +1416,117 @@ function registerSW(){
   else{let rid=null;try{rid=localStorage.getItem(SESS_KEY);}catch(e){}const ru=rid&&S.users.find(x=>String(x.id)===rid&&x.on);if(ru)enter(ru,true);else showAuth();}
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
   registerSW();
+  try{await SY.start();syChip();}catch(e){console.error(e);}
 })();
+
+/* ───────── واجهة الربط بين الأجهزة ───────── */
+const SYNC_SQL="-- ربط أجهزة المقهى (Supabase) — الصق هذا الكود كاملاً في SQL Editor ثم اضغط Run (مرة وحدة، وتكراره آمن)\n-- الجدول مقفول بالكامل؛ الوصول فقط عبر الدوال بالأسفل، وأي سجل ما يُقرأ إلا برمز المحل السري\n-- وكل البيانات تصل هنا مشفّرة من الجهاز، فالخدمة نفسها ما تقدر تقرأ محتواها\n\ncreate sequence if not exists public.cafe_seq;\n\ncreate table if not exists public.cafe_rec (\n  shop text not null,\n  k    text not null,\n  dev  text not null,\n  d    text not null,\n  seq  bigint not null default nextval('public.cafe_seq'),\n  at   timestamptz not null default now(),\n  primary key (shop, k)\n);\ncreate index if not exists cafe_rec_seq on public.cafe_rec (shop, seq);\n\nalter table public.cafe_rec enable row level security;\nrevoke all on table public.cafe_rec from anon, authenticated;\nrevoke all on sequence public.cafe_seq from anon, authenticated;\n\n-- رفع سجلات (جديدة أو معدّلة): آخر رفع يغلب، ولكل سجل رقم تسلسلي جديد عند كل تعديل\ncreate or replace function public.cafe_push(p_shop text, p_rows jsonb)\nreturns integer language plpgsql security definer set search_path = public as $$\ndeclare n integer;\nbegin\n  if p_shop is null or length(p_shop) < 32 then raise exception 'bad shop'; end if;\n  if jsonb_typeof(p_rows) <> 'array' or jsonb_array_length(p_rows) > 1000 then raise exception 'bad rows'; end if;\n  insert into cafe_rec (shop, k, dev, d)\n    select distinct on (t.r ->> 'k') p_shop, t.r ->> 'k', t.r ->> 'dev', t.r ->> 'd'\n    from jsonb_array_elements(p_rows) with ordinality as t(r, i)\n    where length(t.r ->> 'd') <= 1500000\n    order by t.r ->> 'k', t.i desc\n  on conflict (shop, k) do update\n    set dev = excluded.dev, d = excluded.d, seq = nextval('public.cafe_seq'), at = now();\n  get diagnostics n = row_count;\n  return n;\nend $$;\n\n-- سحب السجلات الأحدث من رقم معيّن؛ age = كم ثانية مرّت على كتابة السجل\ncreate or replace function public.cafe_pull(p_shop text, p_after bigint default 0, p_lim integer default 500)\nreturns table (seq bigint, k text, dev text, d text, age integer)\nlanguage plpgsql security definer set search_path = public as $$\nbegin\n  if p_shop is null or length(p_shop) < 32 then raise exception 'bad shop'; end if;\n  return query\n    select r.seq, r.k, r.dev, r.d, extract(epoch from (clock_timestamp() - r.at))::integer\n    from cafe_rec r\n    where r.shop = p_shop and r.seq > p_after\n    order by r.seq\n    limit least(greatest(p_lim, 1), 1000);\nend $$;\n\n-- عدد السجلات المخزّنة للمحل (للتأكد أن كل شيء وصل)\ncreate or replace function public.cafe_count(p_shop text)\nreturns bigint language plpgsql security definer set search_path = public as $$\nbegin\n  if p_shop is null or length(p_shop) < 32 then raise exception 'bad shop'; end if;\n  return (select count(*) from cafe_rec where shop = p_shop);\nend $$;\n\n-- آخر رقم تسلسلي للمحل (يبدأ منه الجهاز الأول بعد رفع بياناته)\ncreate or replace function public.cafe_head(p_shop text)\nreturns bigint language plpgsql security definer set search_path = public as $$\nbegin\n  if p_shop is null or length(p_shop) < 32 then raise exception 'bad shop'; end if;\n  return (select coalesce(max(seq), 0) from cafe_rec where shop = p_shop);\nend $$;\n\nrevoke all on function public.cafe_push(text, jsonb) from public;\nrevoke all on function public.cafe_pull(text, bigint, integer) from public;\nrevoke all on function public.cafe_count(text) from public;\nrevoke all on function public.cafe_head(text) from public;\ngrant execute on function public.cafe_push(text, jsonb) to anon, authenticated;\ngrant execute on function public.cafe_pull(text, bigint, integer) to anon, authenticated;\ngrant execute on function public.cafe_count(text) to anon, authenticated;\ngrant execute on function public.cafe_head(text) to anon, authenticated;\n";
+const SY_ST={ok:['bg-emerald-500','متزامن','text-emerald-500'],busy:['bg-amber-400','جاري المزامنة','text-amber-600'],pend:['bg-amber-400','بانتظار الإرسال','text-amber-600'],offline:['bg-gray-400','بدون اتصال','text-gray-500'],err:['bg-red-500','مشكلة بالمزامنة','text-red-500']};
+const syLetter=dx=>String.fromCharCode(65+dx);
+
+function syChip(){
+  const c=$('#sync-chip');if(!c)return;const v=SY.view();
+  c.classList.toggle('hidden',!v.on);c.classList.toggle('flex',v.on);
+  if(!v.on)return;const [dot,txt]=SY_ST[v.st]||SY_ST.ok;
+  c.innerHTML=`<span class="w-1.5 h-1.5 ${dot} rounded-full ${v.st==='busy'?'animate-pulse':''}"></span><span class="hidden sm:inline">${txt}${v.pend?` (${v.pend})`:''}</span>`;
+}
+function syncStatusHTML(v){
+  const [dot,txt,col]=SY_ST[v.st]||SY_ST.ok;
+  const sub=v.st==='offline'?'ما في اتصال بالإنترنت الحين. بياناتك محفوظة على هذا الجهاز وتُرسل لوحدها أول ما يرجع النت'
+    :v.st==='err'?esc(v.err||'خطأ غير معروف')+' — البرنامج يعيد المحاولة لوحده'
+    :v.seed?'جاري رفع بياناتك الأولى للخدمة، لا تقفل البرنامج'
+    :v.pend?`${v.pend} تغيير ينتظر الإرسال`
+    :v.last?`آخر مزامنة ${hm(v.last)}`:'';
+  return `<div class="flex items-center gap-2 font-black text-sm ${col}"><span class="w-2.5 h-2.5 ${dot} rounded-full"></span>${txt}</div>${sub?`<p class="text-[11px] text-gray-400 font-bold mt-1 leading-5">${sub}</p>`:''}${v.warn?`<p class="text-[11px] text-amber-600 font-bold mt-1 leading-5">${esc(v.warn)}</p>`:''}`;
+}
+function syncCard(){
+  const v=SY.view(),head=`<div class="flex items-center gap-3"><div class="w-12 h-12 bg-blue-50 dark:bg-blue-950 text-primary rounded-2xl flex items-center justify-center text-xl">${ic('fa-globe')}</div><div><h3 class="font-black text-sm">ربط الأجهزة</h3><p class="text-[11px] text-gray-400">خلّ الكاشير والمدير على جهازين وتتطابق البيانات بينهم خلال ثواني</p></div></div><hr class="dark:border-gray-800">`;
+  if(!v.on)return `<div id="sync-card" class="${CARD} p-6 space-y-4">${head}
+    <p class="text-xs text-gray-500 font-bold leading-6">الحين كل جهاز يشتغل لحاله. لو فعّلت الربط، كل فاتورة وسداد ومصروف وتعديل صنف يظهر في الأجهزة الثانية تلقائياً، وتشتغل بدون نت وتتزامن بعدين. بياناتك تُرسل <b>مشفّرة من الجهاز</b>، فالخدمة نفسها ما تقدر تقرأها.</p>
+    <div><button data-a="sync-on" class="${BTN}">${ic('fa-globe')}<span>تفعيل الربط</span></button></div></div>`;
+  const devs=v.devs.map(d=>`<tr><td class="p-3 font-bold">${esc(d.name||'جهاز')}${d.me?' <span class="text-[10px] text-primary">(هذا الجهاز)</span>':''}</td><td class="p-3 text-center"><span dir="ltr" class="font-mono text-gray-500">${d.dx?syLetter(d.dx):'بدون حرف'}</span></td></tr>`).join('');
+  return `<div id="sync-card" class="${CARD} p-6 space-y-4">${head}
+    <div class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4">${syncStatusHTML(v)}</div>
+    <div class="overflow-x-auto border dark:border-gray-700 rounded-xl"><table class="w-full text-right text-xs"><thead class="bg-gray-50 dark:bg-gray-800 text-gray-500"><tr><th class="p-3">الجهاز</th><th class="p-3 text-center">حرف الفواتير</th></tr></thead><tbody class="divide-y dark:divide-gray-700">${devs}</tbody></table></div>
+    <p class="text-[10px] font-bold text-gray-400 leading-5">فواتير كل جهاز لها حرف في أولها (مثل B1001) حتى ما يتكرر رقم بين جهازين. فواتير الجهاز الأول بدون حرف.</p>
+    <div class="flex flex-wrap gap-3"><button data-a="sync-now" class="${BTN_GRAY} px-5">${ic('fa-history','ml-1')} مزامنة الآن</button><button data-a="sync-code" class="${BTN} px-5">${ic('fa-key')}<span>رمز ربط جهاز جديد</span></button><button data-a="sync-off" class="${BTN_GRAY} px-5 text-red-500">${ic('fa-link-slash','ml-1')} إيقاف الربط</button></div></div>`;
+}
+function syncCardRefresh(){const el=$('#sync-card');if(el)el.outerHTML=syncCard();}
+SY.onStatus=()=>{syChip();if(S.user&&S.page==='settings'&&!S.m)syncCardRefresh();if(S.m&&S.m.type==='syi')$('#syi-body').innerHTML=syncStatusHTML(SY.view());};
+
+/* ── تفعيل الربط (الجهاز الأول): خطوات إنشاء الحساب المجاني ثم اللصق ── */
+function syncWizard(){
+  S.m={type:'syw'};
+  modal(`${mHead(ic('fa-globe','text-primary ml-2'),'تفعيل الربط بين الأجهزة')}<div class="space-y-4">
+   <ol class="text-xs text-gray-600 dark:text-gray-300 font-bold leading-7 space-y-2 list-decimal pr-5">
+    <li>افتح <span dir="ltr" class="font-mono text-primary">supabase.com</span> وسجّل بحساب مجاني (جوجل أو GitHub)، ثم <b>New project</b>. اختر أي اسم، ومنطقة قريبة (مثل Mumbai)، واكتب أي رمز لقاعدة البيانات واحفظه. انتظر دقيقة لين يجهز.</li>
+    <li>من القائمة افتح <b>SQL Editor</b> ← <b>New query</b>، والصق الكود اللي بتنسخه من الزر تحت، ثم اضغط <b>Run</b>. لازم يطلع <span dir="ltr" class="font-mono">Success</span>.</li>
+    <li>اضغط زر <b>Connect</b> فوق في صفحة المشروع وانسخ <b>Project URL</b> (يبدأ بـ https وينتهي بـ supabase.co). وانسخ المفتاح العام من <b>Settings ← API Keys</b>: <b>Publishable key</b> (يبدأ بـ sb_publishable)، أو <b>anon</b> في تبويب Legacy لو موجود. <b>لا تنسخ secret / service_role</b>. والصقهما تحت.</li></ol>
+   <button data-a="sync-sql" class="${BTN_GRAY} w-full">${ic('fa-copy','ml-1')} نسخ كود الإعداد (للخطوة 2)</button>
+   <div><label class="${LBL}">Project URL</label><input id="sy-url" dir="ltr" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="https://xxxxxxxx.supabase.co" class="${INP} text-left"></div>
+   <div><label class="${LBL}">المفتاح العام (Publishable key أو anon)</label><input id="sy-key" dir="ltr" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="sb_publishable_...  أو  eyJ..." class="${INP} text-left"></div>
+   <div><label class="${LBL}">اسم هذا الجهاز</label><input id="sy-name" value="الجهاز الرئيسي" class="${INP}"></div>
+   <p id="sy-err" class="hidden text-center text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/40 rounded-2xl py-3 px-3 leading-6"></p>
+   <div id="sy-prog" class="hidden"><div class="h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden"><div id="sy-bar" class="h-full bg-primary" style="width:0%"></div></div><p id="sy-pt" class="text-[11px] text-gray-400 font-bold text-center mt-2">جاري رفع بياناتك...</p></div>
+   ${mActions('id="sy-go" data-a="sync-go"','ربط وبدء الرفع')}</div>`,'max-w-lg');
+}
+function showSyncCode(){
+  const code=syCode();S.m={type:'syc'};
+  modal(`${mHead(ic('fa-key','text-amber-500 ml-2'),'رمز ربط جهاز جديد')}<div class="space-y-4">
+   <p class="text-xs text-gray-500 font-bold leading-6">على الجهاز الجديد افتح البرنامج (أول شاشة) واضغط «عندي محل مربوط»، والصق هذا الرمز. <b class="text-red-500">هذا الرمز مفتاح الدخول لبيانات المحل</b>، أرسله لأجهزتك فقط (واتساب لنفسك مثلاً) ولا تنشره.</p>
+   <textarea readonly dir="ltr" rows="4" class="${INP} text-left font-mono text-[10px] select-all" id="sy-code">${esc(code)}</textarea>
+   <div class="grid grid-cols-2 gap-2"><button data-a="sync-copy" class="${BTN_GRAY}">${ic('fa-copy','ml-1')} نسخ</button><button data-a="sync-share" class="${BTN_GRAY}">${ic('fa-share-nodes','ml-1')} مشاركة</button></div>
+   <button data-a="close-modal" class="${BTN} w-full">تم</button></div>`,'max-w-lg');
+}
+const syCopy=(t,ok)=>{try{navigator.clipboard.writeText(t).then(()=>showToast(ok),()=>showToast('حدّد النص وانسخه يدوياً','error'));}catch(e){showToast('حدّد النص وانسخه يدوياً','error');}};
+Object.assign(A,{
+ 'sync-on':()=>syncWizard(),
+ 'sync-sql':()=>syCopy(SYNC_SQL,'تم نسخ كود الإعداد'),
+ 'sync-go':async()=>{
+   const url=$('#sy-url').value,key=$('#sy-key').value,name=$('#sy-name').value.trim(),err=$('#sy-err'),b=$('#sy-go');
+   err.classList.add('hidden');b.disabled=true;const pg=$('#sy-prog');
+   try{
+     await syEnable(url,key,name,(d,t)=>{pg.classList.remove('hidden');const bar=$('#sy-bar');if(bar){bar.style.width=Math.round(d*100/Math.max(1,t))+'%';$('#sy-pt').textContent=`جاري رفع بياناتك... ${d} من ${t}`;}});
+     closeModal();render();showSyncCode();showToast('تم تفعيل الربط');
+   }catch(e){
+     if(SY.on){closeModal();render();showToast('انقطع الرفع، يكمل لوحده أول ما يرجع الاتصال','error');return;}
+     const bt=$('#sy-go');if(bt)bt.disabled=false;err.textContent=(e&&e.message)||String(e);err.classList.remove('hidden');
+   }
+ },
+ 'sync-code':()=>showSyncCode(),
+ 'sync-copy':()=>syCopy(syCode(),'تم نسخ الرمز'),
+ 'sync-share':()=>{const t=syCode();try{if(navigator.share)navigator.share({title:'رمز ربط '+S.store.name,text:t}).catch(()=>{});else syCopy(t,'تم نسخ الرمز');}catch(e){syCopy(t,'تم نسخ الرمز');}},
+ 'sync-now':()=>{SY.nextTry=0;syRun();showToast('جاري المزامنة...');},
+ 'sync-info':()=>{S.m={type:'syi'};modal(`${mHead(ic('fa-globe','text-primary ml-2'),'حالة الربط')}<div class="space-y-4"><div id="syi-body" class="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-4">${syncStatusHTML(SY.view())}</div><div class="flex gap-3"><button data-a="sync-now" class="flex-1 ${BTN}">مزامنة الآن</button><button data-a="close-modal" class="flex-1 ${BTN_GRAY}">إغلاق</button></div></div>`);},
+ 'sync-off':()=>{S.m={type:'syo'};modal(`${mHead(ic('fa-link-slash','text-red-500 ml-2'),'إيقاف الربط')}<div class="space-y-4"><p class="text-xs text-gray-500 font-bold leading-6">بتوقف المزامنة على هذا الجهاز بس، وبياناته تبقى عليه كما هي. الأجهزة الثانية تكمل لحالها ولا تشوف تغييراته بعد الحين. لو رجعت فعّلت الربط بعدين يبدأ ربط جديد.</p>${mActions('data-a="sync-off-ok"','إيقاف الربط','bg-red-500 text-white px-5 py-3 rounded-2xl font-bold text-xs')}</div>`);},
+ 'sync-off-ok':()=>{syOff();closeModal();render();showToast('تم إيقاف الربط');}
+});
+
+/* ── ربط جهاز جديد من شاشة البداية ── */
+async function tryJoin(){
+  const code=$('#jn-code').value,name=($('#jn-name').value||'').trim()||'جهاز جديد',b=$('#jn-btn'),pg=$('#jn-prog');
+  $('#jn-err').classList.add('hidden');b.disabled=true;pg.classList.remove('hidden');$('#jn-bar').style.width='0%';
+  try{
+    await syJoin(code,name,(d,t)=>{$('#jn-bar').style.width=Math.round(d*100/Math.max(1,t))+'%';$('#jn-pt').textContent=`جاري سحب البيانات... ${d} من ${t}`;});
+    $('#jn-code').value='';pg.classList.add('hidden');showAuth();showToast('تم ربط الجهاز، سجّل دخولك بحسابك');
+  }catch(e){pg.classList.add('hidden');errMsg('#jn-err',(e&&e.message)||String(e));}
+  finally{b.disabled=false;}
+}
+
+/* ── تحديث الشاشة لما توصل بيانات من جهاز ثاني: ما نلمسها لو فيه نافذة مفتوحة أو حقل قيد الكتابة ── */
+SY.onChange=()=>{
+  if(!S.user)return;
+  if(!S.users.includes(S.user)){A.logout();showToast('أُزيل هذا الحساب من جهاز آخر','error');return;}
+  S.dirtyRemote=true;
+};
+function uiBusy(){
+  const open=id=>!$(id).classList.contains('hidden'),ae=document.activeElement;
+  return open('#app-modal')||open('#invoice-preview-modal')||open('#whatsapp-modal')||(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+}
+setInterval(()=>{
+  if(!S.dirtyRemote||!S.user||uiBusy())return;
+  S.dirtyRemote=false;
+  if(S.page==='pos'){renderChrome();drawGrid();}else render();
+},1200);
 
 })();
