@@ -35,6 +35,10 @@ body{overflow:auto; background:var(--c-bg)}
 @media (max-width:760px){.page{padding:22px 18px 30px}.hero h1{font-size:38px}.hero p{font-size:20px}.grid2{grid-template-columns:1fr}}
 /*THEME4_CSS*/
 /*THEME5_CSS*/
+/*STICKERS_CSS*/
+.hero{position:relative}
+.card .stk{z-index:3}
+@media (max-width:900px){.hero .stk{display:none}}
 </style>
 <script>
 document.documentElement.lang="ar";document.documentElement.dir="rtl";
@@ -42,31 +46,33 @@ document.documentElement.lang="ar";document.documentElement.dir="rtl";
 'use strict';
 /*BG_JS*/
 var LESSONS=[
- {no:'٣-١',t:'الكتل النسبية',d:'الكتلة الذرية النسبية Ar وكتلة الصيغة النسبية Mr، وكتابة الصيغة من نموذج أو مخطط.',chips:['٢٩ شريحة','مختبر افتراضي','تذاكر خروج','أسئلة امتحانات'],pal:'navy',bg:'atomic',href:'lesson31.html'},
- {no:'٣-٢',t:'المول',d:'عدد أفوجادرو والكتلة المولية وحسابات المول: n = m ÷ M وعدد الجسيمات.',chips:['٢٨ شريحة','جداول تفاعلية','سباق الفصل','أسئلة امتحانات'],pal:'violet',bg:'reactions',href:'lesson32.html'},
- {no:'٣-٣',t:'حسابات تتضمن كتلاً متفاعلة',d:'استنباط الصيغ الكيميائية وحساب كتل المتفاعلات والنواتج.',chips:['قريباً'],pal:'emerald',bg:'bonds',soon:1},
- {no:'٣-٤',t:'حسابات تتضمن حجوم الغازات',d:'الحجم المولي للغاز ونشاط ٣-٣ مع مختبر افتراضي.',chips:['قريباً'],pal:'ember',bg:'periodic',soon:1},
- {no:'٣-٥',t:'حسابات تتضمن محاليل',d:'التركيز المولي والمعايرة.',chips:['قريباً'],pal:'gold',bg:'organic',soon:1}
+ {no:'٣-١',t:'الكتل النسبية',d:'الكتلة الذرية النسبية Ar وكتلة الصيغة النسبية Mr، وكتابة الصيغة من نموذج أو مخطط.',chips:['٢٩ شريحة','مختبر افتراضي','تذاكر خروج','أسئلة امتحانات'],pal:'navy',bg:'atomic',href:'lesson31.html',stk:'s_fe'},
+ {no:'٣-٢',t:'المول',d:'عدد أفوجادرو والكتلة المولية وحسابات المول: n = m ÷ M وعدد الجسيمات.',chips:['٢٨ شريحة','جداول تفاعلية','سباق الفصل','أسئلة امتحانات'],pal:'violet',bg:'reactions',href:'lesson32.html',stk:'m_mole'},
+ {no:'٣-٣',t:'حسابات تتضمن كتلاً متفاعلة',d:'استنباط الصيغ الكيميائية وحساب كتل المتفاعلات والنواتج.',chips:['قريباً'],pal:'emerald',bg:'bonds',soon:1,stk:'m_tube'},
+ {no:'٣-٤',t:'حسابات تتضمن حجوم الغازات',d:'الحجم المولي للغاز ونشاط ٣-٣ مع مختبر افتراضي.',chips:['قريباً'],pal:'ember',bg:'periodic',soon:1,stk:'n_potion'},
+ {no:'٣-٥',t:'حسابات تتضمن محاليل',d:'التركيز المولي والمعايرة.',chips:['قريباً'],pal:'gold',bg:'organic',soon:1,stk:'glass'}
 ];
 var EFF=['flyR','zoom','float','wipeB','growTurn','flyL'];
 function boot(){
   var h=document.body;
   h.insertAdjacentHTML('afterbegin','<div class="app" data-pal="emerald" style="position:static"><main class="view" id="view"></main>'+
-   '<div class="page"><div class="top2"><div class="brand"><i><small>6</small>C</i><span>كيمياء</span></div><div class="sp"></div><button class="tbtn" id="bFx" type="button" aria-label="الخلفية"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/></svg><span>كاملة</span></button></div>'+
-   '<header class="hero"><h1>كيمياء الصف العاشر: <b>الكيمياء الكمّية</b></h1><p>الوحدة الثالثة · دروس تفاعلية للسبورة والحاسوب</p><div class="hrule"></div></header>'+
+   '<div class="page"><div class="top2"><div class="brand"><i><small>6</small>C</i><span>كيمياء</span></div><div class="sp"></div>'+STK.btn()+'<button class="tbtn" id="bFx" type="button" aria-label="الخلفية"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/></svg><span>كاملة</span></button></div>'+
+   '<header class="hero"><h1>كيمياء الصف العاشر: <b>الكيمياء الكمّية</b></h1><p>الوحدة الثالثة · دروس تفاعلية للسبورة والحاسوب</p><div class="hrule"></div>'+STK.html('kids_duo',{css:'left:0;top:-24px;',w:140,r:-3,d:.5,free:1})+STK.html('m_atom',{css:'left:172px;top:-10px;',w:98,r:8,d:.8,free:1})+STK.html('m_star',{css:'left:270px;top:62px;',w:62,r:-10,d:1.1,free:1})+'</header>'+
    '<section class="grid2" id="grid"></section>'+
    '<div class="tips"><b>داخل الدرس:</b> <span><kbd>←</kbd> التالي</span> <span><kbd>→</kbd> السابق</span> <span><kbd>N</kbd> ملاحظات المعلم</span> <span><kbd>G</kbd> فهرس الدرس</span> <span><kbd>F</kbd> ملء الشاشة</span> <span>زر الخلفية: كاملة / هادئة / ثابتة</span></div></div></div>');
   var app=document.querySelector('.app'), view=document.getElementById('view'), grid=document.getElementById('grid');
   LESSONS.forEach(function(L,i){
     var a=document.createElement(L.soon?'div':'a'); a.className='card fx e-'+EFF[i%EFF.length]+(L.soon?' soon':''); a.setAttribute('data-pal',L.pal); if(!L.soon) a.href=L.href;
     a.style.setProperty('--fdl',(260+i*110)+'ms');
-    a.innerHTML='<div class="no">الدرس <i>'+L.no+'</i></div><h2>'+L.t+'</h2><p>'+L.d+'</p><div class="chips">'+L.chips.map(function(c){return '<span>'+c+'</span>'}).join('')+'</div><span class="go">'+(L.soon?'قريباً':'افتح الدرس ←')+'</span>';
+    var cs=STK.html(L.stk,{css:'left:-16px;top:-34px;',w:96,r:-8,d:.9+i*.12,free:1});
+    a.innerHTML='<div class="no">الدرس <i>'+L.no+'</i></div><h2>'+L.t+'</h2><p>'+L.d+'</p><div class="chips">'+L.chips.map(function(c){return '<span>'+c+'</span>'}).join('')+'</div><span class="go">'+(L.soon?'قريباً':'افتح الدرس ←')+'</span>'+cs;
     a.addEventListener('animationend',function(){a.classList.remove('fx','e-'+EFF[i%EFF.length])});
     function pick(){app.setAttribute('data-pal',L.pal); BG.go(L.bg,L.pal,1)}
     a.addEventListener('mouseenter',pick); a.addEventListener('focus',pick);
     grid.appendChild(a);
   });
   BG.mount(view); BG.go('atomic','emerald',1);
+  STK.mount(null);
   document.getElementById('bFx').addEventListener('click',function(){BG.cycle()});
 }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();

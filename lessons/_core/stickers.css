@@ -1,0 +1,28 @@
+/* ---------- stickers: decoration under the content, praise pop-ups, sparkles ---------- */
+.slide>*{z-index:1} .slide>.stk{z-index:0}
+.stk{position:absolute; pointer-events:none; user-select:none; -webkit-user-drag:none; transform-origin:50% 70%; opacity:0; transform:rotate(var(--r,0deg));
+  filter:drop-shadow(0 7px 9px rgba(0,0,0,.35)); will-change:transform,opacity}
+.stk svg{display:block; width:100%; height:100%; overflow:visible}
+.slide.on .stk,.stk.free{opacity:1;
+  animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,.9s) backwards, stkFloat var(--fd,6s) ease-in-out calc(var(--sd,.9s) + .75s) infinite alternate}
+@keyframes stkIn{from{opacity:0; transform:translateY(26px) scale(.15) rotate(calc(var(--r,0deg) - 24deg))} to{opacity:1; transform:translateY(0) scale(1) rotate(var(--r,0deg))}}
+@keyframes stkFloat{from{transform:translateY(0) rotate(var(--r,0deg))} to{transform:translateY(-9px) rotate(calc(var(--r,0deg) + 2.5deg))}}
+html[data-fx="1"] .slide.on .stk,html[data-fx="1"] .stk.free{animation:stkIn .75s cubic-bezier(.2,1.45,.35,1) var(--sd,.9s) backwards}
+html[data-fx="0"] .slide.on .stk,html[data-fx="0"] .stk.free{animation:none}
+.stk-pop{position:absolute; z-index:60; pointer-events:none; transform:rotate(var(--r,0deg)); filter:drop-shadow(0 12px 18px rgba(0,0,0,.45)); animation:popIn .6s cubic-bezier(.2,1.6,.35,1) both}
+.stk-pop img,.stk-pop svg{display:block; width:100%; height:100%}
+.stk-pop.out{animation:popOut .55s ease-in both}
+@keyframes popIn{from{opacity:0; transform:translateY(70px) scale(.2) rotate(-26deg)} to{opacity:1; transform:translateY(0) scale(1) rotate(var(--r,0deg))}}
+@keyframes popOut{to{opacity:0; transform:translateY(-34px) scale(.72) rotate(var(--r,0deg))}}
+.spk{position:absolute; z-index:61; width:0; height:0; pointer-events:none}
+.spk i{position:absolute; left:0; top:0; width:var(--z); height:var(--z); margin:calc(var(--z)/-2) 0 0 calc(var(--z)/-2); background:var(--c); animation:spk .95s cubic-bezier(.15,.7,.3,1) var(--o) both}
+.spk i:nth-child(3n+1){clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.spk i:nth-child(3n+2){border-radius:50%}
+.spk i:nth-child(3n){clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+@keyframes spk{0%{opacity:0; transform:translate(0,0) scale(.2) rotate(0)} 14%{opacity:1} 100%{opacity:0; transform:translate(var(--dx),var(--dy)) scale(1) rotate(200deg)}}
+html.stk-off .stk,html.stk-off .stk-pop,html.stk-off .spk{display:none!important}
+@media (prefers-reduced-motion:reduce){.slide.on .stk,.stk.free{animation:none}}
+/* narrow windows: the sticker button keeps only its icon so the top bar still fits */
+@media (max-width:1180px){#bStk span{display:none} #bStk{min-width:44px; padding:0 10px}}
+@media (max-width:1100px){#bFx span{display:none} #bFx{min-width:44px; padding:0 10px}}
+@media (max-width:1100px){#bHome span{display:none} #bHome{min-width:44px; padding:0 10px}}

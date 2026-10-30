@@ -380,7 +380,7 @@ var BG=(function(){
   function setTier(t,fromAuto){
     t=Math.max(0,Math.min(2,t));if(t===tier&&started)return;
     tier=t;if(!fromAuto){auto=false;try{localStorage.setItem('l31fx',String(t))}catch(e){}}
-    if(view)view.setAttribute('data-fx',String(tier));
+    if(view)view.setAttribute('data-fx',String(tier));document.documentElement.setAttribute('data-fx',String(tier));
     stop();st.n=0;st.ema=0;st.iv=0;st.ivn=0;st.pf=0;
     if(view)size();
     if(tier>0)start();
@@ -396,7 +396,7 @@ var BG=(function(){
     var saved=null;try{saved=localStorage.getItem('l31fx')}catch(e){}
     var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
     tier=saved!==null&&/^[012]$/.test(saved)?+saved:(rm?1:2);auto=saved===null;
-    view.setAttribute('data-fx',String(tier));
+    view.setAttribute('data-fx',String(tier));document.documentElement.setAttribute('data-fx',String(tier));
     size();started=true;label();if(tier>0)start();
     var rt=0;function onr(){cancelAnimationFrame(rt);rt=requestAnimationFrame(size)}
     if(window.ResizeObserver)new ResizeObserver(onr).observe(view);else window.addEventListener('resize',onr);

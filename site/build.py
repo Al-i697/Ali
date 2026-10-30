@@ -12,7 +12,8 @@ for folder, out in [('3-1-relative-masses', 'lesson31.html'), ('3-2-the-mole', '
 # the home page
 page = rd(os.path.join(root, 'index.src.html'))
 page = page.replace('/*CORE_CSS*/', rd(os.path.join(core, 'style.css'))).replace('/*THEME4_CSS*/', rd(os.path.join(core, 'theme4.css'))).replace('/*THEME5_CSS*/', rd(os.path.join(core, 'theme5.css')))
-page = page.replace('/*BG_JS*/', rd(os.path.join(core, 'bg.js')))
+page = page.replace('/*STICKERS_CSS*/', rd(os.path.join(core, 'stickers.css')))
+page = page.replace('/*BG_JS*/', rd(os.path.join(core, 'bg.js')) + '\n' + rd(os.path.join(core, 'stickers_assets.js')) + '\n' + rd(os.path.join(core, 'stickers.js')))
 open(os.path.join(dist, 'index.html'), 'w').write(doc(page))
 open(os.path.join(dist, 'index.fragment.html'), 'w').write(page)   # for hosts that wrap the page themselves
 print({f: os.path.getsize(os.path.join(dist, f)) for f in sorted(os.listdir(dist))})

@@ -155,7 +155,7 @@ function bindTicket(el,items,key){
       qs.forEach(function(q){q.classList.remove('cur')}); nb.classList.add('hide'); rds.forEach(function(r){r.className='rd done'});
       var s=$('.score',el); s.classList.remove('hide'); s.classList.add('pop');
       $('b',s).textContent=got+' / '+items.length;
-      $('.msg',s).textContent = got===items.length?'ممتاز! الفكرة واضحة':(got>=items.length-1?'قريب جداً':'نراجع النقاط اللي أخطأنا فيها');
+      $('.msg',s).textContent = got===items.length?'ممتاز! الفكرة واضحة 🎉':(got>=items.length-1?'قريب جداً 👏':'نراجع النقاط اللي أخطأنا فيها 💪');
     }
   });
   qs.forEach(function(q,i){
@@ -187,12 +187,14 @@ function build(i){
   var head = s.bare ? '' : '<div class="hd"><span class="chip">'+CHAPTERS[s.ch]+'</span><h2>'+s.title+'</h2>'+(s.tag?'<span class="tag"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg>'+s.tag+'</span>':'')+'</div>';
   el.innerHTML=head+(s.bare?s.html():'<div class="body">'+s.html()+'</div>');
   if(s.cls) el.classList.add(s.cls);
+  if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
   if(s.init) s.init(el,s);
   return el;
 }
 function show(i,dir){
   if(i<0||i>=SLIDES.length||i===CUR) return;
+  if(typeof STK!=='undefined') STK.navigated();
   var prev=CUR, s=SLIDES[i], el=build(i), pl=MOT.plan(i,prev,BG.tier());
   el.classList.remove('off');
   if(prev>=0){
@@ -233,6 +235,7 @@ function boot(){
     '<div class="prog" id="prog" role="tablist" aria-label="شرائح الدرس"></div>'+
     (LESSON.home?'<a class="tbtn" id="bHome" href="'+LESSON.home+'" aria-label="كل الدروس"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>الدروس</span></a>':'')+
     '<button class="tbtn" id="bFx" type="button" aria-label="الخلفية"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/></svg><span>كاملة</span></button>'+
+    (typeof STK!=='undefined'?STK.btn():'')+
     '<button class="tbtn" id="bNote" type="button" aria-label="ملاحظة المعلم"><svg viewBox="0 0 24 24"><path d="M5 4h14v12H9l-4 4z"/></svg><span>المعلم</span></button>'+
     '<button class="tbtn" id="bIdx" type="button" aria-label="فهرس الدرس"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>'+
     '<button class="tbtn" id="bFs" type="button" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></header>'+
@@ -240,7 +243,7 @@ function boot(){
     '<footer class="bot"><button class="nav prev" id="bPrev" type="button"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>السابق</button><div class="where" id="where"></div><button class="nav next" id="bNext" type="button">التالي<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button></footer>'+
    '</div>');
   document.body.insertAdjacentHTML('afterbegin',defsSVG());
-  APP=$('.app'); STAGE=$('#stage'); VIEW=$('#view'); BG.mount(VIEW); NOTE=$('#note'); IDX=$('#idx'); PROG=$('#prog'); BTN_N=$('#bNext'); BTN_P=$('#bPrev'); WHERE=$('#where');
+  APP=$('.app'); STAGE=$('#stage'); VIEW=$('#view'); BG.mount(VIEW); if(typeof STK!=='undefined') STK.mount(STAGE); NOTE=$('#note'); IDX=$('#idx'); PROG=$('#prog'); BTN_N=$('#bNext'); BTN_P=$('#bPrev'); WHERE=$('#where');
   var lastCh=-1;
   SLIDES.forEach(function(s,i){
     var b=document.createElement('button'); b.type='button'; b.className='seg'+(s.ch!==lastCh&&i>0?' gap':''); b.setAttribute('aria-label',s.title||'الغلاف');

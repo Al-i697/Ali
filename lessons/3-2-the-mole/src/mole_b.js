@@ -21,7 +21,7 @@ slide({id:'ar',ch:4,title:'الكتل الذرية النسبية وكتلة ا�
   return `<div class="col grow" style="gap:12px;justify-content:flex-start">
    <div class="frm brk" style="padding:8px 18px;gap:6px"><div class="sm" style="font-size:20px;text-align:center">مستخدماً الكتل الذرية النسبية الآتية، أجب عن الأسئلة ٣-٥ و٣-٦:</div>${arStrip(['P','O','C','H','S','N','Al','Cl','Na','Cu'])}</div>
    <p class="lead" style="margin:0;font-size:25px"><b>قبل ما نبدأ: كتلة مول واحد (الكتلة المولية) لكل مادة =</b></p>
-   ${W.map(function(w,i){return `<div class="qr tight"><div class="qt">${w[1]} ${fh(w[0])}</div><div class="qa"><span class="lb">M =</span>${nin('w'+i,'g/mol')}</div><div class="fb"></div></div>`}).join('')}</div>`;},
+   ${W.map(function(w,i){return `<div class="qr tight"><div class="qt">${w[1]} ${fh(w[0])}</div><div class="qa"><span class="ql">M =</span>${nin('w'+i,'g/mol')}</div><div class="fb"></div></div>`}).join('')}</div>`;},
  init:function(el){
   var F=['HCl','H2SO4','C6H12O6'], rows=F.map(function(f){return {a:[MR(f)],w:['✓ '+MR(f)+' g/mol'],h:['اجمع الكتل الذرية لكل ذرات الصيغة']}});
   bindRows(el,rows);
@@ -49,7 +49,7 @@ slide({id:'q35',ch:4,title:'السؤال ٣-٥: احسب الكتلة بالجر
  html:function(){
   var Q=[['أ','2 mol من Na','Na'],['ب','0.5 mol من CuCO3','CuCO3'],['ج','4 mol من Al(NO3)3','Al(NO3)3'],['د','0.02 mol من CuSO4.5H2O','CuSO4.5H2O']];
   return `<div class="col grow" style="gap:9px;justify-content:flex-start">${arStrip(['Na','Cu','C','O','Al','N','S','H'])}
-   ${Q.map(function(q,i){var t=q[1].split(' من ');return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${t[0]}</span> من ${fh(t[1])}</div><div class="qa"><span class="lb">M =</span>${nin('m'+i,'g/mol')}<span class="lb">m =</span>${nin('g'+i,'g')}</div><div class="fb"></div></div>`}).join('')}</div>`;},
+   ${Q.map(function(q,i){var t=q[1].split(' من ');return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${t[0]}</span> من ${fh(t[1])}</div><div class="qa"><span class="ql">M =</span>${nin('m'+i,'g/mol')}<span class="ql">m =</span>${nin('g'+i,'g')}</div><div class="fb"></div></div>`}).join('')}</div>`;},
  init:function(el){
   var D=[['Na',2],['CuCO3',.5],['Al(NO3)3',4],['CuSO4.5H2O',.02]];
   bindRows(el,D.map(function(d){var M=MR(d[0]), m=Math.round(M*d[1]*1e4)/1e4; return {a:[M,m],t:[0.01,tolOf(m)*2],w:['✓ M = '+M+' g/mol','✓ m = '+d[1]+' × '+M+' = '+m+' g'],h:['اجمع Ar لكل ذرات الصيغة','m = n × M']}}));
@@ -62,7 +62,7 @@ slide({id:'q36',ch:4,title:'السؤال ٣-٦: احسب عدد المولات',
   var Q=[['أ','7.75 g من','P'],['ب','292 g من','HCl'],['ج','2.94 g من','H2SO4'],['د','0.126 g من','C6H12O6']];
   return `<div class="col grow" style="gap:10px;justify-content:flex-start">
    <div class="panel" style="padding:8px 18px;align-items:center"><div class="bigeq" style="font-size:34px;color:var(--gold)">n = m ÷ M</div></div>
-   ${Q.map(function(q,i){return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${q[1].split(' ')[0]} g</span> من ${fh(q[2])}</div><div class="qa"><span class="lb">n =</span>${nin('n'+i,'mol')}</div><div class="fb"></div></div>`}).join('')}
+   ${Q.map(function(q,i){return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${q[1].split(' ')[0]} g</span> من ${fh(q[2])}</div><div class="qa"><span class="ql">n =</span>${nin('n'+i,'mol')}</div><div class="fb"></div></div>`}).join('')}
    <p class="sm muted" style="text-align:center;margin:0;font-size:20px">يمكنك كتابة الجواب بالصيغة العلمية، مثلاً 7e-4</p></div>`;},
  init:function(el){
   var D=[['P',7.75],['HCl',292],['H2SO4',2.94],['C6H12O6',0.126]];
@@ -77,7 +77,7 @@ slide({id:'q37',ch:4,title:'السؤال ٣-٧: احسب عدد الجسيمات
   return `<div class="col grow" style="gap:10px;justify-content:flex-start">
    <div class="panel" style="padding:10px 18px;align-items:center;gap:2px"><p class="lead" style="margin:0;font-size:27px">يحتوي المول الواحد من أي مادة على <b class="num" style="color:var(--gold)">6.02×10<sup>23</sup></b> من الجسيمات</p><div class="bigeq" style="font-size:32px">N = n × 6.02×10<sup style="font-size:.6em">23</sup></div></div>
    <p class="lead" style="margin:0;font-size:25px"><b>احسب عدد الجسيمات في كل من إجاباتك عن السؤال ٣-٦:</b></p>
-   ${N.map(function(q,i){return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${q[1]}</span></div><div class="qa"><span class="lb">N =</span>${nin('c'+i,'')}<span class="lb num">× 10</span>${nin('e'+i,'')}<span class="lb">جسيم</span></div><div class="fb"></div></div>`}).join('')}</div>`;},
+   ${N.map(function(q,i){return `<div class="qr"><div class="qt">${q[0]}. <span class="num">${q[1]}</span></div><div class="qa"><span class="ql">N =</span>${nin('c'+i,'')}<span class="ql num">× 10</span>${nin('e'+i,'')}<span class="ql">جسيم</span></div><div class="fb"></div></div>`}).join('')}</div>`;},
  init:function(el){
   var D=[0.25,8,0.03,0.0007];
   bindRows(el,D.map(function(n){var f=fx3(n*NA); return {a:[f[0],f[1]],t:[tolOf(f[0])*1.5,0.01],w:['✓ المعامل '+f[0],'✓ N = '+f[0]+' × 10^'+f[1]],h:['اضرب n في 6.02 أولاً (والأس يتبع الصيغة العلمية)','كم أُسّ العشرة بعد أن يصير المعامل بين 1 و10؟']}}));
@@ -96,7 +96,7 @@ slide({id:'chain',ch:4,title:'من الكتلة إلى المولات إلى ا�
   <div class="imp-tray" id="tray" style="display:flex;gap:14px;justify-content:center"></div>
   <div class="fb" style="text-align:center;min-height:28px" id="cfb"></div>
   <div class="frm brk gold hide" id="ex" style="padding:14px 22px;gap:10px;display:none"><p class="lead" style="margin:0;font-size:27px"><b>مثال: <span class="num">9 g</span> من الماء <span class="num">H<sub>2</sub>O</span> (H = 1، O = 16)</b></p>
-   <div class="qr"><div class="qt" style="font-size:23px">عدد المولات n =</div><div class="qa">${nin('x1','mol')}<span class="lb">عدد الجزيئات N =</span>${nin('x2','')}<span class="lb num">× 10<sup>23</sup></span></div><div class="fb"></div></div></div></div>`;},
+   <div class="qr"><div class="qt" style="font-size:23px">عدد المولات n =</div><div class="qa">${nin('x1','mol')}<span class="ql">عدد الجزيئات N =</span>${nin('x2','')}<span class="ql num">× 10<sup>23</sup></span></div><div class="fb"></div></div></div></div>`;},
  init:function(el){
   var items=[[1,'عدد المولات (mol)'],[2,'عدد الجسيمات'],[0,'الكتلة (g)']], tray=$('#tray',el), fb=$('#cfb',el), left=3, sel=null;
   function place(chip,slot){

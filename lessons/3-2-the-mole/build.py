@@ -1,8 +1,8 @@
 """Build lesson32.html: the shared core in ../_core plus this lesson's src/.   python3 build.py [--standalone]"""
 import sys
 core, d = '../_core/', 'src/'
-css = ''.join(open(core + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css']) + open(d + 'mole.css').read()
-js = ''.join(open(f).read() + '\n' for f in [d + 'config.js', core + 'engine.js', core + 'art_core.js', d + 'assets.js', core + 'bg.js', core + 'motion.js',
+css = ''.join(open(core + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css']) + open(d + 'mole.css').read()
+js = ''.join(open(f).read() + '\n' for f in [d + 'config.js', core + 'engine.js', core + 'art_core.js', d + 'assets.js', core + 'bg.js', core + 'motion.js', core + 'stickers_assets.js', core + 'stickers.js',
                                               d + 'helpers.js', d + 'mole_a.js', d + 'mole_b.js', d + 'past.js', d + 'tail.js'])
 if '--standalone' in sys.argv: js = js.replace("home:'index.html'", "home:''")
 html = '''<title>المول ٣-٢</title>

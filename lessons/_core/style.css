@@ -357,6 +357,7 @@ p{margin:0}
 
 /* ===== virtual lab ===== */
 .stage.lab{background:#0C2B31; color:#EAF6F3}
+@supports (overflow:clip){.stage{overflow:clip}}  /* focusing a field must never scroll the stage */
 .lab .hd .chip{background:#12403F}
 .lab .hd h2{color:#EAF6F3}
 .lab .panel{background:#12403F; color:#EAF6F3}
