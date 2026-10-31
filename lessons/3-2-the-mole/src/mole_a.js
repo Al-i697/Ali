@@ -22,7 +22,7 @@ slide({id:'goals',ch:0,bare:true,title:'أهداف الدرس',
     <div class="sm" style="font-size:22px">عدد أفوجادرو</div>
    </div></div>`;},
  init:function(el){ $$('.gi',el).forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('done')})}) },
- note:'<ul><li>الأهداف من دليل المعلم للموضوع ٣-٢ (٣-٤ و٣-٨) بصياغة مبسطة. اضغط على هدف لتظليله وأنت تراجع في نهاية الدرس.</li></ul>'});
+ note:'<ul><li>الأهداف من دليل المعلم للموضوع ٣-٢ (٣-٤ و٣-٨) بصياغة مبسطة. اضغط على هدف لتظليله وأنت تراجع في نهاية الدرس.</li><li>دليل المعلم ص٥٤–٥٥: أفكار التدريس تقترح تشبيه الحسابات بعدّ العملات النقدية، ثم مسائل تحويل الكتلة إلى مولات وإلى عدد الجسيمات، وإعادة النظر في نتائج نشاط ٣-١ بالمولات (الشريحة act31).</li></ul>'});
 
 /* 2 count: three pictures, then the question that leads to weighing */
 slide({id:'count',ch:1,title:'تمهيد: كم عدد…؟',tag:'سؤال',
@@ -158,7 +158,7 @@ slide({id:'single',ch:2,title:'لماذا لا نزن ذرة واحدة؟',tag:'
  init:function(el){
   bindMcq($('.panel',el),[{t:'',why:'كتلة الذرة ثابتة؛ المشكلة في صغرها'},{t:'',ok:true,why:'صح'},{t:'',why:'ما لها علاقة بحالة المادة'}],$('.fb',el),function(){var a=$('#ans',el); a.classList.remove('hide'); a.classList.add('up')});
  },
- note:'<ul><li>عرضك (شريحة ٦): لا يمكن وزن ذرة مفردة أو جزيء مفرد.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ٦): لا يمكن وزن ذرة مفردة أو جزيء مفرد.</li><li>كتاب الطالب ص٥٩: لا يستطيع الكيميائي وزن ذرة مفردة أو جزيء مفرد وجعله يتفاعل مع ذرة أخرى، فنحتاج وحدة تربط الكتلة بالعدد، وهي المول.</li></ul>'});
 
 /* 8 ways to count amounts: put the chain in order */
 slide({id:'ways',ch:2,title:'طرق حساب كميات المواد',tag:'رتّب الخطوات',

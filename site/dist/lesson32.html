@@ -2395,7 +2395,7 @@ slide({id:'goals',ch:0,bare:true,title:'أهداف الدرس',
     <div class="sm" style="font-size:22px">عدد أفوجادرو</div>
    </div></div>`;},
  init:function(el){ $$('.gi',el).forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('done')})}) },
- note:'<ul><li>الأهداف من دليل المعلم للموضوع ٣-٢ (٣-٤ و٣-٨) بصياغة مبسطة. اضغط على هدف لتظليله وأنت تراجع في نهاية الدرس.</li></ul>'});
+ note:'<ul><li>الأهداف من دليل المعلم للموضوع ٣-٢ (٣-٤ و٣-٨) بصياغة مبسطة. اضغط على هدف لتظليله وأنت تراجع في نهاية الدرس.</li><li>دليل المعلم ص٥٤–٥٥: أفكار التدريس تقترح تشبيه الحسابات بعدّ العملات النقدية، ثم مسائل تحويل الكتلة إلى مولات وإلى عدد الجسيمات، وإعادة النظر في نتائج نشاط ٣-١ بالمولات (الشريحة act31).</li></ul>'});
 
 /* 2 count: three pictures, then the question that leads to weighing */
 slide({id:'count',ch:1,title:'تمهيد: كم عدد…؟',tag:'سؤال',
@@ -2531,7 +2531,7 @@ slide({id:'single',ch:2,title:'لماذا لا نزن ذرة واحدة؟',tag:'
  init:function(el){
   bindMcq($('.panel',el),[{t:'',why:'كتلة الذرة ثابتة؛ المشكلة في صغرها'},{t:'',ok:true,why:'صح'},{t:'',why:'ما لها علاقة بحالة المادة'}],$('.fb',el),function(){var a=$('#ans',el); a.classList.remove('hide'); a.classList.add('up')});
  },
- note:'<ul><li>عرضك (شريحة ٦): لا يمكن وزن ذرة مفردة أو جزيء مفرد.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ٦): لا يمكن وزن ذرة مفردة أو جزيء مفرد.</li><li>كتاب الطالب ص٥٩: لا يستطيع الكيميائي وزن ذرة مفردة أو جزيء مفرد وجعله يتفاعل مع ذرة أخرى، فنحتاج وحدة تربط الكتلة بالعدد، وهي المول.</li></ul>'});
 
 /* 8 ways to count amounts: put the chain in order */
 slide({id:'ways',ch:2,title:'طرق حساب كميات المواد',tag:'رتّب الخطوات',
@@ -2674,7 +2674,7 @@ slide({id:'avo',ch:3,title:'عدد أفوجادرو ثابت',tag:'اختر ما
   slide({id:'tk1',ch:3,title:'تذكرة خروج ١: فكرة المول',tag:'تذكرة خروج',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'tk1')},
-   note:'<ul><li>الإجابات: ٦٫٠٢×١٠²³ جسيماً، ١٠٠، CO₂، متساوٍ.</li><li>السؤال الأخير يعالج الخطأ الشائع: الكتلة تختلف والعدد يتساوى.</li></ul>'});
+   note:'<ul><li>الإجابات: ٦٫٠٢×١٠²³ جسيماً، ١٠٠، CO₂، متساوٍ.</li><li>السؤال الأخير يعالج الخطأ الشائع: الكتلة تختلف والعدد يتساوى.</li><li>الأسئلة من إعدادي على هدف ٤-٨ في دليل المعلم (تعريف المول)، وتعالج الخطأ الشائع: الكتلة تختلف من مادة لأخرى وعدد الجسيمات في المول ثابت.</li></ul>'});
 })();
 
 /* 14 reference Ar values and a warm-up on molar mass */
@@ -2705,7 +2705,7 @@ slide({id:'ex31',ch:4,title:'مثال ٣-١',tag:'خطوة بخطوة',
   bindRows(cols[0],[{a:[40,1.5],w:['✓ M = 40 g/mol','✓ n = 60 ÷ 40 = 1.5 mol'],h:['23 + 16 + 1','اقسم 60 على كتلة المول']}]);
   bindRows(cols[1],[{a:[249.5,124.75],w:['✓ M = 249.5 g/mol','✓ m = 0.5 × 249.5 = 124.75 g'],h:['اجمع كل ما في الصيغة بما فيها الماء','اضرب 0.5 في كتلة المول']}]);
  },
- note:'<ul><li>مثال ٣-١ في كتاب الطالب (ص٦٠). الإجابات: 40 ثم 1.5 mol؛ 249.5 ثم 124.75 g.</li><li>كل خطوة تفتح التي بعدها.</li></ul>'});
+ note:'<ul><li>مثال ٣-١ في كتاب الطالب (ص٦٠). الإجابات: 40 ثم 1.5 mol؛ 249.5 ثم 124.75 g.</li><li>كل خطوة تفتح التي بعدها.</li><li>خطأ متوقع: نسيان ماء التبلور في CuSO₄·5H₂O (5 × 18 = 90). الصيغة المتبعة في الحل: M ثم n = m ÷ M أو m = n × M.</li></ul>'});
 
 /* 16 question 3-5: mass from moles */
 slide({id:'q35',ch:4,title:'السؤال ٣-٥: احسب الكتلة بالجرامات',tag:'أجب',
@@ -2845,7 +2845,7 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
   slide({id:'tk2',ch:5,title:'تذكرة خروج ٢: حسابات المول',tag:'تذكرة خروج',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'tk2')},
-   note:'<ul><li>الإجابات: ٢٠ g، ٠٫٥ mol، 1.204×10²⁴، العبارة الأولى.</li></ul>'});
+   note:'<ul><li>الإجابات: ٢٠ g، ٠٫٥ mol، 1.204×10²⁴، العبارة الأولى.</li><li>الأسئلة من إعدادي: ١ كتلة من عدد المولات (NaOH)، ٢ عدد المولات من الكتلة (H₂SO₄)، ٣ عدد الجسيمات في 2 mol، ٤ أي عبارة صحيحة عن المول. تغطي هدفي ٣-٨ و٤-٨ في دليل المعلم.</li></ul>'});
 })();
 
 /* ---------- exam-style practice: the first slide uses real past-paper items on the mole, the second is written in the same style ---------- */
@@ -2854,7 +2854,7 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
    {yr:'2025/2026 · الدور الأول',mk:1,q:'ما المصطلح الذي يعبّر عن كمية من مادة تحتوي على <span class="num">6.02×10<sup>23</sup></span> ذرة أو جزيء أو وحدة صيغة (وفقاً لطبيعتها)؟',opts:[['كتلة الصيغة النسبية',0],['الكتلة الذرية النسبية',0],['المول',1],['ثابت أفوجادرو',0]],why:'المول'},
    {yr:'2025/2026 · الدور الأول (من سؤال ١٩)',mk:1,q:'يُستخدم أكسيد الحديد (III) لإنتاج <span class="num">100 g</span> من الحديد. احسب عدد مولات الحديد (Fe = 56).',nums:[{lab:'n(Fe) =',ans:1.78,tol:0.02,why:'100 ÷ 56 = 1.78 mol'}]},
    {yr:'2025/2026 · الدور الأول (من سؤال ١٩)',mk:1,q:'احسب الكتلة المولية لأكسيد الحديد (III) <span class="num">Fe<sub>2</sub>O<sub>3</sub></span> (Fe = 56, O = 16).',nums:[{lab:'M =',ans:160,tol:0.5,why:'(2 × 56) + (3 × 16) = 160 g/mol'}]},
-   {yr:'2022/2023 · الدور الأول (مسائي)',mk:1,q:'عدد مولات الخارصين Zn الناتجة <span class="num">0.031 mol</span>. احسب كتلة Zn بالجرام (Zn = 65).',nums:[{lab:'m =',ans:2.03,tol:0.03,why:'0.031 × 65 = 2.03 g'}]},
+   {yr:'2022/2023 · الدور الأول (مسائي)',mk:1,q:'عدد مولات الخارصين Zn الناتجة <span class="num">0.031 mol</span>. احسب كتلة Zn بالجرام (Zn = 65).',nums:[{lab:'m =',ans:2.03,tol:0.03,why:'0.031 × 65 ≈ 2.0 g (مفتاح الامتحان: 2.03 g ويقبل 2.0 g)'}]},
    {yr:'2022/2023 · الدور الثاني',mk:1,q:'عدد مولات الماغنيسيوم <span class="num">0.021 mol</span>. احسب كتلته بالجرام (Mg = 24).',nums:[{lab:'m =',ans:0.504,tol:0.006,why:'0.021 × 24 = 0.504 g'}]}
   ];
   var P2=[
@@ -2914,7 +2914,7 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
   slide({id:'final',ch:7,title:'تذكرة الخروج النهائية',tag:'تذكرة خروج',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'final')},
-   note:'<ul><li>الإجابات: ٨٠ g، ٢ mol، 3.01×10²³، n = m ÷ M.</li></ul>'});
+   note:'<ul><li>الإجابات: ٨٠ g، ٢ mol، 3.01×10²³، n = m ÷ M.</li><li>الأسئلة من إعدادي: ١ كتلة من المولات (MgO)، ٢ مولات من الكتلة (H₂)، ٣ عدد الذرات في 0.5 mol، ٤ العلاقة n = m ÷ M. الصيغتان m = n × M وn = m ÷ M هما أساس الحسابات في ٣-٣ وما بعده.</li></ul>'});
 })();
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
@@ -2926,7 +2926,7 @@ slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
    <div class="col" style="width:420px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:10px 14px;font-size:21px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
     <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٣ حسابات تتضمن كتلاً متفاعلة (استنباط الصيغ الكيميائية)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
- note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li></ul>'});
+ note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>دليل المعلم ص٥٥: ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط غير متوفرة في الملفات المرسلة (الملف ينتهي عند ص٥٠)، فلا توجد لها شريحة. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) مذكور في الواجب وليس له شريحة.</li></ul>'});
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 

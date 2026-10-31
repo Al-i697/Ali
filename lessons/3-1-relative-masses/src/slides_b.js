@@ -56,7 +56,7 @@ function bindMrCard(card,c){
   slide({id:'tk2',ch:3,title:'تذكرة خروج ٢: كتلة الصيغة النسبية',tag:'تذكرة خروج',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'tk2')},
-   note:'<ul><li>الإجابات: ٧٤، ٦، NaCl.</li></ul>'});
+   note:'<ul><li>الإجابات: ٧٤، ٦، NaCl.</li><li>الأسئلة من إعدادي: ١ القوس في Ca(OH)₂، ٢ عدّ ذرات O في Mg(NO₃)₂ (٣ × ٢ = ٦)، ٣ متى نقول كتلة الصيغة النسبية (مركب أيوني). تغطي هدف ٣-٨ في دليل المعلم.</li></ul>'});
 })();
 
 /* 19 ball models: count the spheres */

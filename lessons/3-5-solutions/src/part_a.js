@@ -19,7 +19,7 @@ slide({id:'goals',ch:0,bare:true,title:'أهداف الدرس',
     <div class="bigeq" style="font-size:34px;color:var(--gold);text-shadow:0 0 22px rgba(228,188,75,.5)">C = n ÷ V</div>
    </div></div>`;},
  init:function(el){ $$('.gi',el).forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('done')})}) },
- note:'<ul><li>معايير النجاح من عرض NotebookLM (شريحة ٢) وأهداف دليل المعلم للموضوع ٣-٥ (٤-٨ و٦-٨). اضغط على هدف لتظليله وأنت تراجع في آخر الدرس.</li><li>روابط المراجعة في عرضك (نقلتها كما ظهرت في الصورة، تحقق منها قبل استخدامها): المعايرة https://youtu.be/86LpJQfX9p4 و https://youtu.be/mhvQYyQV1A ؛ حل أسئلة https://youtu.be/tsi0a7RVqsY ؛ مراجعة https://youtu.be/U3jlaK2Py_8</li><li>الدرس يغطي كتاب الطالب ص٦٩–٧٦، والنشاط ٣-٤، وتمرين ٣-٦، وأوراق العمل ٣-٥ و٣-٦، وأسئلة ٣-١٦ إلى ٣-٢٠، وسؤال ٥ نهاية الوحدة.</li></ul>'});
+ note:'<ul><li>معايير النجاح من عرض NotebookLM (شريحة ٢) وأهداف دليل المعلم للموضوع ٣-٥ (٤-٨ و٦-٨). اضغط على هدف لتظليله وأنت تراجع في آخر الدرس.</li><li>روابط المراجعة في عرضك (نقلتها كما ظهرت في الصورة، تحقق منها قبل استخدامها): المعايرة https://youtu.be/86LpJQfX9p4 و https://youtu.be/mhvQYyQV1A (تنبيه: هذا الرابط ١٠ أحرف فقط ومعرّفات يوتيوب ١١ حرفاً، فغالباً ناقص حرف نقلته من الصورة؛ صحّحه من عرضك الأصلي) ؛ حل أسئلة https://youtu.be/tsi0a7RVqsY ؛ مراجعة https://youtu.be/U3jlaK2Py_8</li><li>الدرس يغطي كتاب الطالب ص٦٩–٧٦، والنشاط ٣-٤، وتمرين ٣-٦، وأوراق العمل ٣-٥ و٣-٦، وأسئلة ٣-١٦ إلى ٣-٢٠، وسؤال ٥ نهاية الوحدة.</li></ul>'});
 
 /* 2 make a solution: the same mass in different volumes (book figure 3-5) */
 slide({id:'mix',ch:0,title:'حضّر محلولاً: كبريتات النحاس',tag:'حرّك المنزلقين',

@@ -61,7 +61,7 @@ const results=[]; const errs=[];
     const v=[4,12,16,238]; for(let i=0;i<4;i++) await fill(sl.locator('.panel').nth(i),'.nin',v[i]); await fill(sl,'.nin[data-n="p"]',2.58); await p.waitForTimeout(150);
     return (await cnt(sl.locator('.ok-b')))===5;
   });
-  await T('ex31a',24,async(p,sl)=>{const v=[12,3,4,2]; for(let i=0;i<4;i++) await fill(sl.locator('.sent').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.sent .ok-b')))===4});
+  await T('ex31a',25,async(p,sl)=>{const v=[12,3,4,2]; for(let i=0;i<4;i++) await fill(sl.locator('.sent').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.sent .ok-b')))===4});
   await T('tk1',14,async(p,sl)=>{
     const pick=[1,1,1]; for(let i=0;i<3;i++){ await sl.locator('.tq.cur .opt').nth(pick[i]).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250) }
     await fill(sl,'.tq.cur .nin',10.2); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
@@ -72,14 +72,15 @@ const results=[]; const errs=[];
     for(let c=0;c<3;c++){ const card=sl.locator('.mrc').nth(c); for(let r=0;r<C[c].length;r++) await card.locator('.cin').nth(r).fill(String(C[c][r])); await fill(card,'.nin',M[c]) }
     await p.waitForTimeout(200); return (await cnt(sl.locator('.mrc .nin input.ok-b')))===3 && (await cnt(sl.locator('.cin.ok-b')))===5;
   });
-  await T('race',19,async(p,sl)=>{const v=[32,17,64,114,98,119,187.5,133.5]; for(let i=0;i<8;i++) await fill(sl.locator('.rc').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.rc.ok')))===8});
-  await T('tk2',20,async(p,sl)=>{
+  await T('ex31b',19,async(p,sl)=>{const v=[44,18,17,100,40,80,60]; for(let i=1;i<8;i++) await fill(sl.locator('.xr').nth(i),'.nin',v[i-1]); await p.waitForTimeout(150); return (await cnt(sl.locator('.xr.done')))===8});
+  await T('race',20,async(p,sl)=>{const v=[32,17,64,114,98,119,187.5,133.5]; for(let i=0;i<8;i++) await fill(sl.locator('.rc').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.rc.ok')))===8});
+  await T('tk2',21,async(p,sl)=>{
     await fill(sl,'.tq.cur .nin',74); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     await sl.locator('.tq.cur .opt').nth(2).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     await sl.locator('.tq.cur .opt').nth(2).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     return (await sl.locator('.score b').textContent()).trim()==='3 / 3';
   });
-  await T('models',21,async(p,sl)=>{
+  await T('models',22,async(p,sl)=>{
     const sph=[2,3,4,5,9], ok=[2,0,1,0,2]; // index of correct option per model: HCl:'HCl' is opts idx0? recompute below
     const correct=[0,2,1,0,2];
     for(let m=0;m<5;m++){
@@ -90,17 +91,17 @@ const results=[]; const errs=[];
     }
     return (await sl.locator('#mfb').textContent()).includes('ممتاز');
   });
-  await T('lattice',22,async(p,sl)=>{
+  await T('lattice',23,async(p,sl)=>{
     const good=[1,2]; for(let i=0;i<2;i++){ const box=sl.locator('.mod').nth(i); const sp=box.locator('.sph'); const n=await sp.count(); for(let k=0;k<n;k++) await sp.nth(k).locator('circle.s').click({force:true}); await box.locator('.sel button').nth(i===0?1:2).click() }
     await p.waitForTimeout(150); return (await cnt(sl.locator('.sel .ok-b')))===2;
   });
-  await T('q31',23,async(p,sl)=>{
+  await T('q31',24,async(p,sl)=>{
     for(let i=0;i<8;i++){ const card=sl.locator('.qd').nth(i); const btns=card.locator('.sel button'); const nb=await btns.count(); for(let k=0;k<nb;k++){ const bt=btns.nth(k); const txt=(await bt.textContent()); const ans=['HBr','CH4','Al2O3','ICl3','BrF5','CH2','NaI','BO2'][i]; if(txt===ans){await bt.click(); break} } }
     const done=(await cnt(sl.locator('.qd.ok')))===8 && (await sl.locator('.fb').textContent()).includes('ممتاز');
     await sl.locator('#typ').click(); await p.waitForTimeout(200);
     return done && (await cnt(sl.locator('.qd .tg')))===8;
   });
-  await T('lab full',25,async(p,sl)=>{
+  await T('lab full',26,async(p,sl)=>{
     for(const g of ['eye','coat','glove']) await sl.locator('.gear[data-g="'+g+'"]').click();
     await sl.locator('#go0').click();
     await sl.locator('button[data-i="3"]').click();           // piece 4: Mg 0.24
@@ -128,7 +129,7 @@ const results=[]; const errs=[];
     await sl.locator('#bk').waitFor({timeout:4000});
     return true;
   });
-  await T('final',28,async(p,sl)=>{
+  await T('final',29,async(p,sl)=>{
     await fill(sl,'.tq.cur .nin',58); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     await sl.locator('.tq.cur .opt').nth(1).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     await sl.locator('.tq.cur .opt').nth(1).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
@@ -136,12 +137,12 @@ const results=[]; const errs=[];
     return (await sl.locator('.score b').textContent()).trim()==='4 / 4';
   });
   await T('isoH',12,async(p,sl)=>{ const v=[0,1,2]; for(let i=0;i<3;i++) await fill(sl.locator('.mod').nth(i),'.nin',v[i]); await p.waitForTimeout(200); return (await cnt(sl.locator('.mod .ok-b')))===3 });
-  await T('past1',26,async(p,sl)=>{
+  await T('past1',27,async(p,sl)=>{
     await fill(sl.locator('.pq').nth(0),'.nin',19); await fill(sl.locator('.pq').nth(1),'.nin',24);
     await sl.locator('.pq').nth(2).locator('.sel button').nth(1).click(); await fill(sl.locator('.pq').nth(3),'.nin',12);
     await fill(sl.locator('.pq').nth(4),'.nin',148); await fill(sl.locator('.pq').nth(5),'.nin',244); await p.waitForTimeout(150);
     return (await cnt(sl.locator('.pq.ok')))===6 });
-  await T('past2',27,async(p,sl)=>{
+  await T('past2',28,async(p,sl)=>{
     await sl.locator('.pq').nth(0).locator('.sel button').nth(1).click(); await sl.locator('.pq').nth(1).locator('.sel button').nth(1).click(); await sl.locator('.pq').nth(2).locator('.sel button').nth(2).click();
     await fill(sl.locator('.pq').nth(3),'.nin',44); const c=sl.locator('.pq').nth(4); await c.locator('.nin input').nth(0).fill('30'); await c.locator('.nin input').nth(0).press('Enter'); await c.locator('.nin input').nth(1).fill('68'); await c.locator('.nin input').nth(1).press('Enter');
     await fill(sl.locator('.pq').nth(5),'.nin',32); await p.waitForTimeout(150);

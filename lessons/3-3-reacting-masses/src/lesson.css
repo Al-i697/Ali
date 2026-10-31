@@ -126,3 +126,8 @@ html[data-fx="0"] .lbub{animation:none}
 .slide[data-id=past1] .pgrid{gap:8px} .slide[data-id=past1] .pq .eq{font-size:19px!important}
 .bars:not(.go) .bseg b{visibility:hidden}
 .slide[data-id=bacl] .opt{font-size:18px; min-height:54px; padding:4px 8px; line-height:1.2}
+/* ag: after the three steps the question appears below them, so the options must be compact to stay on the stage */
+.slide[data-id=ag] .opt{min-height:44px; font-size:21px; padding:4px 14px}
+.slide[data-id=ag] .opt .ix{width:32px; height:32px; font-size:19px}
+.slide[data-id=ag] #pick .opts,.slide[data-id=ag] #pick .col{gap:6px}
+.slide[data-id=ag] .fb{min-height:22px; font-size:19px; line-height:1.2}

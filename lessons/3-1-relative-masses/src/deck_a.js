@@ -13,7 +13,7 @@ slide({id:'goals',ch:0,bare:true,title:'أهداف الدرس',
    '<div class="gl" style="margin-top:4px">'+L.map(function(t){return '<button type="button" class="gi"><span class="ck">✓</span><span>'+t+'</span></button>'}).join('')+'</div></div>'+
    '<div style="width:300px;flex:none;display:flex;align-items:center;justify-content:center"><img class="pic fade" src="'+IMG.goals_navy+'" alt="" style="width:340px;max-width:none"></div></div>';},
  init:function(el){ $$('.gi',el).forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('done')})}) },
- note:'<ul><li>الأهداف من عرضك كما هي. اضغط على هدف لتظليل علامته أثناء مراجعته في نهاية الدرس.</li></ul>'});
+ note:'<ul><li>الأهداف من عرضك كما هي. اضغط على هدف لتظليل علامته أثناء مراجعته في نهاية الدرس.</li><li>دليل المعلم ص٥٤ (الموضوع ٣-١): ١-٨ يستنتج صيغة مركب بسيط من نموذج أو تمثيل تخطيطي، ٢-٨ يعرّف Ar، ٣-٨ يعرّف Mr. أهداف عرضك أوسع (١٤ هدفاً) وكلها مغطاة في شرائح الدرس.</li></ul>'});
 
 /* 2 importance of quantities (match by dragging) */
 slide({id:'imp',ch:1,title:'أهمية تحديد كميات المواد في حياتنا',tag:'مطابقة بالسحب',
@@ -106,7 +106,7 @@ slide({id:'parts',ch:2,title:'كيف يتم تحديد هذه الكميات ك�
     else { $('#ce',el).classList.remove('hid'); say(fb,'الإلكترونات كتلتها صغيرة جداً... جرّب النواة','bad') }
   })});
  },
- note:'<ul><li>عرضك (شريحة ٤): البروتونات والنيوترونات تحمل معظم الكتلة، والإلكترونات تُهمل.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ٤): البروتونات والنيوترونات تحمل معظم الكتلة، والإلكترونات تُهمل.</li><li>كتاب الطالب ص٥٣: معظم كتلة الذرة في النواة، وكتلة الإلكترونات بالغة الصغر مقارنة بها، ولذلك نقارن كتل الذرات بعضها ببعض.</li></ul>'});
 
 /* 6 carbon-12: build the nucleus */
 slide({id:'c12',ch:2,title:'الذرة المقياس: لماذا الكربون-12؟',tag:'ابنِ النواة',

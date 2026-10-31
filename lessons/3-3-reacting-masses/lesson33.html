@@ -1173,6 +1173,11 @@ html[data-fx="0"] .lbub{animation:none}
 .slide[data-id=past1] .pgrid{gap:8px} .slide[data-id=past1] .pq .eq{font-size:19px!important}
 .bars:not(.go) .bseg b{visibility:hidden}
 .slide[data-id=bacl] .opt{font-size:18px; min-height:54px; padding:4px 8px; line-height:1.2}
+/* ag: after the three steps the question appears below them, so the options must be compact to stay on the stage */
+.slide[data-id=ag] .opt{min-height:44px; font-size:21px; padding:4px 14px}
+.slide[data-id=ag] .opt .ix{width:32px; height:32px; font-size:19px}
+.slide[data-id=ag] #pick .opts,.slide[data-id=ag] #pick .col{gap:6px}
+.slide[data-id=ag] .fb{min-height:22px; font-size:19px; line-height:1.2}
 
 </style>
 <script>
@@ -2834,8 +2839,8 @@ slide({id:'fe48',ch:3,title:'كتاب النشاط ص٤٨: الحديد والك
 slide({id:'ag',ch:3,title:'كتاب الطالب ص٧٨: النحاس وأيونات الفضة',tag:'تحدٍّ',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
   <div class="col" style="width:250px;flex:none;align-items:center;justify-content:center"><img class="pic" src="${IMG.flasks}" alt="" style="width:230px"></div>
-  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">
-   <div class="frm brk" style="padding:10px 18px;gap:4px"><div class="bigeq" style="font-size:34px;color:var(--gold);text-align:center">Cu + 2Ag<sup>+</sup> → Cu<sup>2+</sup> + 2Ag</div><p class="lead" style="margin:0;font-size:22px">أُضيف <b class="num">6.35 g</b> من فلز النحاس إلى محلول يحتوي على <b class="num">0.1 mol</b> من أيونات الفضة <span class="num">(Cu = 63.5)</span></p></div>
+  <div class="col" style="flex:1;min-width:0;gap:6px;justify-content:flex-start">
+   <div class="frm brk" style="padding:8px 18px;gap:2px"><div class="bigeq" style="font-size:30px;color:var(--gold);text-align:center">Cu + 2Ag<sup>+</sup> → Cu<sup>2+</sup> + 2Ag</div><p class="lead" style="margin:0;font-size:21px">أُضيف <b class="num">6.35 g</b> من فلز النحاس إلى محلول يحتوي على <b class="num">0.1 mol</b> من أيونات الفضة <span class="num">(Cu = 63.5)</span></p></div>
    ${qline('١. عدد مولات النحاس',[['g1','mol','n(Cu) =']])}
    ${qline('Cu: عدد المولات ÷ المعامل (١)',[['g2','','=']])}
    ${qline('Ag<sup>+</sup>: عدد المولات ÷ المعامل (٢)',[['g3','','=']])}
@@ -3038,7 +3043,7 @@ slide({id:'solv',ch:4,title:'كتاب النشاط: عملية سولفاي (ا�
     ${qline('Mr لـ NaHCO<sub>3</sub>',[['s1','g/mol','Mr =']])}${qline('n(NaHCO<sub>3</sub>) (نسبة 1 : 1 مع NaCl)',[['s2','mol','n =']])}${qline('كتلة NaCl',[['s3','g','m =']])}<div class="fb fa" style="min-height:24px;text-align:center"></div></div>
    <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center"><div class="frm brk" style="padding:10px 16px;gap:4px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">المرحلة ٢ (ب.١)</div><div class="bigeq" style="font-size:21px;color:var(--gold)">2NaHCO<sub>3</sub> → Na<sub>2</sub>CO<sub>3</sub> + CO<sub>2</sub> + H<sub>2</sub>O</div><p class="lead" style="margin:0;font-size:21px">ما كتلة Na<sub>2</sub>CO<sub>3</sub> الممكن إنتاجها من <b class="num">7560 g</b> من NaHCO<sub>3</sub>؟</p></div>
     ${qline('n(Na<sub>2</sub>CO<sub>3</sub>) (نسبة 2 : 1)',[['t1','mol','n =']])}${qline('كتلة Na<sub>2</sub>CO<sub>3</sub>',[['t2','g','m =']])}<div class="fb fb2x" style="min-height:24px;text-align:center"></div>
-    <div class="sm" style="font-size:18px;color:var(--muted);text-align:center">أجزاء الحجم (أ.٢ و ب.٢) نكملها في الدرس ٣-٤</div></div></div></div>`;},
+    <div class="sm" style="font-size:20px;color:var(--ink);opacity:.92;text-align:center">أجزاء الحجم (أ.٢ و ب.٢) نكملها في الدرس ٣-٤</div></div></div></div>`;},
  init:function(el){
   bindSeq(el,[{n:'s1',a:84,t:0.7,w:'✓ 23 + 1 + 12 + 3 × 16 = 84 g/mol',h:'اجمع Ar لكل الذرات'},{n:'s2',a:90,t:0.8,w:'✓ 7560 ÷ 84 = 90 mol',h:'n = m ÷ M'},{n:'s3',a:5265,t:45,w:'✓ 90 × 58.5 = 5265 g',h:'M(NaCl) = 58.5'}],$('.fa',el));
   bindSeq(el,[{n:'t1',a:45,t:0.4,w:'✓ 90 ÷ 2 = 45 mol',h:'كل 2 mol NaHCO₃ تعطي 1 mol Na₂CO₃'},{n:'t2',a:4770,t:40,w:'✓ 45 × 106 = 4770 g',h:'M(Na₂CO₃) = 106'}],$('.fb2x',el));
@@ -3153,7 +3158,7 @@ slide({id:'race',ch:6,title:'سباق الفصل: الصيغة والمحددة 
   var P1=[
    {yr:'2022/2023 · الدور الأول',q:'ما المقصود بالمادة المحددة للتفاعل؟',opts:[['المادة المتفاعلة التي تنتهي أولاً وتحدد كمية الناتج',1],['المادة التي يبقى منها جزء بعد التفاعل',0],['المادة الناتجة بكمية أقل',0]],why:'المادة المحددة تنتهي أولاً فتحدد كمية الناتج'},
    {yr:'2023/2024 · الدور الأول (سؤال ٢٢)',q:'استنتج الصيغة الكيميائية لمركب يحتوي على <span class="num">32.5 g</span> من الأكسجين و<span class="num">14.45 g</span> من النيتروجين (N = 14, O = 16).',nums:[{lab:'n(N) =',ans:1.03,tol:0.02,why:'14.45 ÷ 14 = 1.03 mol'},{lab:'n(O) =',ans:2.03,tol:0.03,why:'32.5 ÷ 16 = 2.03 mol'}],opts:[['NO',0],['<span class="num">NO<sub>2</sub></span>',1],['<span class="num">N<sub>2</sub>O</span>',0]],why:'النسبة 1 : 2 ← NO₂'},
-   {yr:'2025/2026 · الدور الأول (سؤال ١٩)',mk:3,q:'احسب كتلة أكسيد الحديد (III) <span class="num">Fe<sub>2</sub>O<sub>3</sub></span> اللازمة لإنتاج <span class="num">100 g</span> من الحديد: <span class="num">Fe<sub>2</sub>O<sub>3</sub> + 3CO → 2Fe + 3CO<sub>2</sub></span> (Fe = 56, O = 16).',nums:[{lab:'n(Fe) =',ans:1.78,tol:0.02,why:'100 ÷ 56 = 1.78 mol'},{lab:'n(Fe₂O₃) =',ans:0.89,tol:0.01,why:'1.78 ÷ 2 = 0.89 mol'},{lab:'m =',ans:142.6,tol:1.5,why:'0.89 × 160 = 142.4 g'}]},
+   {yr:'2025/2026 · الدور الأول (سؤال ١٩)',mk:3,q:'احسب كتلة أكسيد الحديد (III) <span class="num">Fe<sub>2</sub>O<sub>3</sub></span> اللازمة لإنتاج <span class="num">100 g</span> من الحديد: <span class="num">Fe<sub>2</sub>O<sub>3</sub> + 3CO → 2Fe + 3CO<sub>2</sub></span> (Fe = 56, O = 16).',nums:[{lab:'n(Fe) =',ans:1.78,tol:0.02,why:'100 ÷ 56 = 1.78 mol'},{lab:'n(Fe₂O₃) =',ans:0.89,tol:0.01,why:'1.78 ÷ 2 = 0.89 mol'},{lab:'m =',ans:142.6,tol:1.5,why:'0.89 × 160 ≈ 142.4 g (والدقيق 142.86 g، وكلاهما مقبول)'}]},
    {yr:'2023/2024 · الدور الثاني (سؤال ٢٢)',q:'احسب عدد مولات النحاس إذا كانت كتلته <span class="num">2.5 g</span> (Cu = 63.5).',nums:[{lab:'n =',ans:0.0394,tol:0.0007,why:'2.5 ÷ 63.5 = 0.039 mol'}]},
    {yr:'2023/2024 · الدور الثاني (سؤال ٢٣)',q:'<span class="num">2Cu + O<sub>2</sub> → 2CuO</span>. احسب كتلة أكسيد النحاس الناتجة إذا كان عدد مولاته <span class="num">0.039 mol</span> (Cu = 63.5, O = 16).',nums:[{lab:'m =',ans:3.1,tol:0.05,why:'0.039 × 79.5 = 3.1 g'}]},
    {yr:'2023/2024 · الدور الثاني (سؤال ٢٤)',q:'في التفاعل <span class="num">2Cu + O<sub>2</sub> → 2CuO</span> تنبأ بالمادة المحددة والفائضة، علماً بأن عدد مولات Cu = 0.039 mol وعدد مولات O<sub>2</sub> = 2 mol.',opts:[['المحددة Cu والفائضة O₂',1],['المحددة O₂ والفائضة Cu',0]],why:'Cu: 0.039 ÷ 2 = 0.0195 أقل من O₂: 2 ÷ 1 = 2'}

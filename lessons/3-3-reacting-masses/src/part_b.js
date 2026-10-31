@@ -163,8 +163,8 @@ slide({id:'fe48',ch:3,title:'كتاب النشاط ص٤٨: الحديد والك
 slide({id:'ag',ch:3,title:'كتاب الطالب ص٧٨: النحاس وأيونات الفضة',tag:'تحدٍّ',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
   <div class="col" style="width:250px;flex:none;align-items:center;justify-content:center"><img class="pic" src="${IMG.flasks}" alt="" style="width:230px"></div>
-  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">
-   <div class="frm brk" style="padding:10px 18px;gap:4px"><div class="bigeq" style="font-size:34px;color:var(--gold);text-align:center">Cu + 2Ag<sup>+</sup> → Cu<sup>2+</sup> + 2Ag</div><p class="lead" style="margin:0;font-size:22px">أُضيف <b class="num">6.35 g</b> من فلز النحاس إلى محلول يحتوي على <b class="num">0.1 mol</b> من أيونات الفضة <span class="num">(Cu = 63.5)</span></p></div>
+  <div class="col" style="flex:1;min-width:0;gap:6px;justify-content:flex-start">
+   <div class="frm brk" style="padding:8px 18px;gap:2px"><div class="bigeq" style="font-size:30px;color:var(--gold);text-align:center">Cu + 2Ag<sup>+</sup> → Cu<sup>2+</sup> + 2Ag</div><p class="lead" style="margin:0;font-size:21px">أُضيف <b class="num">6.35 g</b> من فلز النحاس إلى محلول يحتوي على <b class="num">0.1 mol</b> من أيونات الفضة <span class="num">(Cu = 63.5)</span></p></div>
    ${qline('١. عدد مولات النحاس',[['g1','mol','n(Cu) =']])}
    ${qline('Cu: عدد المولات ÷ المعامل (١)',[['g2','','=']])}
    ${qline('Ag<sup>+</sup>: عدد المولات ÷ المعامل (٢)',[['g3','','=']])}

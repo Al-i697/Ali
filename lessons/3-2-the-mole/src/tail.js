@@ -9,7 +9,7 @@
   slide({id:'final',ch:7,title:'تذكرة الخروج النهائية',tag:'تذكرة خروج',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'final')},
-   note:'<ul><li>الإجابات: ٨٠ g، ٢ mol، 3.01×10²³، n = m ÷ M.</li></ul>'});
+   note:'<ul><li>الإجابات: ٨٠ g، ٢ mol، 3.01×10²³، n = m ÷ M.</li><li>الأسئلة من إعدادي: ١ كتلة من المولات (MgO)، ٢ مولات من الكتلة (H₂)، ٣ عدد الذرات في 0.5 mol، ٤ العلاقة n = m ÷ M. الصيغتان m = n × M وn = m ÷ M هما أساس الحسابات في ٣-٣ وما بعده.</li></ul>'});
 })();
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
@@ -21,6 +21,6 @@ slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
    <div class="col" style="width:420px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:10px 14px;font-size:21px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
     <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٣ حسابات تتضمن كتلاً متفاعلة (استنباط الصيغ الكيميائية)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
- note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li></ul>'});
+ note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>دليل المعلم ص٥٥: ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط غير متوفرة في الملفات المرسلة (الملف ينتهي عند ص٥٠)، فلا توجد لها شريحة. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) مذكور في الواجب وليس له شريحة.</li></ul>'});
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
