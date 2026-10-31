@@ -6,7 +6,7 @@ export function LogoMark({ className }: { className?: string }) {
       <rect width="40" height="40" rx="10" fill="var(--brand)" />
       <path d="M20 12.5c-3-2-7-2.3-10-1.4v17c3-.9 7-.6 10 1.4 3-2 7-2.3 10-1.4v-17c-3-.9-7-.6-10 1.4z" fill="var(--brand-contrast)" fillOpacity=".96" />
       <path d="M20 12.5v17" stroke="var(--brand)" strokeWidth="1.6" />
-      <path d="M26.5 9.5v9l2.2-1.8 2.2 1.8v-9z" fill="#d9a441" />
+      <path d="M26.5 9.5v9l2.2-1.8 2.2 1.8v-9z" fill="var(--logo-ribbon, #d9a441)" />
     </svg>
   );
 }

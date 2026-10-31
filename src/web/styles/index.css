@@ -102,6 +102,110 @@
   --radius-ctl: 10px;
 }
 
+/* ─────────── ثيم «ملكي»: خلفية كحلية ثابتة وعناصر عائمة فوقها ───────────
+   الفكرة: الخلفية ثابتة لا تتحرك مع التمرير، وما فوقها (الشريط الجانبي والبطاقات والنوافذ) يطفو بظلال عميقة.
+   رموز الألوان تنقسم نطاقين بدل تكرار الألوان في كل مكوّن:
+     • الجذر = ما يقع مباشرةً على الكحلي (عناوين الصفحات والتبويبات…): نصوص فاتحة وذهبي للتمييز.
+     • أي عنصر يحمل خلفية فاتحة (bg-surface وإخوتها) = نطاق «البطاقة»: نصوص داكنة وكحلي للتمييز، وتتوارثه أبناؤه.
+   فلا يحتاج أي مكوّن موجود إلى تعديل، والزر الأساسي يصير ذهبيًا على الكحلي وكحليًا داخل البطاقة تلقائيًا.
+   قاعدة النطاق الفاتح في طبقة base مع color صريح: لون النص يُورَّث قيمةً محسوبة من body فلا يكفي قلب المتغيرات،
+   والطبقة تُبقي أصناف text-* في المكوّنات (مثل text-brand على الشارات) أعلى منها. */
+:root[data-theme='royal'] {
+  --bg: #0b1d3a;
+  --surface: rgb(255 255 255 / 0.07);
+  --surface-2: rgb(255 255 255 / 0.05);
+  --surface-3: rgb(255 255 255 / 0.1);
+  --border: rgb(255 255 255 / 0.14);
+  --border-strong: rgb(255 255 255 / 0.28);
+  --text: #f6f3ea;
+  --text-2: #d5deee;
+  --muted: #a9b9d4;
+  --brand: #e9c46a;
+  --brand-hover: #f3d58a;
+  --brand-soft: rgb(233 196 106 / 0.16);
+  --brand-contrast: #0b1d3a;
+  --accent: #e9c46a;
+  --accent-soft: rgb(233 196 106 / 0.14);
+  --good: #5fd3a1;
+  --good-soft: rgb(95 211 161 / 0.14);
+  --info: #8db6f0;
+  --info-soft: rgb(141 182 240 / 0.14);
+  --warn: #f0b857;
+  --warn-soft: rgb(240 184 87 / 0.14);
+  --bad: #ff9a8f;
+  --bad-soft: rgb(255 154 143 / 0.14);
+  --ring: rgb(233 196 106 / 0.5);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.2), 0 22px 44px -26px rgb(0 0 0 / 0.75);
+  --shadow-md: 0 1px 2px rgb(0 0 0 / 0.2), 0 24px 48px -24px rgb(0 0 0 / 0.8);
+  --shadow-lg: 0 30px 70px -24px rgb(0 0 0 / 0.75);
+  --overlay: rgb(4 12 28 / 0.68);
+  --grid-dot: rgb(255 255 255 / 0.06);
+  --logo-ribbon: #0b1d3a;
+  color-scheme: light;
+}
+
+@layer base {
+  :root[data-theme='royal'] :is([class~='bg-surface'], [class~='bg-surface-2'], [class~='bg-surface-3'], [class~='bg-white'], [class~='bg-brand-soft'], [class~='bg-accent-soft']):not(.royal-glass, .royal-glass *) {
+    --surface: #ffffff;
+    --surface-2: #faf9f6;
+    --surface-3: #f0eee6;
+    --border: #e6e3da;
+    --border-strong: #d5d9e3;
+    --text: #14213d;
+    --text-2: #3a4664;
+    --muted: #5b6685;
+    --brand: #173564;
+    --brand-hover: #0b1d3a;
+    --brand-soft: #eaf0fa;
+    --brand-contrast: #ffffff;
+    --accent: #7a5614;
+    --accent-soft: #fbf1d9;
+    --good: #0a7a53;
+    --good-soft: #e6f6ee;
+    --info: #1d5fb4;
+    --info-soft: #e8f0fb;
+    --warn: #8a5a00;
+    --warn-soft: #fff3d6;
+    --bad: #b42323;
+    --bad-soft: #fdecec;
+    --ring: rgb(23 53 100 / 0.35);
+    --grid-dot: rgb(20 33 61 / 0.07);
+    --logo-ribbon: #d9a441;
+    color: var(--text);
+  }
+}
+
+/* الخلفية الثابتة: توهّج ذهبي وأزرق ونقش سداسي خفيف فوق تدرّج كحلي */
+:root[data-theme='royal'] body {
+  background-color: #0b1d3a;
+  background-image:
+    radial-gradient(1100px 620px at 12% -8%, rgb(212 165 72 / 0.2), rgb(212 165 72 / 0) 70%),
+    radial-gradient(1200px 760px at 105% 108%, rgb(59 110 190 / 0.38), rgb(59 110 190 / 0) 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='104' viewBox='0 0 120 104'><g fill='none' stroke='%23D4A548' stroke-opacity='.13' stroke-width='1.1'><path d='M30 2h30l15 26-15 26H30L15 28z'/><path d='M90 52h30l15 26-15 26H90L75 78z'/></g><g fill='%23D4A548' fill-opacity='.16'><circle cx='30' cy='2' r='2'/><circle cx='75' cy='28' r='2'/><circle cx='90' cy='52' r='2'/></g></svg>"),
+    linear-gradient(160deg, #07162e 0%, #0b1d3a 50%, #16325f 100%);
+  background-attachment: fixed;
+}
+:root[data-theme='royal'] .rounded-card { border-radius: 20px; }
+:root[data-theme='royal'] .royal-glass {
+  background: rgb(7 22 46 / 0.8);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  border-color: rgb(212 165 72 / 0.38);
+}
+/* الشريط الجانبي يطفو بهامش حوله بدل أن يلتصق بحافة الشاشة */
+@media (min-width: 1024px) {
+  :root[data-theme='royal'] .shell-aside {
+    inset-block: 16px;
+    inset-inline-start: 16px;
+    border: 1px solid rgb(212 165 72 / 0.38);
+    border-radius: 24px;
+    box-shadow: 0 30px 70px -28px rgb(0 0 0 / 0.8);
+    overflow: hidden;
+  }
+  :root[data-theme='royal'] .shell-main { padding-inline-start: 300px; }
+  :root[data-theme='royal'] .shell-main[data-collapsed='true'] { padding-inline-start: 116px; }
+}
+
 /* ألوان المواد: كل مادة لها لون مميز يظهر في الشرائح والجداول */
 .subj-teal { --c: #0d6b64; --c-soft: #d9f0ec; }
 .subj-blue { --c: #1d62b8; --c-soft: #dce9f9; }

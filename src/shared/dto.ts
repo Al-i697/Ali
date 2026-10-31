@@ -74,7 +74,7 @@ export type SettingsDto = {
     seniorTeacherName: string | null;
     principalName: string | null;
   };
-  preferences: { theme: 'system' | 'light' | 'dark'; digits: 'latn' | 'arab' };
+  preferences: { theme: 'system' | 'light' | 'dark' | 'royal'; digits: 'latn' | 'arab' };
   grading: GradingSettings;
   schedule: ScheduleSettings;
 };

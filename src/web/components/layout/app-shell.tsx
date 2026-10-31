@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Ellipsis, LogOut, Menu as MenuIcon, Monitor, Moon, PanelRightClose, PanelRightOpen, Sun, UserRound, X } from 'lucide-react';
+import { Crown, Ellipsis, LogOut, Menu as MenuIcon, Monitor, Moon, PanelRightClose, PanelRightOpen, Sun, UserRound, X } from 'lucide-react';
 import { THEME_PREF, USER_ROLE, type ThemePref } from '@shared/constants';
 import { useAuth, useUser } from '@/context/auth';
 import { useAcademic } from '@/context/academic';
@@ -52,7 +52,7 @@ function ThemeMenu() {
     if (settings) setPref(settings.preferences.theme);
   }, [settings]);
 
-  const Icon = pref === 'dark' ? Moon : pref === 'light' ? Sun : Monitor;
+  const Icon = pref === 'dark' ? Moon : pref === 'light' ? Sun : pref === 'royal' ? Crown : Monitor;
   const change = (v: string) => {
     const next = v as ThemePref;
     setPref(next);
@@ -152,7 +152,7 @@ function UserMenu() {
 function MobileBottomNav({ onMore }: { onMore: () => void }) {
   const items = NAV.filter((n) => n.mobile);
   return (
-    <nav aria-label="تنقل سريع" className="no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+    <nav aria-label="تنقل سريع" className="royal-glass no-print fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
       <ul className="mx-auto grid max-w-xl grid-cols-5">
         {items.map((item) => (
           <li key={item.to}>
@@ -193,7 +193,7 @@ export function AppShell() {
       <aside
         aria-label="القائمة الجانبية"
         className={cn(
-          'no-print fixed inset-y-0 start-0 z-30 hidden flex-col border-e border-line bg-surface transition-[width] duration-200 lg:flex',
+          'shell-aside royal-glass no-print fixed inset-y-0 start-0 z-30 hidden flex-col border-e border-line bg-surface transition-[width] duration-200 lg:flex',
           collapsed ? 'w-[84px]' : 'w-[268px]',
         )}
       >
@@ -219,7 +219,7 @@ export function AppShell() {
       <Dialog.Root open={drawer} onOpenChange={setDrawer}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-[var(--overlay)] lg:hidden" />
-          <Dialog.Content className="fixed inset-y-0 start-0 z-50 flex w-[300px] max-w-[86vw] flex-col bg-surface shadow-modal outline-none data-[state=open]:animate-[slide-in-end_0.2s_ease-out] lg:hidden">
+          <Dialog.Content className="royal-glass fixed inset-y-0 start-0 z-50 flex w-[300px] max-w-[86vw] flex-col bg-surface shadow-modal outline-none data-[state=open]:animate-[slide-in-end_0.2s_ease-out] lg:hidden">
             <Dialog.Title className="sr-only">القائمة الرئيسية</Dialog.Title>
             <Dialog.Description className="sr-only">التنقل بين أقسام سجلي</Dialog.Description>
             <div className="flex h-[68px] items-center justify-between border-b border-line px-5">
@@ -235,7 +235,7 @@ export function AppShell() {
         </Dialog.Portal>
       </Dialog.Root>
 
-      <div className={cn('transition-[padding] duration-200', collapsed ? 'lg:ps-[84px]' : 'lg:ps-[268px]')}>
+      <div data-collapsed={collapsed} className={cn('shell-main transition-[padding] duration-200', collapsed ? 'lg:ps-[84px]' : 'lg:ps-[268px]')}>
         {user.isDemo ? (
           <div role="region" aria-label="تنبيه الحساب التجريبي" className="no-print bg-accent-soft px-4 py-1.5 text-center text-[13px] font-medium text-accent">
             {import.meta.env.VITE_DEMO

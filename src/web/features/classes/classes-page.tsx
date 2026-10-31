@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { BookOpen, CalendarPlus, GraduationCap, Plus, Search, Users } from 'lucide-react';
+import { BookOpen, CalendarPlus, ClipboardList, GraduationCap, Layers, Plus, Search, Users } from 'lucide-react';
 import { STUDENT_STATUS, gradeLabel } from '@shared/constants';
 import type { SectionDto, StudentsPage } from '@shared/dto';
 import { useAcademic } from '@/context/academic';
@@ -9,7 +9,7 @@ import { api, withQuery } from '@/lib/api';
 import { useDebounced, useFmt } from '@/lib/hooks';
 import { qk, useSections } from '@/lib/queries';
 import { cn } from '@/lib/cn';
-import { Avatar, Badge, Button, Card, EmptyState, Input, PageHeader, PageLoader, QueryError, Select, Skeleton, SubjectChip, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
+import { Avatar, Badge, Button, ButtonLink, Card, EmptyState, Input, PageHeader, PageLoader, QueryError, Select, Skeleton, SubjectChip, Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui';
 import { CreateYearDialog } from '@/components/common/year-dialog';
 import { SubjectManager } from '@/components/common/subject-manager';
 import { SectionDialog } from './section-dialog';
@@ -18,22 +18,46 @@ function SectionCard({ s }: { s: SectionDto }) {
   const fmt = useFmt();
   const accent = s.assignments[0]?.subjectColor ?? 'teal';
   return (
-    <Card className="group relative overflow-hidden transition-shadow hover:shadow-pop">
-      <div className={cn(`subj-${accent} h-1.5 bg-[var(--c)]`)} aria-hidden />
-      <div className="p-5">
-        <div className="mb-3 flex items-start justify-between gap-3">
+    <Card className="group relative overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-pop">
+      <div className={cn(`subj-${accent} border-b border-[var(--c)]/20 bg-[var(--c-soft)] px-5 pb-4 pt-5`)}>
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <Link to={`/classes/${s.id}`} className="tnum text-[32px] font-bold leading-9 tracking-tight text-ink after:absolute after:inset-0 after:content-['']">{s.label}</Link>
-            <div className="mt-0.5 text-[14px] text-muted">{gradeLabel(s.gradeLevel)}</div>
+            <Link to={`/classes/${s.id}`} className="tnum text-[34px] font-bold leading-10 tracking-tight text-ink after:absolute after:inset-0 after:content-['']">{s.label}</Link>
+            <div className="mt-0.5 text-[14px] font-medium text-ink-2">{gradeLabel(s.gradeLevel)}</div>
           </div>
-          <Badge tone={s.studentCount ? 'brand' : 'warn'}>
+          <Badge tone={s.studentCount ? 'neutral' : 'warn'} className={s.studentCount ? 'bg-surface text-ink-2 shadow-sm' : undefined}>
             <Users className="size-3.5" /> {fmt.num(s.studentCount)} طالبًا
           </Badge>
         </div>
-        <div className="flex min-h-7 flex-wrap gap-1.5">
-          {s.assignments.length ? s.assignments.map((a) => <SubjectChip key={a.id} name={a.subjectName} color={a.subjectColor} />) : <span className="text-[13px] text-muted">لا مواد بعد</span>}
-        </div>
-        {s.notes ? <p className="mt-3 line-clamp-2 text-[13.5px] text-muted">{s.notes}</p> : null}
+      </div>
+      {s.assignments.length ? (
+        <ul className="divide-y divide-line">
+          {s.assignments.map((a) => (
+            <li key={a.id} className="flex items-center justify-between gap-2 px-5 py-2.5">
+              <SubjectChip name={a.subjectName} color={a.subjectColor} />
+              {/* فوق الرابط الممتد للبطاقة كي يعمل كلٌّ منهما */}
+              <div className="relative z-10 flex items-center gap-1">
+                <ButtonLink to={`/assessments/${a.id}`} variant="ghost" size="sm" icon={<ClipboardList className="size-4" />}>الدرجات</ButtonLink>
+                <ButtonLink to={`/lessons/new?assignment=${a.id}`} variant="ghost" size="sm" icon={<Plus className="size-4" />}>تحضير</ButtonLink>
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="px-5 py-3 text-[13.5px] text-muted">لا مواد بعد — افتح الشعبة لإضافتها.</p>
+      )}
+      {s.notes ? <p className="line-clamp-2 border-t border-line px-5 py-3 text-[13.5px] text-muted">{s.notes}</p> : null}
+    </Card>
+  );
+}
+
+function MiniStat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <Card className="flex items-center gap-3 px-4 py-3">
+      <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">{icon}</span>
+      <div className="min-w-0">
+        <div className="tnum text-[22px] font-bold leading-7 text-ink">{value}</div>
+        <div className="truncate text-[13px] text-muted">{label}</div>
       </div>
     </Card>
   );
@@ -119,6 +143,7 @@ function AllStudents({ sections, yearId }: { sections: SectionDto[]; yearId: str
 
 export default function ClassesPage() {
   const { year, isLoading: yearsLoading } = useAcademic();
+  const fmt = useFmt();
   const sections = useSections(year?.id);
   const [creating, setCreating] = useState(false);
   const [subjectsOpen, setSubjectsOpen] = useState(false);
@@ -159,7 +184,14 @@ export default function ClassesPage() {
           ) : list.length === 0 ? (
             <EmptyState icon={<GraduationCap className="size-7" />} title="لا شعب في هذا العام" description="أضف شعبة (مثل 10/3) واختر المواد التي تدرّسها فيها. ثم أضف طلابها بلصق الأسماء أو برفع ملف Excel." action={<Button variant="primary" icon={<Plus className="size-4" />} onClick={() => setCreating(true)}>إضافة أول شعبة</Button>} />
           ) : (
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{list.map((s) => <SectionCard key={s.id} s={s} />)}</div>
+            <>
+              <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <MiniStat icon={<GraduationCap className="size-5" />} label="الشعب" value={fmt.num(list.length)} />
+                <MiniStat icon={<Users className="size-5" />} label="الطلاب" value={fmt.num(list.reduce((n, s) => n + s.studentCount, 0))} />
+                <MiniStat icon={<Layers className="size-5" />} label="مقررات (شعبة × مادة)" value={fmt.num(list.reduce((n, s) => n + s.assignments.length, 0))} />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{list.map((s) => <SectionCard key={s.id} s={s} />)}</div>
+            </>
           )}
         </TabsContent>
         <TabsContent value="students"><AllStudents sections={list} yearId={year.id} /></TabsContent>

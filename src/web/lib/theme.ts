@@ -5,7 +5,7 @@ const KEY = 'sijilli-theme';
 export function readThemePref(): ThemePref {
   try {
     const v = localStorage.getItem(KEY);
-    return v === 'light' || v === 'dark' || v === 'system' ? v : 'system';
+    return v === 'light' || v === 'dark' || v === 'royal' || v === 'system' ? v : 'system';
   } catch {
     return 'system';
   }
@@ -18,7 +18,8 @@ export function applyTheme(pref: ThemePref) {
     /* التخزين محجوب: نكتفي بتطبيق السمة لهذه الجلسة */
   }
   const dark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+  // «ملكي»: خلفية كحلية ثابتة وبطاقات فاتحة عائمة، فعناصره الداخلية فاتحة (colorScheme = light)
+  document.documentElement.dataset.theme = pref === 'royal' ? 'royal' : dark ? 'dark' : 'light';
   document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
 }
 

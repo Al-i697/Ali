@@ -330,6 +330,7 @@ export const THEME_PREF = defineEnum([
   { value: 'system', label: 'حسب النظام' },
   { value: 'light', label: 'فاتح' },
   { value: 'dark', label: 'داكن' },
+  { value: 'royal', label: 'ملكي (كحلي وذهبي)' },
 ] as const);
 export type ThemePref = (typeof THEME_PREF.values)[number];
 

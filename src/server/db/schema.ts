@@ -103,7 +103,7 @@ export const userSettings = sqliteTable('user_settings', {
   specialization: text('specialization'),
   seniorTeacherName: text('senior_teacher_name'),
   principalName: text('principal_name'),
-  theme: text('theme').$type<'system' | 'light' | 'dark'>().notNull().default('system'),
+  theme: text('theme').$type<'system' | 'light' | 'dark' | 'royal'>().notNull().default('system'),
   digits: text('digits').$type<'latn' | 'arab'>().notNull().default('latn'),
   grading: text('grading', { mode: 'json' }).$type<GradingSettings>(),
   schedule: text('schedule', { mode: 'json' }).$type<ScheduleSettings>(),
