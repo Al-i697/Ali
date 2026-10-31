@@ -20,9 +20,9 @@ const {chromium}=require('playwright');const path=require('path');
     }
     return out;
   });
-  await p.addStyleTag({content:'.slide *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important} .slide svg text{fill:transparent!important}',});
+  const hideTxt=await p.addStyleTag({content:'.slide *{color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:none!important} .slide svg text{fill:transparent!important}',});
   const shot=await p.screenshot(); 
-  await p.evaluate(()=>{const s=[...document.querySelectorAll('style')].pop(); s.remove()});
+  await hideTxt.evaluate(e=>e.remove()); /* remove only this tool's own style tag (slides may carry their own <style>) */
   const res=await p.evaluate(async({img,items})=>{
     const im=new Image(); im.src='data:image/png;base64,'+img; await im.decode();
     const c=document.createElement('canvas'); c.width=1920;c.height=1080; const g=c.getContext('2d'); g.drawImage(im,0,0);
