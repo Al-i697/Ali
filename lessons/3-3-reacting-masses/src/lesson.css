@@ -125,3 +125,4 @@ html[data-fx="0"] .lbub{animation:none}
 .slide[data-id=past1] .fb,.slide[data-id=past2] .fb{min-height:20px; font-size:17px; line-height:1.2}
 .slide[data-id=past1] .pgrid{gap:8px} .slide[data-id=past1] .pq .eq{font-size:19px!important}
 .bars:not(.go) .bseg b{visibility:hidden}
+.slide[data-id=bacl] .opt{font-size:18px; min-height:54px; padding:4px 8px; line-height:1.2}

@@ -35,6 +35,27 @@ slide({id:'si6',ch:3,title:'ماذا يحدث إذا لم تكن الكميات 
  },
  note:'<ul><li>عرضك (شريحة ٦): ٦ g Si مع ٥٫٣ g O. الأكسجين يُستهلك أولاً (المادة المحددة)، ويبقى ١٫٣ g Si (المادة الفائضة). وردت في الشريحة عبارة «Si مع Si» والصحيح ٦ g Si مع ٥٫٣ g O.</li><li>التعريفان من كتاب الطالب ص٦٣ (مصطلحات علمية).</li></ul>'});
 
+/* 9b the equation as a ratio of moles and of masses, and conservation of mass (book p.62, summary p.4) */
+slide({id:'conserve',ch:3,title:'المعادلة تعطي نسبة المولات ونسبة الكتل',tag:'أكمل الجدول',
+ html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
+   <div class="frm brk" style="padding:12px 20px;align-items:center;gap:6px"><div class="bigeq" style="font-size:40px;color:var(--gold)">Fe + S → FeS</div><div class="sm" style="font-size:20px;text-align:center">المعادلة تعني: <b class="num">1 mol</b> من Fe تتفاعل مع <b class="num">1 mol</b> من S وتعطي <b class="num">1 mol</b> من FeS (Fe = 56, S = 32)</div></div>
+   <table class="mtab"><thead><tr><th></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">Fe</span></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">S</span></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">FeS</span></th></tr></thead><tbody>
+    <tr><th>عدد المولات</th><td><span class="num">1 mol</span></td><td><span class="num">1 mol</span></td><td><span class="num">1 mol</span></td></tr>
+    <tr><th>الكتلة المولية</th><td><span class="num">56 g/mol</span></td><td><span class="num">32 g/mol</span></td><td>${nin('k0','g/mol')}</td></tr>
+    <tr><th>الكتلة</th><td>${nin('k1','g')}</td><td>${nin('k2','g')}</td><td>${nin('k3','g')}</td></tr></tbody></table>
+   <div class="fb" style="text-align:center;min-height:26px"></div></div>
+  <div class="col" style="width:430px;flex:none;gap:8px;justify-content:flex-start">
+   <div class="panel hide" id="q1" style="padding:10px 16px;gap:6px"><div style="font-size:22px;font-weight:800">كتلة المواد الداخلة (56 + 32) مقارنة بكتلة FeS الناتجة:</div>${optsHTML([{t:'أكبر'},{t:'مساوية لها'},{t:'أقل'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:8px"')}<div class="fb q1fb" style="min-height:22px"></div></div>
+   <div class="panel hide" id="q2" style="padding:10px 16px;gap:6px;flex-direction:row;align-items:center;flex-wrap:wrap"><span style="font-size:22px;font-weight:700">نصف الكمية: 28 g Fe تلزمها</span>${nin('half','g')}<span style="font-size:22px;font-weight:700">من S</span><div class="fb q2fb" style="flex:1 1 100%;min-height:22px"></div></div>
+   <div class="gbar hide" id="gb" style="font-size:21px;padding:8px 14px"><b>كتل المواد الداخلة = كتل المواد الناتجة</b> والنسبة <b class="num">56 : 32 : 88</b> ثابتة. وإذا اختلفت الكميات عنها يبقى جزء من إحدى المادتين.</div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'k0',a:88,t:0.7,w:'✓ 56 + 32 = 88 g/mol',h:'اجمع كتلتي Fe وS'},{n:'k1',a:56,t:0.5,w:'✓ 1 mol × 56 = 56 g',h:'الكتلة = عدد المولات × الكتلة المولية'},{n:'k2',a:32,t:0.3,w:'✓ 1 mol × 32 = 32 g',h:'1 × 32'},{n:'k3',a:88,t:0.7,w:'✓ 1 mol × 88 = 88 g',h:'1 × 88'}],$('.fb',el),function(){ var q=$('#q1',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindMcq($('#q1',el),[{t:'',why:'مجموع 56 + 32 يساوي 88 تماماً'},{t:'',ok:true,why:'صح: 56 + 32 = 88 (حفظ الكتلة)'},{t:'',why:'لا تفنى المادة ولا تُخلق'}],$('.q1fb',el),function(){ $('#q1 .opts',el).classList.add('hide'); var q=$('#q2',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindNum($('.nin[data-n="half"]',el),16,0.2,function(ok){ var fb=$('.q2fb',el); if(ok){ say(fb,'✓ 28 ÷ 56 = 0.5 mol ← 0.5 mol S = 16 g ، والناتج 44 g','ok'); var g=$('#gb',el); g.classList.remove('hide'); g.classList.add('up') } else say(fb,'النسبة 56 : 32 ثابتة؛ 28 هي نصف 56','bad') });
+ },
+ note:'<ul><li>كتاب الطالب ص٦٢: المعادلة Fe + S → FeS تعني ١ mol : ١ mol : ١ mol أي ٥٦ g : ٣٢ g : ٨٨ g، والكتلة الكلية تُحفظ. ملخص الوحدة (الصفحة ٤): «كتل المواد الداخلة = كتل المواد الناتجة» مع Fe + S → FeS (١ mol، ٥٦ g، ٣٢ g، ٨٨ g).</li><li>هذه الشريحة مضافة من الكتاب والملخص (ليست في عرض NotebookLM)، وتمهّد لشريحة الحديد والكبريت.</li></ul>'});
+
 /* 10 iron and sulfur: bars of used and left */
 slide({id:'fes',ch:3,title:'الحديد والكبريت',tag:'أكمل الأرقام',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
@@ -49,7 +70,7 @@ slide({id:'fes',ch:3,title:'الحديد والكبريت',tag:'أكمل الأ�
   <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
    <div class="panel" style="padding:14px 20px;gap:10px"><div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;font-size:20px;color:var(--muted);font-weight:700"><span></span><span style="display:flex;gap:14px"><span><i class="lg used"></i><span>المستخدم في التفاعل</span></span><span><i class="lg left"></i><span>المتبقي</span></span></span></div>
     ${barsHTML('bfs',[{lab:'الحديد Fe',parts:[[5.6,'used','5.6 g']]},{lab:'الكبريت S',parts:[[3.2,'used','3.2 g'],[1.8,'left','1.8 g']]},{lab:'FeS',parts:[[8.8,'prod','8.8 g']]}],8.8)}</div>
-   <div class="gbar hide" id="gb" style="font-size:23px">الكبريت <b>فائض</b> لأن كمية منه أكثر من المطلوب، والحديد <b>محدد</b> لأنه انتهى كله.</div></div></div>`;},
+   <div class="gbar hide" id="gb" style="font-size:21px">الكبريت <b>فائض</b> والحديد <b>محدد</b>. وبالقاعدة: n(Fe) = 5.6 ÷ 56 = 0.1 و n(S) = 5 ÷ 32 = 0.156 ← ÷ المعامل (1) ← الأقل 0.1 هو Fe.</div></div></div>`;},
  init:function(el){
   var fb=$('.fb',el), bars=$('#bfs',el);
   bindSeq(el,[{n:'s1',a:3.2,t:0.04,w:'✓ 5.6 ÷ 56 = 0.1 mol Fe ← 0.1 mol S ← 3.2 g',h:'n(Fe) = 5.6 ÷ 56 ثم m(S) = n × 32'},{n:'s2',a:1.8,t:0.03,w:'✓ 5 − 3.2 = 1.8 g من الكبريت تبقى',h:'اطرح ما تفاعل من الكبريت من 5 g'},{n:'s3',a:8.8,t:0.1,w:'✓ 5.6 + 3.2 = 8.8 g (حفظ الكتلة)',h:'جمع كتلتي المتفاعلين أو 0.1 × 88'}],fb,function(){

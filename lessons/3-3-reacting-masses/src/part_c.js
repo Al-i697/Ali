@@ -32,6 +32,18 @@ slide({id:'scaleup',ch:4,title:'الكميات تكبر والنسبة ثابت�
  },
  note:'<ul><li>كتاب الطالب ص٦٣: CaCO₃ → CaO + CO₂ بالنسبة ١٠٠ : ٥٦ : ٤٤ (g)، ومن ١٠ أطنان كربونات الكالسيوم نتوقع ٥٫٦ أطنان من CaO.</li><li>الفكرة: المعادلة تعطينا نسباً ثابتة بين الكتل، والكتلة الكلية تُحفظ (٥٦ + ٤٤ = ١٠٠).</li></ul>'});
 
+/* 18b proportion in chemical calculations (activity book exercise 3-2) */
+slide({id:'prop',ch:4,title:'التناسب في الحسابات الكيميائية',tag:'كتاب النشاط تمرين ٣-٢',
+ html:function(){
+  var Q=[['أ','يلزم <b class="num">5 طن</b> من ZnO لإنتاج <b class="num">4 طن</b> من الخارصين. ما كتلة الخارصين الناتجة من <b class="num">20 طناً</b> من ZnO؟','t'],['ب','تحوّل <b class="num">14 طناً</b> من النيتروجين إلى <b class="num">17 طناً</b> من الأمونيا. ما كتلة النيتروجين اللازمة لإنتاج <b class="num">34 طناً</b> من الأمونيا؟','t'],['ج','<b class="num">27 g</b> من Al تعطي <b class="num">51 g</b> من Al<sub>2</sub>O<sub>3</sub>. كم g من Al<sub>2</sub>O<sub>3</sub> تنتج من <b class="num">4.5 g</b> من Al؟','g']];
+  return `<div class="col grow" style="gap:12px;justify-content:center"><div style="display:flex;gap:14px">${Q.map(function(q,i){return `<div class="frm brk" style="flex:1;min-width:0;padding:14px 16px;gap:10px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">${q[0]}</div><p class="lead" style="margin:0;font-size:22px;line-height:1.5">${q[1]}</p>${nin('p'+i,q[2])}</div>`}).join('')}</div>
+   <div class="fb" style="text-align:center;min-height:30px;font-size:23px"></div>
+   <div class="gbar hide" id="gb" style="font-size:22px">النسبة بين الكتل <b>ثابتة</b>: نضرب في نسبة المعطى فقط، وتصلح للأطنان والجرامات</div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'p0',a:16,t:0.2,w:'✓ 20 × 4 ÷ 5 = 16 طن',h:'النسبة 4 : 5'},{n:'p1',a:28,t:0.3,w:'✓ 34 × 14 ÷ 17 = 28 طن',h:'النسبة 14 : 17'},{n:'p2',a:8.5,t:0.1,w:'✓ 4.5 × 51 ÷ 27 = 8.5 g',h:'النسبة 51 : 27'}],$('.fb',el),function(){ var g=$('#gb',el); g.classList.remove('hide'); g.classList.add('up') });
+ },
+ note:'<ul><li>كتاب النشاط ص٣٧–٣٨ تمرين ٣-٢ «التناسب في الحسابات الكيميائية»: أ) ١٦ طن، ب) ٢٨ طن، ج) ٨٫٥ g.</li><li>هذه الأسئلة تُحَلّ بالنسبة والتناسب مباشرة، وهي مقدمة للطريقة الكاملة بالمولات في الشرائح التالية.</li></ul>'});
+
 /* 19 the method */
 slide({id:'method',ch:4,title:'كيف نحسب كتلة مادة من المعادلة؟',tag:'رتّب الخطوات',
  html:function(){return `<div class="col grow" style="gap:10px;justify-content:flex-start">

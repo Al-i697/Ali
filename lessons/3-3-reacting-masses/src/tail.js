@@ -14,12 +14,12 @@
 
 slide({id:'hw',ch:8,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط: ورقة العمل ٣-٣ (الكتل المتفاعلة)','كتاب النشاط: ورقة العمل ٣-٤ تجفيف بلورات BaCl₂ (اختياري)','أسئلة نهاية الوحدة: السؤال ٣'];
+  var hw=['كتاب الطالب: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط: ورقة العمل ٣-٣ (الكتل المتفاعلة)','كتاب النشاط: تمرين ٣-٣ الازدياد النسبي (الجزئيتان ب وج)','كتاب النشاط: ورقة العمل ٣-٤ BaCl₂ (اختياري)','أسئلة نهاية الوحدة: السؤال ٣'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:24px;line-height:1.55"><li>الصيغة من الكتل: كتلة ← مولات (÷ M) ← أبسط نسبة (÷ الأقل)</li><li>الكتلة من المعادلة: كتلة ← مولات ← نسبة المعادلة ← كتلة</li><li>المادة المحددة: الأقل في <b class="num">n ÷ المعامل</b>، تنتهي أولاً وتحدد الناتج</li><li>المادة الفائضة: يبقى منها جزء بعد التفاعل</li><li>نشاط ٣-٢: <b class="num">n(Na<sub>2</sub>CO<sub>3</sub>) : n(CO<sub>2</sub>) = 1 : 1</b></li></ul></div>
-   <div class="col" style="width:430px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:9px 14px;font-size:20px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
-    <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٤ حسابات تتضمن حجوم الغازات (الحجم المولي ومختبر النشاط ٣-٣)</p></div></div></div>`;},
+   <div class="col" style="width:430px;flex:none;gap:12px"><div class="panel" style="padding:12px 18px"><h3 style="margin:0 0 6px;font-family:var(--font-display);font-size:26px">الواجب</h3><div class="steps" style="gap:6px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:5px 12px;font-size:18px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
+    <div class="panel" style="padding:8px 16px"><div class="sm" style="font-size:19px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:20px;line-height:1.35">٣-٤ حسابات تتضمن حجوم الغازات (الحجم المولي ومختبر النشاط ٣-٣)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
  note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٣: الأسئلة ٣-٨ إلى ٣-١١، وورقة العمل ٣-٣، وورقة العمل ٣-٤ (إزالة ماء التبلور من BaCl₂·2H₂O) اختيارية، وأسئلة نهاية الوحدة السؤال ٣. اضغط على البند لتظليله.</li><li>في ورقة العمل ٣-٣ سؤال ٢ أجزاء الحجم (أ.٢ و ب.٢) تُحَلّ بعد الدرس ٣-٤.</li></ul>'});
 

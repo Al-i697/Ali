@@ -147,6 +147,29 @@ slide({id:'noo',ch:2,title:'سؤال امتحان: صيغة مركب النيت�
  },
  note:'<ul><li>سؤال حقيقي من امتحان ٢٠٢٣/٢٠٢٤ الدور الأول (سؤال ٢٢). نموذج الإجابة: المولات ١٫٠٣ و٢٫٠٣، أبسط نسبة ١ : ٢، الصيغة NO₂.</li><li>الدرجة تُمنح بخطوات الحل لا بالناتج وحده.</li></ul>'});
 
+/* 7b water of crystallisation: the same three steps with the masses of a heated salt (activity book worksheet 3-4) */
+slide({id:'bacl',ch:2,title:'ماء التبلور: قيمة x في BaCl₂·xH₂O',tag:'ورقة العمل ٣-٤',
+ html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start">
+   <div class="frm brk" style="padding:10px 16px;gap:4px"><p class="lead" style="margin:0;font-size:21px">سُخّنت بلورات كلوريد الباريوم المميهة في بوتقة خزفية حتى فقدت ماءها:</p>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:20px;font-weight:700"><span>كتلة البوتقة الفارغة</span><span class="num">117.8 g</span><span>البوتقة مع BaCl₂·xH₂O</span><span class="num">125.9 g</span><span>البوتقة بعد التسخين</span><span class="num">124.7 g</span></div></div>
+   ${qline('كتلة BaCl<sub>2</sub>·xH<sub>2</sub>O قبل التسخين',[['w1','g','m =']])}
+   ${qline('كتلة BaCl<sub>2</sub> بعد التسخين',[['w2','g','m =']])}
+   ${qline('كتلة الماء المفقودة',[['w3','g','m =']])}
+   <div class="fb" style="text-align:center;min-height:24px"></div></div>
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start">
+   ${arStrip(['Ba','Cl','H','O'])}
+   ${qline('Mr لـ BaCl<sub>2</sub> (Ba = 137, Cl = 35.5)',[['w4','g/mol','Mr =']])}
+   ${qline('n(BaCl<sub>2</sub>)',[['w5','mol','n =']])}
+   ${qline('n(H<sub>2</sub>O) (Mr = 18)',[['w6','mol','n =']])}
+   ${qline('x = n(H<sub>2</sub>O) ÷ n(BaCl<sub>2</sub>)',[['w7','','x =']])}
+   <div class="panel hide" id="q2" style="padding:8px 14px;gap:4px"><div style="font-size:21px;font-weight:800">كيف نتأكد أن كل الماء فُقد؟</div>${optsHTML([{t:'نسخّن ثانية ونزن حتى تثبت الكتلة'},{t:'نزيد كمية الملح'},{t:'نبرّد البوتقة فقط'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:6px"')}<div class="fb q2fb" style="min-height:20px"></div></div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'w1',a:8.1,t:0.05,w:'✓ 125.9 − 117.8 = 8.1 g',h:'اطرح كتلة البوتقة الفارغة'},{n:'w2',a:6.9,t:0.05,w:'✓ 124.7 − 117.8 = 6.9 g',h:'البوتقة بعد التسخين ناقص الفارغة'},{n:'w3',a:1.2,t:0.03,w:'✓ 8.1 − 6.9 = 1.2 g (أو 125.9 − 124.7)',h:'الفرق بين الكتلتين'},{n:'w4',a:208,t:1.7,w:'✓ 137 + 2 × 35.5 = 208 g/mol',h:'137 + (2 × 35.5)'},{n:'w5',a:6.9/208,t:0.0004,w:'✓ 6.9 ÷ 208 = 0.0332 mol',h:'n = m ÷ Mr'},{n:'w6',a:1.2/18,t:0.0008,w:'✓ 1.2 ÷ 18 = 0.0667 mol',h:'Mr(H₂O) = 18'},{n:'w7',a:2,t:0.1,w:'✓ 0.0667 ÷ 0.0332 ≈ 2 ← BaCl₂·2H₂O',h:'اقسم عدد مولات الماء على عدد مولات BaCl₂'}],$('.fb',el),function(){ var q=$('#q2',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindMcq($('#q2',el),[{t:'',ok:true,why:'صح: إذا ثبتت الكتلة فلم يبق ماء'},{t:'',why:'لا علاقة لذلك بفقد الماء'},{t:'',why:'التبريد وحده لا يؤكد فقد كل الماء'}],$('.q2fb',el),null);
+ },
+ note:'<ul><li>كتاب النشاط ص٥٠ (ورقة العمل ٣-٤): ١١٧٫٨ g و١٢٥٫٩ g و١٢٤٫٧ g. الإجابات: ٨٫١ g، ٦٫٩ g، ١٫٢ g، Mr(BaCl₂) = ٢٠٨، x = ٢. هي نفس خطوات استنباط الصيغة لكن بالتسخين بدل الاندماج.</li><li>في ورقة النشاط كُتب Cl = ٣٥٫٣ والصحيح ٣٥٫٥ (كما في الامتحانات)، واعتمدنا ٣٥٫٥.</li><li>سؤال امتحان ٢٠٢٥/٢٠٢٦ الدور الأول (١٦) يطلب Mr لـ BaCl₂·2H₂O.</li></ul>'});
+
 /* 8 exit ticket 1: finding a formula */
 (function(){
   var items=[

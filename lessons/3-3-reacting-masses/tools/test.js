@@ -1,7 +1,7 @@
 /* Interaction tests for the reacting-masses lesson: every slide is driven the way a student would use it. Run from the lesson folder: node tools/test.js */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lesson33.html';
-const IDS=['goals','sand1','sand2','steps3','mgo','sio2','noo','tk1','si6','fes','rule','cuo','fe48','ag','parts','cls','tk2','scaleup','method','ex32','ex33','q38','q39','solv','lab','labcalc','race','past1','past2','final','hw'];
+const IDS=['goals','sand1','sand2','steps3','mgo','sio2','noo','bacl','tk1','si6','conserve','fes','rule','cuo','fe48','ag','parts','cls','tk2','scaleup','prop','method','ex32','ex33','q38','q39','solv','lab','labcalc','race','past1','past2','final','hw'];
 const results=[]; const errs=[];
 (async()=>{
   const b=await chromium.launch();
@@ -48,8 +48,10 @@ const results=[]; const errs=[];
   await T('mgo',async(p,sl)=>{await rows(sl,[['an0',0.01],['an1',0.01],['ar0',1],['ar1',1]]); await p.waitForTimeout(300); if(!(await vis(sl.locator('#afq')))) return false; await sl.locator('#afq .opt').nth(0).click(); await p.waitForTimeout(200); return (await sl.locator('.fb').first().textContent()).includes('✓')});
   await T('sio2',async(p,sl)=>{await rows(sl,[['bm1',5.3],['bn0',0.168],['bn1',0.331],['br0',1],['br1',2]]); await p.waitForTimeout(300); await sl.locator('#bfq .opt').nth(1).click(); await p.waitForTimeout(200); return (await sl.locator('.fb').first().textContent()).includes('✓')});
   await T('noo',async(p,sl)=>{await rows(sl,[['cn0',1.03],['cn1',2.03],['cr0',1],['cr1',2]]); await p.waitForTimeout(300); await sl.locator('#cfq .opt').nth(1).click(); await p.waitForTimeout(200); return (await sl.locator('.fb').first().textContent()).includes('✓')});
+  await T('bacl',async(p,sl)=>{await rows(sl,[['w1',8.1],['w2',6.9],['w3',1.2],['w4',208],['w5',0.0332],['w6',0.0667],['w7',2]]); await p.waitForTimeout(300); if(!(await vis(sl.locator('#q2')))) return false; await sl.locator('#q2 .opt').nth(0).click(); await p.waitForTimeout(300); return (await sl.locator('#q2 .fb').textContent()).includes('✓')});
   await T('tk1',async(p,sl)=>ticket(p,sl,[{opt:1},{num:0.2},{opt:1},{opt:1}]));
   await T('si6',async(p,sl)=>{await sl.locator('.opt').nth(1).click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#qleft')))) return false; await fill(sl,'.nin',1.3); await p.waitForTimeout(300); return await vis(sl.locator('#defs')) && (await sl.locator('#b6.go').count())===1});
+  await T('conserve',async(p,sl)=>{await rows(sl,[['k0',88],['k1',56],['k2',32],['k3',88]]); await p.waitForTimeout(300); if(!(await vis(sl.locator('#q1')))) return false; await sl.locator('#q1 .opt').nth(1).click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#q2')))) return false; await fill(sl,'.nin[data-n="half"]',16); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('fes',async(p,sl)=>{await rows(sl,[['s1',3.2],['s2',1.8],['s3',8.8]]); await p.waitForTimeout(300); if(!(await vis(sl.locator('#pick')))) return false; await sl.locator('#pick .opt').nth(0).click(); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('rule',async(p,sl)=>{for(const k of ['max','min']) await tap(p,sl,k,'.mslot','.mchip'); await p.waitForTimeout(300); if(!(await vis(sl.locator('#q2')))) return false; await sl.locator('#q2 .opt').nth(1).click(); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('cuo',async(p,sl)=>{await rows(sl,[['c1',0.0625],['c2',79.5],['c3',0.0654],['c4',0.0327],['c5',0.0625]]); await p.waitForTimeout(300); if(!(await vis(sl.locator('#pick')))) return false; await sl.locator('#pick .opt').nth(0).click(); await p.waitForTimeout(400); const tf=await sl.locator('.bal .bm').getAttribute('style'); return await vis(sl.locator('#gb')) && /rotate\(-9deg\)/.test(tf)});
@@ -59,6 +61,7 @@ const results=[]; const errs=[];
   await T('cls',async(p,sl)=>{for(const k of ['Cu','S','CuO','Ag','C','Fe']) await tap(p,sl,k,'.mslot','.mchip'); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('tk2',async(p,sl)=>ticket(p,sl,[{opt:0},{opt:0},{opt:1},{num:0.05}]));
   await T('scaleup',async(p,sl)=>{await sl.locator('#sl').evaluate(e=>{e.value=20; e.dispatchEvent(new Event('input'))}); const v=await sl.locator('#sv').textContent(); await fill(sl,'.nin',5.6); await p.waitForTimeout(300); return v==='20 t' && await vis(sl.locator('#gb'))});
+  await T('prop',async(p,sl)=>{await rows(sl,[['p0',16],['p1',28],['p2',8.5]]); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('method',async(p,sl)=>{for(const k of [0,1,2,3]) await tap(p,sl,k,'.mslot','.mchip'); await p.waitForTimeout(300); return await vis(sl.locator('#gb'))});
   await T('ex32',async(p,sl)=>{await rows(sl,[['e1',0.34],['e2',0.17],['e3',102],['e4',17.3]]); await p.waitForTimeout(200); return (await okIn(sl))===4 && (await cnt(sl.locator('.ccell.on')))===4});
   await T('ex33',async(p,sl)=>{await rows(sl,[['x1',500],['x2',8.93],['x3',4.47],['x4',715],['x5',0.715]]); await p.waitForTimeout(200); return (await okIn(sl))===5});

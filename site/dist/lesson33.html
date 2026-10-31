@@ -1174,6 +1174,7 @@ html[data-fx="0"] .lbub{animation:none}
 .slide[data-id=past1] .fb,.slide[data-id=past2] .fb{min-height:20px; font-size:17px; line-height:1.2}
 .slide[data-id=past1] .pgrid{gap:8px} .slide[data-id=past1] .pq .eq{font-size:19px!important}
 .bars:not(.go) .bseg b{visibility:hidden}
+.slide[data-id=bacl] .opt{font-size:18px; min-height:54px; padding:4px 8px; line-height:1.2}
 
 </style>
 <script>
@@ -1186,10 +1187,11 @@ var LESSON={
   chapters:['مدخل','ماذا لو كان؟','استنباط الصيغة الكيميائية','المادة المحددة والفائضة','الكتلة من المعادلة','نشاط عملي (إثرائي)','تمارين وتدريب','أسئلة على نمط الامتحان','ختام'],
   bgMap:['hexes','bubbles','doodles','waves','atomic','bubbles','bonds','periodic','doodles'],
   palCh:['emerald','gold','navy','ember','violet','navy','ember','gold','emerald'],
-  bgId:{sand2:'bubbles',mgo:'reactions',sio2:'atomic',noo:'periodic',tk1:'doodles',si6:'waves',fes:'reactions',rule:'hexes',cuo:'waves',fe48:'bonds',ag:'bubbles',parts:'atomic',cls:'doodles',tk2:'doodles',scaleup:'reactions',method:'hexes',ex32:'bonds',ex33:'bonds',q38:'waves',q39:'periodic',solv:'organic',lab:'bubbles',labcalc:'waves',race:'doodles',past2:'hexes',final:'doodles',hw:'bubbles'},
-  palId:{goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
+  bgId:{bacl:'organic',conserve:'reactions',prop:'periodic',sand2:'bubbles',mgo:'reactions',sio2:'atomic',noo:'periodic',tk1:'doodles',si6:'waves',fes:'reactions',rule:'hexes',cuo:'waves',fe48:'bonds',ag:'bubbles',parts:'atomic',cls:'doodles',tk2:'doodles',scaleup:'reactions',method:'hexes',ex32:'bonds',ex33:'bonds',q38:'waves',q39:'periodic',solv:'organic',lab:'bubbles',labcalc:'waves',race:'doodles',past2:'hexes',final:'doodles',hw:'bubbles'},
+  palId:{bacl:'violet',conserve:'ember',prop:'emerald',goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
+    bacl:[['m_flask',1130,556,100,5,1.0]], conserve:[['m_flame',40,556,100,-5,1.0]], prop:[['m_tube',1130,556,100,6,1.0]],
     sand1:[['m_flask',1130,556,100,5,1.0]], sand2:[['m_star',1130,556,90,6,1.0]], steps3:[['m_tube',1130,556,100,6,1.0]],
     mgo:[['m_flame',40,556,100,-5,1.0]], sio2:[['n_crystal',40,540,110,-5,1.0]], noo:[['m_atom',40,556,100,-5,1.0]], tk1:[['m_bulb',44,560,110,-5,1.0],['m_star',1130,560,90,7,1.25]],
     si6:[['m_star',1130,556,90,6,1.0]], fes:[['s_fe',40,540,110,-5,1.0]], rule:[['m_bulb',40,556,100,-5,1.0]], cuo:[['m_tube',1130,556,100,6,1.0]], fe48:[['n_hhe',40,500,90,-5,1.0]],
@@ -2632,6 +2634,29 @@ slide({id:'noo',ch:2,title:'سؤال امتحان: صيغة مركب النيت�
  },
  note:'<ul><li>سؤال حقيقي من امتحان ٢٠٢٣/٢٠٢٤ الدور الأول (سؤال ٢٢). نموذج الإجابة: المولات ١٫٠٣ و٢٫٠٣، أبسط نسبة ١ : ٢، الصيغة NO₂.</li><li>الدرجة تُمنح بخطوات الحل لا بالناتج وحده.</li></ul>'});
 
+/* 7b water of crystallisation: the same three steps with the masses of a heated salt (activity book worksheet 3-4) */
+slide({id:'bacl',ch:2,title:'ماء التبلور: قيمة x في BaCl₂·xH₂O',tag:'ورقة العمل ٣-٤',
+ html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start">
+   <div class="frm brk" style="padding:10px 16px;gap:4px"><p class="lead" style="margin:0;font-size:21px">سُخّنت بلورات كلوريد الباريوم المميهة في بوتقة خزفية حتى فقدت ماءها:</p>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:20px;font-weight:700"><span>كتلة البوتقة الفارغة</span><span class="num">117.8 g</span><span>البوتقة مع BaCl₂·xH₂O</span><span class="num">125.9 g</span><span>البوتقة بعد التسخين</span><span class="num">124.7 g</span></div></div>
+   ${qline('كتلة BaCl<sub>2</sub>·xH<sub>2</sub>O قبل التسخين',[['w1','g','m =']])}
+   ${qline('كتلة BaCl<sub>2</sub> بعد التسخين',[['w2','g','m =']])}
+   ${qline('كتلة الماء المفقودة',[['w3','g','m =']])}
+   <div class="fb" style="text-align:center;min-height:24px"></div></div>
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start">
+   ${arStrip(['Ba','Cl','H','O'])}
+   ${qline('Mr لـ BaCl<sub>2</sub> (Ba = 137, Cl = 35.5)',[['w4','g/mol','Mr =']])}
+   ${qline('n(BaCl<sub>2</sub>)',[['w5','mol','n =']])}
+   ${qline('n(H<sub>2</sub>O) (Mr = 18)',[['w6','mol','n =']])}
+   ${qline('x = n(H<sub>2</sub>O) ÷ n(BaCl<sub>2</sub>)',[['w7','','x =']])}
+   <div class="panel hide" id="q2" style="padding:8px 14px;gap:4px"><div style="font-size:21px;font-weight:800">كيف نتأكد أن كل الماء فُقد؟</div>${optsHTML([{t:'نسخّن ثانية ونزن حتى تثبت الكتلة'},{t:'نزيد كمية الملح'},{t:'نبرّد البوتقة فقط'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:6px"')}<div class="fb q2fb" style="min-height:20px"></div></div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'w1',a:8.1,t:0.05,w:'✓ 125.9 − 117.8 = 8.1 g',h:'اطرح كتلة البوتقة الفارغة'},{n:'w2',a:6.9,t:0.05,w:'✓ 124.7 − 117.8 = 6.9 g',h:'البوتقة بعد التسخين ناقص الفارغة'},{n:'w3',a:1.2,t:0.03,w:'✓ 8.1 − 6.9 = 1.2 g (أو 125.9 − 124.7)',h:'الفرق بين الكتلتين'},{n:'w4',a:208,t:1.7,w:'✓ 137 + 2 × 35.5 = 208 g/mol',h:'137 + (2 × 35.5)'},{n:'w5',a:6.9/208,t:0.0004,w:'✓ 6.9 ÷ 208 = 0.0332 mol',h:'n = m ÷ Mr'},{n:'w6',a:1.2/18,t:0.0008,w:'✓ 1.2 ÷ 18 = 0.0667 mol',h:'Mr(H₂O) = 18'},{n:'w7',a:2,t:0.1,w:'✓ 0.0667 ÷ 0.0332 ≈ 2 ← BaCl₂·2H₂O',h:'اقسم عدد مولات الماء على عدد مولات BaCl₂'}],$('.fb',el),function(){ var q=$('#q2',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindMcq($('#q2',el),[{t:'',ok:true,why:'صح: إذا ثبتت الكتلة فلم يبق ماء'},{t:'',why:'لا علاقة لذلك بفقد الماء'},{t:'',why:'التبريد وحده لا يؤكد فقد كل الماء'}],$('.q2fb',el),null);
+ },
+ note:'<ul><li>كتاب النشاط ص٥٠ (ورقة العمل ٣-٤): ١١٧٫٨ g و١٢٥٫٩ g و١٢٤٫٧ g. الإجابات: ٨٫١ g، ٦٫٩ g، ١٫٢ g، Mr(BaCl₂) = ٢٠٨، x = ٢. هي نفس خطوات استنباط الصيغة لكن بالتسخين بدل الاندماج.</li><li>في ورقة النشاط كُتب Cl = ٣٥٫٣ والصحيح ٣٥٫٥ (كما في الامتحانات)، واعتمدنا ٣٥٫٥.</li><li>سؤال امتحان ٢٠٢٥/٢٠٢٦ الدور الأول (١٦) يطلب Mr لـ BaCl₂·2H₂O.</li></ul>'});
+
 /* 8 exit ticket 1: finding a formula */
 (function(){
   var items=[
@@ -2683,6 +2708,27 @@ slide({id:'si6',ch:3,title:'ماذا يحدث إذا لم تكن الكميات 
  },
  note:'<ul><li>عرضك (شريحة ٦): ٦ g Si مع ٥٫٣ g O. الأكسجين يُستهلك أولاً (المادة المحددة)، ويبقى ١٫٣ g Si (المادة الفائضة). وردت في الشريحة عبارة «Si مع Si» والصحيح ٦ g Si مع ٥٫٣ g O.</li><li>التعريفان من كتاب الطالب ص٦٣ (مصطلحات علمية).</li></ul>'});
 
+/* 9b the equation as a ratio of moles and of masses, and conservation of mass (book p.62, summary p.4) */
+slide({id:'conserve',ch:3,title:'المعادلة تعطي نسبة المولات ونسبة الكتل',tag:'أكمل الجدول',
+ html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
+   <div class="frm brk" style="padding:12px 20px;align-items:center;gap:6px"><div class="bigeq" style="font-size:40px;color:var(--gold)">Fe + S → FeS</div><div class="sm" style="font-size:20px;text-align:center">المعادلة تعني: <b class="num">1 mol</b> من Fe تتفاعل مع <b class="num">1 mol</b> من S وتعطي <b class="num">1 mol</b> من FeS (Fe = 56, S = 32)</div></div>
+   <table class="mtab"><thead><tr><th></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">Fe</span></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">S</span></th><th><span class="bigeq" style="font-size:30px;color:var(--gold)">FeS</span></th></tr></thead><tbody>
+    <tr><th>عدد المولات</th><td><span class="num">1 mol</span></td><td><span class="num">1 mol</span></td><td><span class="num">1 mol</span></td></tr>
+    <tr><th>الكتلة المولية</th><td><span class="num">56 g/mol</span></td><td><span class="num">32 g/mol</span></td><td>${nin('k0','g/mol')}</td></tr>
+    <tr><th>الكتلة</th><td>${nin('k1','g')}</td><td>${nin('k2','g')}</td><td>${nin('k3','g')}</td></tr></tbody></table>
+   <div class="fb" style="text-align:center;min-height:26px"></div></div>
+  <div class="col" style="width:430px;flex:none;gap:8px;justify-content:flex-start">
+   <div class="panel hide" id="q1" style="padding:10px 16px;gap:6px"><div style="font-size:22px;font-weight:800">كتلة المواد الداخلة (56 + 32) مقارنة بكتلة FeS الناتجة:</div>${optsHTML([{t:'أكبر'},{t:'مساوية لها'},{t:'أقل'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:8px"')}<div class="fb q1fb" style="min-height:22px"></div></div>
+   <div class="panel hide" id="q2" style="padding:10px 16px;gap:6px;flex-direction:row;align-items:center;flex-wrap:wrap"><span style="font-size:22px;font-weight:700">نصف الكمية: 28 g Fe تلزمها</span>${nin('half','g')}<span style="font-size:22px;font-weight:700">من S</span><div class="fb q2fb" style="flex:1 1 100%;min-height:22px"></div></div>
+   <div class="gbar hide" id="gb" style="font-size:21px;padding:8px 14px"><b>كتل المواد الداخلة = كتل المواد الناتجة</b> والنسبة <b class="num">56 : 32 : 88</b> ثابتة. وإذا اختلفت الكميات عنها يبقى جزء من إحدى المادتين.</div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'k0',a:88,t:0.7,w:'✓ 56 + 32 = 88 g/mol',h:'اجمع كتلتي Fe وS'},{n:'k1',a:56,t:0.5,w:'✓ 1 mol × 56 = 56 g',h:'الكتلة = عدد المولات × الكتلة المولية'},{n:'k2',a:32,t:0.3,w:'✓ 1 mol × 32 = 32 g',h:'1 × 32'},{n:'k3',a:88,t:0.7,w:'✓ 1 mol × 88 = 88 g',h:'1 × 88'}],$('.fb',el),function(){ var q=$('#q1',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindMcq($('#q1',el),[{t:'',why:'مجموع 56 + 32 يساوي 88 تماماً'},{t:'',ok:true,why:'صح: 56 + 32 = 88 (حفظ الكتلة)'},{t:'',why:'لا تفنى المادة ولا تُخلق'}],$('.q1fb',el),function(){ $('#q1 .opts',el).classList.add('hide'); var q=$('#q2',el); q.classList.remove('hide'); q.classList.add('up') });
+  bindNum($('.nin[data-n="half"]',el),16,0.2,function(ok){ var fb=$('.q2fb',el); if(ok){ say(fb,'✓ 28 ÷ 56 = 0.5 mol ← 0.5 mol S = 16 g ، والناتج 44 g','ok'); var g=$('#gb',el); g.classList.remove('hide'); g.classList.add('up') } else say(fb,'النسبة 56 : 32 ثابتة؛ 28 هي نصف 56','bad') });
+ },
+ note:'<ul><li>كتاب الطالب ص٦٢: المعادلة Fe + S → FeS تعني ١ mol : ١ mol : ١ mol أي ٥٦ g : ٣٢ g : ٨٨ g، والكتلة الكلية تُحفظ. ملخص الوحدة (الصفحة ٤): «كتل المواد الداخلة = كتل المواد الناتجة» مع Fe + S → FeS (١ mol، ٥٦ g، ٣٢ g، ٨٨ g).</li><li>هذه الشريحة مضافة من الكتاب والملخص (ليست في عرض NotebookLM)، وتمهّد لشريحة الحديد والكبريت.</li></ul>'});
+
 /* 10 iron and sulfur: bars of used and left */
 slide({id:'fes',ch:3,title:'الحديد والكبريت',tag:'أكمل الأرقام',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
@@ -2697,7 +2743,7 @@ slide({id:'fes',ch:3,title:'الحديد والكبريت',tag:'أكمل الأ�
   <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
    <div class="panel" style="padding:14px 20px;gap:10px"><div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;align-items:center;font-size:20px;color:var(--muted);font-weight:700"><span></span><span style="display:flex;gap:14px"><span><i class="lg used"></i><span>المستخدم في التفاعل</span></span><span><i class="lg left"></i><span>المتبقي</span></span></span></div>
     ${barsHTML('bfs',[{lab:'الحديد Fe',parts:[[5.6,'used','5.6 g']]},{lab:'الكبريت S',parts:[[3.2,'used','3.2 g'],[1.8,'left','1.8 g']]},{lab:'FeS',parts:[[8.8,'prod','8.8 g']]}],8.8)}</div>
-   <div class="gbar hide" id="gb" style="font-size:23px">الكبريت <b>فائض</b> لأن كمية منه أكثر من المطلوب، والحديد <b>محدد</b> لأنه انتهى كله.</div></div></div>`;},
+   <div class="gbar hide" id="gb" style="font-size:21px">الكبريت <b>فائض</b> والحديد <b>محدد</b>. وبالقاعدة: n(Fe) = 5.6 ÷ 56 = 0.1 و n(S) = 5 ÷ 32 = 0.156 ← ÷ المعامل (1) ← الأقل 0.1 هو Fe.</div></div></div>`;},
  init:function(el){
   var fb=$('.fb',el), bars=$('#bfs',el);
   bindSeq(el,[{n:'s1',a:3.2,t:0.04,w:'✓ 5.6 ÷ 56 = 0.1 mol Fe ← 0.1 mol S ← 3.2 g',h:'n(Fe) = 5.6 ÷ 56 ثم m(S) = n × 32'},{n:'s2',a:1.8,t:0.03,w:'✓ 5 − 3.2 = 1.8 g من الكبريت تبقى',h:'اطرح ما تفاعل من الكبريت من 5 g'},{n:'s3',a:8.8,t:0.1,w:'✓ 5.6 + 3.2 = 8.8 g (حفظ الكتلة)',h:'جمع كتلتي المتفاعلين أو 0.1 × 88'}],fb,function(){
@@ -2900,6 +2946,18 @@ slide({id:'scaleup',ch:4,title:'الكميات تكبر والنسبة ثابت�
   bindNum($('.nin',el),5.6,0.06,function(ok){ var fb=$('.fb',el); if(ok){ say(fb,'✓ 10 × 56 ÷ 100 = 5.6 طن','ok'); var g=$('#gb',el); g.classList.remove('hide'); g.classList.add('up') } else say(fb,'النسبة 100 : 56، فكم يقابل 10؟','bad') });
  },
  note:'<ul><li>كتاب الطالب ص٦٣: CaCO₃ → CaO + CO₂ بالنسبة ١٠٠ : ٥٦ : ٤٤ (g)، ومن ١٠ أطنان كربونات الكالسيوم نتوقع ٥٫٦ أطنان من CaO.</li><li>الفكرة: المعادلة تعطينا نسباً ثابتة بين الكتل، والكتلة الكلية تُحفظ (٥٦ + ٤٤ = ١٠٠).</li></ul>'});
+
+/* 18b proportion in chemical calculations (activity book exercise 3-2) */
+slide({id:'prop',ch:4,title:'التناسب في الحسابات الكيميائية',tag:'كتاب النشاط تمرين ٣-٢',
+ html:function(){
+  var Q=[['أ','يلزم <b class="num">5 طن</b> من ZnO لإنتاج <b class="num">4 طن</b> من الخارصين. ما كتلة الخارصين الناتجة من <b class="num">20 طناً</b> من ZnO؟','t'],['ب','تحوّل <b class="num">14 طناً</b> من النيتروجين إلى <b class="num">17 طناً</b> من الأمونيا. ما كتلة النيتروجين اللازمة لإنتاج <b class="num">34 طناً</b> من الأمونيا؟','t'],['ج','<b class="num">27 g</b> من Al تعطي <b class="num">51 g</b> من Al<sub>2</sub>O<sub>3</sub>. كم g من Al<sub>2</sub>O<sub>3</sub> تنتج من <b class="num">4.5 g</b> من Al؟','g']];
+  return `<div class="col grow" style="gap:12px;justify-content:center"><div style="display:flex;gap:14px">${Q.map(function(q,i){return `<div class="frm brk" style="flex:1;min-width:0;padding:14px 16px;gap:10px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">${q[0]}</div><p class="lead" style="margin:0;font-size:22px;line-height:1.5">${q[1]}</p>${nin('p'+i,q[2])}</div>`}).join('')}</div>
+   <div class="fb" style="text-align:center;min-height:30px;font-size:23px"></div>
+   <div class="gbar hide" id="gb" style="font-size:22px">النسبة بين الكتل <b>ثابتة</b>: نضرب في نسبة المعطى فقط، وتصلح للأطنان والجرامات</div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'p0',a:16,t:0.2,w:'✓ 20 × 4 ÷ 5 = 16 طن',h:'النسبة 4 : 5'},{n:'p1',a:28,t:0.3,w:'✓ 34 × 14 ÷ 17 = 28 طن',h:'النسبة 14 : 17'},{n:'p2',a:8.5,t:0.1,w:'✓ 4.5 × 51 ÷ 27 = 8.5 g',h:'النسبة 51 : 27'}],$('.fb',el),function(){ var g=$('#gb',el); g.classList.remove('hide'); g.classList.add('up') });
+ },
+ note:'<ul><li>كتاب النشاط ص٣٧–٣٨ تمرين ٣-٢ «التناسب في الحسابات الكيميائية»: أ) ١٦ طن، ب) ٢٨ طن، ج) ٨٫٥ g.</li><li>هذه الأسئلة تُحَلّ بالنسبة والتناسب مباشرة، وهي مقدمة للطريقة الكاملة بالمولات في الشرائح التالية.</li></ul>'});
 
 /* 19 the method */
 slide({id:'method',ch:4,title:'كيف نحسب كتلة مادة من المعادلة؟',tag:'رتّب الخطوات',
@@ -3164,12 +3222,12 @@ slide({id:'race',ch:6,title:'سباق الفصل: الصيغة والمحددة 
 
 slide({id:'hw',ch:8,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط: ورقة العمل ٣-٣ (الكتل المتفاعلة)','كتاب النشاط: ورقة العمل ٣-٤ تجفيف بلورات BaCl₂ (اختياري)','أسئلة نهاية الوحدة: السؤال ٣'];
+  var hw=['كتاب الطالب: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط: ورقة العمل ٣-٣ (الكتل المتفاعلة)','كتاب النشاط: تمرين ٣-٣ الازدياد النسبي (الجزئيتان ب وج)','كتاب النشاط: ورقة العمل ٣-٤ BaCl₂ (اختياري)','أسئلة نهاية الوحدة: السؤال ٣'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:24px;line-height:1.55"><li>الصيغة من الكتل: كتلة ← مولات (÷ M) ← أبسط نسبة (÷ الأقل)</li><li>الكتلة من المعادلة: كتلة ← مولات ← نسبة المعادلة ← كتلة</li><li>المادة المحددة: الأقل في <b class="num">n ÷ المعامل</b>، تنتهي أولاً وتحدد الناتج</li><li>المادة الفائضة: يبقى منها جزء بعد التفاعل</li><li>نشاط ٣-٢: <b class="num">n(Na<sub>2</sub>CO<sub>3</sub>) : n(CO<sub>2</sub>) = 1 : 1</b></li></ul></div>
-   <div class="col" style="width:430px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:9px 14px;font-size:20px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
-    <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٤ حسابات تتضمن حجوم الغازات (الحجم المولي ومختبر النشاط ٣-٣)</p></div></div></div>`;},
+   <div class="col" style="width:430px;flex:none;gap:12px"><div class="panel" style="padding:12px 18px"><h3 style="margin:0 0 6px;font-family:var(--font-display);font-size:26px">الواجب</h3><div class="steps" style="gap:6px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:5px 12px;font-size:18px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
+    <div class="panel" style="padding:8px 16px"><div class="sm" style="font-size:19px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:20px;line-height:1.35">٣-٤ حسابات تتضمن حجوم الغازات (الحجم المولي ومختبر النشاط ٣-٣)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
  note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٣: الأسئلة ٣-٨ إلى ٣-١١، وورقة العمل ٣-٣، وورقة العمل ٣-٤ (إزالة ماء التبلور من BaCl₂·2H₂O) اختيارية، وأسئلة نهاية الوحدة السؤال ٣. اضغط على البند لتظليله.</li><li>في ورقة العمل ٣-٣ سؤال ٢ أجزاء الحجم (أ.٢ و ب.٢) تُحَلّ بعد الدرس ٣-٤.</li></ul>'});
 
