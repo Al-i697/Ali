@@ -24,6 +24,20 @@ export default function DeckPresentPage() {
   const [full, setFull] = useState(false);
   const deck = useQuery({ queryKey: qk.deck(deckId), queryFn: () => api.get<DeckDto>(`/decks/${deckId}`) });
 
+  // المعاينة التفاعلية تعمل بلا خادم وفي إطار معزول: الصفحة تُجلب بـfetch (تعيدها الطبقة الوسيطة) وتُعرض srcdoc بدل مسار الخادم
+  const demoHtml = useQuery({
+    queryKey: ['decks', 'demo-html', deckId],
+    queryFn: async () => {
+      const res = await fetch(`/api/decks/${deckId}/content`);
+      if (!res.ok) throw new Error('تعذّر تحميل الدرس');
+      return res.text();
+    },
+    enabled: !!import.meta.env.VITE_DEMO && !!deck.data,
+    staleTime: Infinity,
+  });
+
+  const failure = deck.isError ? deck : import.meta.env.VITE_DEMO && demoHtml.isError ? demoHtml : null;
+
   const focusFrame = useCallback(() => frame.current?.contentWindow?.focus(), []);
 
   useEffect(() => {
@@ -76,15 +90,15 @@ export default function DeckPresentPage() {
       </header>
 
       <div className="relative min-h-0 flex-1">
-        {deck.isPending ? (
+        {failure ? (
+          <div className="mx-auto max-w-lg p-8 text-ink"><QueryError error={failure.error} onRetry={() => void failure.refetch()} /></div>
+        ) : deck.isPending || (import.meta.env.VITE_DEMO && demoHtml.isPending) ? (
           <div className="grid h-full place-items-center"><PageLoader /></div>
-        ) : deck.isError ? (
-          <div className="mx-auto max-w-lg p-8 text-ink"><QueryError error={deck.error} onRetry={() => void deck.refetch()} /></div>
-        ) : (
+        ) : deck.data ? (
           <iframe
             ref={frame}
             title={deck.data.title}
-            src={`/api/decks/${deck.data.id}/content?v=${encodeURIComponent(deck.data.updatedAt)}`}
+            {...(import.meta.env.VITE_DEMO ? { srcDoc: demoHtml.data } : { src: `/api/decks/${deck.data.id}/content?v=${encodeURIComponent(deck.data.updatedAt)}` })}
             // أصل معتم: لا allow-same-origin، فلا يصل الدرس إلى الكوكي ولا إلى واجهة التطبيق (يعزز الترويسة الصادرة من الخادم)
             sandbox="allow-scripts allow-downloads"
             allow="fullscreen"
@@ -92,7 +106,7 @@ export default function DeckPresentPage() {
             className="size-full border-0 bg-white"
             onLoad={focusFrame}
           />
-        )}
+        ) : null}
       </div>
       <FloatingClass lift />
     </main>

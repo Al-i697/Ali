@@ -94,6 +94,10 @@ const payload = { now: raw.now, plexCss, entries };
 const payloadJson = JSON.stringify(payload);
 
 // ───────────── 3) الطبقة الوسيطة ─────────────
+// صفحة الدرس التفاعلي (إن وُجد DEMO_DECK_FILE) تُضمَّن مرة واحدة بترميز base64 ولا تُسجَّل مع الاستجابات (ميغابايتات)
+const deckFile = process.env.DEMO_DECK_FILE;
+const deckB64 = deckFile ? fs.readFileSync(deckFile).toString('base64') : '';
+if (deckFile) console.log(`  درس مضمَّن: ${path.basename(deckFile)} (${(fs.statSync(deckFile).size / 1024).toFixed(0)} ك.ب)`);
 const shim = await esbuild({
   entryPoints: [r('demo/shim.ts')],
   bundle: true,
@@ -102,7 +106,7 @@ const shim = await esbuild({
   target: 'es2020',
   platform: 'browser',
   write: false,
-  define: { __DEMO_DATA__: JSON.stringify(payloadJson) },
+  define: { __DEMO_DATA__: JSON.stringify(payloadJson), __DEMO_DECK_B64__: JSON.stringify(deckB64) },
   logLevel: 'warning',
 });
 const shimJs = shim.outputFiles[0].text;

@@ -360,6 +360,44 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       await p.screenshot({ path: path.join(shotsDir, 'class-report-section.png') });
     });
 
+    await step('الدروس التفاعلية: المكتبة تعرض الدرس المضمَّن، و«عرض في الحصة» يفتحه في إطار داخلي ولوحة المشاركة فوقه (الأسهم تعمل بعد التسجيل)، والرفع يُرفض برسالة المعاينة', async () => {
+      const decks = await apiGet(f, '/decks');
+      if (decks.length === 0) return; // لم يُضمَّن درس عند البناء (DEMO_DECK_FILE)
+      await goto('/decks');
+      await f.getByRole('link', { name: decks[0].title }).first().waitFor();
+      await expectClean(f, 'الدروس التفاعلية');
+      await p.screenshot({ path: path.join(shotsDir, 'decks-library.png') });
+      // الرفع يُرفض كبقية التعديلات
+      await f.getByRole('button', { name: 'رفع درس' }).first().click();
+      const dlg = f.getByRole('dialog');
+      await dlg.locator('input[type=file]').setInputFiles({ name: 'x.html', mimeType: 'text/html', buffer: Buffer.from('<div>x</div>') });
+      await dlg.getByRole('button', { name: 'رفع الدرس' }).click();
+      await dlg.getByText('معاينة للتصفح فقط').waitFor();
+      await p.keyboard.press('Escape');
+      // العرض
+      await f.getByRole('link', { name: 'عرض في الحصة' }).first().click();
+      const lesson = f.frameLocator('main iframe').first();
+      const where = lesson.locator('#where');
+      await where.waitFor({ timeout: 20_000 });
+      await pause(1500);
+      const w0 = (await where.innerText()).replace(/\s+/g, ' ').trim();
+      await p.keyboard.press('ArrowLeft');
+      await until(async () => (await where.innerText()).replace(/\s+/g, ' ').trim() !== w0, 'ArrowLeft لم يقدّم شريحة الدرس');
+      const fab = f.getByRole('button', { name: 'فتح لوحة المشاركة العائمة' });
+      await fab.click();
+      const fp = f.getByRole('region', { name: 'لوحة المشاركة العائمة' });
+      await fp.waitFor();
+      await fp.locator('[data-float-student]').first().waitFor();
+      await p.screenshot({ path: path.join(shotsDir, 'decks-present-panel.png') });
+      const w1 = (await where.innerText()).replace(/\s+/g, ' ').trim();
+      await fp.locator('[data-float-student]').first().getByRole('button', { name: /^شارك — / }).first().click();
+      await pause(400);
+      await p.keyboard.press('ArrowLeft');
+      await until(async () => (await where.innerText()).replace(/\s+/g, ' ').trim() !== w1, 'الأسهم لم تعمل بعد التسجيل بالنقر');
+      await f.getByRole('link', { name: 'المكتبة' }).click();
+      await f.getByRole('link', { name: decks[0].title }).first().waitFor();
+    });
+
     await step('التقويم المستمر: شبكة الدرجات تُعرض، وتعديل خلية يُرفض برسالة المعاينة دون تعطّل', async () => {
       await goto('/assessments');
       await f.locator('main a[href^="/assessments/"]').first().click();

@@ -141,6 +141,8 @@ async function main() {
       const req = res.request();
       const u = new URL(res.url());
       if (!u.pathname.startsWith('/api/')) return;
+      // صفحة الدرس نفسها (ميغابايتات) لا تُسجَّل هنا: يضمّنها البناء مرة واحدة من DEMO_DECK_FILE (demo/build.mjs)
+      if (/^\/api\/decks\/[^/]+\/content$/.test(u.pathname)) return;
       const p = (async () => {
         if (req.method() !== 'GET') return;
         if (res.status() !== 200) {
@@ -207,6 +209,30 @@ async function main() {
   const plans = await api(main, '/support-plans');
   const labs = (await api(main, '/lab-activities?limit=200')).items;
   const sections = await api(main, `/sections?yearId=${year.id}`);
+  // الدروس التفاعلية: إن عُيّن DEMO_DECK_FILE يُرفع إلى الخادم المؤقت فيظهر في المكتبة المسجَّلة (وصفحته تُضمَّن عند البناء)
+  const deckFile = process.env.DEMO_DECK_FILE;
+  if (deckFile) {
+    const bytes = fs.readFileSync(deckFile);
+    const subjects = await api(main, '/subjects');
+    const subject = subjects.find((x) => /علوم|كيمياء/.test(x.name)) ?? subjects[0];
+    const status = await main.evaluate(
+      async ([b64, subjectId]) => {
+        const bin = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+        const html = new TextDecoder().decode(bin);
+        const title = /<title[^>]*>([^<]+)<\/title>/i.exec(html)?.[1]?.trim() ?? 'درس تفاعلي';
+        const form = new FormData();
+        form.append('title', title);
+        form.append('description', 'درس تفاعلي للعرض في الحصة، وتطفو فوقه لوحة المشاركة.');
+        if (subjectId) form.append('subjectId', subjectId);
+        form.append('file', new Blob([bin], { type: 'text/html' }), 'lesson.html');
+        const res = await fetch('/api/decks', { method: 'POST', credentials: 'same-origin', headers: { 'x-sijilli-client': 'web' }, body: form });
+        return res.status;
+      },
+      [bytes.toString('base64'), subject?.id ?? null],
+    );
+    if (status !== 201) throw new Error(`تعذّر رفع الدرس التجريبي: ${status}`);
+    console.log(`  درس تفاعلي: ${(bytes.length / 1024).toFixed(0)} ك.ب`);
+  }
   console.log(`البذرة: ${sections.length} شعبة · ${assignments.length} مقرر · ${students.length} طالبًا · ${lessons.length} تحضيرًا · ${plans.length} خطة · ${labs.length} نشاط مختبر`);
 
   // ───── أ) جولة على الصفحات: كل رابط داخلي، وكل تبويب/خيار/قائمة مختارة ─────
@@ -300,6 +326,7 @@ async function main() {
 
   // ───── ج-2) تفاصيل نشاط المختبر (تُفتح في نافذة) والمهارات ─────
   for (const l of labs) await api(main, `/lab-activities/${l.id}`);
+  for (const d of await api(main, '/decks')) await api(main, `/decks/${d.id}`);
   // إدارة الصف: تقرير كل طالب بكل حصصه (بلا نطاق) — منه تُبذر صفوف محرّك المعاينة (demo/class-engine.ts)
   for (const s of students) await api(main, `/class/students/${s.id}?limit=500`);
   for (const subject of [...new Set(assignments.map((a) => a.subjectId))]) {

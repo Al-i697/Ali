@@ -11,6 +11,8 @@ import { ClassEngine } from './class-engine';
 import { demoKey } from './key.mjs';
 
 declare const __DEMO_DATA__: string;
+/** صفحة الدرس التفاعلي المضمَّنة (base64) أو فارغ إن لم يُضمَّن شيء */
+declare const __DEMO_DECK_B64__: string;
 
 type Entry = { t: 'j' | 'h'; b: string };
 type Payload = { now: string; plexCss: string; entries: Record<string, Entry> };
@@ -101,6 +103,12 @@ let settingsOverride: unknown = null;
 
 function read(path: string, params: URLSearchParams): Response {
   if (path === '/ai/status') return json(200, aiStatus());
+  // صفحة الدرس: لا يطلبها التطبيق من الإطار مباشرة في المعاينة (الإطار srcdoc) بل بـfetch فتعيدها الطبقة الوسيطة من المضمَّن
+  if (/^\/decks\/[^/]+\/content$/.test(path)) {
+    if (!__DEMO_DECK_B64__) return fail(404, 'DEMO_NOT_RECORDED', NOT_IN_PREVIEW);
+    const bin = Uint8Array.from(atob(__DEMO_DECK_B64__), (c) => c.charCodeAt(0));
+    return new Response(new TextDecoder().decode(bin), { status: 200, headers: { 'content-type': 'text/html; charset=utf-8' } });
+  }
   // تنزيل PDF وExcel يحتاج الخادم (Chromium وExcelJS): نرفضه برسالة واضحة بدل «غير مضمَّن»
   if (/^\/reports\/[^/]+\/(pdf|xlsx)$/.test(path)) return fail(403, 'DEMO_DOWNLOAD', 'تنزيل ملفات PDF وExcel يعمل في التطبيق الكامل.');
   if (path === '/settings' && settingsOverride) return json(200, settingsOverride);
