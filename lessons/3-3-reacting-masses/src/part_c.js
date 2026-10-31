@@ -116,6 +116,21 @@ slide({id:'q39',ch:4,title:'السؤالان ٣-٩ و٣-١٠',tag:'أجب',
  },
  note:'<ul><li>٣-٩: ٢٫٨٦ طن Fe₂O₃. ٣-١٠: ١٧٫٣٥ g (في عرضك ١٧٫٣٣ من تقريب الخطوات؛ نقبل الاثنين).</li><li>في ٣-٩ المعطى بالأطنان: نحوّله إلى g (٢ طن = ٢٬٠٠٠٬٠٠٠ g) ثم نرجع إلى الأطنان.</li></ul>'});
 
+/* 23b end-of-unit question 3 (a) and (b): masses from equations (book p.78) */
+slide({id:'eou3',ch:4,title:'سؤال نهاية الوحدة ٣ (أ) و(ب)',tag:'كتاب الطالب ص٧٨',
+ html:function(){return `<div class="col grow" style="gap:8px;justify-content:flex-start">
+  ${arStrip(['H','C','O','Na','Ca'])}
+  <div style="display:flex;gap:16px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start"><div class="frm brk" style="padding:10px 16px;gap:4px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">٣ (أ)</div><div class="bigeq" style="font-size:24px;color:var(--gold)">CaO + H<sub>2</sub>O → Ca(OH)<sub>2</sub></div><p class="lead" style="margin:0;font-size:21px">في عبوة معدنية <b class="num">168 g</b> من CaO. كم مولاً فيها؟ وما كتلة الماء اللازمة للتفاعل معها؟ (1 mol مع 1 mol)</p></div>
+   ${qline('n(CaO) في 168 g',[['e1','mol','n =']])}${qline('كتلة H<sub>2</sub>O اللازمة',[['e2','g','m =']])}<div class="fb fe1" style="min-height:24px;text-align:center"></div></div>
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start"><div class="frm brk" style="padding:10px 16px;gap:4px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">٣ (ب)</div><div class="bigeq" style="font-size:21px;color:var(--gold)">2NaHCO<sub>3</sub> → Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O + CO<sub>2</sub></div><p class="lead" style="margin:0;font-size:21px">تفكّك <b class="num">4.2 g</b> من NaHCO<sub>3</sub>. كم مولاً تفكّك؟ وما كتلة Na<sub>2</sub>CO<sub>3</sub> الناتجة؟</p></div>
+   ${qline('n(NaHCO<sub>3</sub>) في 4.2 g',[['f1','mol','n =']])}${qline('n(Na<sub>2</sub>CO<sub>3</sub>) (نسبة 2 : 1)',[['f2','mol','n =']])}${qline('كتلة Na<sub>2</sub>CO<sub>3</sub>',[['f3','g','m =']])}<div class="fb fe2" style="min-height:24px;text-align:center"></div></div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'e1',a:3,t:0.03,w:'✓ M(CaO) = 56 ← 168 ÷ 56 = 3 mol',h:'M(CaO) = 40 + 16 = 56 ثم n = m ÷ M'},{n:'e2',a:54,t:0.6,w:'✓ النسبة 1 : 1 فهي 3 mol ماء ← 3 × 18 = 54 g',h:'عدد مولات الماء = عدد مولات CaO ثم × 18'}],$('.fe1',el));
+  bindSeq(el,[{n:'f1',a:0.05,t:0.001,w:'✓ M(NaHCO₃) = 84 ← 4.2 ÷ 84 = 0.05 mol',h:'M = 23 + 1 + 12 + 3 × 16 = 84'},{n:'f2',a:0.025,t:0.0005,w:'✓ كل 2 mol تعطي 1 mol ← 0.05 ÷ 2 = 0.025 mol',h:'قسّم على 2'},{n:'f3',a:2.65,t:0.04,w:'✓ 0.025 × 106 = 2.65 g',h:'M(Na₂CO₃) = 2 × 23 + 12 + 3 × 16 = 106'}],$('.fe2',el));
+ },
+ note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ٣ (أ) و(ب). إجابات دليل المعلم (ص٧٥–٧٦): (أ) ٣ mol ثم ٥٤ g ماء؛ (ب) ٠٫٠٥ mol ثم ٠٫٠٢٥ mol ثم ٢٫٦٥ g.</li><li>الجزء (ج) (النحاس وأيونات الفضة) في الشريحة «كتاب الطالب ص٧٨» ضمن المادة المحددة.</li><li>مفيدة كمراجعة لطريقة الثلاث خطوات: n من الكتلة ← نسبة المعادلة ← الكتلة المطلوبة. لا يعطي السؤال Ar لـ Na وC في (ب)، فنستخدم قيم الشريط أعلى الشريحة.</li></ul>'});
+
 /* 24 the activity book worksheet, mass parts of the Solvay process */
 slide({id:'solv',ch:4,title:'كتاب النشاط: عملية سولفاي (الكتل)',tag:'ورقة العمل ٣-٣ سؤال ٢',
  html:function(){return `<div class="col grow" style="gap:8px;justify-content:flex-start">

@@ -1100,6 +1100,8 @@ tr.qr.ok{background:none; box-shadow:none}
 .mtab .nin .go{height:46px; min-width:46px}
 .slide[data-id=hw] .stp{padding:7px 12px}
 .body>div{max-width:100%}
+/* end-of-unit question 2: four compact options next to the chained steps */
+.slide[data-id=eou2] .opt{min-height:50px; font-size:23px; padding:4px 16px}
 
 </style>
 <script>
@@ -1112,8 +1114,8 @@ var LESSON={
   chapters:['مدخل','تمهيد: كيف نعدّ الأشياء الكثيرة؟','المول وعدد أفوجادرو','الكتلة المولية','حسابات المول','تمارين وتدريب','أسئلة على نمط الامتحان','ختام'],
   bgMap:['doodles','bubbles','atomic','hexes','waves','reactions','periodic','doodles'],
   palCh:['violet','navy','violet','gold','emerald','ember','gold','navy'],
-  bgId:{graphite:'atomic',weigh:'periodic',units:'doodles',ways:'hexes',avo:'bonds',tk1:'bubbles',ex31:'bubbles',q36:'hexes',q37:'organic',chain:'doodles',act31:'reactions',tbl33a:'bonds',tbl33b:'hexes',race:'waves',tk2:'doodles',final:'reactions',hw:'bubbles'},
-  palId:{weigh:'gold',graphite:'navy',units:'navy',mole:'violet',single:'violet',ways:'violet',formula:'gold',t34a:'gold',t34b:'gold',avo:'gold',tk1:'ember',
+  bgId:{eou2:'periodic',graphite:'atomic',weigh:'periodic',units:'doodles',ways:'hexes',avo:'bonds',tk1:'bubbles',ex31:'bubbles',q36:'hexes',q37:'organic',chain:'doodles',act31:'reactions',tbl33a:'bonds',tbl33b:'hexes',race:'waves',tk2:'doodles',final:'reactions',hw:'bubbles'},
+  palId:{eou2:'gold',weigh:'gold',graphite:'navy',units:'navy',mole:'violet',single:'violet',ways:'violet',formula:'gold',t34a:'gold',t34b:'gold',avo:'gold',tk1:'ember',
          ar:'emerald',ex31:'emerald',q35:'emerald',q36:'navy',q37:'violet',chain:'emerald',act31:'ember',tbl33a:'navy',tbl33b:'navy',race:'ember',tk2:'ember',
          past1:'gold',past2:'gold',final:'ember',hw:'violet'},
   /* stickers placed under the content, where the slide has room: [sticker, x, y, width, tilt, entrance delay s] */
@@ -2848,6 +2850,23 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
    note:'<ul><li>الإجابات: ٢٠ g، ٠٫٥ mol، 1.204×10²⁴، العبارة الأولى.</li><li>الأسئلة من إعدادي: ١ كتلة من عدد المولات (NaOH)، ٢ عدد المولات من الكتلة (H₂SO₄)، ٣ عدد الجسيمات في 2 mol، ٤ أي عبارة صحيحة عن المول. تغطي هدفي ٣-٨ و٤-٨ في دليل المعلم.</li></ul>'});
 })();
 
+/* end-of-unit question 2 (student book p.78): carbon-12 as the standard, then moles and particles in CO2 */
+slide({id:'eou2',ch:6,title:'سؤال نهاية الوحدة ٢',tag:'كتاب الطالب ص٧٨',
+ html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
+  <div class="frm brk" style="flex:1;padding:14px 18px;gap:10px"><p class="lead" style="margin:0;font-size:25px"><b>٢ (أ). يُستخدم الكربون ذرة قياسية لمقياس الكتلة الذرية النسبية. أي نظائر الكربون هو المقياس؟</b></p>
+   ${optsHTML([{t:'الكربون-6'},{t:'الكربون-12'},{t:'الكربون-13'},{t:'الكربون-14'}])}<div class="fb fa" style="min-height:24px"></div></div>
+  <div class="frm brk" style="flex:1.15;padding:14px 18px;gap:10px"><p class="lead" style="margin:0;font-size:25px"><b>٢ (ب). عيّنة من <span class="num">CO<sub>2</sub></span> كتلتها <span class="num">8.8 g</span> <span class="num">(C = 12, O = 16)</span></b></p>
+   <div class="qr"><div class="qt" style="font-size:22px;white-space:normal">١. كتلة الصيغة النسبية لـ CO₂</div><div class="qa">${nin('a1','g/mol')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٢. عدد المولات في <span class="num">8.8 g</span>: <span class="num">n = m ÷ M</span></div><div class="qa">${nin('a2','mol')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٣. عدد الجزيئات <span class="num">N = n × 6.02×10²³</span> (المعامل a في <span class="num">a × 10²³</span>)</div><div class="qa">${nin('a3','×10²³')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٤. ذرات الأكسجين: في كل جزيء ذرتا O (المعامل a في <span class="num">a × 10²³</span>)</div><div class="qa">${nin('a4','×10²³')}</div><div class="fb"></div></div></div></div>`;},
+ init:function(el){
+  var cols=$$('.frm',el);
+  bindMcq(cols[0],[{why:'المقياس هو النظير الذي عدده الكتلي 12 (6 بروتونات و6 نيوترونات)'},{ok:true,why:'الكربون-12 كتلته 12 و.ك.ذ تماماً بالتعريف'},{why:'المقياس هو النظير الذي عدده الكتلي 12'},{why:'المقياس هو النظير الذي عدده الكتلي 12'}],$('.fa',cols[0]),null);
+  bindRows(cols[1],[{a:[44,0.2,1.204,2.408],w:['✓ \u2066M(CO₂) = 12 + (2 × 16) = 44 g/mol\u2069','✓ \u2066n = 8.8 ÷ 44 = 0.2 mol\u2069','✓ \u2066N = 0.2 × 6.02×10²³ = 1.204×10²³\u2069 جزيء','✓ \u20662 × 1.204×10²³ = 2.408×10²³\u2069 ذرة أكسجين'],h:['اجمع Ar: 12 + (2 × 16)','n = m ÷ M = 8.8 ÷ 44','اضرب عدد المولات في 6.02 ثم اكتب الناتج بصيغة a × 10²³','لكل جزيء ذرتان من O فاضرب في 2']}]);
+ },
+ note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ٢. إجابات دليل المعلم (ص٧٥): (أ) الكربون-12؛ (ب) ٤٤ g/mol، ٠٫٢ mol، 1.204×10²³ جزيء، 2.408×10²³ ذرة أكسجين.</li><li>الجزء (أ) يراجع فكرة الدرس ٣-١ (الذرة القياسية)، والجزء (ب) هو سلسلة الدرس: الكتلة ← المولات ← الجسيمات ← الذرات.</li><li>خطأ متوقع في ٤: نسيان أن كل جزيء CO₂ فيه ذرتا أكسجين.</li></ul>'});
+
 /* ---------- exam-style practice: the first slide uses real past-paper items on the mole, the second is written in the same style ---------- */
 (function(){
   var P1=[
@@ -2926,7 +2945,7 @@ slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
    <div class="col" style="width:420px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:10px 14px;font-size:21px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
     <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٣ حسابات تتضمن كتلاً متفاعلة (استنباط الصيغ الكيميائية)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
- note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>دليل المعلم ص٥٥: ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط غير متوفرة في الملفات المرسلة (الملف ينتهي عند ص٥٠)، فلا توجد لها شريحة. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) مذكور في الواجب وليس له شريحة.</li></ul>'});
+ note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>دليل المعلم ص٥٥: ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط غير متوفرة في الملفات المرسلة (الملف ينتهي عند ص٥٠)، فلا توجد لها شريحة. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) له شريحة في الدرس (eou2) قبل الأسئلة السابقة.</li></ul>'});
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
 

@@ -1,7 +1,7 @@
 /* Interaction tests for the reacting-masses lesson: every slide is driven the way a student would use it. Run from the lesson folder: node tools/test.js */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lesson33.html';
-const IDS=['goals','sand1','sand2','steps3','mgo','sio2','noo','bacl','tk1','si6','conserve','fes','rule','cuo','fe48','ag','parts','cls','tk2','scaleup','prop','method','ex32','ex33','q38','q39','solv','lab','labcalc','race','past1','past2','final','hw'];
+const IDS=['goals','sand1','sand2','steps3','mgo','sio2','noo','bacl','tk1','si6','conserve','fes','rule','cuo','fe48','ag','parts','cls','tk2','scaleup','prop','method','ex32','ex33','q38','q39','eou3','solv','lab','labcalc','race','past1','past2','final','hw'];
 const results=[]; const errs=[];
 (async()=>{
   const b=await chromium.launch();
@@ -67,6 +67,7 @@ const results=[]; const errs=[];
   await T('ex33',async(p,sl)=>{await rows(sl,[['x1',500],['x2',8.93],['x3',4.47],['x4',715],['x5',0.715]]); await p.waitForTimeout(200); return (await okIn(sl))===5});
   await T('q38',async(p,sl)=>{await rows(sl,[['q1',0.0741],['q2',2],['q3',4],['q4',0.037],['q5',102],['q6',3.78]]); await p.waitForTimeout(200); return (await okIn(sl))===6});
   await T('q39',async(p,sl)=>{await rows(sl,[['a1',35714],['a2',17857],['a3',2.86],['b1',0.162],['b2',0.324],['b3',17.35]]); await p.waitForTimeout(200); return (await okIn(sl))===6});
+  await T('eou3',async(p,sl)=>{await rows(sl,[['e1',3],['e2',54],['f1',0.05],['f2',0.025],['f3',2.65]]); await p.waitForTimeout(200); return (await okIn(sl))===5});
   await T('solv',async(p,sl)=>{await rows(sl,[['s1',84],['s2',90],['s3',5265],['t1',45],['t2',4770]]); await p.waitForTimeout(200); return (await okIn(sl))===5});
   await T('lab',async(p,sl)=>{
     for(const i of [0,1,2]) await sl.locator('.sfc[data-ok="1"]').nth(i).click();

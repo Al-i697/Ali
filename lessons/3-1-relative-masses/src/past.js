@@ -60,6 +60,31 @@
   }
   function grid(P,extra){return '<div class="col grow" style="gap:8px;justify-content:flex-start"><div class="pgrid">'+P.map(cardHTML).join('')+'</div>'+(extra||'')+'</div>'}
 
+  /* end-of-unit question 1 (student book p.78): the ammonium sulfate fertiliser */
+  slide({id:'eou1',ch:6,title:'سؤال نهاية الوحدة ١',tag:'كتاب الطالب ص٧٨',
+   html:function(){
+    function row(lab,id,unit){return '<div class="frm brk" style="padding:8px 14px;gap:4px"><div style="font-size:21px;line-height:1.35">'+lab+'</div><div style="display:flex;align-items:center;gap:10px">'+ninHTML(id,unit,'sm')+'<div class="fb" style="flex:1;min-height:22px;font-size:18px"></div></div></div>'}
+    return '<div class="col grow" style="gap:8px;justify-content:flex-start">'+
+     '<div class="frm brk" style="padding:8px 18px;gap:2px;align-items:center"><p class="lead" style="margin:0;font-size:21px">تبيّن المعادلة كيف يُصنع سماد كبريتات الأمونيوم:</p><div class="bigeq" style="font-size:30px;color:var(--gold)">2NH<sub>3</sub>(aq) + H<sub>2</sub>SO<sub>4</sub>(aq) → (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>(aq)</div></div>'+
+     '<div style="display:flex;gap:12px;flex:1;align-items:flex-start">'+
+      '<div class="frm brk" id="eoa" style="flex:1;padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أ. اكتب المعادلة اللفظية لهذا التفاعل</div>'+optsHTML([{t:'الأمونيا + حمض الكبريتيك ← كبريتات الأمونيوم'},{t:'كبريتات الأمونيوم + حمض الكبريتيك ← الأمونيا'},{t:'الأمونيا + كبريتات الأمونيوم ← حمض الكبريتيك'}])+'<div class="fb fa" style="min-height:22px;font-size:18px"></div></div>'+
+      '<div class="col" style="flex:1;gap:6px">'+
+       row('ب. كم عدد ذرات الهيدروجين في صيغة كبريتات الأمونيوم <span class="num">(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></span>؟','b','ذرة')+
+       row('ج. احسب M<sub>r</sub> لحمض الكبريتيك <span class="num">H<sub>2</sub>SO<sub>4</sub></span> <span class="num">(H = 1, S = 32, O = 16)</span>','c','g/mol')+
+       row('د. كل <span class="num">17 g</span> من الأمونيا تنتج <span class="num">66 g</span> من كبريتات الأمونيوم. كم تنتج <span class="num">3.4 g</span> من الأمونيا؟','d','g')+
+      '</div></div></div>';
+   },
+   init:function(el){
+    var fa=$('.fa',el), left=4;
+    $$('.opt',el).forEach(function(b){ b.style.minHeight='46px'; b.style.fontSize='21px'; b.style.padding='4px 14px' });
+    function one(){ left--; if(!left) say(fa,'✓ أحسنت! أكملت السؤال ١ كاملاً','ok') }
+    bindMcq($('#eoa',el),[{ok:true,why:'الأمونيا وحمض الكبريتيك متفاعلان وكبريتات الأمونيوم ناتج'},{why:'المتفاعلات على اليمين والناتج بعد السهم'},{why:'المتفاعلان هما الأمونيا وحمض الكبريتيك'}],fa,one);
+    [['b',8,0.01,'✓ العدد 2 × 4 = 8 ذرات H','(NH₄)₂ تعني مجموعتين فيهما 4 ذرات H لكل منهما'],['c',98,0.01,'✓ \u2066(2 × 1) + 32 + (4 × 16) = 98\u2069','اجمع: 2 H + S + 4 O'],['d',13.2,0.15,'✓ \u20663.4 ÷ 34 × 132 = 13.2 g\u2069','الأمونيا 2 × 17 = 34 g تعطي 2 × 66 = 132 g؛ أو 3.4 ÷ 17 × 66']].forEach(function(q){
+      var box=$('.nin[data-n="'+q[0]+'"]',el), fb=$('.fb',box.parentNode);
+      bindNum(box,q[1],q[2],function(ok){ if(ok){ say(fb,q[3],'ok'); one() } else say(fb,q[4],'bad') });
+    });
+   },
+   note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ١ (واجب دليل المعلم للدرس ٣-١، ص٥٤). إجابات الدليل (ص٧٥): (أ) الأمونيا + حمض الكبريتيك ← كبريتات الأمونيوم، (ب) ٨، (ج) ٩٨ g/mol، (د) ١٣٫٢ g.</li><li>في (د) نسبة الكتل 17 : 66 تعني أن 34 g من الأمونيا (2 mol) تعطي 132 g (Mr لكبريتات الأمونيوم = 132)، ومنها 3.4 g تعطي 13.2 g. هذه أول لمحة عن حسابات الكتل في المعادلات (الدرس ٣-٣).</li><li>خطأ متوقع في (ب): عدّ 4 ذرات فقط ونسيان العدد 2 خارج القوس.</li></ul>'});
   slide({id:'past1',ch:6,title:'امتحانات سابقة (١): الكتل النسبية',tag:'على نمط الامتحان',
    html:function(){return grid(P1)},
    init:function(el){bindCards(el,P1)},

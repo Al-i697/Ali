@@ -1,7 +1,7 @@
 /* Interaction tests for the mole lesson: every slide is driven the way a student would use it. Run from the lesson folder: node tools/test.js */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lesson32.html';
-const IDS=['goals','count','weigh','graphite','units','mole','single','ways','formula','t34a','t34b','avo','tk1','ar','ex31','q35','q36','q37','chain','act31','tbl33a','tbl33b','race','tk2','past1','past2','final','hw'].filter(x=>!(process.env.NOPAST&&x.startsWith('past')));
+const IDS=['goals','count','weigh','graphite','units','mole','single','ways','formula','t34a','t34b','avo','tk1','ar','ex31','q35','q36','q37','chain','act31','tbl33a','tbl33b','race','tk2','eou2','past1','past2','final','hw'].filter(x=>!(process.env.NOPAST&&x.startsWith('past')));
 const results=[]; const errs=[];
 (async()=>{
   const b=await chromium.launch();
@@ -47,6 +47,7 @@ const results=[]; const errs=[];
   await T('ex31',async(p,sl)=>{await rows(sl,[['a1',40],['a2',1.5],['b1',249.5],['b2',124.75]]); await p.waitForTimeout(200); return (await cnt(sl.locator('.qr.ok')))===2});
   await T('q35',async(p,sl)=>{await rows(sl,[['m0',23],['g0',46],['m1',123.5],['g1',61.75],['m2',213],['g2',852],['m3',249.5],['g3',4.99]]); await p.waitForTimeout(200); return (await cnt(sl.locator('.qr.ok')))===4});
   await T('q36',async(p,sl)=>{await rows(sl,[['n0',0.25],['n1',8],['n2',0.03],['n3','7e-4']]); await p.waitForTimeout(200); return (await cnt(sl.locator('.qr.ok')))===4});
+  await T('eou2',async(p,sl)=>{await sl.locator('.opt').nth(0).click(); await sl.locator('.opt').nth(1).click(); await p.waitForTimeout(150); const mc=await cnt(sl.locator('.opt.ok-b')); await rows(sl,[['a1',44],['a2',0.2],['a3',1.204],['a4',2.408]]); await p.waitForTimeout(200); return mc===1 && (await cnt(sl.locator('.qr.ok')))===1});
   await T('q37',async(p,sl)=>{await rows(sl,[['c0',1.505],['e0',23],['c1',4.816],['e1',24],['c2',1.806],['e2',22],['c3',4.214],['e3',20]]); await p.waitForTimeout(200); return (await cnt(sl.locator('.qr.ok')))===4});
   await T('chain',async(p,sl)=>{
     for(const k of [0,1,2]) await tap(p,sl,k,'.mslot','.mchip'); await p.waitForTimeout(400); if(!(await vis(sl.locator('#ex')))) return false;

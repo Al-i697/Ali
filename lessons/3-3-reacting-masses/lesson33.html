@@ -1190,8 +1190,8 @@ var LESSON={
   chapters:['مدخل','ماذا لو كان؟','استنباط الصيغة الكيميائية','المادة المحددة والفائضة','الكتلة من المعادلة','نشاط عملي (إثرائي)','تمارين وتدريب','أسئلة على نمط الامتحان','ختام'],
   bgMap:['hexes','bubbles','doodles','waves','atomic','bubbles','bonds','periodic','doodles'],
   palCh:['emerald','gold','navy','ember','violet','navy','ember','gold','emerald'],
-  bgId:{bacl:'organic',conserve:'reactions',prop:'periodic',sand2:'bubbles',mgo:'reactions',sio2:'atomic',noo:'periodic',tk1:'doodles',si6:'waves',fes:'reactions',rule:'hexes',cuo:'waves',fe48:'bonds',ag:'bubbles',parts:'atomic',cls:'doodles',tk2:'doodles',scaleup:'reactions',method:'hexes',ex32:'bonds',ex33:'bonds',q38:'waves',q39:'periodic',solv:'organic',lab:'bubbles',labcalc:'waves',race:'doodles',past2:'hexes',final:'doodles',hw:'bubbles'},
-  palId:{bacl:'violet',conserve:'ember',prop:'emerald',goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
+  bgId:{eou3:'bonds',bacl:'organic',conserve:'reactions',prop:'periodic',sand2:'bubbles',mgo:'reactions',sio2:'atomic',noo:'periodic',tk1:'doodles',si6:'waves',fes:'reactions',rule:'hexes',cuo:'waves',fe48:'bonds',ag:'bubbles',parts:'atomic',cls:'doodles',tk2:'doodles',scaleup:'reactions',method:'hexes',ex32:'bonds',ex33:'bonds',q38:'waves',q39:'periodic',solv:'organic',lab:'bubbles',labcalc:'waves',race:'doodles',past2:'hexes',final:'doodles',hw:'bubbles'},
+  palId:{eou3:'gold',bacl:'violet',conserve:'ember',prop:'emerald',goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     bacl:[['m_flask',1130,556,100,5,1.0]], conserve:[['m_flame',40,556,100,-5,1.0]], prop:[['m_tube',1130,556,100,6,1.0]],
@@ -3033,6 +3033,21 @@ slide({id:'q39',ch:4,title:'السؤالان ٣-٩ و٣-١٠',tag:'أجب',
   bindSeq(el,[{n:'b1',a:12/74,t:0.002,w:'✓ Mr = 74 ← 12 ÷ 74 = 0.162 mol',h:'Mr(Ca(OH)₂) = 40 + 2 × 17 = 74'},{n:'b2',a:12/74*2,t:0.004,w:'✓ 0.162 × 2 = 0.324 mol',h:'النسبة 1 : 2'},{n:'b3',a:17.35,t:0.2,w:'✓ 0.324 × 53.5 = 17.35 g',h:'Mr(NH₄Cl) = 14 + 4 + 35.5 = 53.5'}],$('.fb2x',el));
  },
  note:'<ul><li>٣-٩: ٢٫٨٦ طن Fe₂O₃. ٣-١٠: ١٧٫٣٥ g (في عرضك ١٧٫٣٣ من تقريب الخطوات؛ نقبل الاثنين).</li><li>في ٣-٩ المعطى بالأطنان: نحوّله إلى g (٢ طن = ٢٬٠٠٠٬٠٠٠ g) ثم نرجع إلى الأطنان.</li></ul>'});
+
+/* 23b end-of-unit question 3 (a) and (b): masses from equations (book p.78) */
+slide({id:'eou3',ch:4,title:'سؤال نهاية الوحدة ٣ (أ) و(ب)',tag:'كتاب الطالب ص٧٨',
+ html:function(){return `<div class="col grow" style="gap:8px;justify-content:flex-start">
+  ${arStrip(['H','C','O','Na','Ca'])}
+  <div style="display:flex;gap:16px;flex:1;align-items:stretch">
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start"><div class="frm brk" style="padding:10px 16px;gap:4px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">٣ (أ)</div><div class="bigeq" style="font-size:24px;color:var(--gold)">CaO + H<sub>2</sub>O → Ca(OH)<sub>2</sub></div><p class="lead" style="margin:0;font-size:21px">في عبوة معدنية <b class="num">168 g</b> من CaO. كم مولاً فيها؟ وما كتلة الماء اللازمة للتفاعل معها؟ (1 mol مع 1 mol)</p></div>
+   ${qline('n(CaO) في 168 g',[['e1','mol','n =']])}${qline('كتلة H<sub>2</sub>O اللازمة',[['e2','g','m =']])}<div class="fb fe1" style="min-height:24px;text-align:center"></div></div>
+  <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:flex-start"><div class="frm brk" style="padding:10px 16px;gap:4px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">٣ (ب)</div><div class="bigeq" style="font-size:21px;color:var(--gold)">2NaHCO<sub>3</sub> → Na<sub>2</sub>CO<sub>3</sub> + H<sub>2</sub>O + CO<sub>2</sub></div><p class="lead" style="margin:0;font-size:21px">تفكّك <b class="num">4.2 g</b> من NaHCO<sub>3</sub>. كم مولاً تفكّك؟ وما كتلة Na<sub>2</sub>CO<sub>3</sub> الناتجة؟</p></div>
+   ${qline('n(NaHCO<sub>3</sub>) في 4.2 g',[['f1','mol','n =']])}${qline('n(Na<sub>2</sub>CO<sub>3</sub>) (نسبة 2 : 1)',[['f2','mol','n =']])}${qline('كتلة Na<sub>2</sub>CO<sub>3</sub>',[['f3','g','m =']])}<div class="fb fe2" style="min-height:24px;text-align:center"></div></div></div></div>`;},
+ init:function(el){
+  bindSeq(el,[{n:'e1',a:3,t:0.03,w:'✓ M(CaO) = 56 ← 168 ÷ 56 = 3 mol',h:'M(CaO) = 40 + 16 = 56 ثم n = m ÷ M'},{n:'e2',a:54,t:0.6,w:'✓ النسبة 1 : 1 فهي 3 mol ماء ← 3 × 18 = 54 g',h:'عدد مولات الماء = عدد مولات CaO ثم × 18'}],$('.fe1',el));
+  bindSeq(el,[{n:'f1',a:0.05,t:0.001,w:'✓ M(NaHCO₃) = 84 ← 4.2 ÷ 84 = 0.05 mol',h:'M = 23 + 1 + 12 + 3 × 16 = 84'},{n:'f2',a:0.025,t:0.0005,w:'✓ كل 2 mol تعطي 1 mol ← 0.05 ÷ 2 = 0.025 mol',h:'قسّم على 2'},{n:'f3',a:2.65,t:0.04,w:'✓ 0.025 × 106 = 2.65 g',h:'M(Na₂CO₃) = 2 × 23 + 12 + 3 × 16 = 106'}],$('.fe2',el));
+ },
+ note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ٣ (أ) و(ب). إجابات دليل المعلم (ص٧٥–٧٦): (أ) ٣ mol ثم ٥٤ g ماء؛ (ب) ٠٫٠٥ mol ثم ٠٫٠٢٥ mol ثم ٢٫٦٥ g.</li><li>الجزء (ج) (النحاس وأيونات الفضة) في الشريحة «كتاب الطالب ص٧٨» ضمن المادة المحددة.</li><li>مفيدة كمراجعة لطريقة الثلاث خطوات: n من الكتلة ← نسبة المعادلة ← الكتلة المطلوبة. لا يعطي السؤال Ar لـ Na وC في (ب)، فنستخدم قيم الشريط أعلى الشريحة.</li></ul>'});
 
 /* 24 the activity book worksheet, mass parts of the Solvay process */
 slide({id:'solv',ch:4,title:'كتاب النشاط: عملية سولفاي (الكتل)',tag:'ورقة العمل ٣-٣ سؤال ٢',

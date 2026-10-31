@@ -2,9 +2,9 @@
 var LESSON={
   short:'الكتل النسبية', brand:'الدرس ٣-١ · الكتل النسبية', home:'index.html',
   chapters:['مدخل','لماذا نقيس الكميات؟','الكتلة الذرية النسبية Ar','كتلة الصيغة النسبية Mr','الصيغة من نموذج أو مخطط','نشاط عملي','أسئلة على نمط الامتحان','ختام'],
-  bgMap:['doodles','bubbles','atomic','hexes','bonds','reactions','periodic','waves'], bgId:{table:'periodic',balance:'periodic',q32:'periodic',imp:'bubbles',shop:'doodles',calc:'waves',iso:'doodles',isoH:'hexes',tk1:'bubbles',race:'waves',tk2:'doodles',models:'bonds',lattice:'hexes',final:'reactions',hw:'doodles'},
+  bgMap:['doodles','bubbles','atomic','hexes','bonds','reactions','periodic','waves'], bgId:{eou1:'reactions',table:'periodic',balance:'periodic',q32:'periodic',imp:'bubbles',shop:'doodles',calc:'waves',iso:'doodles',isoH:'hexes',tk1:'bubbles',race:'waves',tk2:'doodles',models:'bonds',lattice:'hexes',final:'reactions',hw:'doodles'},
   palCh:['navy','emerald','navy','emerald','navy','ember','gold','violet'],
-  palId:{imp:'emerald',npk:'ember',shop:'navy',c12:'violet',balance:'gold',q32:'gold',table:'gold',isoH:'violet',iso:'navy',tk1:'ember',race:'ember',tk2:'ember',final:'ember',hw:'violet'},
+  palId:{eou1:'gold',imp:'emerald',npk:'ember',shop:'navy',c12:'violet',balance:'gold',q32:'gold',table:'gold',isoH:'violet',iso:'navy',tk1:'ember',race:'ember',tk2:'ember',final:'ember',hw:'violet'},
   /* stickers placed under the content, where the slide has room: [sticker, x, y, width, tilt, entrance delay s] */
   stk:{
     goals:[['m_star',1130,556,90,6,1.0]],

@@ -51,3 +51,5 @@ tr.qr.ok{background:none; box-shadow:none}
 .mtab .nin .go{height:46px; min-width:46px}
 .slide[data-id=hw] .stp{padding:7px 12px}
 .body>div{max-width:100%}
+/* end-of-unit question 2: four compact options next to the chained steps */
+.slide[data-id=eou2] .opt{min-height:50px; font-size:23px; padding:4px 16px}

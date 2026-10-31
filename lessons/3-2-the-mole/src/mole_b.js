@@ -184,3 +184,20 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
    init:function(el){bindTicket(el,items,'tk2')},
    note:'<ul><li>الإجابات: ٢٠ g، ٠٫٥ mol، 1.204×10²⁴، العبارة الأولى.</li><li>الأسئلة من إعدادي: ١ كتلة من عدد المولات (NaOH)، ٢ عدد المولات من الكتلة (H₂SO₄)، ٣ عدد الجسيمات في 2 mol، ٤ أي عبارة صحيحة عن المول. تغطي هدفي ٣-٨ و٤-٨ في دليل المعلم.</li></ul>'});
 })();
+
+/* end-of-unit question 2 (student book p.78): carbon-12 as the standard, then moles and particles in CO2 */
+slide({id:'eou2',ch:6,title:'سؤال نهاية الوحدة ٢',tag:'كتاب الطالب ص٧٨',
+ html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
+  <div class="frm brk" style="flex:1;padding:14px 18px;gap:10px"><p class="lead" style="margin:0;font-size:25px"><b>٢ (أ). يُستخدم الكربون ذرة قياسية لمقياس الكتلة الذرية النسبية. أي نظائر الكربون هو المقياس؟</b></p>
+   ${optsHTML([{t:'الكربون-6'},{t:'الكربون-12'},{t:'الكربون-13'},{t:'الكربون-14'}])}<div class="fb fa" style="min-height:24px"></div></div>
+  <div class="frm brk" style="flex:1.15;padding:14px 18px;gap:10px"><p class="lead" style="margin:0;font-size:25px"><b>٢ (ب). عيّنة من <span class="num">CO<sub>2</sub></span> كتلتها <span class="num">8.8 g</span> <span class="num">(C = 12, O = 16)</span></b></p>
+   <div class="qr"><div class="qt" style="font-size:22px;white-space:normal">١. كتلة الصيغة النسبية لـ CO₂</div><div class="qa">${nin('a1','g/mol')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٢. عدد المولات في <span class="num">8.8 g</span>: <span class="num">n = m ÷ M</span></div><div class="qa">${nin('a2','mol')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٣. عدد الجزيئات <span class="num">N = n × 6.02×10²³</span> (المعامل a في <span class="num">a × 10²³</span>)</div><div class="qa">${nin('a3','×10²³')}</div>
+    <div class="qt" style="font-size:22px;white-space:normal">٤. ذرات الأكسجين: في كل جزيء ذرتا O (المعامل a في <span class="num">a × 10²³</span>)</div><div class="qa">${nin('a4','×10²³')}</div><div class="fb"></div></div></div></div>`;},
+ init:function(el){
+  var cols=$$('.frm',el);
+  bindMcq(cols[0],[{why:'المقياس هو النظير الذي عدده الكتلي 12 (6 بروتونات و6 نيوترونات)'},{ok:true,why:'الكربون-12 كتلته 12 و.ك.ذ تماماً بالتعريف'},{why:'المقياس هو النظير الذي عدده الكتلي 12'},{why:'المقياس هو النظير الذي عدده الكتلي 12'}],$('.fa',cols[0]),null);
+  bindRows(cols[1],[{a:[44,0.2,1.204,2.408],w:['✓ \u2066M(CO₂) = 12 + (2 × 16) = 44 g/mol\u2069','✓ \u2066n = 8.8 ÷ 44 = 0.2 mol\u2069','✓ \u2066N = 0.2 × 6.02×10²³ = 1.204×10²³\u2069 جزيء','✓ \u20662 × 1.204×10²³ = 2.408×10²³\u2069 ذرة أكسجين'],h:['اجمع Ar: 12 + (2 × 16)','n = m ÷ M = 8.8 ÷ 44','اضرب عدد المولات في 6.02 ثم اكتب الناتج بصيغة a × 10²³','لكل جزيء ذرتان من O فاضرب في 2']}]);
+ },
+ note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ٢. إجابات دليل المعلم (ص٧٥): (أ) الكربون-12؛ (ب) ٤٤ g/mol، ٠٫٢ mol، 1.204×10²³ جزيء، 2.408×10²³ ذرة أكسجين.</li><li>الجزء (أ) يراجع فكرة الدرس ٣-١ (الذرة القياسية)، والجزء (ب) هو سلسلة الدرس: الكتلة ← المولات ← الجسيمات ← الذرات.</li><li>خطأ متوقع في ٤: نسيان أن كل جزيء CO₂ فيه ذرتا أكسجين.</li></ul>'});
