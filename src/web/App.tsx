@@ -24,6 +24,8 @@ const TasksPage = lazy(() => import('@/features/tasks/tasks-page'));
 const SupportPage = lazy(() => import('@/features/support/support-page'));
 const SupportPlanPage = lazy(() => import('@/features/support/plan-page'));
 const LabPage = lazy(() => import('@/features/lab/lab-page'));
+const DecksPage = lazy(() => import('@/features/decks/decks-page'));
+const DeckPresentPage = lazy(() => import('@/features/decks/present-page'));
 const ClassPage = lazy(() => import('@/features/classroom/class-page'));
 const ClassSessionPage = lazy(() => import('@/features/classroom/session-page'));
 const FloatPage = lazy(() => import('@/features/classroom/float/float-page'));
@@ -91,36 +93,42 @@ export function App() {
                     >
                       <Route path="class/float" element={<FloatPage />} />
                     </Route>
+                    {/* مزوّدو التطبيق المصادَق (العام الدراسي واللوحة العائمة) يغلّفون الغلاف وشاشة العرض معًا فلا تُفقد حالة اللوحة بينهما */}
                     <Route
                       element={
                         <RequireAuth>
                           <AcademicProvider>
                             <FloatingClassProvider>
-                              <AppShell />
+                              <Outlet />
                             </FloatingClassProvider>
                           </AcademicProvider>
                         </RequireAuth>
                       }
                     >
-                      <Route index element={<DashboardPage />} />
-                      <Route path="classes" element={<ClassesPage />} />
-                      <Route path="classes/:sectionId" element={<SectionPage />} />
-                      <Route path="students/:studentId" element={<StudentProfilePage />} />
-                      <Route path="lessons" element={<LessonsPage />} />
-                      <Route path="lessons/new" element={<LessonEditorPage />} />
-                      <Route path="lessons/:lessonId" element={<LessonEditorPage />} />
-                      <Route path="assessments" element={<AssessmentsPage />} />
-                      <Route path="assessments/:assignmentId" element={<GradebookPage />} />
-                      <Route path="timetable" element={<TimetablePage />} />
-                      <Route path="tasks" element={<TasksPage />} />
-                      <Route path="support" element={<SupportPage />} />
-                      <Route path="support/:planId" element={<SupportPlanPage />} />
-                      <Route path="lab" element={<LabPage />} />
-                      <Route path="class" element={<ClassPage />} />
-                      <Route path="class/session" element={<ClassSessionPage />} />
-                      <Route path="reports" element={<ReportsPage />} />
-                      <Route path="settings" element={<SettingsPage />} />
-                      <Route path="*" element={<NotFound />} />
+                      {/* عرض الدرس بملء الشاشة بلا غلاف التطبيق، واللوحة العائمة فوقه */}
+                      <Route path="decks/:deckId/present" element={<DeckPresentPage />} />
+                      <Route element={<AppShell />}>
+                        <Route index element={<DashboardPage />} />
+                        <Route path="classes" element={<ClassesPage />} />
+                        <Route path="classes/:sectionId" element={<SectionPage />} />
+                        <Route path="students/:studentId" element={<StudentProfilePage />} />
+                        <Route path="lessons" element={<LessonsPage />} />
+                        <Route path="lessons/new" element={<LessonEditorPage />} />
+                        <Route path="lessons/:lessonId" element={<LessonEditorPage />} />
+                        <Route path="assessments" element={<AssessmentsPage />} />
+                        <Route path="assessments/:assignmentId" element={<GradebookPage />} />
+                        <Route path="timetable" element={<TimetablePage />} />
+                        <Route path="tasks" element={<TasksPage />} />
+                        <Route path="support" element={<SupportPage />} />
+                        <Route path="support/:planId" element={<SupportPlanPage />} />
+                        <Route path="lab" element={<LabPage />} />
+                        <Route path="decks" element={<DecksPage />} />
+                        <Route path="class" element={<ClassPage />} />
+                        <Route path="class/session" element={<ClassSessionPage />} />
+                        <Route path="reports" element={<ReportsPage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Route>
                     </Route>
                   </Routes>
                 </Suspense>

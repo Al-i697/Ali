@@ -62,7 +62,7 @@ function useDrag(root: RefObject<HTMLElement | null>, enabled: boolean, commit: 
   return { live, handlers };
 }
 
-function Launcher() {
+function Launcher({ lift }: { lift?: boolean }) {
   const f = useFloatingClass();
   const btn = useRef<HTMLButtonElement>(null);
   const { focusNext } = f;
@@ -79,7 +79,11 @@ function Launcher() {
       onClick={() => f.openPanel()}
       aria-label="فتح لوحة المشاركة العائمة"
       aria-expanded={false}
-      className="no-print fixed bottom-[calc(96px+env(safe-area-inset-bottom))] end-4 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-brand px-4 text-[15px] font-semibold text-brand-fg shadow-modal transition-[background-color,transform] hover:bg-brand-hover active:scale-95 lg:bottom-6 lg:end-6"
+      className={cn(
+        'no-print fixed end-4 z-40 inline-flex h-12 items-center gap-2 rounded-full bg-brand px-4 text-[15px] font-semibold text-brand-fg shadow-modal transition-[background-color,transform] hover:bg-brand-hover active:scale-95 lg:end-6',
+        // في شاشة العرض لا شريط تنقل سفلي، لكن للدرس شريطه الخاص أسفل الشاشة فيرتفع الزر فوقه
+        lift ? 'bottom-[calc(84px+env(safe-area-inset-bottom))]' : 'bottom-[calc(96px+env(safe-area-inset-bottom))] lg:bottom-6',
+      )}
     >
       <Hand className="size-5" aria-hidden />
       <span className="hidden sm:inline">المشاركة</span>
@@ -223,8 +227,11 @@ function PipPortal({ win }: { win: Window }) {
   );
 }
 
-/** يُركَّب مرة واحدة في غلاف التطبيق: الزر العائم أو اللوحة أو نافذة PiP */
-export function FloatingClass() {
+/**
+ * يُركَّب مرة واحدة تحت مزوّد اللوحة العائمة: الزر العائم أو اللوحة أو نافذة PiP.
+ * `lift`: يرفع الزر عن أسفل الشاشة (شاشة عرض الدرس فيها شريط تحكم سفلي خاص بالدرس).
+ */
+export function FloatingClass({ lift }: { lift?: boolean } = {}) {
   const f = useFloatingClass();
   const { pathname } = useLocation();
   const { year } = useAcademic();
@@ -234,7 +241,7 @@ export function FloatingClass() {
   const showLauncher = hasCourses && pathname !== '/class/session' && !f.state.open && !f.pipWindow;
   return (
     <>
-      {showLauncher ? <Launcher /> : null}
+      {showLauncher ? <Launcher lift={lift} /> : null}
       {hasCourses && f.state.open && !f.pipWindow ? <InAppPanel /> : null}
       {f.pipWindow ? <PipPortal win={f.pipWindow} /> : null}
     </>

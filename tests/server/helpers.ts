@@ -79,14 +79,17 @@ export class TestClient {
 
 export const PASSWORD = 'Str0ng-Pass!';
 
-/** يبني جسم multipart/form-data يدويًا (لرفع الملفات في الاختبارات) */
-export function multipart(filename: string, content: Buffer | string, mime = 'text/csv') {
+/** يبني جسم multipart/form-data يدويًا (لرفع الملفات في الاختبارات). الحقول النصية تسبق الملف كما يفعل المتصفح */
+export function multipart(filename: string, content: Buffer | string, mime = 'text/csv', fields: Record<string, string> = {}) {
   const boundary = '----sijilli' + Math.random().toString(16).slice(2);
+  const parts = Object.entries(fields).map(([k, v]) =>
+    Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${k}"\r\n\r\n${v}\r\n`),
+  );
   const head = Buffer.from(
     `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${filename}"\r\nContent-Type: ${mime}\r\n\r\n`,
   );
   const tail = Buffer.from(`\r\n--${boundary}--\r\n`);
-  const body = Buffer.concat([head, Buffer.isBuffer(content) ? content : Buffer.from(content), tail]);
+  const body = Buffer.concat([...parts, head, Buffer.isBuffer(content) ? content : Buffer.from(content), tail]);
   return { payload: body, headers: { 'content-type': `multipart/form-data; boundary=${boundary}` } };
 }
 

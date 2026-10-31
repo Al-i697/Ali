@@ -435,6 +435,19 @@ export type LabActivityDto = LabActivitySummaryDto & {
   createdAt: string;
 };
 
+// ───────────── الدروس التفاعلية ─────────────
+export type DeckDto = {
+  id: string;
+  title: string;
+  description: string | null;
+  subjectId: string | null;
+  subjectName: string | null;
+  /** حجم الصفحة بالبايت */
+  bytes: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
 /** إحصاءات تُحسب على كل ما يطابق التصفية (عدا الحالة) ولا تتأثر بالترقيم */
 export type LabStats = { planned: number; done: number; cancelled: number; overdue: number; participants: number };
 

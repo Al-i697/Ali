@@ -41,6 +41,7 @@ describe('ترقية قاعدة بيانات إلى أحدث هجرة', () => {
     expect(old.sqlite.prepare("select name from sqlite_master where name='lab_activities'").get()).toBeUndefined();
     expect(old.sqlite.prepare("select name from sqlite_master where name='app_settings'").get()).toBeUndefined();
     expect(old.sqlite.prepare("select name from sqlite_master where name='class_participation'").get()).toBeUndefined();
+    expect(old.sqlite.prepare("select name from sqlite_master where name='interactive_decks'").get()).toBeUndefined();
     old.close();
 
     // 2) بدء التطبيق بالمخطط الأحدث: نسخة أمان ثم ترقية
@@ -63,6 +64,10 @@ describe('ترقية قاعدة بيانات إلى أحدث هجرة', () => {
     expect(app2.db.sqlite.prepare("select name from sqlite_master where name='class_participation'").get()).toBeTruthy();
     expect(app2.db.sqlite.prepare("select name from sqlite_master where name='class_records'").get()).toBeTruthy();
     expect((app2.db.sqlite.prepare('select count(*) c from class_participation').get() as { c: number }).c).toBe(0);
+    // الدروس التفاعلية: جدولان جديدان فارغان
+    expect(app2.db.sqlite.prepare("select name from sqlite_master where name='interactive_decks'").get()).toBeTruthy();
+    expect(app2.db.sqlite.prepare("select name from sqlite_master where name='interactive_deck_files'").get()).toBeTruthy();
+    expect((app2.db.sqlite.prepare('select count(*) c from interactive_decks').get() as { c: number }).c).toBe(0);
     // الترقية لا تُفعّل المساعد الذكي: لا موافقة مسجّلة ولا صفوف في app_settings
     expect((app2.db.sqlite.prepare('select count(*) c from app_settings').get() as { c: number }).c).toBe(0);
     expect(getAiEnabled(app2.db.orm)).toBe(false);

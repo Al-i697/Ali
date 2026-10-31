@@ -8,6 +8,7 @@ export * from './assessments';
 export * from './tasks';
 export * from './support';
 export * from './lab';
+export * from './decks';
 export * from './classroom';
 export * from './ai';
 export * from './reports';

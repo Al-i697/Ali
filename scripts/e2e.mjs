@@ -1783,6 +1783,147 @@ async function phaseDemo(browser, srv) {
       expect((await classNow()).every((x) => x.participation === null && x.records.length === 0), 'بقيت تسجيلات في حصة الاختبار');
     });
 
+    // ───── الدروس التفاعلية: مكتبة + شاشة عرض بإطار معزول واللوحة العائمة الحقيقية فوقه ─────
+    // درس اصطناعي صغير يحاكي مشغّل الدروس الحقيقي: شريحة حالية في #where وتنقّل بالأسهم والمسافة على المستند
+    const deckDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sijilli-deck-'));
+    const deckFile = path.join(deckDir, 'e2e-lesson.html');
+    fs.writeFileSync(
+      deckFile,
+      `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>درس الاختبار الشامل</title></head><body style="margin:0;background:#123;color:#fff;font:28px sans-serif">
+<h1 id="where">1 من 5</h1>
+<script>
+let i = 1;
+const w = document.getElementById('where');
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowLeft' || e.key === ' ') i = Math.min(5, i + 1);
+  else if (e.key === 'ArrowRight') i = Math.max(1, i - 1);
+  else return;
+  w.textContent = i + ' من 5';
+});
+</script></body></html>`,
+    );
+    const deckFrame = async (p, id) => {
+      let f;
+      await until(async () => (f = p.frames().find((x) => x.url().includes(`/api/decks/${id}/content`))) && (await f.locator('#where').count()) === 1, 'لم يُحمَّل الدرس في الإطار');
+      return f;
+    };
+    const slide = (f) => f.locator('#where').innerText();
+    let deckId = '';
+
+    await step('الدروس التفاعلية: المكتبة الفارغة ثم رفع درس HTML واحد (العنوان يُقترح من <title>) ويظهر بحجمه ويبقى بعد إعادة التحميل، بلا مخالفات axe', async () => {
+      await page.goto('/decks');
+      await page.getByText('مكتبتك فارغة').waitFor();
+      await expectNoAxe(page, 'مكتبة الدروس الفارغة');
+      await page.getByRole('button', { name: 'رفع درس' }).first().click();
+      const dlg = page.getByRole('dialog');
+      await dlg.locator('input[type=file]').setInputFiles(deckFile);
+      await until(async () => (await dlg.getByLabel('عنوان الدرس').inputValue()) === 'درس الاختبار الشامل', 'لم يُقترح العنوان من وسم title');
+      await expectNoAxe(page, 'نافذة رفع درس');
+      await dlg.getByRole('button', { name: 'رفع الدرس' }).click();
+      await page.getByRole('link', { name: 'درس الاختبار الشامل' }).waitFor();
+      await page.reload();
+      await page.getByRole('link', { name: 'درس الاختبار الشامل' }).waitFor();
+      await expectNoAxe(page, 'مكتبة الدروس');
+      const list = await apiGet(page, '/decks');
+      expect(list.length === 1 && list[0].bytes === fs.statSync(deckFile).size && !('html' in list[0]), `قائمة الدروس: ${JSON.stringify(list)}`);
+      deckId = list[0].id;
+    });
+
+    await step('الدروس التفاعلية: يُفتح في إطار معزول (أصل معتم، لا كوكي ولا تخزين ولا وصول إلى واجهة التطبيق) وأسهم الدرس تعمل', async () => {
+      allowProblem(/Content Security Policy/);
+      await page.goto('/');
+      await clearTestSession();
+      await pinFloat(page);
+      await page.goto('/decks');
+      await page.getByRole('link', { name: 'عرض في الحصة' }).click();
+      await page.waitForURL(/\/decks\/[^/]+\/present$/);
+      const f = await deckFrame(page, deckId);
+      const probe = await f.evaluate(async () => {
+        const t = (fn) => { try { fn(); return 'allowed'; } catch { return 'blocked'; } };
+        const api = await fetch('/api/auth/me', { credentials: 'include' }).then(() => 'reached', () => 'blocked');
+        return { origin: window.origin, cookie: t(() => document.cookie), storage: t(() => localStorage.getItem('x')), parent: t(() => window.parent.document.title), api };
+      });
+      expect(probe.origin === 'null' && probe.cookie === 'blocked' && probe.storage === 'blocked' && probe.parent === 'blocked' && probe.api === 'blocked', `عزل الدرس: ${JSON.stringify(probe)}`);
+      const box = await page.locator('iframe').boundingBox();
+      expect(box.width > 900 && box.height > 500, `الإطار لا يملأ الشاشة: ${JSON.stringify(box)}`);
+      expect((await slide(f)) === '1 من 5', 'الشريحة الأولى');
+      await page.keyboard.press('ArrowLeft'); // التركيز في الإطار بعد التحميل
+      await until(async () => (await slide(f)) === '2 من 5', 'ArrowLeft لم يقدّم الشريحة');
+      await page.keyboard.press('ArrowRight');
+      await until(async () => (await slide(f)) === '1 من 5', 'ArrowRight لم يرجّع الشريحة');
+      // الرابط المباشر لمحتوى الدرس بلا جلسة مرفوض، وبرأسه سياسة العزل
+      const anon = await browser.newContext();
+      expect((await anon.request.get(`${page.url().split('/decks')[0]}/api/decks/${deckId}/content`)).status() === 401, 'محتوى الدرس متاح بلا دخول');
+      await anon.close();
+    });
+
+    await step('الدروس التفاعلية: لوحة المشاركة الحقيقية فوق الدرس — زر مرفوع عن شريط الدرس، والتسجيل بالنقر يُحفظ في الخادم، وأسهم الدرس تعمل بعده، ولا يُسحب التركيز من حقل السبب', async () => {
+      const f = await deckFrame(page, deckId);
+      const fab = fabBtn(page);
+      await fab.waitFor();
+      const lb = await fab.boundingBox();
+      const fb = await page.locator('iframe').boundingBox();
+      expect(lb.y + lb.height <= fb.y + fb.height - 70, `الزر العائم فوق شريط الدرس السفلي: ${Math.round(lb.y + lb.height)} من ${Math.round(fb.y + fb.height)}`);
+      await fab.click();
+      const fp = floatPanel(page);
+      await fp.waitFor();
+      await fp.locator('[data-float-student]').first().waitFor();
+      const [n1, n2] = (await classNow()).map((x) => x.fullName);
+
+      await fAct(fp, n1, 'شارك').click(); // نقرة ماوس على الاسم
+      await until(async () => (await classNow()).find((x) => x.fullName === n1).participation === 1, 'لم تُحفظ المشاركة من لوحة العرض');
+      await page.waitForTimeout(200); // زمن بشري بين النقر والضغط على السهم (الإرجاع يتم بعد ~60ms)
+      const before = await slide(f);
+      await page.keyboard.press('ArrowLeft'); // عاد التركيز إلى الدرس تلقائيًا
+      await until(async () => (await slide(f)) !== before, 'لم تتحرك الشريحة بعد التسجيل بالنقر (لم يعد التركيز للإطار)');
+      await page.keyboard.press('Space');
+      expect((await classNow()).find((x) => x.fullName === n1).participation === 1, 'المسافة أعادت ضغط زر الاسم بدل أن تقلّب الشريحة');
+
+      // حقل «سبب آخر»: يبقى التركيز فيه ويستقبل المسافة بدل أن تقلّب الشريحة
+      await fAct(fp, n2, 'سلوك إيجابي').click();
+      const reason = fp.getByLabel(`سبب آخر — ${n2}`);
+      await reason.click();
+      await page.waitForTimeout(400); // أطول من مهلة إعادة التركيز
+      const at = await slide(f);
+      await page.keyboard.type('إجابة مميزة');
+      expect((await reason.inputValue()) === 'إجابة مميزة', 'سُحب التركيز من حقل السبب');
+      expect((await slide(f)) === at, 'مسافة حقل السبب قلّبت شريحة الدرس');
+      await page.keyboard.press('Enter');
+      await until(async () => (await classNow()).find((x) => x.fullName === n2).records.some((r) => r.kind === 'positive' && r.reason === 'إجابة مميزة'), 'لم يُحفظ السبب المكتوب');
+      await expectNoAxe(page, 'شاشة عرض الدرس مع اللوحة');
+    });
+
+    await step('الدروس التفاعلية: ملء الشاشة، والرجوع إلى المكتبة يُبقي اللوحة مفتوحة، ثم تعديل الدرس واستبدال صفحته وحذفه', async () => {
+      allowProblem(/http 404: GET \/api\/decks\/[0-9a-f-]+\/content/);
+      await page.getByRole('link', { name: 'المكتبة' }).click();
+      await page.waitForURL(/\/decks$/);
+      await floatPanel(page).waitFor(); // حالة اللوحة لم تُفقد بين شاشة العرض والغلاف
+      await page.getByRole('button', { name: /^خيارات «درس الاختبار الشامل»/ }).click();
+      await page.getByRole('menuitem', { name: /تعديل/ }).click();
+      const dlg = page.getByRole('dialog');
+      await dlg.getByLabel('عنوان الدرس').fill('درس معدَّل');
+      fs.writeFileSync(deckFile, fs.readFileSync(deckFile, 'utf8').replace('1 من 5', 'نسخة ثانية'));
+      await dlg.locator('input[type=file]').setInputFiles(deckFile);
+      await dlg.getByRole('button', { name: 'حفظ' }).click();
+      await page.getByRole('link', { name: 'درس معدَّل' }).waitFor();
+      await page.getByRole('link', { name: 'عرض في الحصة' }).click();
+      const f = await deckFrame(page, deckId);
+      expect((await slide(f)).trim() === 'نسخة ثانية', `الصفحة المستبدلة لم تُعرض: ${await slide(f)}`);
+      await page.getByRole('button', { name: 'ملء الشاشة' }).click();
+      await until(async () => page.evaluate(() => !!document.fullscreenElement), 'لم يدخل ملء الشاشة');
+      await page.getByRole('button', { name: 'الخروج من ملء الشاشة' }).click();
+      await until(async () => page.evaluate(() => !document.fullscreenElement), 'لم يخرج من ملء الشاشة');
+      await page.getByRole('link', { name: 'المكتبة' }).click();
+      await page.getByRole('button', { name: /^خيارات «درس معدَّل»/ }).click();
+      await page.getByRole('menuitem', { name: 'حذف' }).click();
+      await page.getByRole('dialog').getByRole('button', { name: 'حذف', exact: true }).click();
+      await page.getByText('مكتبتك فارغة').waitFor();
+      expect((await apiStatus(page, `/decks/${deckId}/content`)) === 404, 'محتوى الدرس باقٍ بعد حذفه');
+      expect((await clearTestSession()) === 200, 'تعذّر مسح حصة الاختبار');
+      await page.evaluate((k) => localStorage.removeItem(k), FLOAT_KEY);
+      fs.rmSync(deckDir, { recursive: true, force: true });
+    });
+
     await step('المهام: إضافة سريعة ← إنجاز ← تظهر في «المنجزة» ← حذف بتأكيد', async () => {
       await page.goto('/tasks');
       const title = 'تجهيز أوراق عمل الوحدة الثالثة';
@@ -2072,6 +2213,7 @@ async function phaseVisual(browser, srv) {
     ['support', '/support'],
     ['support-plan', `/support/${plans[0].id}`],
     ['lab', '/lab'],
+    ['decks', '/decks'],
     ['class', '/class'],
     ['class-summary', `/class?tab=summary&assignment=${asg.id}`],
     ['class-session', `/class/session?assignment=${asg.id}&date=${new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Muscat' })}`],

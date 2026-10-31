@@ -44,6 +44,9 @@ export const qk = {
   classSession: (assignmentId: string, date: string, period: number | null) => ['class', 'session', assignmentId, date, period ?? 0] as const,
   classSummary: (params?: unknown) => ['class', 'summary', params ?? {}] as const,
   classStudent: (studentId: string, params?: unknown) => ['class', 'student', studentId, params ?? {}] as const,
+  // الدروس التفاعلية: كل مفاتيحها تبدأ بـ'decks'
+  decks: (params?: unknown) => ['decks', 'list', params ?? {}] as const,
+  deck: (id: string) => ['decks', 'item', id] as const,
   calendar: (from: string, to: string) => ['calendar', from, to] as const,
   dashboard: ['dashboard'] as const,
   users: ['users'] as const,

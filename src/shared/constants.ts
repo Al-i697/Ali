@@ -473,6 +473,16 @@ export type ReportType = (typeof REPORT_TYPE.values)[number];
 export const REPORT_FORMAT = ['html', 'pdf', 'xlsx'] as const;
 export type ReportFormat = (typeof REPORT_FORMAT)[number];
 
+// ───────────── الدروس التفاعلية ─────────────
+export const DECK_LIMITS = {
+  title: 200,
+  description: 1000,
+  /** أقصى حجم لصفحة درس (HTML واحد بأصوله المضمَّنة) */
+  maxBytes: 20 * 1024 * 1024,
+  /** أقصى عدد دروس للمعلم الواحد (حماية حجم القاعدة والنسخ الاحتياطية) */
+  maxPerOwner: 200,
+} as const;
+
 // ───────────── إعدادات عامة ─────────────
 export const LIMITS = {
   nameMax: 120,

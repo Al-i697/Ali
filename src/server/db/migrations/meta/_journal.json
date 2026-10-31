@@ -36,6 +36,13 @@
       "when": 1792253518534,
       "tag": "0004_class_management",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1793469827771,
+      "tag": "0005_interactive_decks",
+      "breakpoints": true
     }
   ]
 }

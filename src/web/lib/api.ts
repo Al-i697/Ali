@@ -75,6 +75,7 @@ export const api = {
   patch: <T>(path: string, body?: unknown) => request<T>('PATCH', path, body ?? {}),
   del: <T>(path: string, query?: Query) => request<T>('DELETE', path, undefined, query),
   upload: <T>(path: string, form: FormData) => request<T>('POST', path, form),
+  putUpload: <T>(path: string, form: FormData) => request<T>('PUT', path, form),
 };
 
 /** رابط مباشر لملف يولّده الخادم (تقارير/نسخ) — يعمل بالكوكي نفسه */

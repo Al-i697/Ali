@@ -609,6 +609,38 @@ export const classRecords = sqliteTable(
   ],
 );
 
+// ═════════════ الدروس التفاعلية (صفحات HTML للعرض في الحصة) ═════════════
+/**
+ * بيانات الدرس الوصفية. صفحة HTML نفسها في interactive_deck_files كي لا تُحمَّل (قد تبلغ ميغابايتات) مع كل قائمة.
+ * الدرس يتبع المعلم وحده، وتبقى مادته اختيارية (تُفرَّغ عند حذف المادة ولا يُحذف الدرس).
+ */
+export const interactiveDecks = sqliteTable(
+  'interactive_decks',
+  {
+    id: id(),
+    ownerId: owner(),
+    subjectId: text('subject_id').references(() => subjects.id, { onDelete: 'set null' }),
+    title: text('title').notNull(),
+    /** عنوان بعد التطبيع العربي — للبحث */
+    searchText: text('search_text').notNull().default(''),
+    description: text('description'),
+    /** حجم صفحة HTML بالبايت (يُعرض في القائمة دون جلب الصفحة) */
+    bytes: integer('bytes').notNull(),
+    ...timestamps,
+  },
+  (t) => [
+    index('deck_owner_created_idx').on(t.ownerId, t.createdAt),
+    check('deck_bytes_chk', sql`${t.bytes} > 0`),
+  ],
+);
+
+export const interactiveDeckFiles = sqliteTable('interactive_deck_files', {
+  deckId: text('deck_id')
+    .primaryKey()
+    .references(() => interactiveDecks.id, { onDelete: 'cascade' }),
+  html: text('html').notNull(),
+});
+
 // ═════════════ إعدادات النظام (للنظام كله لا لمعلم بعينه) ═════════════
 /** مفتاح/قيمة: مثل موافقة المدير على المساعد الذكي. بلا owner_id عمدًا — يديرها المدير فقط عبر واجهات مخصصة */
 export const appSettings = sqliteTable('app_settings', {

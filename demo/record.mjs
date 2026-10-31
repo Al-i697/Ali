@@ -296,7 +296,7 @@ async function main() {
   console.log(`  … ${visited.size} مسارًا، ${entries.size} استجابة (بعد المعرّفات)`);
 
   // ───── ج) نقاط نهاية لا تضمن الجولة وصولها (تبويبات كسولة) ─────
-  for (const u of ['/auth/me', '/auth/sessions', '/settings', '/subjects', '/years', '/system/info', '/dashboard']) await api(main, u);
+  for (const u of ['/auth/me', '/auth/sessions', '/settings', '/subjects', '/years', '/system/info', '/dashboard', '/decks']) await api(main, u);
 
   // ───── ج-2) تفاصيل نشاط المختبر (تُفتح في نافذة) والمهارات ─────
   for (const l of labs) await api(main, `/lab-activities/${l.id}`);
