@@ -394,6 +394,7 @@ console.log('\n━━ إطار معزول + CSP صارمة ━━');
       await pause(400);
       await p.keyboard.press('ArrowLeft');
       await until(async () => (await where.innerText()).replace(/\s+/g, ' ').trim() !== w1, 'الأسهم لم تعمل بعد التسجيل بالنقر');
+      await fp.getByRole('button', { name: 'إغلاق اللوحة' }).click(); // حالة اللوحة تبقى عبر الصفحات: لا نتركها تحجب الخطوات التالية
       await f.getByRole('link', { name: 'المكتبة' }).click();
       await f.getByRole('link', { name: decks[0].title }).first().waitFor();
     });

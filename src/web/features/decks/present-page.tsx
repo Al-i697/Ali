@@ -38,7 +38,17 @@ export default function DeckPresentPage() {
 
   const failure = deck.isError ? deck : import.meta.env.VITE_DEMO && demoHtml.isError ? demoHtml : null;
 
-  const focusFrame = useCallback(() => frame.current?.contentWindow?.focus(), []);
+  // يركّز عنصر الإطار نفسه ثم نافذته: الثانية وحدها لا تنقل التركيز حين تكون الصفحة نفسها داخل إطار آخر (المعاينة التفاعلية)
+  const focusFrame = useCallback(() => {
+    const el = frame.current;
+    if (!el?.isConnected) return; // النقرة التي غادرت الصفحة (رابط «المكتبة») تصل مؤقّتتها بعد إزالة الإطار
+    el.focus();
+    try {
+      el.contentWindow?.focus();
+    } catch {
+      /* نافذة الإطار غير متاحة لحظة تبديل مستنده */
+    }
+  }, []);
 
   useEffect(() => {
     let timer = 0;
@@ -101,7 +111,7 @@ export default function DeckPresentPage() {
             {...(import.meta.env.VITE_DEMO ? { srcDoc: demoHtml.data } : { src: `/api/decks/${deck.data.id}/content?v=${encodeURIComponent(deck.data.updatedAt)}` })}
             // أصل معتم: لا allow-same-origin، فلا يصل الدرس إلى الكوكي ولا إلى واجهة التطبيق (يعزز الترويسة الصادرة من الخادم)
             sandbox="allow-scripts allow-downloads"
-            allow="fullscreen"
+            allow={import.meta.env.VITE_DEMO ? undefined : 'fullscreen'}
             referrerPolicy="no-referrer"
             className="size-full border-0 bg-white"
             onLoad={focusFrame}

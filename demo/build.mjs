@@ -96,7 +96,9 @@ const payloadJson = JSON.stringify(payload);
 // ───────────── 3) الطبقة الوسيطة ─────────────
 // صفحة الدرس التفاعلي (إن وُجد DEMO_DECK_FILE) تُضمَّن مرة واحدة بترميز base64 ولا تُسجَّل مع الاستجابات (ميغابايتات)
 const deckFile = process.env.DEMO_DECK_FILE;
-const deckB64 = deckFile ? fs.readFileSync(deckFile).toString('base64') : '';
+// المنصة تمنع الشبكة، فنحذف من الدرس المضمَّن وسوم خطوط Google (وإلا سجّل المتصفح خطأ CSP عند كل فتح) وتُعرض الصفحة بخطوط النظام
+const deckHtml = deckFile ? fs.readFileSync(deckFile, 'utf8').replace(/<link\b[^>]*fonts\.(?:googleapis|gstatic)\.com[^>]*>\s*/gi, '') : '';
+const deckB64 = Buffer.from(deckHtml, 'utf8').toString('base64');
 if (deckFile) console.log(`  درس مضمَّن: ${path.basename(deckFile)} (${(fs.statSync(deckFile).size / 1024).toFixed(0)} ك.ب)`);
 const shim = await esbuild({
   entryPoints: [r('demo/shim.ts')],

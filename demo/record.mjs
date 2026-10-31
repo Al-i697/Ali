@@ -226,6 +226,7 @@ async function main() {
         if (subjectId) form.append('subjectId', subjectId);
         form.append('file', new Blob([bin], { type: 'text/html' }), 'lesson.html');
         const res = await fetch('/api/decks', { method: 'POST', credentials: 'same-origin', headers: { 'x-sijilli-client': 'web' }, body: form });
+        await res.text(); // يجب استهلاك الجسم وإلا ظلّ الطلب «جاريًا» عند المسجِّل ولم تهدأ الصفحة أبدًا
         return res.status;
       },
       [bytes.toString('base64'), subject?.id ?? null],
@@ -245,7 +246,8 @@ async function main() {
     return p + u.search;
   };
   // شاشات الحصص يخدمها محرّك المعاينة من الذاكرة (استجاباتها تُسقَط عند الكتابة)، فلا تُزار حصة حصة
-  const skip = (r) => r.startsWith('/login') || r.startsWith('/setup') || r.startsWith('/api') || r.startsWith('/class/session');
+  // وشاشة عرض الدرس (/decks/:id/present) تحمّل صفحة الدرس كاملة بحركاتها ولا تضيف استجابة للتسجيل (تفاصيل الدرس تُسجَّل صراحةً أدناه)
+  const skip = (r) => r.startsWith('/login') || r.startsWith('/setup') || r.startsWith('/api') || r.startsWith('/class/session') || /^\/decks\/[^/]+\/present/.test(r);
 
   async function exploreRoute(page, route) {
     await go(page, route);
