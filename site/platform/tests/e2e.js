@@ -6,7 +6,7 @@ const srv=http.createServer((q,r)=>{ const f=path.join(DIST,decodeURIComponent(q
 let n=0, bad=0; const T=async(name,fn)=>{try{await fn(); n++; console.log('ok  ',name)}catch(e){bad++; console.log('FAIL',name,'\n    ',(e.message||e).split('\n')[0])}};
 const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school week
 (async()=>{
-  await new Promise(r=>srv.listen(0,r)); const URL='http://127.0.0.1:'+srv.address().port+'/index.html';
+  await new Promise(r=>srv.listen(0,r)); const URL=process.env.OFFLINE?'file://'+path.resolve(__dirname,'../../offline/platform-offline.html'):'http://127.0.0.1:'+srv.address().port+'/index.html';   // OFFLINE=1: the single-file copy opened straight from disk
   const b=await chromium.launch(); const errs=[];
   async function page(opts){
     opts=opts||{}; const ctx=await b.newContext({viewport:{width:1280,height:720},acceptDownloads:true}); const p=await ctx.newPage();
@@ -21,22 +21,28 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
   const addClass=async(p,name,names,course)=>{ await p.click('[data-act=newclass]'); await p.fill('#cdName',name); if(course) await p.selectOption('#cdCourse',course); await p.fill('#cdNames',names); await p.click('#cdSave'); await p.waitForTimeout(400) };
   const NAMES='أحمد\nسالم\nخالد\nمحمد\nيوسف\nسعيد';
 
-  await T('home: first run shows the empty card, four courses, chemistry 10 has 5 of 26 lessons built',async()=>{
-    const p=await page(); const t=await p.innerText('#today'); assert.ok(t.includes('ابدأ بإضافة شعبتك'));
-    assert.strictEqual(await p.locator('#cchips .pill').count(),4); assert.ok((await p.innerText('#cprog')).includes('٥ من ٢٦'));
-    assert.strictEqual(await p.locator('.lc.built').count(),5); await p.context().close();
+  await T('pages: grades (big cards) -> subjects -> units and lessons -> the lesson opens on its slides; back buttons return one step',async()=>{
+    const p=await page(); assert.strictEqual(await p.locator('#v-home .bcard').count(),4,'three grades and the teacher record'); assert.ok((await p.innerText('#v-home .strip')).includes('أضف شعبتك'));
+    const box=await p.locator('#v-home .bcard').first().boundingBox(); assert.ok(box.height>=300&&box.width>=280,'cards are big: '+JSON.stringify(box));
+    await p.click('a[href="#grade-10"]'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); assert.ok(await p.isVisible('#v-grade'));
+    assert.strictEqual(await p.locator('#v-grade .bcard').count(),4); assert.strictEqual(await p.locator('#v-grade .bcard.soon').count(),3); assert.ok((await p.innerText('#v-grade a.bcard')).includes('٥ دروس جاهزة من ٢٦'));
+    await p.click('#v-grade a.bcard'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),5);
+    await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#home');
+    await p.click('a[href="#grade-11"]'); await p.click('#v-grade a.bcard'); await p.waitForTimeout(200); assert.strictEqual(await p.locator('#v-course .lc.built').count(),0,'grade 11 chemistry has its lessons listed as coming soon');
+    await p.goto(URL+'#grade-10-chem'); await p.waitForTimeout(500); await p.click('#v-course .lc.built >> nth=2'); await p.waitForTimeout(1500); assert.strictEqual(await p.evaluate(()=>location.hash),'#l-chem10-3-3'); assert.ok(await p.isVisible('#lf')); await p.context().close();
   });
   await T('add a class: names pasted with numbering, duplicates reported, stored in this browser',async()=>{
     const p=await page(); await addClass(p,'10/3','1. أحمد\n٢- سالم\nخالد\nأحمد\nمحمد\nيوسف\nسعيد','chem10');
     const s=await state(p); assert.strictEqual(s.classes.length,1); assert.strictEqual(s.classes[0].students.length,6); assert.strictEqual(s.classes[0].course,'chem10');
-    assert.ok((await p.innerText('#toast')).includes('مكرراً')); assert.ok((await p.innerText('#today')).includes('ابدأ حصة'));
+    assert.ok((await p.innerText('#toast')).includes('مكرراً'));
     await p.context().close();
   });
   await T('timetable: a slot puts today\'s lesson on the home page, and the class is remembered',async()=>{
     const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-nav=classes]'); await p.waitForTimeout(300);
     await p.click('[data-slot="0|2"]'); await p.click('.menu button:has-text("10/3")'); await p.click('[data-nav=home]'); await p.waitForTimeout(300);
-    const t=await p.innerText('#today'); assert.ok(t.includes('الحصة ٢')&&t.includes('10/3')&&t.includes('ابدأ الحصة'),t); await p.context().close();
+    const t=await p.innerText('#v-home .strip'); assert.ok(t.includes('حصصك اليوم')&&t.includes('الحصة ٢')&&t.includes('10/3'),t); await p.context().close();
   });
+async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-chem10-3-1'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500) }
   async function openLesson(p){ await p.click('[data-start]'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500) }
   await T('lesson opens in a frame with the class button added to its top bar, drawer shows the roster',async()=>{
     const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-nav=classes]'); await p.click('[data-slot="0|1"]'); await p.click('.menu button:has-text("10/3")'); await p.click('[data-nav=home]');
@@ -44,7 +50,7 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
     assert.ok((await p.innerText('#dLs')).includes('٣-١')); await p.context().close();
   });
   await T('drawer: tap = participation, minus, skip, reasons, undo, "did not participate for the rest" needs a second click',async()=>{
-    const p=await page({hash:''}); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-start]'); await p.waitForTimeout(1500);
+    const p=await page({hash:''}); await addClass(p,'10/3',NAMES,'chem10'); await openByHash(p);
     const row=i=>p.locator('#slist .stu').nth(i);
     for(let k=0;k<3;k++) await row(0).locator('[data-a=tap]').click(); assert.strictEqual((await row(0).locator('.cnt').innerText()).trim(),'٣');
     await row(0).locator('[data-a=minus]').click(); assert.strictEqual((await row(0).locator('.cnt').innerText()).trim(),'٢');
@@ -58,7 +64,7 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
     await p.context().close();
   });
   await T('drawer: search, hide behaviour, random picker only among unrecorded, focus returns to the lesson',async()=>{
-    const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-start]'); await p.waitForTimeout(1500);
+    const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await openByHash(p);
     await p.fill('#dQ','احمد'); assert.strictEqual(await p.locator('#slist .stu').count(),1,'search ignores hamza'); await p.fill('#dQ','');
     await p.locator('#slist .stu').nth(2).locator('[data-a=neg]').click(); await p.click('#slist .rs button >> nth=0'); await p.click('#bEye'); await p.waitForTimeout(150);
     assert.strictEqual(await p.locator('#slist [data-rm]').count(),0,'behaviour hidden'); await p.click('#bEye');
@@ -69,9 +75,9 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
     await p.context().close();
   });
   await T('the slide number follows the lesson, the lesson home button returns to the platform, leaving unloads the lesson',async()=>{
-    const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-start]'); await p.waitForTimeout(1800);
+    const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await openByHash(p);
     await p.frameLocator('#lf').locator('#bNext').click(); await p.waitForTimeout(1300); assert.ok((await p.innerText('#dLs')).includes('شريحة ٢'),await p.innerText('#dLs'));
-    await p.frameLocator('#lf').locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#home'); assert.strictEqual(await p.evaluate(()=>document.getElementById('lf').getAttribute('src')),'about:blank');
+    await p.frameLocator('#lf').locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem','the lesson home button returns to the lessons page of its subject'); assert.strictEqual(await p.evaluate(()=>document.getElementById('lf').getAttribute('src')),'about:blank');
     await p.context().close();
   });
   await T('drawer closes and opens from the lesson top bar; with no class it offers to add one',async()=>{
@@ -129,10 +135,10 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
   });
   await T('no horizontal scroll at phone width on every screen',async()=>{
     const st=seed(), p=await page({state:st}); await p.setViewportSize({width:400,height:800});
-    for(const v of ['home','classes','summary','student']){ await p.goto(URL+'#'+v); await p.waitForTimeout(700); const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth); assert.ok(o<=1,v+' overflow '+o) } await p.context().close();
+    for(const v of ['home','grade-10','grade-10-chem','classes','summary','student']){ await p.goto(URL+'#'+v); await p.waitForTimeout(700); const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth); assert.ok(o<=1,v+' overflow '+o) } await p.context().close();
   });
   await T('weekend: the home page says it is a day off and still offers to start a lesson',async()=>{
-    const st=seed(), p=await page({state:st,now:'2026-11-06T09:30:00'}); const t=await p.innerText('#today'); assert.ok(t.includes('اليوم إجازة')&&t.includes('ابدأ حصة'),t); await p.context().close();
+    const st=seed(), p=await page({state:st,now:'2026-11-06T09:30:00'}); const t=await p.innerText('#v-home .strip'); assert.ok(t.includes('اليوم إجازة')&&t.includes('ابدأ حصة'),t); await p.context().close();
   });
   await T('lesson hash survives a reload: opening #l-chem10-3-4 directly shows lesson 3-4 with the drawer',async()=>{
     const st=seed(), p=await page({state:st,hash:'#l-chem10-3-4'}); await p.waitForTimeout(1500); assert.ok((await p.innerText('#dLs')).includes('٣-٤')); assert.strictEqual(await p.locator('#slist .stu').count(),6); await p.context().close();

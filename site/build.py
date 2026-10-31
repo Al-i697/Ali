@@ -26,3 +26,16 @@ page = page.replace('/*APP_JS*/', ''.join(rd(os.path.join(pl, 'src', f)) + '\n' 
 open(os.path.join(dist, 'index.html'), 'w').write(doc(page))
 open(os.path.join(dist, 'index.fragment.html'), 'w').write(page)   # for hosts that wrap the page themselves
 print({f: os.path.getsize(os.path.join(dist, f)) for f in sorted(os.listdir(dist)) if os.path.isfile(os.path.join(dist, f))})
+
+# the single-file copy: the whole site in one page that opens by double-click (no server, no internet except the fonts)
+off = os.path.join(root, 'offline'); os.makedirs(off, exist_ok=True)
+stk = rd(os.path.join(core, 'stickers_assets.js')); tag = '<script src="shared/stickers_assets.js"></script>'
+lessons = {}
+for _, out in [('', 'lesson31.html'), ('', 'lesson32.html'), ('', 'lesson33.html'), ('', 'lesson34.html'), ('', 'lesson35.html')]:
+    t = rd(os.path.join(dist, out)); assert tag in t
+    lessons[out] = t.replace(tag, '<script>var STK_IMG=parent.STK_IMG,STK_WH=parent.STK_WH;</script>')
+blob = json.dumps(lessons, ensure_ascii=False).replace('</', '<\\/').replace('<!--', '<\\!--')
+host = rd(os.path.join(dist, 'index.html')); assert tag in host
+host = host.replace(tag, '<script>' + stk + '</script>\n<script>window.OFFLINE_LESSONS=' + blob + ';</script>')
+open(os.path.join(off, 'platform-offline.html'), 'w').write(host)
+print('offline copy', os.path.getsize(os.path.join(off, 'platform-offline.html')))

@@ -4,6 +4,12 @@ function bgKey(){try{if(host.bgSaved===null) localStorage.removeItem('l31fx'); e
 function pauseBg(){ if(host.bgPrev!==undefined) return; host.bgPrev=BG.tier(); try{host.bgSaved=localStorage.getItem('l31fx')}catch(e){host.bgSaved=null} BG.setTier(0); bgKey() }
 function resumeBg(){ if(host.bgPrev===undefined) return; BG.setTier(host.bgPrev); bgKey(); if(host.bgSaved===null) BG.auto(true); host.bgPrev=undefined }
 
+/* online the lesson is a page of the site; in the single-file copy (no server) the lesson text is inside this page and goes in through srcdoc, which keeps it same-origin */
+function setFrame(L,n){
+  var f=$('#lf'), t=window.OFFLINE_LESSONS&&OFFLINE_LESSONS[L.page];
+  if(t){ f.removeAttribute('src'); f.srcdoc=t.replace('<head>','<head><script>try{location.hash="#s'+n+'"}catch(e){}<\/script>') }
+  else { f.removeAttribute('srcdoc'); f.src=L.page+'#s'+n }
+}
 function showLesson(L){
   var d=D(), today=PL.todayISO();
   if(pending){ ctx={classId:pending.classId,date:today,period:pending.period||0,lesson:L.id,slide:0}; pending=null }
@@ -12,7 +18,7 @@ function showLesson(L){
   if(ctx.classId&&PL.findClass(d,ctx.classId)) change(function(s){PL.setLastLesson(s,ctx.classId,L.id); s.ui.lastClass=ctx.classId; s.ui.course=L.course});
   $('#pg').classList.add('hide'); $('#lv').classList.remove('hide'); pauseBg(); layoutFrame();
   $$('[data-nav]').forEach(function(b){b.classList.remove('on')});
-  if(host.id!==L.id){ host.id=L.id; host.w=null; host.d=null; $('#lf').src=L.page+'#s'+(host.slides[L.id]||1); ctx.slide=host.slides[L.id]||1 }
+  if(host.id!==L.id){ host.id=L.id; host.w=null; host.d=null; ctx.slide=host.slides[L.id]||1; setFrame(L,ctx.slide) }
   host.restAsk=0; renderDrawer(); startPoll(); document.title=ar(L.code)+' '+L.title;
   /* when the lesson page can not be reached from here (the site opened as plain files), a button of our own opens the drawer */
   setTimeout(function(){ if(host.id===L.id&&!host.d) floatBtn(true) },2500);
@@ -27,9 +33,16 @@ function hideLesson(){
   if($('#lv').classList.contains('hide')) return;
   stopPoll(); floatBtn(false); $('#lv').classList.add('hide'); $('#pick').classList.add('hide'); resumeBg();
   if(document.fullscreenElement&&document.exitFullscreen) try{document.exitFullscreen().catch(function(){})}catch(e){}
-  $('#lf').src='about:blank'; host.id=''; host.w=null; host.d=null; document.title='منصة الدروس';
+  $('#lf').removeAttribute('srcdoc'); $('#lf').src='about:blank'; host.id=''; host.w=null; host.d=null; document.title='منصة الدروس';
 }
-function startPoll(){ stopPoll(); host.poll=setInterval(function(){ try{ var h=host.w&&host.w.location.hash, m=/#s(\d+)/.exec(h||''), n=m?+m[1]:0; if(n&&n!==ctx.slide){ctx.slide=n; host.slides[ctx.lesson]=n; renderCtx()} }catch(e){} },600) }
+/* the slide the lesson shows: read from its progress bar (works in both ways of loading), else from its address */
+function readSlide(){
+  try{
+    var segs=host.d&&host.d.querySelectorAll('#prog .seg'); if(segs&&segs.length){ for(var i=0;i<segs.length;i++) if(segs[i].classList.contains('cur')) return i+1 }
+    var m=/#s(\d+)/.exec((host.w&&host.w.location.hash)||''); return m?+m[1]:0;
+  }catch(e){return 0}
+}
+function startPoll(){ stopPoll(); host.poll=setInterval(function(){ var n=readSlide(); if(n&&n!==ctx.slide){ctx.slide=n; host.slides[ctx.lesson]=n; renderCtx()} },600) }
 function stopPoll(){clearInterval(host.poll); host.poll=0}
 function focusLesson(){ try{ if(host.w) host.w.focus() }catch(e){} }
 function hostFullscreen(){ try{ var p=document.fullscreenElement?document.exitFullscreen():$('#lv').requestFullscreen(); if(p&&p.catch) p.catch(function(){toast('تعذّر ملء الشاشة من هذه الصفحة. استخدم F11 في المتصفح.')}) }catch(e){} }
@@ -52,7 +65,7 @@ function patchLesson(){
     b.innerHTML='<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">'+PATH.users+'</svg><span></span>';
     top.insertBefore(b,d.getElementById('bNote')||null); b.addEventListener('click',toggleDrawer);
   }
-  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); go('home')},true)}
+  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?courseHash(m[2],m[1]):'home')},true)}
   var fs=d.getElementById('bFs'); if(fs&&!fs.__p){fs.__p=1; fs.addEventListener('click',function(e){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()},true)}
   if(!d.__p){d.__p=1; d.addEventListener('keydown',function(e){ if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(input|textarea|select)$/i.test((e.target&&e.target.tagName)||'')){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()} },true)}
   updateClassBtn(); focusLesson();

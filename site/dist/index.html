@@ -937,6 +937,39 @@ select.inp{appearance:auto}
 .rt tr.lk td:first-child{font-weight:800}
 .hint{font:600 17px var(--font-body); color:var(--muted)}
 
+/* ---- the pages of big cards ---- */
+.strip{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; padding:12px 20px}
+.bigcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr)); gap:24px}
+.bcard{position:relative; display:flex; flex-direction:column; justify-content:flex-end; gap:10px; min-height:320px; padding:30px 32px 28px; border-radius:28px; text-decoration:none; color:var(--ink); cursor:pointer;
+  background:linear-gradient(150deg,rgba(var(--p1),.9),rgba(var(--p2),.82)); border:2px solid rgba(var(--t2),.5); box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14),0 0 30px rgba(var(--t1),.12);
+  transition:transform 260ms var(--ease-out),box-shadow 260ms var(--ease-out),border-color 260ms var(--ease-out)}
+.bcard:hover,.bcard:focus-visible{transform:translateY(-6px); border-color:rgba(var(--t1),.95); box-shadow:0 24px 56px rgba(0,0,0,.5),0 0 44px rgba(var(--t1),.3)}
+.bcard .bnum{font:800 150px/.95 var(--font-display); color:var(--gold); text-shadow:0 0 34px rgba(228,188,75,.35); display:flex; align-items:center}
+.bcard .bnum svg{width:120px; height:120px; stroke-width:1.6}
+.bcard .bname{font:800 54px/1.1 var(--font-display)}
+.bcard .bmeta{font:700 24px/1.4 var(--font-body); color:var(--muted)}
+.bcard .bar{height:14px; margin-top:4px}
+.bcard.sub2{min-height:270px}
+.bcard.soon{opacity:.55; cursor:default}
+.bcard.soon:hover{transform:none; box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14)}
+.bcard .stk{z-index:3}
+.backbar{display:flex; align-items:center; gap:22px; flex-wrap:wrap}
+.sbtn.big{min-height:64px; padding:0 30px; font-size:26px; border-radius:18px}
+.sbtn.big svg{width:28px; height:28px}
+.unit>button{padding:20px 26px}
+.unit .ut{font-size:28px} .unit .un{font-size:21px; padding:4px 14px}
+.lgrid{grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:16px; padding:2px 26px 26px}
+.lc{gap:10px; padding:22px 24px; min-height:170px; border-radius:20px}
+.lc .cd{font-size:28px} .lc .tt{font-size:28px; line-height:1.3} .lc .st{font-size:21px}
+@media (max-width:900px){.bcard{min-height:230px}.bcard .bnum{font-size:100px}.bcard .bname{font-size:42px}}
+
+.bigcards.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bigcards.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bcard.wide{flex-direction:row; align-items:center; justify-content:flex-start; gap:28px; min-height:150px; padding:22px 32px}
+.bcard.wide .bnum{font-size:0; line-height:0} .bcard.wide .bnum svg{width:84px; height:84px}
+.bcard.wide .bname{font-size:44px}
+@media (max-width:900px){.bigcards.three,.bigcards.two{grid-template-columns:1fr}}
+
 </style>
 <script src="shared/stickers_assets.js"></script>
 <script>
@@ -2086,7 +2119,7 @@ var PATH={
  eyeoff:'<path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.5 19 2 12 2 12a18 18 0 0 1 4.1-5.1M9.9 5.2A9.7 9.7 0 0 1 12 5c6.5 0 10 7 10 7a18 18 0 0 1-2.2 3.2"/><path d="m2 2 20 20"/>',
  dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/>',
  up2:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/>',
- chev:'<path d="m15 18-6-6 6-6"/>', home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/>', play:'<path d="m6 4 14 8-14 8z"/>', close:'<path d="M18 6 6 18M6 6l12 12"/>',
+ chev:'<path d="m15 18-6-6 6-6"/>', chevr:'<path d="m9 18 6-6-6-6"/>', home:'<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/>', play:'<path d="m6 4 14 8-14 8z"/>', close:'<path d="M18 6 6 18M6 6l12 12"/>',
  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>', trash:'<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/>'
 };
 function ic(n){return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">'+PATH[n]+'</svg>'}
@@ -2158,60 +2191,86 @@ function openMenu(anchor,items){
   setTimeout(function(){document.addEventListener('mousedown',function h(e){ if(menuEl&&!menuEl.contains(e.target)){closeMenu()} document.removeEventListener('mousedown',h)})},0);
 }
 
-/* ---------- router and views ---------- */
-var VIEWS=['home','classes','summary','student'], current='home', pending=null, ctx={classId:'',date:'',period:0,lesson:'',slide:0};
+/* ---------- router and views: home (grades) -> grade (subjects) -> course (units and lessons) -> the lesson ---------- */
+var VIEWS=['home','grade','course','classes','summary','student'], current='home', nav={grade:0,subject:''}, pending=null, ctx={classId:'',date:'',period:0,lesson:'',slide:0};
+function gradeHash(g){return 'grade-'+g}
+function courseHash(g,s){return 'grade-'+g+'-'+s}
+function parentHash(){ if(current==='course') return gradeHash(nav.grade); return 'home' }
 function go(v){ if(location.hash!=='#'+v){try{history.pushState(null,'','#'+v)}catch(e){location.hash=v}} route() }
 function route(){
-  var h=(location.hash||'#home').slice(1), L=BYHASH[h];
+  var h=(location.hash||'#home').slice(1), L=BYHASH[h], m;
   if(L){ showLesson(L); return }
-  hideLesson(); if(VIEWS.indexOf(h)<0) h='home'; current=h; showView(h);
+  hideLesson();
+  if((m=/^grade-(\d+)-([a-z]+)$/.exec(h))&&CATALOG.grades[m[1]]&&CATALOG.subjects[m[2]]){ nav.grade=+m[1]; nav.subject=m[2]; current='course' }
+  else if((m=/^grade-(\d+)$/.exec(h))&&CATALOG.grades[m[1]]){ nav.grade=+m[1]; current='grade' }
+  else { current=VIEWS.indexOf(h)>=0&&h!=='grade'&&h!=='course'?h:'home' }
+  showView(current);
 }
+var PAL={home:'emerald',grade:'emerald',course:'emerald',classes:'gold',summary:'gold',student:'gold'};
 function showView(v){
   $('#lv').classList.add('hide'); $('#pg').classList.remove('hide');
   VIEWS.forEach(function(k){$('#v-'+k).classList.toggle('hide',k!==v)});
-  $$('[data-nav]').forEach(function(b){var k=b.getAttribute('data-nav'); b.classList.toggle('on',k===v||(k==='classes'&&v!=='home'))});
+  $$('[data-nav]').forEach(function(b){var k=b.getAttribute('data-nav'); b.classList.toggle('on',k===v||(k==='classes'&&(v==='summary'||v==='student'))||(k==='home'&&(v==='grade'||v==='course')))});
   $$('[data-sub]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-sub')===v)});
-  var pal=v==='home'?'emerald':'gold', bg=v==='home'?'doodles':'hexes'; $('.app').setAttribute('data-pal',pal); BG.go(bg,pal,1);
+  var pal=PAL[v]||'emerald', bg=PAL[v]==='gold'?'hexes':'doodles'; $('.app').setAttribute('data-pal',pal); BG.go(bg,pal,1);
   renderView(v); window.scrollTo(0,0);
 }
-function renderView(v){ ({home:renderHome,classes:renderClasses,summary:renderSummary,student:renderStudent})[v||current](); renderBanner() }
+function renderView(v){ ({home:renderHome,grade:renderGrade,course:renderCourse,classes:renderClasses,summary:renderSummary,student:renderStudent})[v||current](); renderBanner() }
 
 /* a banner for what must not be missed: data that can not be saved, or no backup for a long time */
 function renderBanner(){
-  var s=PStore.status(), d=D(), el=$('#banner'), has=d.classes.length>0, days=d.lastBackup?Math.floor((Date.now()-d.lastBackup)/864e5):null, h='';
+  var s=PStore.status(), d=D(), el=$('#banner'), has=Object.keys(d.sessions).length>0, days=d.lastBackup?Math.floor((Date.now()-d.lastBackup)/864e5):null, h='';
   if(!s.persists) h='<div class="banner bad">هذا المتصفح لا يسمح بحفظ البيانات، فستضيع عند إغلاق الصفحة. صدّر نسخة احتياطية بعد كل حصة. <button class="sbtn mini" type="button" data-act="export">تصدير نسخة</button></div>';
   else if(s.error) h='<div class="banner bad">'+esc(s.error)+' <button class="sbtn mini" type="button" data-act="export">تصدير نسخة</button></div>';
   else if(has&&(days===null||days>=14)) h='<div class="banner">'+(days===null?'لم تحفظ نسخة احتياطية بعد.':'آخر نسخة احتياطية قبل '+ar(days)+' يوماً.')+' بياناتك محفوظة في هذا المتصفح فقط، فاحفظ نسخة في مكان آمن. <button class="sbtn mini" type="button" data-act="export">تصدير نسخة</button></div>';
   el.innerHTML=h;
 }
 
-/* ---- home: today's lessons and the curriculum ---- */
-var course='';
+/* ---- the pages of the curriculum: big cards, one choice per page ---- */
+function courseId(g,s){return s+g}
+function courseCounts(cid){var c=CATALOG.courses[cid], tot=0, b=0; if(c) c.units.forEach(function(u){u.lessons.forEach(function(l){tot++; if(l.page) b++})}); return {tot:tot,built:b}}
+function gradeCounts(g){var tot=0,b=0,subs=0; Object.keys(CATALOG.subjects).forEach(function(s){var k=courseCounts(courseId(g,s)); if(k.tot){subs++; tot+=k.tot; b+=k.built}}); return {tot:tot,built:b,subjects:subs}}
+var GPAL={10:'emerald',11:'navy',12:'violet'}, SPAL={chem:'emerald',phys:'navy',bio:'ember',env:'violet'}, GSTK={10:'m_flask',11:'m_atom',12:'m_star'}, SSTK={chem:'m_flask',phys:'m_bulb',bio:'micro',env:'lens'};
+function readyText(k){return k.built?ar(k.built)+' '+(k.built===1?'درس جاهز':'دروس جاهزة'):'قريباً'}
+function backBar(title,sub){return '<div class="backbar"><button class="sbtn big" type="button" data-back>'+ic('chevr')+'رجوع</button><div><h1 class="h1" style="font-size:42px">'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div></div>'}
+function stk(name,css,w,r){return typeof STK!=='undefined'&&STK.has&&STK.has(name)!==false?STK.html(name,{css:css,w:w,r:r,d:.5,free:1}):''}
+
+/* start a lesson for a class: its last lesson, else the first ready lesson of its course, else the page of that course to choose from */
 function startLesson(classId,period){
-  var lid=lessonFor(classId);
-  if(lid){ pending={classId:classId,period:period||0}; go(LESSONS[lid].hash) }
-  else { pending={classId:classId,period:period||0}; toast('اختر الدرس الذي تبدأ به من المقررات.'); go('home'); setTimeout(function(){var e=$('#cat'); if(e) e.scrollIntoView({behavior:'smooth'})},80) }
+  var lid=lessonFor(classId); pending={classId:classId,period:period||0};
+  if(lid){ go(LESSONS[lid].hash); return }
+  var cl=PL.findClass(D(),classId), m=cl&&/^([a-z]+)(\d+)$/.exec(cl.course||''); toast('اختر الدرس الذي تبدأ به.'); go(m?courseHash(m[2],m[1]):'home');
 }
 function renderHome(){
   var d=D(), today=PL.todayISO(), list=PL.todayList(d,today), h='';
-  if(!d.classes.length){
-    h='<div class="glass empty"><b class="h2">ابدأ بإضافة شعبتك</b><p>الصق أسماء طلابك مرة واحدة، فتجد لوحة الصف جاهزة داخل كل درس. تقدر أيضاً تستورد نسخة من موقع «الإدارة الصفية» القديم.</p><div class="row"><button class="gbtn" type="button" data-act="newclass">'+ic('plus')+'إضافة شعبة</button><button class="sbtn" type="button" data-act="import">'+ic('up2')+'استيراد نسخة</button></div></div>';
-  } else if(list.length){
-    h=list.map(function(t){var c=PL.findClass(d,t.classId), lid=lessonFor(t.classId), L=lid&&LESSONS[lid];
-      return '<div class="glass tcard"><div class="pn">الحصة '+ar(t.period)+'</div><div class="cl">'+lat(c.name)+'</div><div class="lsn">'+(L?'الدرس '+esc(lessonTitle(lid)):'لم تحدّد درساً لهذه الشعبة بعد')+'</div><div><button class="gbtn" type="button" data-start="'+c.id+'" data-per="'+t.period+'">'+ic('play')+(L?'ابدأ الحصة':'اختر درساً')+'</button></div></div>'}).join('');
-  } else {
-    h='<div class="glass empty"><b class="h2">'+(PL.dayIndex(today)<0?'اليوم إجازة':'لا حصص في جدولك اليوم')+'</b><p>تقدر تبدأ حصة لأي شعبة مباشرة، أو تضع جدولك الأسبوعي من «سجل المعلم» فتظهر حصصك هنا كل يوم.</p><div class="row">'+d.classes.map(function(c){return '<button class="gbtn" type="button" data-start="'+c.id+'" data-per="0">'+ic('play')+'ابدأ حصة '+lat(c.name)+'</button>'}).join('')+'<button class="sbtn" type="button" data-nav2="classes">الجدول الأسبوعي</button></div></div>';
-  }
-  $('#today').innerHTML=h;
-  $('#todayT').textContent=d.classes.length&&list.length?'حصصك اليوم':'مرحباً بك';
-  if(!course||!CATALOG.courses[course]) course=d.ui.course&&CATALOG.courses[d.ui.course]?d.ui.course:COURSE_IDS[0];
-  $('#cchips').innerHTML=COURSE_IDS.map(function(id){var c=CATALOG.courses[id],tot=0,b=0; c.units.forEach(function(u){u.lessons.forEach(function(l){tot++; if(l.page)b++})}); return '<button class="pill'+(id===course?' on':'')+'" type="button" data-c="'+id+'">'+courseLabel(id)+' <small style="opacity:.75">'+ar(b)+'/'+ar(tot)+'</small></button>'}).join('');
-  var c=CATALOG.courses[course], tot=0, built=0; c.units.forEach(function(u){u.lessons.forEach(function(l){tot++; if(l.page)built++})});
-  $('#cprog').innerHTML='<span>'+ar(built)+' من '+ar(tot)+' درساً جاهزاً</span><div class="bar"><i style="width:'+Math.round(built/tot*100)+'%"></i></div>';
-  $('#units').innerHTML=c.units.map(function(u){
+  if(list.length){
+    h+='<div class="glass strip"><b class="h2" style="font-size:24px">حصصك اليوم</b>'+list.map(function(t){var c=PL.findClass(d,t.classId), lid=lessonFor(t.classId);
+      return '<button class="gbtn" type="button" data-start="'+esc(c.id)+'" data-per="'+t.period+'">'+ic('play')+'الحصة '+ar(t.period)+' · '+lat(c.name)+(lid?' · '+esc(ar(LESSONS[lid].code)):'')+'</button>'}).join('')+'</div>';
+  } else if(!d.classes.length){
+    h+='<div class="glass strip"><span class="hint" style="font-size:20px">أضف شعبتك لتسجيل مشاركة الطلاب داخل الدروس.</span><button class="sbtn" type="button" data-act="newclass">'+ic('plus')+'إضافة شعبة</button><button class="sbtn" type="button" data-act="import">'+ic('up2')+'استيراد نسخة</button></div>';
+  } else if(PL.dayIndex(today)<0){ h+='<div class="glass strip"><span class="hint" style="font-size:20px">اليوم إجازة.</span>'+d.classes.map(function(c){return '<button class="sbtn" type="button" data-start="'+esc(c.id)+'" data-per="0">'+ic('play')+'ابدأ حصة '+lat(c.name)+'</button>'}).join('')+'</div>' }
+  h+='<div class="bigcards three">'+Object.keys(CATALOG.grades).map(function(g){var k=gradeCounts(g);
+    return '<a class="bcard" href="#'+gradeHash(g)+'" data-pal="'+(GPAL[g]||'emerald')+'" data-pick="'+(GPAL[g]||'emerald')+'"><span class="bnum">'+ar(g)+'</span><span class="bname">'+esc(CATALOG.grades[g].replace(/^الصف\s*/,''))+'</span><span class="bmeta">'+(k.subjects?ar(k.subjects)+' '+(k.subjects>2?'مواد':'مادة')+' · '+readyText(k):'قريباً')+'</span>'+stk(GSTK[g]||'m_star','left:14px;top:-34px;',104,-6)+'</a>'}).join('')+
+   '</div><a class="bcard wide" href="#classes" data-pal="gold" data-pick="gold"><span class="bnum">'+ic('users')+'</span><span><span class="bname" style="display:block">سجل المعلم</span><span class="bmeta">شعبي · ملخص الشعبة · تقرير الطالب</span></span></a>';
+  $('#v-home').innerHTML='<header class="hero" style="position:relative"><h1 class="h1">اختر <b>الصف</b></h1><p class="sub">ثم المادة، ثم الدرس، فيفتح الشرح مباشرة</p><div class="hrule"></div></header>'+h;
+  $$('#v-home [data-pick]').forEach(function(c){c.addEventListener('mouseenter',function(){$('.app').setAttribute('data-pal',c.getAttribute('data-pick')); BG.go('doodles',c.getAttribute('data-pick'),1)})});
+}
+function renderGrade(){
+  var g=nav.grade, name=CATALOG.grades[g];
+  var cards=Object.keys(CATALOG.subjects).map(function(s){var cid=courseId(g,s), k=courseCounts(cid), s0=CATALOG.subjects[s];
+    var body='<span class="bname">'+esc(s0.name)+'</span><span class="bmeta">'+(k.tot?readyText(k)+' من '+ar(k.tot):'قريباً')+'</span>'+(k.tot?'<span class="bar"><i style="width:'+Math.round(k.built/k.tot*100)+'%"></i></span>':'')+stk(SSTK[s]||'m_star','left:14px;top:-34px;',100,-6);
+    return k.tot?'<a class="bcard sub2" href="#'+courseHash(g,s)+'" data-pal="'+(SPAL[s]||'emerald')+'" data-pick="'+(SPAL[s]||'emerald')+'">'+body+'</a>':'<div class="bcard sub2 soon" data-pal="'+(SPAL[s]||'emerald')+'">'+body+'</div>'}).join('');
+  $('#v-grade').innerHTML=backBar('الصف '+esc(name),'اختر المادة')+'<div class="bigcards two">'+cards+'</div>';
+}
+function renderCourse(){
+  var g=nav.grade, s=nav.subject, cid=courseId(g,s), c=CATALOG.courses[cid], k=courseCounts(cid);
+  if(!c){ $('#v-course').innerHTML=backBar(esc(CATALOG.subjects[s].name),CATALOG.grades[g])+'<div class="glass empty"><p>لا توجد دروس لهذه المادة بعد.</p></div>'; return }
+  var h=backBar(esc(CATALOG.subjects[s].name)+' · الصف '+esc(CATALOG.grades[g]),ar(k.built)+' من '+ar(k.tot)+' درساً جاهزاً');
+  h+='<div id="units" style="display:flex;flex-direction:column;gap:16px">'+c.units.map(function(u){
     var parts=u.title.split(':'), nm=parts[0].trim(), tt=(parts[1]||parts[0]).trim(), nb=u.lessons.filter(function(l){return l.page}).length;
-    return '<div class="glass unit'+(nb?' open':'')+'"><button type="button" aria-expanded="'+(nb>0)+'"><span class="un">'+esc(nm)+'</span><span class="ut">'+esc(tt)+'</span><span class="tag">'+(u.sem===1?'الفصل الأول':'الفصل الثاني')+'</span><span class="tag'+(nb?' good':'')+'">'+ar(nb)+'/'+ar(u.lessons.length)+'</span><svg class="ic cv" viewBox="0 0 24 24">'+PATH.chev+'</svg></button><div class="lgrid">'+
-     u.lessons.map(function(l){var cd=ar(l.code); return l.page?'<a class="lc built" href="#'+lessonHash(l.id)+'" data-open="'+l.id+'"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">افتح الدرس ←</span></a>':'<div class="lc"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">قريباً</span></div>'}).join('')+'</div></div>'}).join('');
+    return '<div class="glass unit'+(nb?' open':'')+'"><button type="button" aria-expanded="'+(nb>0)+'"><span class="un">'+esc(nm)+'</span><span class="ut">'+esc(tt)+'</span><span class="tag">'+(u.sem===1?'الفصل الأول':'الفصل الثاني')+'</span><span class="tag'+(nb?' good':'')+'">'+(nb?ar(nb)+' من '+ar(u.lessons.length)+' جاهزة':'قريباً')+'</span><svg class="ic cv" viewBox="0 0 24 24">'+PATH.chev+'</svg></button><div class="lgrid">'+
+     u.lessons.map(function(l){var cd=ar(l.code); return l.page?'<a class="lc built" href="#'+lessonHash(l.id)+'"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">افتح الشرح ←</span></a>':'<div class="lc"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">قريباً</span></div>'}).join('')+'</div></div>'}).join('')+'</div>';
+  $('#v-course').innerHTML=h;
 }
 
 /* ---------- lesson host: the lesson runs in a frame, the class drawer sits beside it ---------- */
@@ -2220,6 +2279,12 @@ function bgKey(){try{if(host.bgSaved===null) localStorage.removeItem('l31fx'); e
 function pauseBg(){ if(host.bgPrev!==undefined) return; host.bgPrev=BG.tier(); try{host.bgSaved=localStorage.getItem('l31fx')}catch(e){host.bgSaved=null} BG.setTier(0); bgKey() }
 function resumeBg(){ if(host.bgPrev===undefined) return; BG.setTier(host.bgPrev); bgKey(); if(host.bgSaved===null) BG.auto(true); host.bgPrev=undefined }
 
+/* online the lesson is a page of the site; in the single-file copy (no server) the lesson text is inside this page and goes in through srcdoc, which keeps it same-origin */
+function setFrame(L,n){
+  var f=$('#lf'), t=window.OFFLINE_LESSONS&&OFFLINE_LESSONS[L.page];
+  if(t){ f.removeAttribute('src'); f.srcdoc=t.replace('<head>','<head><script>try{location.hash="#s'+n+'"}catch(e){}<\/script>') }
+  else { f.removeAttribute('srcdoc'); f.src=L.page+'#s'+n }
+}
 function showLesson(L){
   var d=D(), today=PL.todayISO();
   if(pending){ ctx={classId:pending.classId,date:today,period:pending.period||0,lesson:L.id,slide:0}; pending=null }
@@ -2228,7 +2293,7 @@ function showLesson(L){
   if(ctx.classId&&PL.findClass(d,ctx.classId)) change(function(s){PL.setLastLesson(s,ctx.classId,L.id); s.ui.lastClass=ctx.classId; s.ui.course=L.course});
   $('#pg').classList.add('hide'); $('#lv').classList.remove('hide'); pauseBg(); layoutFrame();
   $$('[data-nav]').forEach(function(b){b.classList.remove('on')});
-  if(host.id!==L.id){ host.id=L.id; host.w=null; host.d=null; $('#lf').src=L.page+'#s'+(host.slides[L.id]||1); ctx.slide=host.slides[L.id]||1 }
+  if(host.id!==L.id){ host.id=L.id; host.w=null; host.d=null; ctx.slide=host.slides[L.id]||1; setFrame(L,ctx.slide) }
   host.restAsk=0; renderDrawer(); startPoll(); document.title=ar(L.code)+' '+L.title;
   /* when the lesson page can not be reached from here (the site opened as plain files), a button of our own opens the drawer */
   setTimeout(function(){ if(host.id===L.id&&!host.d) floatBtn(true) },2500);
@@ -2243,9 +2308,16 @@ function hideLesson(){
   if($('#lv').classList.contains('hide')) return;
   stopPoll(); floatBtn(false); $('#lv').classList.add('hide'); $('#pick').classList.add('hide'); resumeBg();
   if(document.fullscreenElement&&document.exitFullscreen) try{document.exitFullscreen().catch(function(){})}catch(e){}
-  $('#lf').src='about:blank'; host.id=''; host.w=null; host.d=null; document.title='منصة الدروس';
+  $('#lf').removeAttribute('srcdoc'); $('#lf').src='about:blank'; host.id=''; host.w=null; host.d=null; document.title='منصة الدروس';
 }
-function startPoll(){ stopPoll(); host.poll=setInterval(function(){ try{ var h=host.w&&host.w.location.hash, m=/#s(\d+)/.exec(h||''), n=m?+m[1]:0; if(n&&n!==ctx.slide){ctx.slide=n; host.slides[ctx.lesson]=n; renderCtx()} }catch(e){} },600) }
+/* the slide the lesson shows: read from its progress bar (works in both ways of loading), else from its address */
+function readSlide(){
+  try{
+    var segs=host.d&&host.d.querySelectorAll('#prog .seg'); if(segs&&segs.length){ for(var i=0;i<segs.length;i++) if(segs[i].classList.contains('cur')) return i+1 }
+    var m=/#s(\d+)/.exec((host.w&&host.w.location.hash)||''); return m?+m[1]:0;
+  }catch(e){return 0}
+}
+function startPoll(){ stopPoll(); host.poll=setInterval(function(){ var n=readSlide(); if(n&&n!==ctx.slide){ctx.slide=n; host.slides[ctx.lesson]=n; renderCtx()} },600) }
 function stopPoll(){clearInterval(host.poll); host.poll=0}
 function focusLesson(){ try{ if(host.w) host.w.focus() }catch(e){} }
 function hostFullscreen(){ try{ var p=document.fullscreenElement?document.exitFullscreen():$('#lv').requestFullscreen(); if(p&&p.catch) p.catch(function(){toast('تعذّر ملء الشاشة من هذه الصفحة. استخدم F11 في المتصفح.')}) }catch(e){} }
@@ -2268,7 +2340,7 @@ function patchLesson(){
     b.innerHTML='<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">'+PATH.users+'</svg><span></span>';
     top.insertBefore(b,d.getElementById('bNote')||null); b.addEventListener('click',toggleDrawer);
   }
-  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); go('home')},true)}
+  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?courseHash(m[2],m[1]):'home')},true)}
   var fs=d.getElementById('bFs'); if(fs&&!fs.__p){fs.__p=1; fs.addEventListener('click',function(e){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()},true)}
   if(!d.__p){d.__p=1; d.addEventListener('keydown',function(e){ if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(input|textarea|select)$/i.test((e.target&&e.target.tagName)||'')){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()} },true)}
   updateClassBtn(); focusLesson();
@@ -2529,7 +2601,7 @@ function renderStudent(){
 
 /* ---------- events, boot ---------- */
 function onDocClick(e){
-  var t=e.target, b=t.closest('[data-act],[data-start],[data-nav],[data-nav2],[data-sub],[data-c],[data-sumof],[data-editc],[data-slot],[data-stu],th[data-k],.unit>button');
+  var t=e.target, b=t.closest('[data-act],[data-start],[data-back],[data-nav],[data-nav2],[data-sub],[data-sumof],[data-editc],[data-slot],[data-stu],th[data-k],.unit>button');
   if(!b) return;
   var act=b.getAttribute('data-act');
   if(act==='newclass') classDialog(); else if(act==='import') importDialog(); else if(act==='export') exportBackup();
@@ -2539,7 +2611,7 @@ function onDocClick(e){
   else if(b.hasAttribute('data-nav')) go(b.getAttribute('data-nav'));
   else if(b.hasAttribute('data-nav2')) go(b.getAttribute('data-nav2'));
   else if(b.hasAttribute('data-sub')) go(b.getAttribute('data-sub'));
-  else if(b.hasAttribute('data-c')){ course=b.getAttribute('data-c'); change(function(s){s.ui.course=course}) }
+  else if(b.hasAttribute('data-back')) go(parentHash());
   else if(b.hasAttribute('data-sumof')){ sumSt.classId=b.getAttribute('data-sumof'); go('summary') }
   else if(b.hasAttribute('data-editc')) classDialog(b.getAttribute('data-editc'));
   else if(b.hasAttribute('data-slot')){
@@ -2561,8 +2633,7 @@ function boot(){
   '<div class="page" id="pg"><div class="top2"><div class="brand"><i><small>6</small>C</i><span>منصة الدروس</span></div>'+
    '<nav class="row" aria-label="الأقسام"><button class="pill on" type="button" data-nav="home">'+ic('home')+'الرئيسية</button><button class="pill" type="button" data-nav="classes">'+ic('users')+'سجل المعلم</button></nav><div class="sp"></div></div>'+
    '<div id="banner"></div>'+
-   '<section id="v-home" style="display:flex;flex-direction:column;gap:22px"><header class="hero" style="position:relative"><h1 class="h1" id="todayT">حصصك اليوم</h1><p class="sub">اضغط «ابدأ الحصة» فيفتح الدرس ومعه لوحة الصف</p><div class="hrule"></div>'+STK.html('m_flask',{css:'left:0;top:6px;',w:112,r:-4,d:.5,free:1})+'</header>'+
-    '<div class="today" id="today"></div><div id="cat" class="catbar" style="margin-top:8px"><h2 class="h2">المقررات</h2><div class="row" id="cchips"></div><div class="cprog" id="cprog"></div></div><div id="units" style="display:flex;flex-direction:column;gap:12px"></div></section>'+
+   '<section id="v-home" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-grade" class="hide" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-course" class="hide" style="display:flex;flex-direction:column;gap:24px"></section>'+
    '<section id="v-classes" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-summary" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-student" class="hide" style="display:flex;flex-direction:column;gap:22px"></section></div>'+
   '<div class="lv hide" id="lv"><div id="lfWrap"><iframe id="lf" title="الدرس" allow="fullscreen" referrerpolicy="no-referrer"></iframe>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="hint" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+

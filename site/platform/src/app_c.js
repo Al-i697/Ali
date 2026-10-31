@@ -147,7 +147,7 @@ function renderStudent(){
 
 /* ---------- events, boot ---------- */
 function onDocClick(e){
-  var t=e.target, b=t.closest('[data-act],[data-start],[data-nav],[data-nav2],[data-sub],[data-c],[data-sumof],[data-editc],[data-slot],[data-stu],th[data-k],.unit>button');
+  var t=e.target, b=t.closest('[data-act],[data-start],[data-back],[data-nav],[data-nav2],[data-sub],[data-sumof],[data-editc],[data-slot],[data-stu],th[data-k],.unit>button');
   if(!b) return;
   var act=b.getAttribute('data-act');
   if(act==='newclass') classDialog(); else if(act==='import') importDialog(); else if(act==='export') exportBackup();
@@ -157,7 +157,7 @@ function onDocClick(e){
   else if(b.hasAttribute('data-nav')) go(b.getAttribute('data-nav'));
   else if(b.hasAttribute('data-nav2')) go(b.getAttribute('data-nav2'));
   else if(b.hasAttribute('data-sub')) go(b.getAttribute('data-sub'));
-  else if(b.hasAttribute('data-c')){ course=b.getAttribute('data-c'); change(function(s){s.ui.course=course}) }
+  else if(b.hasAttribute('data-back')) go(parentHash());
   else if(b.hasAttribute('data-sumof')){ sumSt.classId=b.getAttribute('data-sumof'); go('summary') }
   else if(b.hasAttribute('data-editc')) classDialog(b.getAttribute('data-editc'));
   else if(b.hasAttribute('data-slot')){
@@ -179,8 +179,7 @@ function boot(){
   '<div class="page" id="pg"><div class="top2"><div class="brand"><i><small>6</small>C</i><span>منصة الدروس</span></div>'+
    '<nav class="row" aria-label="الأقسام"><button class="pill on" type="button" data-nav="home">'+ic('home')+'الرئيسية</button><button class="pill" type="button" data-nav="classes">'+ic('users')+'سجل المعلم</button></nav><div class="sp"></div></div>'+
    '<div id="banner"></div>'+
-   '<section id="v-home" style="display:flex;flex-direction:column;gap:22px"><header class="hero" style="position:relative"><h1 class="h1" id="todayT">حصصك اليوم</h1><p class="sub">اضغط «ابدأ الحصة» فيفتح الدرس ومعه لوحة الصف</p><div class="hrule"></div>'+STK.html('m_flask',{css:'left:0;top:6px;',w:112,r:-4,d:.5,free:1})+'</header>'+
-    '<div class="today" id="today"></div><div id="cat" class="catbar" style="margin-top:8px"><h2 class="h2">المقررات</h2><div class="row" id="cchips"></div><div class="cprog" id="cprog"></div></div><div id="units" style="display:flex;flex-direction:column;gap:12px"></div></section>'+
+   '<section id="v-home" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-grade" class="hide" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-course" class="hide" style="display:flex;flex-direction:column;gap:24px"></section>'+
    '<section id="v-classes" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-summary" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-student" class="hide" style="display:flex;flex-direction:column;gap:22px"></section></div>'+
   '<div class="lv hide" id="lv"><div id="lfWrap"><iframe id="lf" title="الدرس" allow="fullscreen" referrerpolicy="no-referrer"></iframe>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="hint" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+
