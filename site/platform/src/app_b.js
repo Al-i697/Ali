@@ -65,7 +65,7 @@ function patchLesson(){
     b.innerHTML='<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">'+PATH.users+'</svg><span></span>';
     top.insertBefore(b,d.getElementById('bNote')||null); b.addEventListener('click',toggleDrawer);
   }
-  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?courseHash(m[2],m[1]):'home')},true)}
+  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?termHash(m[2],m[1],l.sem):'home')},true)}
   var fs=d.getElementById('bFs'); if(fs&&!fs.__p){fs.__p=1; fs.addEventListener('click',function(e){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()},true)}
   if(!d.__p){d.__p=1; d.addEventListener('keydown',function(e){ if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(input|textarea|select)$/i.test((e.target&&e.target.tagName)||'')){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()} },true)}
   updateClassBtn(); focusLesson();

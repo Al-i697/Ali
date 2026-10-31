@@ -26,10 +26,12 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
     const box=await p.locator('#v-home .bcard').first().boundingBox(); assert.ok(box.height>=300&&box.width>=280,'cards are big: '+JSON.stringify(box));
     await p.click('a[href="#grade-10"]'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); assert.ok(await p.isVisible('#v-grade'));
     assert.strictEqual(await p.locator('#v-grade .bcard').count(),4); assert.strictEqual(await p.locator('#v-grade .bcard.soon').count(),3); assert.ok((await p.innerText('#v-grade a.bcard')).includes('٥ دروس جاهزة من ٢٦'));
-    await p.click('#v-grade a.bcard'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),5);
-    await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#home');
-    await p.click('a[href="#grade-11"]'); await p.click('#v-grade a.bcard'); await p.waitForTimeout(200); assert.strictEqual(await p.locator('#v-course .lc.built').count(),0,'grade 11 chemistry has its lessons listed as coming soon');
-    await p.goto(URL+'#grade-10-chem'); await p.waitForTimeout(500); await p.click('#v-course .lc.built >> nth=2'); await p.waitForTimeout(1500); assert.strictEqual(await p.evaluate(()=>location.hash),'#l-chem10-3-3'); assert.ok(await p.isVisible('#lf')); await p.context().close();
+    await p.click('#v-grade a.bcard'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem'); assert.strictEqual(await p.locator('#v-term .bcard').count(),2,'first and second semester'); assert.ok((await p.innerText('#v-term')).includes('الفصل الأول')&&(await p.innerText('#v-term')).includes('الفصل الثاني')); assert.ok((await p.innerText('#v-term a.bcard >> nth=0')).includes('٥ دروس جاهزة من ١٦'));
+    await p.click('#v-term a.bcard >> nth=0'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem-1'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),5); assert.strictEqual(await p.locator('#v-course .unit').count(),4,'only the units of the first semester');
+    await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem'); await p.click('#v-term a.bcard >> nth=1'); await p.waitForTimeout(300); assert.strictEqual(await p.locator('#v-course .unit').count(),4,'four units in the second semester'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),0);
+    await p.click('[data-back]:visible'); await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); await p.click('[data-back]:visible'); await p.waitForTimeout(200); assert.strictEqual(await p.evaluate(()=>location.hash),'#home');
+    await p.click('a[href="#grade-11"]'); await p.click('#v-grade a.bcard'); await p.click('#v-term a.bcard >> nth=0'); await p.waitForTimeout(200); assert.strictEqual(await p.locator('#v-course .lc.built').count(),0,'grade 11 chemistry has its lessons listed as coming soon');
+    await p.goto(URL+'#grade-10-chem-1'); await p.waitForTimeout(500); await p.click('#v-course .lc.built >> nth=2'); await p.waitForTimeout(1500); assert.strictEqual(await p.evaluate(()=>location.hash),'#l-chem10-3-3'); assert.ok(await p.isVisible('#lf')); await p.context().close();
   });
   await T('add a class: names pasted with numbering, duplicates reported, stored in this browser',async()=>{
     const p=await page(); await addClass(p,'10/3','1. أحمد\n٢- سالم\nخالد\nأحمد\nمحمد\nيوسف\nسعيد','chem10');
@@ -77,7 +79,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('the slide number follows the lesson, the lesson home button returns to the platform, leaving unloads the lesson',async()=>{
     const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await openByHash(p);
     await p.frameLocator('#lf').locator('#bNext').click(); await p.waitForTimeout(1300); assert.ok((await p.innerText('#dLs')).includes('شريحة ٢'),await p.innerText('#dLs'));
-    await p.frameLocator('#lf').locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem','the lesson home button returns to the lessons page of its subject'); assert.strictEqual(await p.evaluate(()=>document.getElementById('lf').getAttribute('src')),'about:blank');
+    await p.frameLocator('#lf').locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem-1','the lesson home button returns to the lessons page of its semester'); assert.strictEqual(await p.evaluate(()=>document.getElementById('lf').getAttribute('src')),'about:blank');
     await p.context().close();
   });
   await T('drawer closes and opens from the lesson top bar; with no class it offers to add one',async()=>{
@@ -135,7 +137,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   });
   await T('no horizontal scroll at phone width on every screen',async()=>{
     const st=seed(), p=await page({state:st}); await p.setViewportSize({width:400,height:800});
-    for(const v of ['home','grade-10','grade-10-chem','classes','summary','student']){ await p.goto(URL+'#'+v); await p.waitForTimeout(700); const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth); assert.ok(o<=1,v+' overflow '+o) } await p.context().close();
+    for(const v of ['home','grade-10','grade-10-chem','grade-10-chem-1','classes','summary','student']){ await p.goto(URL+'#'+v); await p.waitForTimeout(700); const o=await p.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth); assert.ok(o<=1,v+' overflow '+o) } await p.context().close();
   });
   await T('weekend: the home page says it is a day off and still offers to start a lesson',async()=>{
     const st=seed(), p=await page({state:st,now:'2026-11-06T09:30:00'}); const t=await p.innerText('#v-home .strip'); assert.ok(t.includes('اليوم إجازة')&&t.includes('ابدأ حصة'),t); await p.context().close();

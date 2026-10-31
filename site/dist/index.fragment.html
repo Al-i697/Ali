@@ -2137,7 +2137,7 @@ function toast(m,undo){
 var LESSONS={}, BYHASH={}, COURSE_IDS=Object.keys(CATALOG.courses);
 function lessonHash(id){return 'l-'+id.replace(/[:_~]/g,'-')}
 COURSE_IDS.forEach(function(cid){ CATALOG.courses[cid].units.forEach(function(u){ u.lessons.forEach(function(l){
-  var o={id:l.id,code:l.code,title:l.title,course:cid,unit:u.num,page:l.page||'',hash:l.page?lessonHash(l.id):''}; LESSONS[l.id]=o; if(o.hash) BYHASH[o.hash]=o }) }) });
+  var o={id:l.id,code:l.code,title:l.title,course:cid,unit:u.num,sem:u.sem,page:l.page||'',hash:l.page?lessonHash(l.id):''}; LESSONS[l.id]=o; if(o.hash) BYHASH[o.hash]=o }) }) });
 function courseLabel(id){var c=CATALOG.courses[id]; return c?CATALOG.subjects[c.subject].short+' '+ar(c.grade):''}
 function lessonTitle(id){var l=LESSONS[id]; return l?ar(l.code)+' '+l.title:''}
 function firstBuilt(course){var c=CATALOG.courses[course]; if(!c) return ''; for(var i=0;i<c.units.length;i++) for(var j=0;j<c.units[i].lessons.length;j++) if(c.units[i].lessons[j].page) return c.units[i].lessons[j].id; return ''}
@@ -2190,21 +2190,23 @@ function openMenu(anchor,items){
 }
 
 /* ---------- router and views: home (grades) -> grade (subjects) -> course (units and lessons) -> the lesson ---------- */
-var VIEWS=['home','grade','course','classes','summary','student'], current='home', nav={grade:0,subject:''}, pending=null, ctx={classId:'',date:'',period:0,lesson:'',slide:0};
+var VIEWS=['home','grade','term','course','classes','summary','student'], current='home', nav={grade:0,subject:'',sem:1}, pending=null, ctx={classId:'',date:'',period:0,lesson:'',slide:0};
 function gradeHash(g){return 'grade-'+g}
 function courseHash(g,s){return 'grade-'+g+'-'+s}
-function parentHash(){ if(current==='course') return gradeHash(nav.grade); return 'home' }
+function termHash(g,s,t){return 'grade-'+g+'-'+s+'-'+t}
+function parentHash(){ if(current==='course') return courseHash(nav.grade,nav.subject); if(current==='term') return gradeHash(nav.grade); return 'home' }
 function go(v){ if(location.hash!=='#'+v){try{history.pushState(null,'','#'+v)}catch(e){location.hash=v}} route() }
 function route(){
   var h=(location.hash||'#home').slice(1), L=BYHASH[h], m;
   if(L){ showLesson(L); return }
   hideLesson();
-  if((m=/^grade-(\d+)-([a-z]+)$/.exec(h))&&CATALOG.grades[m[1]]&&CATALOG.subjects[m[2]]){ nav.grade=+m[1]; nav.subject=m[2]; current='course' }
+  if((m=/^grade-(\d+)-([a-z]+)-([12])$/.exec(h))&&CATALOG.grades[m[1]]&&CATALOG.subjects[m[2]]){ nav.grade=+m[1]; nav.subject=m[2]; nav.sem=+m[3]; current='course' }
+  else if((m=/^grade-(\d+)-([a-z]+)$/.exec(h))&&CATALOG.grades[m[1]]&&CATALOG.subjects[m[2]]){ nav.grade=+m[1]; nav.subject=m[2]; current='term' }
   else if((m=/^grade-(\d+)$/.exec(h))&&CATALOG.grades[m[1]]){ nav.grade=+m[1]; current='grade' }
-  else { current=VIEWS.indexOf(h)>=0&&h!=='grade'&&h!=='course'?h:'home' }
+  else { current=VIEWS.indexOf(h)>=0&&h!=='grade'&&h!=='course'&&h!=='term'?h:'home' }
   showView(current);
 }
-var PAL={home:'emerald',grade:'emerald',course:'emerald',classes:'gold',summary:'gold',student:'gold'};
+var PAL={home:'emerald',grade:'emerald',term:'emerald',course:'emerald',classes:'gold',summary:'gold',student:'gold'};
 function showView(v){
   $('#lv').classList.add('hide'); $('#pg').classList.remove('hide');
   VIEWS.forEach(function(k){$('#v-'+k).classList.toggle('hide',k!==v)});
@@ -2213,7 +2215,7 @@ function showView(v){
   var pal=PAL[v]||'emerald', bg=PAL[v]==='gold'?'hexes':'doodles'; $('.app').setAttribute('data-pal',pal); BG.go(bg,pal,1);
   renderView(v); window.scrollTo(0,0);
 }
-function renderView(v){ ({home:renderHome,grade:renderGrade,course:renderCourse,classes:renderClasses,summary:renderSummary,student:renderStudent})[v||current](); renderBanner() }
+function renderView(v){ ({home:renderHome,grade:renderGrade,term:renderTerm,course:renderCourse,classes:renderClasses,summary:renderSummary,student:renderStudent})[v||current](); renderBanner() }
 
 /* a banner for what must not be missed: data that can not be saved, or no backup for a long time */
 function renderBanner(){
@@ -2226,10 +2228,11 @@ function renderBanner(){
 
 /* ---- the pages of the curriculum: big cards, one choice per page ---- */
 function courseId(g,s){return s+g}
-function courseCounts(cid){var c=CATALOG.courses[cid], tot=0, b=0; if(c) c.units.forEach(function(u){u.lessons.forEach(function(l){tot++; if(l.page) b++})}); return {tot:tot,built:b}}
+function courseCounts(cid,sem){var c=CATALOG.courses[cid], tot=0, b=0; if(c) c.units.forEach(function(u){ if(sem&&u.sem!==sem) return; u.lessons.forEach(function(l){tot++; if(l.page) b++})}); return {tot:tot,built:b}}
 function gradeCounts(g){var tot=0,b=0,subs=0; Object.keys(CATALOG.subjects).forEach(function(s){var k=courseCounts(courseId(g,s)); if(k.tot){subs++; tot+=k.tot; b+=k.built}}); return {tot:tot,built:b,subjects:subs}}
 var GPAL={10:'emerald',11:'navy',12:'violet'}, SPAL={chem:'emerald',phys:'navy',bio:'ember',env:'violet'}, GSTK={10:'m_flask',11:'m_atom',12:'m_star'}, SSTK={chem:'m_flask',phys:'m_bulb',bio:'micro',env:'lens'};
 function readyText(k){return k.built?ar(k.built)+' '+(k.built===1?'درس جاهز':'دروس جاهزة'):'قريباً'}
+function countText(k){return k.built?readyText(k)+' من '+ar(k.tot):(k.tot?'قريباً · '+ar(k.tot)+' '+(k.tot>10?'درساً':'دروس'):'قريباً')}
 function backBar(title,sub){return '<div class="backbar"><button class="sbtn big" type="button" data-back>'+ic('chevr')+'رجوع</button><div><h1 class="h1" style="font-size:42px">'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div></div>'}
 function stk(name,css,w,r){return typeof STK!=='undefined'&&STK.has&&STK.has(name)!==false?STK.html(name,{css:css,w:w,r:r,d:.5,free:1}):''}
 
@@ -2256,17 +2259,25 @@ function renderHome(){
 function renderGrade(){
   var g=nav.grade, name=CATALOG.grades[g];
   var cards=Object.keys(CATALOG.subjects).map(function(s){var cid=courseId(g,s), k=courseCounts(cid), s0=CATALOG.subjects[s];
-    var body='<span class="bname">'+esc(s0.name)+'</span><span class="bmeta">'+(k.tot?readyText(k)+' من '+ar(k.tot):'قريباً')+'</span>'+(k.tot?'<span class="bar"><i style="width:'+Math.round(k.built/k.tot*100)+'%"></i></span>':'')+stk(SSTK[s]||'m_star','left:14px;top:-34px;',100,-6);
+    var body='<span class="bname">'+esc(s0.name)+'</span><span class="bmeta">'+countText(k)+'</span>'+(k.tot?'<span class="bar"><i style="width:'+Math.round(k.built/k.tot*100)+'%"></i></span>':'')+stk(SSTK[s]||'m_star','left:14px;top:-34px;',100,-6);
     return k.tot?'<a class="bcard sub2" href="#'+courseHash(g,s)+'" data-pal="'+(SPAL[s]||'emerald')+'" data-pick="'+(SPAL[s]||'emerald')+'">'+body+'</a>':'<div class="bcard sub2 soon" data-pal="'+(SPAL[s]||'emerald')+'">'+body+'</div>'}).join('');
   $('#v-grade').innerHTML=backBar('الصف '+esc(name),'اختر المادة')+'<div class="bigcards two">'+cards+'</div>';
 }
+function renderTerm(){
+  var g=nav.grade, s=nav.subject, cid=courseId(g,s), c=CATALOG.courses[cid], title=esc(CATALOG.subjects[s].name)+' · الصف '+esc(CATALOG.grades[g]);
+  if(!c){ $('#v-term').innerHTML=backBar(title,'')+'<div class="glass empty"><p>لا توجد دروس لهذه المادة بعد.</p></div>'; return }
+  var cards=[1,2].map(function(t){var k=courseCounts(cid,t), pal=t===1?'emerald':'navy',
+    body='<span class="bnum">'+ar(t)+'</span><span class="bname">'+(t===1?'الفصل الأول':'الفصل الثاني')+'</span><span class="bmeta">'+countText(k)+'</span>'+(k.tot?'<span class="bar"><i style="width:'+Math.round(k.built/k.tot*100)+'%"></i></span>':'');
+    return k.tot?'<a class="bcard sub2" href="#'+termHash(g,s,t)+'" data-pal="'+pal+'" data-pick="'+pal+'">'+body+'</a>':'<div class="bcard sub2 soon" data-pal="'+pal+'">'+body+'</div>'}).join('');
+  $('#v-term').innerHTML=backBar(title,'اختر الفصل الدراسي')+'<div class="bigcards two">'+cards+'</div>';
+}
 function renderCourse(){
-  var g=nav.grade, s=nav.subject, cid=courseId(g,s), c=CATALOG.courses[cid], k=courseCounts(cid);
-  if(!c){ $('#v-course').innerHTML=backBar(esc(CATALOG.subjects[s].name),CATALOG.grades[g])+'<div class="glass empty"><p>لا توجد دروس لهذه المادة بعد.</p></div>'; return }
-  var h=backBar(esc(CATALOG.subjects[s].name)+' · الصف '+esc(CATALOG.grades[g]),ar(k.built)+' من '+ar(k.tot)+' درساً جاهزاً');
-  h+='<div id="units" style="display:flex;flex-direction:column;gap:16px">'+c.units.map(function(u){
+  var g=nav.grade, s=nav.subject, t=nav.sem, cid=courseId(g,s), c=CATALOG.courses[cid], k=courseCounts(cid,t), title=esc(CATALOG.subjects[s].name)+' · الصف '+esc(CATALOG.grades[g])+' · '+(t===1?'الفصل الأول':'الفصل الثاني');
+  if(!c||!k.tot){ $('#v-course').innerHTML=backBar(title,'')+'<div class="glass empty"><p>لا توجد دروس في هذا الفصل بعد.</p></div>'; return }
+  var h=backBar(title,ar(k.built)+' من '+ar(k.tot)+' درساً جاهزاً');
+  h+='<div id="units" style="display:flex;flex-direction:column;gap:16px">'+c.units.filter(function(u){return u.sem===t}).map(function(u){
     var parts=u.title.split(':'), nm=parts[0].trim(), tt=(parts[1]||parts[0]).trim(), nb=u.lessons.filter(function(l){return l.page}).length;
-    return '<div class="glass unit'+(nb?' open':'')+'"><button type="button" aria-expanded="'+(nb>0)+'"><span class="un">'+esc(nm)+'</span><span class="ut">'+esc(tt)+'</span><span class="tag">'+(u.sem===1?'الفصل الأول':'الفصل الثاني')+'</span><span class="tag'+(nb?' good':'')+'">'+(nb?ar(nb)+' من '+ar(u.lessons.length)+' جاهزة':'قريباً')+'</span><svg class="ic cv" viewBox="0 0 24 24">'+PATH.chev+'</svg></button><div class="lgrid">'+
+    return '<div class="glass unit'+(nb?' open':'')+'"><button type="button" aria-expanded="'+(nb>0)+'"><span class="un">'+esc(nm)+'</span><span class="ut">'+esc(tt)+'</span><span class="tag'+(nb?' good':'')+'">'+(nb?ar(nb)+' من '+ar(u.lessons.length)+' جاهزة':'قريباً')+'</span><svg class="ic cv" viewBox="0 0 24 24">'+PATH.chev+'</svg></button><div class="lgrid">'+
      u.lessons.map(function(l){var cd=ar(l.code); return l.page?'<a class="lc built" href="#'+lessonHash(l.id)+'"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">افتح الشرح ←</span></a>':'<div class="lc"><span class="cd">'+cd+'</span><span class="tt">'+esc(l.title)+'</span><span class="st">قريباً</span></div>'}).join('')+'</div></div>'}).join('')+'</div>';
   $('#v-course').innerHTML=h;
 }
@@ -2338,7 +2349,7 @@ function patchLesson(){
     b.innerHTML='<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round">'+PATH.users+'</svg><span></span>';
     top.insertBefore(b,d.getElementById('bNote')||null); b.addEventListener('click',toggleDrawer);
   }
-  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?courseHash(m[2],m[1]):'home')},true)}
+  var hm=d.getElementById('bHome'); if(hm&&!hm.__p){hm.__p=1; hm.addEventListener('click',function(e){e.preventDefault(); e.stopPropagation(); var l=LESSONS[host.id], m=l&&/^([a-z]+)(\d+)$/.exec(l.course); go(m?termHash(m[2],m[1],l.sem):'home')},true)}
   var fs=d.getElementById('bFs'); if(fs&&!fs.__p){fs.__p=1; fs.addEventListener('click',function(e){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()},true)}
   if(!d.__p){d.__p=1; d.addEventListener('keydown',function(e){ if((e.key==='f'||e.key==='F')&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(input|textarea|select)$/i.test((e.target&&e.target.tagName)||'')){e.stopImmediatePropagation(); e.preventDefault(); hostFullscreen()} },true)}
   updateClassBtn(); focusLesson();
@@ -2631,7 +2642,7 @@ function boot(){
   '<div class="page" id="pg"><div class="top2"><div class="brand"><i><small>6</small>C</i><span>منصة الدروس</span></div>'+
    '<nav class="row" aria-label="الأقسام"><button class="pill on" type="button" data-nav="home">'+ic('home')+'الرئيسية</button><button class="pill" type="button" data-nav="classes">'+ic('users')+'سجل المعلم</button></nav><div class="sp"></div></div>'+
    '<div id="banner"></div>'+
-   '<section id="v-home" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-grade" class="hide" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-course" class="hide" style="display:flex;flex-direction:column;gap:24px"></section>'+
+   '<section id="v-home" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-grade" class="hide" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-term" class="hide" style="display:flex;flex-direction:column;gap:24px"></section><section id="v-course" class="hide" style="display:flex;flex-direction:column;gap:24px"></section>'+
    '<section id="v-classes" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-summary" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-student" class="hide" style="display:flex;flex-direction:column;gap:22px"></section></div>'+
   '<div class="lv hide" id="lv"><div id="lfWrap"><iframe id="lf" title="الدرس" allow="fullscreen" referrerpolicy="no-referrer"></iframe>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="hint" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+
