@@ -48,7 +48,7 @@ body{overflow:auto; background:var(--c-bg)}
 .tcard{display:flex; flex-direction:column; gap:8px; padding:16px 20px}
 .tcard .pn{font:800 18px var(--font-display); color:var(--cyan)}
 .tcard .cl{font:800 34px var(--font-display); line-height:1}
-.tcard .ls{font:700 20px var(--font-body); color:var(--muted); min-height:30px}
+.tcard .lsn{font:700 20px var(--font-body); color:var(--muted); min-height:30px}
 .catbar{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
 .cprog{display:flex; align-items:center; gap:12px; margin-inline-start:auto; font:700 19px var(--font-display); color:var(--muted)}
 .cprog .bar{width:160px}
@@ -58,7 +58,7 @@ body{overflow:auto; background:var(--c-bg)}
 .unit .un{font:800 18px var(--font-display); color:#171100; background:linear-gradient(145deg,#F3D27A,#D9A92B); border-radius:10px; padding:2px 12px; white-space:nowrap}
 .unit .ut{font:800 23px var(--font-display); flex:1}
 .unit .cv{transition:transform 220ms var(--ease-out)} .unit.open .cv{transform:rotate(-90deg)}
-.lgrid{display:none; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; padding:2px 22px 20px}
+.lgrid{display:none; grid-template-columns:repeat(auto-fill,minmax(205px,1fr)); gap:12px; padding:2px 22px 20px}
 .unit.open .lgrid{display:grid}
 .lc{display:flex; flex-direction:column; gap:6px; padding:14px 16px; border-radius:16px; background:rgba(var(--d2),.62); border:1px solid rgba(var(--t2),.3); text-decoration:none; color:var(--ink)}
 .lc .cd{font:800 17px var(--font-display); color:var(--cyan)}
@@ -79,7 +79,7 @@ body{overflow:auto; background:var(--c-bg)}
 .fsi{width:100%; height:100%; padding:4cqw 5cqw; display:flex; flex-direction:column; gap:2.4cqw; justify-content:center}
 .fs .t{font:800 2.1cqw var(--font-display); color:var(--cyan)}
 .fs h2{margin:0; font:800 4.6cqw/1.15 var(--font-display)}
-.fs .eq{font:800 5.4cqw var(--font-display); color:var(--gold); direction:ltr; text-align:center}
+.fs .peq{font:800 5.4cqw var(--font-display); color:var(--gold); direction:ltr; text-align:center}
 .fs p{margin:0; font:600 2.5cqw/1.5 var(--font-body); color:var(--ink)}
 .fs .os{display:flex; gap:1.6cqw}
 .fs .os button{flex:1; border:0; border-radius:1.4cqw; padding:1.6cqw 1cqw; font:800 2.4cqw var(--font-display); background:rgba(var(--t2),.16); color:var(--ink); box-shadow:inset 0 0 0 .22cqw rgba(var(--t2),.4)}
@@ -105,19 +105,20 @@ body{overflow:auto; background:var(--c-bg)}
 .ib:hover{background:rgba(var(--t1),.3)} .ib.on{background:linear-gradient(145deg,#F3D27A,#D9A92B); color:#171100}
 .ib svg{width:22px; height:22px}
 .slist{flex:1; min-height:0; overflow:auto; display:flex; flex-direction:column; gap:7px; padding-inline-end:4px}
-.stu{border-radius:14px; background:rgba(var(--d2),.6); border:1px solid rgba(var(--t2),.28); padding:5px 6px 5px 6px; display:grid; grid-template-columns:1fr auto; gap:2px 6px; align-items:center}
+.stu{border-radius:14px; background:rgba(var(--d2),.6); border:1px solid rgba(var(--t2),.28); padding:5px 6px 5px 6px; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 6px; align-items:center}
 .stu.has{border-color:rgba(166,242,138,.6); background:rgba(166,242,138,.08)}
 .stu.zero{border-color:rgba(255,196,80,.55); background:rgba(255,196,80,.07)}
 .stu .nm{all:unset; box-sizing:border-box; display:flex; align-items:center; gap:10px; min-height:50px; padding:0 10px; cursor:pointer; border-radius:10px; font:800 21px var(--font-display)}
 .stu .nm:active{background:rgba(var(--t1),.22)}
 .stu .nm:focus-visible{outline:3px solid var(--accent)}
-.cnt{min-width:40px; height:34px; border-radius:17px; display:grid; place-items:center; padding:0 10px; font:800 19px var(--font-display); background:rgba(var(--t2),.14); color:var(--muted)}
+.stu .cnt{margin-inline-start:auto} .cnt{min-width:40px; height:34px; border-radius:17px; display:grid; place-items:center; padding:0 10px; font:800 19px var(--font-display); background:rgba(var(--t2),.14); color:var(--muted)}
 .has .cnt{background:var(--ok); color:#06281a} .zero .cnt{background:#ffd88a; color:#2a1c00}
 .cnt.pop{animation:pop 320ms var(--ease-out)}
 @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
-.prev{margin-inline-start:auto; font:600 14px var(--font-body); color:var(--muted)}
+.nt{display:flex; flex-direction:column; align-items:flex-start; line-height:1.2; min-width:0}
+.prev{font:600 14px var(--font-body); color:var(--muted); white-space:nowrap}
 .acts{display:flex; gap:4px}
-.acts button{width:44px; height:44px; border-radius:11px; border:1px solid rgba(var(--t2),.3); background:rgba(var(--t1),.1); display:grid; place-items:center; color:var(--ink); cursor:pointer; padding:0}
+.acts button{width:42px; height:42px; border-radius:11px; border:1px solid rgba(var(--t2),.3); background:rgba(var(--t1),.1); display:grid; place-items:center; color:var(--ink); cursor:pointer; padding:0}
 .acts button:hover{background:rgba(var(--t1),.26)}
 .acts button.pos{color:#c8f7b6} .acts button.neg{color:#ffb3a8}
 .acts svg{width:21px; height:21px} .acts .dn svg{transform:scaleY(-1)}
@@ -143,11 +144,11 @@ body{overflow:auto; background:var(--c-bg)}
 .ccard.add{border-style:dashed; align-items:center; justify-content:center; text-align:center; min-height:200px; cursor:pointer; color:var(--muted)}
 .ccard.add:hover{border-color:rgba(var(--t1),.9); color:var(--ink)}
 .ttab{display:grid; grid-template-columns:90px repeat(7,minmax(0,1fr)); gap:6px}
-.ttab .hd{font:800 16px var(--font-display); color:var(--muted); text-align:center; padding:4px 0}
+.ttab .ph{font:800 16px var(--font-display); color:var(--muted); text-align:center; padding:4px 0}
 .ttab .dy{font:800 19px var(--font-display); display:flex; align-items:center}
 .ttab .sl{min-height:46px; border-radius:11px; display:grid; place-items:center; font:800 18px var(--font-display); background:rgba(var(--d2),.5); border:1px dashed rgba(var(--t2),.2); color:transparent}
 .ttab .sl.f{border:1px solid transparent; color:#171100}
-.k1{background:linear-gradient(145deg,#F3D27A,#D9A92B)} .k2{background:linear-gradient(145deg,#8fd0ff,#4a9be0)} .k3{background:linear-gradient(145deg,#a8f0c8,#4cc98f)}
+.ttab .sl.k1{background:linear-gradient(145deg,#F3D27A,#D9A92B)} .ttab .sl.k2{background:linear-gradient(145deg,#8fd0ff,#4a9be0)} .ttab .sl.k3{background:linear-gradient(145deg,#a8f0c8,#4cc98f)}
 .tiles{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px}
 .tile{display:flex; flex-direction:column; gap:2px; padding:14px 18px}
 .tile b{font:800 44px/1.1 var(--font-display)}
@@ -173,7 +174,7 @@ body{overflow:auto; background:var(--c-bg)}
 .tl{display:flex; flex-direction:column; gap:10px}
 .ev{display:grid; grid-template-columns:150px 1fr; gap:14px; padding:12px 16px; border-radius:14px; background:rgba(var(--d2),.62); border:1px solid rgba(var(--t2),.28)}
 .ev .dt{font:800 18px var(--font-display); color:var(--cyan)}
-.ev .ls{font:800 20px var(--font-display)}
+.ev .lsn{font:800 20px var(--font-display)}
 .ev .ch{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px}
 @media (max-width:900px){.page{padding:18px 16px 40px}.h1{font-size:34px}.tiles{grid-template-columns:repeat(2,1fr)}.hd2{grid-template-columns:1fr}.ev{grid-template-columns:1fr}.ttab{grid-template-columns:70px repeat(7,minmax(0,1fr))}.drawer.open{width:min(440px,92vw)}.lv .mid{flex-direction:column}.drawer{width:100%!important;height:0}.drawer.open{height:48vh}.dr-in{width:100%}}
 @media (prefers-reduced-motion:reduce){.drawer,.unit .cv{transition:none}.cnt.pop{animation:none}}
@@ -234,7 +235,7 @@ function go(v){setView(v)}
 function courseLabel(id){var c=CATALOG.courses[id]; return CATALOG.subjects[c.subject].short+' '+ar(c.grade)}
 function renderHome(){
   var tc=[['الحصة ١','10/3','الدرس ٣-٣ · حسابات تتضمن كتلاً متفاعلة','lesson','ابدأ الحصة'],['الحصة ٣','10/5','الدرس ٣-٢ · المول وثابت أفوجادرو','toast','ابدأ الحصة'],['الحصة ٥','11/2','لم تحدّد درساً لهذه الحصة بعد','pick','اختر درساً']];
-  $('#today').innerHTML=tc.map(function(t,i){return '<div class="glass tcard"><div class="pn">'+t[0]+'</div><div class="cl">'+lat(t[1])+'</div><div class="ls">'+t[2]+'</div><div><button class="gbtn" type="button" data-t="'+t[3]+'">'+ic('play')+t[4]+'</button></div></div>'}).join('');
+  $('#today').innerHTML=tc.map(function(t,i){return '<div class="glass tcard"><div class="pn">'+t[0]+'</div><div class="cl">'+lat(t[1])+'</div><div class="lsn">'+t[2]+'</div><div><button class="gbtn" type="button" data-t="'+t[3]+'">'+ic('play')+t[4]+'</button></div></div>'}).join('');
   $$('#today [data-t]').forEach(function(b){b.addEventListener('click',function(){var k=b.getAttribute('data-t'); if(k==='lesson')go('lesson'); else if(k==='pick')$('#cat').scrollIntoView({behavior:'smooth'}); else toast('في المنصة الحقيقية يفتح الدرس مباشرة مع لوحة الصف.')})});
   var ids=Object.keys(CATALOG.courses);
   $('#cchips').innerHTML=ids.map(function(id){var c=CATALOG.courses[id],tot=0,b=0; c.units.forEach(function(u){u.lessons.forEach(function(l){tot++; if(l.page)b++})}); return '<button class="pill'+(id===course?' on':'')+'" type="button" data-c="'+id+'">'+courseLabel(id)+' <small style="opacity:.75">'+ar(b)+'/'+ar(tot)+'</small></button>'}).join('')+'<button class="pill" type="button" data-c="+" style="border-style:dashed">'+ic('plus')+'مقرر جديد</button>';
@@ -244,7 +245,7 @@ function renderHome(){
   $('#cprog').innerHTML='<span>'+ar(built)+' من '+ar(tot)+' درساً جاهزاً</span><div class="bar"><i style="width:'+Math.round(built/tot*100)+'%"></i></div>';
   $('#units').innerHTML=c.units.map(function(u,ui){
     var parts=u.title.split(':'), nm=parts[0].trim(), tt=(parts[1]||parts[0]).trim(), nb=u.lessons.filter(function(l){return l.page}).length;
-    var open=nb>0||ui===0;
+    var open=nb>0;
     return '<div class="glass unit'+(open?' open':'')+'"><button type="button" aria-expanded="'+open+'"><span class="un">'+nm+'</span><span class="ut">'+tt+'</span><span class="tag">'+(u.sem===1?'الفصل الأول':'الفصل الثاني')+'</span><span class="tag'+(nb?' good':'')+'">'+ar(nb)+'/'+ar(u.lessons.length)+'</span><svg class="ic cv" viewBox="0 0 24 24">'+PATH.chev+'</svg></button><div class="lgrid">'+
      u.lessons.map(function(l){var cd=ar(l.code); return l.page?'<a class="lc built" href="#" data-open="'+l.page+'"><span class="cd">'+cd+'</span><span class="tt">'+l.title+'</span><span class="st">افتح الدرس ←</span></a>':'<div class="lc"><span class="cd">'+cd+'</span><span class="tt">'+l.title+'</span><span class="st">قريباً</span></div>'}).join('')+'</div></div>'}).join('');
   $$('#units .unit>button').forEach(function(b){b.addEventListener('click',function(){var u=b.parentNode, o=!u.classList.contains('open'); u.classList.toggle('open',o); b.setAttribute('aria-expanded',o)})});
@@ -252,8 +253,8 @@ function renderHome(){
 }
 
 /* ---- lesson with the class drawer ---- */
-var S=[], opened=false, hideBeh=false, query='';
-function resetSession(){S=ST.map(function(s){return {n:null,pos:[],neg:[],open:null}})}
+var S=[], opened=true, hideBeh=false, query='';
+function resetSession(){S=ST.map(function(s){return {n:null,pos:[],neg:[],open:null}}); S[0].n=2; S[2].n=1; S[5].n=1; S[10].n=0; S[7].neg=['حديث جانبي']}
 function renderDrawer(){
   var done=S.filter(function(x){return x.n!==null}).length, part=S.filter(function(x){return x.n>0}).length, rest=S.length-done;
   $('#sPart').textContent=ar(part); $('#sSkip').textContent=ar(done-part); $('#sRest').textContent=ar(rest);
@@ -264,7 +265,7 @@ function renderDrawer(){
     var x=S[i], cls='stu'+(x.n>0?' has':(x.n===0?' zero':'')), cnt=x.n===null?'—':(x.n===0?'لم يشارك':ar(x.n));
     var recs=hideBeh?'':x.pos.map(function(r){return '<span class="tag good">'+r+'</span>'}).join('')+x.neg.map(function(r){return '<span class="tag bad">'+r+'</span>'}).join('');
     var rs=x.open?'<div class="rs">'+(x.open==='pos'?POS:NEG).map(function(r){return '<button type="button" data-i="'+i+'" data-r="'+r+'">'+r+'</button>'}).join('')+'</div>':'';
-    return '<div class="'+cls+'" data-i="'+i+'"><button class="nm" type="button" data-a="tap" aria-label="'+s[0]+' شارك"><span>'+s[0]+'</span><span class="prev">قبل: '+ar(s[2])+' من '+ar(s[1])+'</span><span class="cnt" id="c'+i+'">'+cnt+'</span></button><div class="acts"><button type="button" data-a="minus" aria-label="تراجع">'+ic('minus')+'</button><button type="button" data-a="skip" aria-label="لم يشارك">'+ic('skip')+'</button><button class="pos" type="button" data-a="pos" aria-label="سلوك حسن">'+ic('up')+'</button><button class="neg dn" type="button" data-a="neg" aria-label="سلوك غير حسن">'+ic('up')+'</button></div><div class="recs">'+recs+'</div>'+rs+'</div>'}).join('')||'<p class="mut" style="padding:12px">لا يوجد طالب بهذا الاسم.</p>';
+    return '<div class="'+cls+'" data-i="'+i+'"><button class="nm" type="button" data-a="tap" aria-label="'+s[0]+' شارك"><span class="nt"><span>'+s[0]+'</span><span class="prev">قبل: '+ar(s[2])+'/'+ar(s[1])+'</span></span><span class="cnt" id="c'+i+'">'+cnt+'</span></button><div class="acts"><button type="button" data-a="minus" aria-label="تراجع">'+ic('minus')+'</button><button type="button" data-a="skip" aria-label="لم يشارك">'+ic('skip')+'</button><button class="pos" type="button" data-a="pos" aria-label="سلوك حسن">'+ic('up')+'</button><button class="neg dn" type="button" data-a="neg" aria-label="سلوك غير حسن">'+ic('up')+'</button></div><div class="recs">'+recs+'</div>'+rs+'</div>'}).join('')||'<p class="mut" style="padding:12px">لا يوجد طالب بهذا الاسم.</p>';
 }
 function onDrawerClick(e){
   var b=e.target.closest('button'); if(!b) return;
@@ -305,7 +306,7 @@ function renderClasses(){
   $$('#cgrid [data-p]').forEach(function(b){b.addEventListener('click',function(){go('lesson')})});
   $('#addc').addEventListener('click',function(){toast('تلصق أسماء الطلاب فتصير شعبة جاهزة في ثوانٍ.')});
   var days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'], map={'0':{1:0,3:1,5:2},'1':{2:1,4:0},'2':{1:2,3:0},'3':{2:0,5:1},'4':{1:1,3:2}};
-  var h='<div></div>'; for(var p=1;p<=7;p++)h+='<div class="hd">ح'+ar(p)+'</div>';
+  var h='<div></div>'; for(var p=1;p<=7;p++)h+='<div class="ph">ح'+ar(p)+'</div>';
   days.forEach(function(d,di){h+='<div class="dy">'+d+'</div>'; for(var p=1;p<=7;p++){var ci=map[di]&&map[di][p]; h+=(ci!==undefined)?'<div class="sl f k'+(ci+1)+'">'+lat(CLASSES[ci].id)+'</div>':'<div class="sl">·</div>'}});
   $('#ttab').innerHTML=h;
 }
@@ -330,7 +331,7 @@ function renderStudent(){
   $('#cmp').innerHTML='<div class="ln me"><span>'+s[0]+'</span><div class="bar"><i style="width:'+rate+'%"></i></div><b>'+ar(rate)+'٪</b></div><div class="ln"><span>متوسط الشعبة</span><div class="bar"><i style="width:'+avg+'%"></i></div><b>'+ar(avg)+'٪</b></div><p class="mut" style="margin:4px 0 0;font:600 17px var(--font-body)">شارك في '+ar(s[2])+' من '+ar(s[1])+' حصة مسجّلة.</p>';
   $('#beh').innerHTML='<div class="row"><span class="tag good">'+ar(s[3])+' إيجابي</span><span class="tag bad">'+ar(s[4])+' غير حسن</span></div><p class="mut" style="margin:8px 0 0;font:600 17px var(--font-body)">'+(s[4]?(s[0]==='هلال'?'الأسباب: حديث جانبي (٢)، عدم أداء الواجب (١)، استخدام الجوال (١).':'الأسباب: حديث جانبي، عدم أداء الواجب.'):'لا ملاحظات غير حسنة في الفترة.')+'</p>';
   var low=rate<50;
-  $('#tl').innerHTML=EV.map(function(e,k){var n=low?e[2]:1+((stuIdx+k)%3), neg=low?e[3]:(s[4]&&k===0?'neg':null), why=low?e[4]:(s[4]&&k===0?'حديث جانبي':''); return '<div class="ev"><div class="dt">'+e[0]+'</div><div><div class="ls">'+e[1]+'</div><div class="ch"><span class="tag '+(n?'good':'warn')+'">'+(n?'شارك ×'+ar(n):'لم يشارك')+'</span>'+(neg?'<span class="tag bad">'+why+'</span>':'')+'</div></div></div>'}).join('');
+  $('#tl').innerHTML=EV.map(function(e,k){var n=low?e[2]:1+((stuIdx+k)%3), neg=low?e[3]:(s[4]&&k===0?'neg':null), why=low?e[4]:(s[4]&&k===0?'حديث جانبي':''); return '<div class="ev"><div class="dt">'+e[0]+'</div><div><div class="lsn">'+e[1]+'</div><div class="ch"><span class="tag '+(n?'good':'warn')+'">'+(n?'شارك ×'+ar(n):'لم يشارك')+'</span>'+(neg?'<span class="tag bad">'+why+'</span>':'')+'</div></div></div>'}).join('');
 }
 
 function boot(){
@@ -358,10 +359,10 @@ function boot(){
   $('#v-student').innerHTML=sub('student','تقرير الطالب','كل ما سُجّل على الطالب في الحصص، مع الدرس الذي كان يُشرح.')+'<div class="row"><label class="mut" for="stSel" style="font:700 19px var(--font-display)">الطالب</label><select id="stSel" class="pill" style="appearance:auto"></select><div style="flex:1"></div><button class="gbtn" type="button" data-exp>'+ic('dl')+'تقرير Word</button></div><div id="stHead"></div><div class="hd2"><div class="glass"><h2 class="h2" style="margin-bottom:10px">المشاركة</h2><div class="cmp" id="cmp"></div></div><div class="glass"><h2 class="h2" style="margin-bottom:10px">السلوك</h2><div id="beh"></div></div></div><div><h2 class="h2" style="margin-bottom:10px">الحصص</h2><div class="tl" id="tl"></div></div>';
   /* the lesson view: same bars as a real lesson, the stage shrinks to make room for the class drawer */
   $('#lv').innerHTML='<div class="top"><div class="brand"><i><small>6</small>C</i><span>الدرس ٣-٣ · كتل متفاعلة</span></div><div style="flex:1"></div><span class="sample">نموذج</span><button class="pill" type="button" id="lvHome">'+ic('home')+'الرئيسية</button></div>'+
-   '<div class="mid"><div class="stagewrap"><div class="stagebox"><div class="fs" data-pal="navy"><div class="fsi"><div class="t">٣-٣ · المادة المحددة والفائضة</div><h2>أيهما يُستهلك كله أولاً؟</h2><div class="eq">2Mg + O₂ → 2MgO</div><p>تفاعل '+lat('4.8 g')+' من المغنيسيوم مع '+lat('4 g')+' من الأكسجين. ما المادة المحددة؟</p><div class="os"><button type="button" data-ok="1">المغنيسيوم Mg</button><button type="button">الأكسجين O₂</button><button type="button">كلاهما</button></div></div></div></div>'+
+   '<div class="mid"><div class="stagewrap"><div class="stagebox"><div class="fs" data-pal="navy"><div class="fsi"><div class="t">٣-٣ · المادة المحددة والفائضة</div><h2>أيهما يُستهلك كله أولاً؟</h2><div class="peq">2Mg + O₂ → 2MgO</div><p>تفاعل '+lat('4.8 g')+' من المغنيسيوم مع '+lat('4 g')+' من الأكسجين. ما المادة المحددة؟</p><div class="os"><button type="button" data-ok="1">المغنيسيوم Mg</button><button type="button">الأكسجين O₂</button><button type="button">كلاهما</button></div></div></div></div>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="mut" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+
-   '<aside class="drawer" id="drawer" aria-label="لوحة الصف"><div class="dr-in"><div class="glass dr"><div class="dr-h"><b>الصف '+lat('10/3')+'</b><div style="flex:1"></div><button class="ib" type="button" id="bEye" aria-label="إخفاء السلوك">'+ic('eye')+'</button></div><div class="ctx"><span class="tag">الحصة ١</span><span class="tag">٣-٣ · شريحة ١٢</span><span class="tag">تلقائي</span></div><div class="sum3"><div class="g"><b id="sPart">٠</b>شاركوا</div><div class="y"><b id="sSkip">٠</b>لم يشاركوا</div><div><b id="sRest">٠</b>لم يُسجَّل</div></div><div class="tools"><label class="sq">'+ic('search')+'<input id="q" type="search" placeholder="ابحث باسم الطالب" aria-label="بحث"></label><button class="ib" type="button" id="bRand" aria-label="اختر طالباً" title="اختر طالباً">'+ic('dice')+'</button></div><div class="slist" id="slist"></div><div class="dr-f"><button class="sbtn" type="button" id="bRest">لم يشارك لمن تبقّى</button></div></div></div></aside></div>'+
-   '<div class="bot"><button class="pill on" type="button" id="tgl" aria-expanded="false" aria-controls="drawer">'+ic('users')+'الصف <span class="tag" id="bdg" style="background:#171100;color:var(--gold);border-color:transparent">٠</span></button><div style="flex:1"></div><span class="mut" style="font:700 18px var(--font-display)">شريحة ١٢ من ٣٥</span></div>';
+   '<aside class="drawer open" id="drawer" aria-label="لوحة الصف"><div class="dr-in"><div class="glass dr"><div class="dr-h"><b>الصف '+lat('10/3')+'</b><div style="flex:1"></div><button class="ib" type="button" id="bEye" aria-label="إخفاء السلوك">'+ic('eye')+'</button></div><div class="ctx"><span class="tag">الحصة ١</span><span class="tag">٣-٣ · شريحة ١٢</span><span class="tag">تلقائي</span></div><div class="sum3"><div class="g"><b id="sPart">٠</b>شاركوا</div><div class="y"><b id="sSkip">٠</b>لم يشاركوا</div><div><b id="sRest">٠</b>لم يُسجَّل</div></div><div class="tools"><label class="sq">'+ic('search')+'<input id="q" type="search" placeholder="ابحث باسم الطالب" aria-label="بحث"></label><button class="ib" type="button" id="bRand" aria-label="اختر طالباً" title="اختر طالباً">'+ic('dice')+'</button></div><div class="slist" id="slist"></div><div class="dr-f"><button class="sbtn" type="button" id="bRest">لم يشارك لمن تبقّى</button></div></div></div></aside></div>'+
+   '<div class="bot"><span class="mut" style="font:700 18px var(--font-display)">شريحة ١٢ من ٣٥</span><div style="flex:1"></div><button class="pill on" type="button" id="tgl" aria-expanded="true" aria-controls="drawer">'+ic('users')+'الصف <span class="tag" id="bdg" style="background:#171100;color:var(--gold);border-color:transparent">٠</span></button></div>';
   $$('[data-nav]').forEach(function(b){b.addEventListener('click',function(){go(b.getAttribute('data-nav'))})});
   $$('[data-sub]').forEach(function(b){b.addEventListener('click',function(){go(b.getAttribute('data-sub'))})});
   $$('[data-exp]').forEach(function(b){b.addEventListener('click',function(){toast('في المنصة الحقيقية ينزّل الملف جاهزاً للطباعة أو الإرسال.')})});
