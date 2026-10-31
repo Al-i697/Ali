@@ -1,0 +1,3 @@
+# the lightweight lesson builds are produced by site/build.py (python3 build.py --shared)
+lessons/*/lesson*.slim.html
+site/preview/dist/
