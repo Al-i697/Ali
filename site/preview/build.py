@@ -11,4 +11,7 @@ page = page.replace('/*BG_JS*/', rd(os.path.join(core, 'bg.js')) + '\n' + rd(os.
 html = '<!doctype html>\n<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n' + page + '</head><body></body></html>\n'
 open(os.path.join(out, 'index.html'), 'w', encoding='utf8').write(html)
 open(os.path.join(out, 'shared', 'stickers_assets.js'), 'w', encoding='utf8').write(rd(os.path.join(core, 'stickers_assets.js')))
-print({f: os.path.getsize(os.path.join(out, f)) for f in ['index.html']})
+# one self-contained file (the sticker pictures inlined) to download or send: works by double-click, no server
+one = html.replace('<script src="shared/stickers_assets.js"></script>', '<script>' + rd(os.path.join(core, 'stickers_assets.js')) + '</script>')
+open(os.path.join(out, 'platform-mockup.html'), 'w', encoding='utf8').write(one)
+print({f: os.path.getsize(os.path.join(out, f)) for f in ['index.html', 'platform-mockup.html']})
