@@ -7,10 +7,11 @@
 | ٣-١ الكتل النسبية | [`3-1-relative-masses`](3-1-relative-masses/README.md) |
 | ٣-٢ المول | [`3-2-the-mole`](3-2-the-mole/README.md) |
 | ٣-٣ حسابات تتضمن كتلاً متفاعلة | [`3-3-reacting-masses`](3-3-reacting-masses/README.md) |
+| ٣-٤ حسابات تتضمن حجوم الغازات | [`3-4-gas-volumes`](3-4-gas-volumes/README.md) |
 
 ## الموقع
 ```bash
-python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson31.html + lesson32.html + lesson33.html
+python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson31.html + lesson32.html + lesson33.html + lesson34.html
 ```
 افتح `site/dist/index.html` وستجد الدروس كبطاقات؛ كل درس فيه زر «الدروس» للعودة.
 

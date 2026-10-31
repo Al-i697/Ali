@@ -6,7 +6,7 @@ HEAD = '<!doctype html>\n<html lang="ar" dir="rtl"><head><meta charset="utf-8"><
 def doc(fragment): return HEAD + fragment + '</head><body></body></html>\n'
 def rd(p): return open(p).read()
 # the lessons (built with the home link back to index.html)
-for folder, out in [('3-1-relative-masses', 'lesson31.html'), ('3-2-the-mole', 'lesson32.html'), ('3-3-reacting-masses', 'lesson33.html')]:
+for folder, out in [('3-1-relative-masses', 'lesson31.html'), ('3-2-the-mole', 'lesson32.html'), ('3-3-reacting-masses', 'lesson33.html'), ('3-4-gas-volumes', 'lesson34.html')]:
     subprocess.run(['python3', 'build.py'], cwd=os.path.join(L, folder), check=True, stdout=subprocess.DEVNULL)
     open(os.path.join(dist, out), 'w').write(doc(rd(os.path.join(L, folder, out))))
 # the home page
