@@ -6,7 +6,7 @@ const results=[]; const errs=[];
   async function open(n){
     const p=await b.newPage({viewport:{width:1600,height:900}});
     p.on('console',m=>{if(m.type()==='error')errs.push('[s'+n+'] '+m.text())}); p.on('pageerror',e=>errs.push('[s'+n+'] PAGEERR '+e.message));
-    await p.goto(URL+'#s'+n); await p.waitForTimeout(500); return p;
+    await p.goto(URL+'#s'+n); await p.waitForTimeout(1900); return p;
   }
   async function fill(sl,sel,v){const i=sl.locator(sel+' input').first(); await i.fill(String(v)); await i.press('Enter')}
   async function drag(p,from,to){const a=await from.boundingBox(), c=await to.boundingBox();
