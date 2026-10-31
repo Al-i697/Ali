@@ -13,7 +13,7 @@ var REASONS={
   negative:['حديث جانبي','عدم إحضار الكتاب أو الأدوات','عدم أداء الواجب','إزعاج الزملاء','استخدام الجوال','خروج من الصف دون إذن','عدم الانتباه','عدم احترام المعلم أو الزملاء','مشاجرة'],
   note:['يحتاج إلى متابعة','تحسّن ملحوظ','يحتاج إلى مساعدة في الفهم','تواصل مع ولي الأمر','ظروف خاصة']};
 var BIDI=/[‎‏‪-‮⁦-⁩]/g, CTRL=/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F￾￿]/g;
-var ID_OK=/^[\w-]{1,48}$/, BAD_IDS={__proto__:1,constructor:1,prototype:1,tostring:1,valueof:1,hasownproperty:1};
+var LESSON_ID=/^[a-z]+\d+:[\w~-]{1,20}$/, ID_OK=/^[\w-]{1,48}$/, BAD_IDS={__proto__:1,constructor:1,prototype:1,tostring:1,valueof:1,hasownproperty:1};
 var seq=0;
 function idOk(s){return typeof s==='string'&&ID_OK.test(s)&&!BAD_IDS[s.toLowerCase()]}
 function uid(p){
@@ -41,7 +41,7 @@ function dayIndex(iso){var p=iso.split('-').map(Number), g=new Date(p[0],p[1]-1,
 function addDays(iso,n){var p=iso.split('-').map(Number), d=new Date(p[0],p[1]-1,p[2]+n); return todayISO(d)}
 
 /* ---------- state ---------- */
-function emptyState(){return {v:1, classes:[], timetable:[], sessions:{}, ui:{hideBehavior:false, course:'chem10', lastClass:''}, updated:0, lastBackup:0}}
+function emptyState(){return {v:1, classes:[], timetable:[], sessions:{}, ui:{hideBehavior:false, course:'chem10', lastClass:'', lastLesson:{}}, updated:0, lastBackup:0}}
 function findClass(st,id){for(var i=0;i<st.classes.length;i++) if(st.classes[i].id===id) return st.classes[i]; return null}
 function findStudent(cls,sid){if(!cls) return null; for(var i=0;i<cls.students.length;i++) if(cls.students[i].id===sid) return cls.students[i]; return null}
 function skey(classId,date,period){return classId+'|'+date+'|'+(period||0)}
@@ -86,8 +86,9 @@ function removeClass(st,id){
   if(!findClass(st,id)) return false;
   st.classes=st.classes.filter(function(c){return c.id!==id}); st.timetable=st.timetable.filter(function(t){return t.classId!==id});
   Object.keys(st.sessions).forEach(function(k){if(st.sessions[k].classId===id) delete st.sessions[k]});
-  if(st.ui.lastClass===id) st.ui.lastClass=st.classes.length?st.classes[0].id:''; return true;
+  delete st.ui.lastLesson[id]; if(st.ui.lastClass===id) st.ui.lastClass=st.classes.length?st.classes[0].id:''; return true;
 }
+function setLastLesson(st,classId,lessonId){ if(findClass(st,classId)&&LESSON_ID.test(str(lessonId))){st.ui.lastLesson[classId]=lessonId; return true} return false }
 function setSlot(st,day,period,classId){
   if(!(day>=0&&day<=4&&period>=1&&period<=8)) return false;
   st.timetable=st.timetable.filter(function(t){return !(t.day===day&&t.period===period)});
@@ -246,15 +247,35 @@ function normalizeState(d){
     });
     if(Object.keys(out.part).length||out.recs.length) st.sessions[key]=out;
   });
-  var u=d.ui||{}; st.ui.hideBehavior=u.hideBehavior===true; st.ui.course=/^[a-z]+\d+$/.test(str(u.course))?u.course:'chem10'; st.ui.lastClass=cids[u.lastClass]?u.lastClass:(st.classes[0]?st.classes[0].id:'');
+  var u=d.ui||{}; if(u.lastLesson&&typeof u.lastLesson==='object') Object.keys(u.lastLesson).forEach(function(c){ if(cids[c]&&LESSON_ID.test(str(u.lastLesson[c]))) st.ui.lastLesson[c]=u.lastLesson[c] }); st.ui.hideBehavior=u.hideBehavior===true; st.ui.course=/^[a-z]+\d+$/.test(str(u.course))?u.course:'chem10'; st.ui.lastClass=cids[u.lastClass]?u.lastClass:(st.classes[0]?st.classes[0].id:'');
   st.updated=Number(d.updated)>0?Number(d.updated):0; st.lastBackup=Number(d.lastBackup)>0?Number(d.lastBackup):0;
   return {state:st, warnings:warn};
 }
 function exportBackup(st){return JSON.stringify({app:'teacher-platform', v:1, exportedAt:new Date().toISOString(), data:st})}
+/* the backup file of the earlier classroom site: {app:'chem10-smart-planner-class', classroom:{groups, order, sessions, tt}}.
+   A session there is (class, lesson key, date); here it is (class, date, period) with the lesson kept inside, so two lessons of one day in one class become one session. */
+function fromLegacy(raw){
+  var d=raw&&raw.classroom?raw.classroom:raw, groups=d&&d.groups&&typeof d.groups==='object'?d.groups:{}, order=Array.isArray(d.order)?d.order:Object.keys(groups), classes=[], seen={};
+  order.concat(Object.keys(groups)).forEach(function(id){ var g=groups[id]; if(!g||seen[id]) return; seen[id]=1; classes.push({id:str(g.id||id), name:g.name, course:g.course, students:Array.isArray(g.students)?g.students.map(function(s){return {id:s&&s.id,name:s&&s.name}}):[]}) });
+  var tt=[], slots=d.tt&&d.tt.slots&&typeof d.tt.slots==='object'?d.tt.slots:{};
+  Object.keys(slots).forEach(function(k){var m=/^([0-6])\|(\d{1,2})$/.exec(k); if(m&&slots[k]&&slots[k].gid) tt.push({day:+m[1],period:+m[2],classId:str(slots[k].gid)})});
+  var sess={}, src=d.sessions&&typeof d.sessions==='object'?d.sessions:{};
+  Object.keys(src).forEach(function(k){
+    var s=src[k]; if(!s||!s.gid||!validDate(s.date)) return;
+    var g=groups[s.gid], course=g&&g.course?g.course:'chem10', lesson=typeof s.lesson==='string'&&s.lesson?(s.lesson.indexOf('~')>0?s.lesson.replace('~',':'):course+':'+s.lesson):'';
+    var key=skey(str(s.gid),s.date,0), t=sess[key]||(sess[key]={classId:str(s.gid),date:s.date,period:0,lessons:[],part:{},recs:[]});
+    if(lesson&&t.lessons.indexOf(lesson)<0) t.lessons.push(lesson);
+    var part=s.part&&typeof s.part==='object'?s.part:{}; Object.keys(part).forEach(function(sid){var n=Math.floor(Number(part[sid])); if(n>=0) t.part[sid]=t.part[sid]===undefined?n:Math.max(t.part[sid],n)});
+    (Array.isArray(s.recs)?s.recs:[]).forEach(function(r){ if(r) t.recs.push({id:r.id,sid:r.st,kind:r.kind,reason:r.reason,note:r.note}) });
+  });
+  return normalizeState({classes:classes, timetable:tt, sessions:sess, ui:{}});
+}
 function parseBackup(text){
   var o; try{o=JSON.parse(str(text))}catch(e){throw new Error('الملف ليس نسخة احتياطية صالحة')}
-  if(o&&o.app&&o.app!=='teacher-platform') throw new Error('هذه النسخة من برنامج آخر');
-  return normalizeState(o&&o.data?o.data:o);
+  if(!o||typeof o!=='object'||Array.isArray(o)) throw new Error('الملف ليس نسخة احتياطية صالحة');
+  if(o.app==='chem10-smart-planner-class'||(!o.app&&(o.classroom||(o.groups&&typeof o.groups==='object'&&!Array.isArray(o.groups))))){var r=fromLegacy(o); r.legacy=true; return r}
+  if(o.app&&o.app!=='teacher-platform') throw new Error('هذه النسخة من برنامج آخر');
+  return normalizeState(o.data?o.data:o);
 }
 /* import adds to what is there: classes whose id is already present are skipped, nothing is overwritten or deleted */
 function mergeInto(st,other){
@@ -268,8 +289,8 @@ function mergeInto(st,other){
 
 return {LIM:LIM, FLAGS:FLAGS, KINDS:KINDS, REASONS:REASONS, FLAG_TEXT:FLAG_TEXT, uid:uid, clean:clean, normAr:normAr, todayISO:todayISO, validDate:validDate, dayIndex:dayIndex, addDays:addDays,
  emptyState:emptyState, findClass:findClass, findStudent:findStudent, skey:skey, parseNames:parseNames, addClass:addClass, addStudents:addStudents, renameStudent:renameStudent, removeStudent:removeStudent,
- renameClass:renameClass, removeClass:removeClass, setSlot:setSlot, todayList:todayList, getSession:getSession, setPart:setPart, addRec:addRec, delRec:delRec, markRest:markRest, clearSession:clearSession,
+ renameClass:renameClass, removeClass:removeClass, setLastLesson:setLastLesson, setSlot:setSlot, todayList:todayList, getSession:getSession, setPart:setPart, addRec:addRec, delRec:delRec, markRest:markRest, clearSession:clearSession,
  sessionView:sessionView, studentCounts:studentCounts, flagsOf:flagsOf, flagHint:flagHint, classSummary:classSummary, studentReport:studentReport, summaryCSV:summaryCSV, reportText:reportText,
- normalizeState:normalizeState, exportBackup:exportBackup, parseBackup:parseBackup, mergeInto:mergeInto};
+ fromLegacy:fromLegacy, normalizeState:normalizeState, exportBackup:exportBackup, parseBackup:parseBackup, mergeInto:mergeInto};
 })();
 if(typeof module!=='undefined'&&module.exports) module.exports=PL;

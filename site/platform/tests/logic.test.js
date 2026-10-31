@@ -105,11 +105,28 @@ T('import rejects non-backups and hostile content',()=>{
   const s=r.state.sessions['c1|2026-10-01|1']; assert.strictEqual(s.recs.length,1); assert.strictEqual(Object.keys(s.part).length,0); assert.strictEqual(Object.keys(r.state.sessions).length,1);
   assert.strictEqual(({}).polluted,undefined); assert.strictEqual(Object.getPrototypeOf(r.state.sessions),Object.prototype);
 });
+T('import of the earlier classroom site backup: classes, students, timetable, sessions and lesson ids',()=>{
+  const legacy={app:'chem10-smart-planner-class',version:1,classroom:{v:1,order:['g1'],groups:{g1:{id:'g1',course:'chem10',name:'10/3',at:1,students:[{id:'a1',name:'أحمد'},{id:'a2',name:'سالم'}]}},
+    sessions:{x:{gid:'g1',lesson:'3_3',date:'2026-10-20',part:{a1:2,a2:0},recs:[{id:'r1',st:'a2',kind:'negative',reason:'حديث جانبي',note:'',at:5}]},
+              y:{gid:'g1',lesson:'3_2',date:'2026-10-20',part:{a1:1},recs:[]},
+              z:{gid:'g1',lesson:'chem11~1_1',date:'2026-10-21',part:{a2:1},recs:[]}},
+    tt:{days:[0,1,2,3,4],periods:[],slots:{'0|2':{gid:'g1',room:'12'},'6|1':{gid:'g1',room:''}}}}};
+  const r=PL.parseBackup(JSON.stringify(legacy)); assert.ok(r.legacy); const st=r.state;
+  assert.strictEqual(st.classes.length,1); assert.strictEqual(st.classes[0].course,'chem10'); assert.strictEqual(st.classes[0].students.length,2);
+  assert.deepStrictEqual(st.timetable,[{day:0,period:2,classId:'g1'}],'Saturday slot is outside the school week and is dropped');
+  const s=st.sessions['g1|2026-10-20|0']; assert.deepStrictEqual(s.lessons.sort(),['chem10:3_2','chem10:3_3']); assert.strictEqual(s.part.a1,2,'larger count wins when two lessons share a day'); assert.strictEqual(s.recs[0].sid,'a2');
+  assert.deepStrictEqual(st.sessions['g1|2026-10-21|0'].lessons,['chem11:1_1']);
+  assert.strictEqual(PL.parseBackup(JSON.stringify(legacy.classroom)).legacy,true,'the bare classroom object is accepted too');
+});
 T('merge adds classes and sessions, never overwrites or deletes',()=>{
   const a=fresh(), b=fresh(); const st=a.st; PL.setPart(st,a.ctx,a.cls.students[0].id,1);
   const other=PL.parseBackup(PL.exportBackup(b.st)).state; const r=PL.mergeInto(st,other);
   assert.strictEqual(r.added,1); assert.strictEqual(st.classes.length,2); assert.strictEqual(PL.getSession(st,a.ctx).part[a.cls.students[0].id],1);
   assert.strictEqual(PL.mergeInto(st,other).added,0);
+});
+T('last lesson per class survives a backup and is dropped with the class',()=>{
+  const {st,cls}=fresh(); assert.ok(PL.setLastLesson(st,cls.id,'chem10:3_3')); assert.ok(!PL.setLastLesson(st,cls.id,'bad id'));
+  const b=PL.parseBackup(PL.exportBackup(st)).state; assert.strictEqual(b.ui.lastLesson[cls.id],'chem10:3_3'); PL.removeClass(st,cls.id); assert.deepStrictEqual(st.ui.lastLesson,{});
 });
 T('normAr matches names typed differently',()=>{ assert.strictEqual(PL.normAr('أَحْمَد'),PL.normAr('احمد')); assert.strictEqual(PL.normAr('فاطمة'),PL.normAr('فاطمه')); assert.strictEqual(PL.normAr('١٠/٣'),'10/3'); });
 console.log('\n'+n+' tests passed'+(process.exitCode?' (WITH FAILURES)':''));

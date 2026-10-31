@@ -12,11 +12,17 @@ for folder, out in [('3-1-relative-masses', 'lesson31.html'), ('3-2-the-mole', '
     open(os.path.join(dist, out), 'w').write(doc(rd(os.path.join(L, folder, out.replace('.html', '.slim.html')))))
 os.makedirs(os.path.join(dist, 'shared'), exist_ok=True)
 open(os.path.join(dist, 'shared', 'stickers_assets.js'), 'w').write(rd(os.path.join(core, 'stickers_assets.js')))
-# the home page
-page = rd(os.path.join(root, 'index.src.html'))
-page = page.replace('/*CORE_CSS*/', rd(os.path.join(core, 'style.css'))).replace('/*THEME4_CSS*/', rd(os.path.join(core, 'theme4.css'))).replace('/*THEME5_CSS*/', rd(os.path.join(core, 'theme5.css')))
-page = page.replace('/*STICKERS_CSS*/', rd(os.path.join(core, 'stickers.css')))
+# the home page: the platform (home, class drawer, teacher's records), built from site/platform
+import json
+pl = os.path.join(root, 'platform')
+page = rd(os.path.join(pl, 'index.src.html'))
+for tag, f in [('/*CORE_CSS*/', 'style.css'), ('/*THEME4_CSS*/', 'theme4.css'), ('/*THEME5_CSS*/', 'theme5.css'), ('/*STICKERS_CSS*/', 'stickers.css')]:
+    page = page.replace(tag, rd(os.path.join(core, f)))
+page = page.replace('/*PLATFORM_CSS*/', rd(os.path.join(pl, 'src', 'platform.css')))
 page = page.replace('/*BG_JS*/', rd(os.path.join(core, 'bg.js')) + '\n' + rd(os.path.join(core, 'stickers.js')))
+page = page.replace('/*CATALOG_JSON*/', json.dumps(json.load(open(os.path.join(root, 'catalog.json'), encoding='utf8')), ensure_ascii=False))
+page = page.replace('/*LOGIC_JS*/', rd(os.path.join(pl, 'src', 'logic.js'))).replace('/*STORE_JS*/', rd(os.path.join(pl, 'src', 'store.js')))
+page = page.replace('/*APP_JS*/', ''.join(rd(os.path.join(pl, 'src', f)) + '\n' for f in ['app_a.js', 'app_b.js', 'app_c.js']))
 open(os.path.join(dist, 'index.html'), 'w').write(doc(page))
 open(os.path.join(dist, 'index.fragment.html'), 'w').write(page)   # for hosts that wrap the page themselves
-print({f: os.path.getsize(os.path.join(dist, f)) for f in sorted(os.listdir(dist))})
+print({f: os.path.getsize(os.path.join(dist, f)) for f in sorted(os.listdir(dist)) if os.path.isfile(os.path.join(dist, f))})
