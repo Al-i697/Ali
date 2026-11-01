@@ -12,14 +12,15 @@ def used_photos(config, parts_src, scenes):
             bgs.update(re.findall(r"bg:'(\w+)'", m.group(2)))
     return bgs
 
-def build(num, title, parts, args, css_extra=()):
+def build(num, title, parts, args, css_extra=(), skin=None):
+    """skin='photo': still photographs (u4/photobg.js instead of bg.js, no 3D scenes) behind solid coloured cards (u4/skin_photo.css)."""
     d = 'src/'
-    css = ''.join(open(CORE + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css', 'u4/lesson.css']) \
+    css = ''.join(open(CORE + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css', 'u4/lesson.css'] + (['u4/skin_photo.css'] if skin == 'photo' else [])) \
         + ''.join(open(d + f).read() + '\n' for f in css_extra)
     config = open(d + 'config.js').read()
     lesson_js = [open(d + f).read() for f in parts]
     scenes = open(CORE + 'u4/scenes.js').read()
-    keep = used_photos(config, '\n'.join(lesson_js), scenes)
+    keep = used_photos(config, '\n'.join(lesson_js), scenes) if skin != 'photo' else set(re.findall(r"['\"]((?:u|nb)_\w+)['\"]", config))
     raw = open(CORE + 'bgimg_assets.js').read()
     body = raw[raw.index('var BGIMG=') + 10:]
     pack = json.loads(body[:body.rindex('}') + 1])
@@ -27,9 +28,11 @@ def build(num, title, parts, args, css_extra=()):
     assert not missing, 'missing photo backgrounds: %s' % missing
     bgimg = '/* photo backgrounds used by this lesson (made by _core/tools/make_bg.py) */\nvar BGIMG=' + json.dumps({k: pack[k] for k in sorted(keep)}) + ';\n'
     stk = open(CORE + 'stickers_assets.js').read() + '\n'
-    js = config + '\n' + ''.join(open(CORE + f).read() + '\n' for f in ['engine.js', 'art_core.js', 'bg.js']) + bgimg \
-        + ''.join(open(CORE + f).read() + '\n' for f in ['mol3d.js', 'motion.js', 'stickers_assets.js', 'stickers.js', 'u4/helpers.js', 'u4/scenes.js']) \
-        + '\n'.join(lesson_js) + '\n'
+    skinned = skin == 'photo'
+    core_a = ['engine.js', 'art_core.js'] + ([] if skinned else ['bg.js'])
+    core_b = (['u4/photobg.js'] if skinned else ['mol3d.js']) + ['motion.js', 'stickers_assets.js', 'stickers.js', 'u4/helpers.js'] + ([] if skinned else ['u4/scenes.js'])
+    rd = lambda fs: ''.join(open(CORE + f).read() + '\n' for f in fs)
+    js = config + '\n' + rd(core_a) + bgimg + rd(core_b) + '\n'.join(lesson_js) + '\n'
     if '--standalone' in args: js = js.replace("home:'index.html'", "home:''")
     shared = '--shared' in args   # site build: the sticker pictures (about 780 KB, the same in every lesson) load once from shared/stickers_assets.js
     if shared:

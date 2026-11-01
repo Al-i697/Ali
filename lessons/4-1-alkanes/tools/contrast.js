@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const path=require('path');
 (async()=>{
  const b=await chromium.launch(); const p=await b.newPage({viewport:{width:1920,height:1080}});
- await p.goto('file://'+path.resolve('lesson41.html')); await p.waitForTimeout(1500);
+ await p.goto('file://'+path.resolve('lesson41.html')+'?pts=all'); await p.waitForTimeout(1500);
  const n=await p.evaluate(()=>document.querySelectorAll('.prog .seg').length);
  const bad=[]; let tot=0, minAll=99;
  for(let i=1;i<=n;i++){

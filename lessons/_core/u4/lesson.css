@@ -281,3 +281,6 @@ html[data-fx="0"] .shaking{animation:none}
 .tw2{display:inline-flex;align-items:center;gap:4px}
 
 .cls.sm .btn{min-height:38px;padding:0 14px;font-size:18px}
+
+/* ---- points that appear one click at a time (engine.js, LESSON.pts) ---- */
+.pt-h{opacity:0!important; visibility:hidden!important; pointer-events:none!important}

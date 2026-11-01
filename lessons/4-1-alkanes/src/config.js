@@ -2,10 +2,12 @@
 var LESSON={
   short:'الألكانات', brand:'الدرس ٤-١ · الألكانات', home:'index.html',
   chapters:['مدخل: الكيمياء العضوية','الهيدروكربونات والألكانات','التسمية والصيغ','الخصائص الفيزيائية','الاحتراق والاستخدامات','السلسلة المتجانسة','أسئلة وامتحانات'],
-  bgMap:['mol_carbon','mol_methane','mol_propane','mol_chain','mol_burn','mol_family','mol_family'],
-  palCh:['navy','emerald','violet','navy','ember','emerald','gold'],
-  bgId:{goals:'p_leaf',what:'p_earth',carbon:'mol_carbon',bonds:'p_leaf_z',q1to4:'p_leaf_d',hydro:'mol_ethene',alk:'p_leaf_g',names:'mol_methane',formula:'p_leaf_v',draw:'mol_propane',names2:'p_table_v',states:'pm_family',plot:'mol_hexane',why:'p_leaf_z',exq26:'p_table',inert:'pm_ethane',burn:'mol_burn',uses2:'p_pump_head',q89:'p_ref_mid',dots:'mol_methane',homol:'pm_family',map:'p_leaf_v',ws41:'p_leaf',ws42:'p_ref_low',eou:'p_table_v',past1:'p_pipes_sun',past2:'p_leaf_d',final:'p_pump_base',hw:'mol_family'},
-  palId:{goals:'navy',what:'navy',carbon:'gold',bonds:'violet',q1to4:'navy',hydro:'emerald',alk:'emerald',names:'violet',formula:'violet',draw:'violet',names2:'emerald',states:'navy',plot:'navy',why:'emerald',exq26:'gold',inert:'ember',burn:'ember',uses2:'ember',q89:'ember',dots:'ember',homol:'emerald',map:'emerald',ws41:'gold',ws42:'gold',eou:'gold',past1:'gold',past2:'gold',final:'navy',hw:'emerald'},
+  bgMap:['u_earth','nb_leaf','nb_rig','u_pump_head','u_ref_mid','u_pipes_sun','u_hands'],   /* one still photograph per chapter (the 'photo' look) */
+  palCh:['violet','ember','violet','navy','emerald','violet','ember'],
+  bgId:{},
+  palId:{},
+  /* points that appear one click at a time (slide id: selector) */
+  pts:{goals:'.gi', what:'.rcard', carbon:'.col[style*="420px"]>.panel', inert:'.rcard', alk:'.rcard', why:'.rcard', uses2:'.rcard', homol:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     goals:[['m_flask',1130,556,96,5,1.0]], what:[['m_bulb',1130,556,96,5,1.0]], carbon:[['m_atom',40,556,100,-5,1.0]], bonds:[['m_star',1130,556,90,6,1.0]], q1to4:[['m_star',40,556,90,-6,1.0]],

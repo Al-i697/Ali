@@ -189,13 +189,34 @@ function build(i){
   if(s.cls) el.classList.add(s.cls);
   if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
+  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; s.pts.forEach(function(e){e.classList.add('pt')}) }
   if(s.init) s.init(el,s);
+  if(typeof SKIN!=='undefined') SKIN.slide(el);   /* after init, so text that init fills in is covered too */
   return el;
 }
+/* ---- points that appear one click at a time, like a slide show: LESSON.pts={slideId:'css selector of the points'}.
+   Next shows the next point (and only then moves on to the next slide); Previous hides the last point.
+   Arriving from before starts with all points hidden, coming back from the next slide shows them all (so does ?pts=all, used by the tests). ---- */
+var PT_FX=['flyB','float','flyR','zoom'];
+function ptReset(s,dir){
+  if(!s.pts) return;
+  s.pn=(dir<0||/[?&]pts=all/.test(location.search))?s.pts.length:0;
+  s.pts.forEach(function(e,j){ e.classList.toggle('pt-h',j>=s.pn) });
+}
+function ptMore(s){ return !!(s&&s.pts&&s.pn<s.pts.length) }
+function ptReveal(s){
+  var e=s.pts[s.pn], eff=PT_FX[s.pn%PT_FX.length]; s.pn++;
+  e.classList.remove('pt-h'); e.classList.add('fx','e-'+eff); e.style.setProperty('--fd','560ms'); e.style.setProperty('--fdl','0ms');
+  var done=function(ev){ if(ev&&ev.target!==e) return; e.classList.remove('fx','e-'+eff); e.style.removeProperty('--fd'); e.style.removeProperty('--fdl'); e.removeEventListener('animationend',done) };
+  e.addEventListener('animationend',done); setTimeout(done,900);
+  paintChrome();
+}
+function ptHide(s){ s.pn--; s.pts[s.pn].classList.add('pt-h'); paintChrome() }
 function show(i,dir){
   if(i<0||i>=SLIDES.length||i===CUR) return;
   if(typeof STK!=='undefined') STK.navigated();
   var prev=CUR, s=SLIDES[i], el=build(i), pl=MOT.plan(i,prev,BG.tier());
+  ptReset(s,dir);
   el.classList.remove('off');
   if(prev>=0){
     var pe=SLIDES[prev].el; pe.classList.remove('on'); pe.classList.add('off'); MOT.mark(pe,pl,dir);
@@ -216,13 +237,13 @@ function show(i,dir){
   paintChrome();
   try{history.replaceState(null,'','#s'+(i+1))}catch(e){}
 }
-function next(){ if(CUR<SLIDES.length-1) show(CUR+1,1) }
-function prevS(){ if(CUR>0) show(CUR-1,-1) }
+function next(){ var s=SLIDES[CUR]; if(ptMore(s)){ ptReveal(s); return } if(CUR<SLIDES.length-1) show(CUR+1,1) }
+function prevS(){ var s=SLIDES[CUR]; if(s&&s.pts&&s.pn>0){ ptHide(s); return } if(CUR>0) show(CUR-1,-1) }
 function paintChrome(){
   var s=SLIDES[CUR];
   $$('.seg',PROG).forEach(function(b,j){b.classList.toggle('cur',j===CUR); b.classList.toggle('done',j<CUR); b.classList.toggle('act',!!SLIDES[j].tag && j!==CUR)});
-  BTN_P.disabled=CUR===0; BTN_N.disabled=CUR===SLIDES.length-1;
-  WHERE.innerHTML='<b>'+(s.title||LESSON.short)+'</b><small>'+CHAPTERS[s.ch]+' · '+ar(CUR+1)+' من '+ar(SLIDES.length)+'</small>';
+  BTN_P.disabled=CUR===0&&!(s.pts&&s.pn>0); BTN_N.disabled=CUR===SLIDES.length-1&&!ptMore(s);
+  WHERE.innerHTML='<b>'+(s.title||LESSON.short)+'</b><small>'+CHAPTERS[s.ch]+' · '+ar(CUR+1)+' من '+ar(SLIDES.length)+(s.pts&&s.pts.length?' · النقاط '+ar(s.pn)+'/'+ar(s.pts.length):'')+'</small>';
   NOTE.innerHTML='<h4>ملاحظة المعلم</h4>'+(s.note||'<p>لا توجد ملاحظة لهذه الشريحة.</p>');
   $$('.it',IDX).forEach(function(b,j){b.classList.toggle('cur',j===CUR)});
 }
