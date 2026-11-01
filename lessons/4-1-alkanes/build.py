@@ -2,7 +2,7 @@
 import sys
 core, d = '../_core/', 'src/'
 css = ''.join(open(core + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css']) + open(d + 'lesson.css').read()
-js = ''.join(open(f).read() + '\n' for f in [d + 'config.js', core + 'engine.js', core + 'art_core.js', core + 'bg.js', core + 'mol3d.js', core + 'motion.js', core + 'stickers_assets.js', core + 'stickers.js',
+js = ''.join(open(f).read() + '\n' for f in [d + 'config.js', core + 'engine.js', core + 'art_core.js', core + 'bg.js', core + 'bgimg_assets.js', core + 'mol3d.js', core + 'motion.js', core + 'stickers_assets.js', core + 'stickers.js',
                                               d + 'helpers.js', d + 'alk.js', d + 'bgscenes.js', d + 'part_a.js', d + 'part_b.js', d + 'part_c.js', d + 'part_d.js', d + 'past.js', d + 'tail.js'])
 if '--standalone' in sys.argv: js = js.replace("home:'index.html'", "home:''")
 shared = '--shared' in sys.argv   # site build: the sticker pictures (about 780 KB, the same in every lesson) load once from shared/stickers_assets.js instead of being copied into each lesson

@@ -144,6 +144,23 @@ var MOL3D=(function(){
   }
   function rgbStr(a,t){return 'rgb('+Math.round(a[0]*t)+','+Math.round(a[1]*t)+','+Math.round(a[2]*t)+')'}
 
+  /* photo backgrounds (BGIMG, made by tools/make_bg.py): loaded once, drawn cover-fit with a slow drift and a dark scrim for the text */
+  var IM={};
+  function getImg(n,redraw){
+    if(IM[n]) return IM[n];
+    var im=new Image(); im.onload=function(){ if(redraw) redraw() };
+    im.src=(typeof BGIMG!=='undefined'&&BGIMG[n])||''; return IM[n]=im;
+  }
+  function photo(A,spec,T,ox,oy,sa){
+    var ctx=A.ctx(),W=A.W(),H=A.H(),im=getImg(spec.bg,A.redraw);
+    if(!(im.complete&&im.naturalWidth)) return;
+    var s=Math.max(W/im.naturalWidth,H/im.naturalHeight)*(1.09+.03*Math.sin(T*.05+(spec.ph||0))), iw=im.naturalWidth*s, ih=im.naturalHeight*s;
+    var px=(W-iw)/2+ox*.1+Math.sin(T*.045+(spec.ph||0))*W*.011, py=(H-ih)/2+oy*.05+Math.cos(T*.037)*H*.009;
+    px=Math.max(W-iw,Math.min(0,px)); py=Math.max(H-ih,Math.min(0,py));
+    ctx.globalAlpha=sa; ctx.drawImage(im,px,py,iw,ih);
+    ctx.fillStyle='rgba(2,9,16,'+(spec.dim==null?.4:spec.dim)+')'; ctx.fillRect(0,0,W,H);
+    var g=ctx.createRadialGradient(W/2,H/2,H*.34,W/2,H/2,W*.66); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.36)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
   function scene(spec){
     return function(A){
       var items=[],dust=[],T0=0,F=16,MV=[];
@@ -156,6 +173,7 @@ var MOL3D=(function(){
       function draw(){
         var ctx=A.ctx(),W=A.W(),H=A.H(),U=A.U(),T=A.T(),PC=A.pal(),sa=A.sa(),ox=A.ox(),oy=A.oy(),rim=PC.m,i,j,k;
         var prevOp=ctx.globalCompositeOperation;ctx.globalCompositeOperation='source-over';
+        if(spec.bg) photo(A,spec,T,ox,oy,sa);
         /* soft bokeh behind and in front of the model */
         for(i=0;i<dust.length;i++){
           var d=dust[i],px=(d.x*1.1-.05)*W+ox*(.25/d.z)*.3,py=d.y*H+oy*.04,rad=(d.z<.5?46:d.z<1?26:14)*U*(.6+.5/d.z);

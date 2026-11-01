@@ -234,3 +234,12 @@ input[type=range].tr{width:100%;direction:ltr;accent-color:var(--gold)}
 .btn.tab{background:rgba(var(--d2),.9);color:var(--ink,#fff)}
 .btn.tab.acc{background:linear-gradient(145deg,#F3D27A,#D9A92B);color:#2a1d00}
 .tk .rd{background:rgba(var(--d2),.9)}
+/* over the photo backgrounds the plates are lighter and frosted, so the picture shows through while the text stays readable */
+.frm,.panel:not(.dark),.rcard,.tq{background:rgba(var(--d2),.40)!important;-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.rcard.on{background:rgba(40,120,80,.40)!important}
+html[data-fx="0"] .frm,html[data-fx="0"] .panel,html[data-fx="0"] .rcard,html[data-fx="0"] .tq{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* the small cyan instruction lines sit straight on the photo: give them a plate */
+div[style*="var(--cyan)"]{background:rgba(3,11,18,.84);color:#cdeff7!important;padding:1px 12px;border-radius:10px;width:fit-content}
+.rcard .rq{color:#e9f4f6}
+.rcards.two .rcard{padding:7px 12px}
+.rcards.two{gap:8px}
