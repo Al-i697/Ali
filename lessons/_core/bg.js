@@ -533,7 +533,10 @@ var BG=(function(){
     }
     if(tier>0)vx=(dir||1)*-240;
   }
-  return {mount:mount,go:go,setTier:function(t){setTier(t,false)},cycle:function(){setTier(tier===0?2:tier-1,false)},
+  /* extension point: other files add their own scenes (for example the 3D molecule scenes in mol3d.js) */
+  var API={ctx:function(){return ctx},W:function(){return W},H:function(){return H},U:function(){return U},T:function(){return T},ox:function(){return ox},oy:function(){return oy},sa:function(){return sa},pal:function(){return PC},tier:function(){return tier},rng:rng,glow:glow,mkDust:mkDust};
+  function register(name,mk,shape){SCN[name]=shape||SCN.organic;SC[name]=mk(API)}
+  return {mount:mount,go:go,register:register,setTier:function(t){setTier(t,false)},cycle:function(){setTier(tier===0?2:tier-1,false)},
           tier:function(){return tier},stats:function(){return {ema:st.ema,frames:st.frames,gl:st.gl,tier:tier,W:W,H:H,S:S}},
           auto:function(v){auto=!!v}};
 })();
