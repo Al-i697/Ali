@@ -100,6 +100,7 @@ var MOL3D=(function(){
     pentane:function(){return chain(5,-1)},
     hexane:function(){return chain(6,-1)},
     chain8:function(){return chain(8,-1)},
+    chain10:function(){return chain(10,-1)},
     chain12:function(){return chain(12,-1)},
     ethene:function(){return chain(2,0)},
     propene:function(){return chain(3,0)},
@@ -114,7 +115,7 @@ var MOL3D=(function(){
     br2:function(){return {at:[{e:'Br',p:[-1.1,0,0]},{e:'Br',p:[1.1,0,0]}],bd:[[0,1,1]]}},
     ring:ring6, graphite:graphite, diamond:diamond
   };
-  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52};
+  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain10:50,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52};
   var CACHE={};
   function build(name){
     if(CACHE[name])return CACHE[name];

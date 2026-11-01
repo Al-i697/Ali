@@ -5,14 +5,14 @@ The decks are exported as one picture per slide (text baked in). For each chosen
   2. crops / flips / shifts the hue to make several different-looking backgrounds from one slide,
   3. saves 1280x720 JPEGs to ../bgimg/ and packs them into ../bgimg_assets.js (BGIMG = {name: data-URI}).
 
-usage:  python3 make_bg.py <folder with the slide pictures named x01.png ... z15.png>
+usage:  python3 make_bg.py [<folder with the slide pictures named x01.png ... z15.png>]   (without the folder only the teacher's own photos in ../bgimg/src are processed)
   x = deck of 4-1 (alkanes), y = deck of 4-2 (alkenes), z = deck of 4-3 (petroleum).
 """
 import sys, os, io, base64, json
 import numpy as np
 from PIL import Image, ImageFilter, ImageEnhance
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else '.'
+SRC = sys.argv[1] if len(sys.argv) > 1 else None
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'bgimg')
 os.makedirs(OUT, exist_ok=True)
 W, H = 1280, 720
@@ -90,6 +90,7 @@ def tone(img, sat=1.0, bright=1.0, blur=0):
     return ImageEnhance.Brightness(img).enhance(bright)
 
 OUTS = {}
+QUAL = 88
 def grain(img, s=2.4):
     """remove the banding of the smooth gradients (smooth where there is no detail), then add fine grain so it cannot come back"""
     a = np.asarray(img).astype(np.float32)
@@ -106,33 +107,61 @@ def darkgrade(img, k=.30, lift=(6, 16, 24)):
     a = np.asarray(img).astype(np.float32) * k + np.array(lift, np.float32)
     return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8))
 
-def save(name, img):
-    img = grain(img)
-    img.save(os.path.join(OUT, name + '.jpg'), quality=88, optimize=True, progressive=True)
+GRAIN = 2.4
+def save(name, img, g=None):
+    img = grain(img, GRAIN if g is None else g)
+    img.save(os.path.join(OUT, name + '.jpg'), quality=QUAL, optimize=True, progressive=True)
     OUTS[name] = os.path.getsize(os.path.join(OUT, name + '.jpg'))
 
 LOGO = (1240, 735, 1376, 768)
-# ---- x01: the cover of the alkanes deck (a molecule on a ginkgo leaf, deep blue) ----
-x01 = diffuse(load('x01.png'), [(650, 485, 1330, 705), LOGO])
-save('nb_leaf',   cover(x01))
-save('nb_leaf_z', cover(x01, (160, 20, 920, 448)))
-save('nb_leaf_v', hue(cover(x01, flip=True), 55))
-save('nb_leaf_g', hue(tone(cover(x01, (0, 0, 1000, 563), flip=True), 1.0, .95), -48))
-save('nb_leaf_d', tone(cover(x01, (0, 300, 760, 728)), 1.0, 1.1, 1.5))
-# ---- x03: the periodic table with the crowned carbon (dark teal) ----
-x03 = diffuse(load('x03.png'), [(770, 90, 1376, 720), (360, 385, 760, 650), LOGO])
-save('nb_table',   cover(x03, (40, 30, 740, 424)))
-save('nb_table_v', hue(cover(x03, (40, 30, 740, 424)), 95))
-# ---- z01: the oil-rig photograph of the petroleum deck (three crops, the flare, the cranes, the barrel and the oil) ----
-z01 = load('z01.png')
-def sharp(img): return img.filter(ImageFilter.UnsharpMask(radius=2, percent=70, threshold=2))
-save('nb_rig',   sharp(cover(z01, (84, 250, 562, 519))))
-save('nb_rig_s', sharp(cover(z01, (84, 78, 562, 347))))
-save('nb_rig_o', sharp(cover(z01, (84, 400, 562, 669))))
+if SRC and os.path.exists(os.path.join(SRC, 'x01.png')):
+    # ---- x01: the cover of the alkanes deck (a molecule on a ginkgo leaf, deep blue) ----
+    x01 = diffuse(load('x01.png'), [(650, 485, 1330, 705), LOGO])
+    save('nb_leaf',   cover(x01))
+    save('nb_leaf_z', cover(x01, (160, 20, 920, 448)))
+    save('nb_leaf_v', hue(cover(x01, flip=True), 55))
+    save('nb_leaf_g', hue(tone(cover(x01, (0, 0, 1000, 563), flip=True), 1.0, .95), -48))
+    save('nb_leaf_d', tone(cover(x01, (0, 300, 760, 728)), 1.0, 1.1, 1.5))
+    # ---- x03: the periodic table with the crowned carbon (dark teal) ----
+    x03 = diffuse(load('x03.png'), [(770, 90, 1376, 720), (360, 385, 760, 650), LOGO])
+    save('nb_table',   cover(x03, (40, 30, 740, 424)))
+    save('nb_table_v', hue(cover(x03, (40, 30, 740, 424)), 95))
+    # ---- z01: the oil-rig photograph of the petroleum deck (three crops, the flare, the cranes, the barrel and the oil) ----
+    z01 = load('z01.png')
+    def sharp(img): return img.filter(ImageFilter.UnsharpMask(radius=2, percent=70, threshold=2))
+    save('nb_rig',   sharp(cover(z01, (84, 250, 562, 519))))
+    save('nb_rig_s', sharp(cover(z01, (84, 78, 562, 347))))
+    save('nb_rig_o', sharp(cover(z01, (84, 400, 562, 669))))
+
+# ---- the teacher's own photographs (736 px wide, so every crop is enlarged about 1.7x: a light unsharp mask, then grain hides the softness) ----
+USR = os.path.join(OUT, 'src')
+def usr(n): return Image.open(os.path.join(USR, n)).convert('RGB')
+def up(img): return img.filter(ImageFilter.UnsharpMask(radius=1.6, percent=60, threshold=2))
+QUAL = 76
+GRAIN = 1.5   # the photos are dimmed and blurred behind the panels: finer grain keeps the files small
+pump = usr('user_pump.jpg')          # a pumpjack at sunset (736x981)
+save('u_pump_sky',  up(cover(pump, (0, 40, 736, 454))))                # the stormy sky and the orange glow
+save('u_pump_head', up(cover(pump, (0, 250, 736, 664), flip=True)))     # the pumpjack head against the glow
+save('u_pump_base', up(cover(pump, (0, 540, 736, 954))))                # the horizon, the base and the ground
+earth = usr('user_earth.jpg')        # a globe with a seedling in a forest (736x1308)
+save('u_earth_top', up(cover(earth, (0, 0, 736, 414))))                 # sun rays and green bokeh
+save('u_earth',     up(cover(earth, (30, 330, 736, 727))))              # the seedling and the top of the globe
+save('u_earth_g',   hue(up(cover(earth, (0, 60, 736, 474), flip=True)), -30), 1.6)
+ref = usr('user_refinery.jpg')       # a refinery with flares (736x736)
+save('u_ref_top',   up(cover(ref, (0, 0, 736, 414))))                   # flares against the sky
+save('u_ref_mid',   up(cover(ref, (0, 150, 736, 564), flip=True)))      # the towers
+save('u_ref_low',   up(cover(ref, (0, 322, 736, 736))))                 # the tanks and the control boxes
+hands = usr('user_hands.jpg')        # a green infographic held in two hands (736x736)
+save('u_hands',     darkgrade(up(cover(hands, (0, 30, 736, 444))), .55, (4, 12, 10)), 1.6)
+pipes = usr('user_pipes.jpg')        # offshore platform and pipes at sunset (736x736)
+save('u_pipes_sun', up(cover(pipes, (0, 120, 736, 534))))               # the sun between the pipes
+save('u_pipes_top', up(cover(pipes, (0, 0, 736, 414))))                 # the platform and the sky
+save('u_pipes_sea', up(cover(pipes, (0, 322, 736, 736), flip=True)))    # the sea and the pipes
 
 pack = {}
-for n in OUTS:
+names = sorted(f[:-4] for f in os.listdir(OUT) if f.endswith('.jpg'))
+for n in names:
     pack[n] = 'data:image/jpeg;base64,' + base64.b64encode(open(os.path.join(OUT, n + '.jpg'), 'rb').read()).decode()
-js = '/* photo backgrounds made from the NotebookLM decks by tools/make_bg.py: {name: data-URI}. Do not edit by hand. */\nvar BGIMG=' + json.dumps(pack) + ';\n'
+js = '/* photo backgrounds (from the NotebookLM decks and the teacher\'s own photographs) made by tools/make_bg.py: {name: data-URI}. Do not edit by hand. */\nvar BGIMG=' + json.dumps(pack) + ';\n'
 open(os.path.join(OUT, '..', 'bgimg_assets.js'), 'w').write(js)
-print(len(OUTS), 'images,', sum(OUTS.values()) // 1024, 'KB of JPEG, bgimg_assets.js', len(js) // 1024, 'KB')
+print(len(names), 'images,', sum(os.path.getsize(os.path.join(OUT, n + '.jpg')) for n in names) // 1024, 'KB of JPEG, bgimg_assets.js', len(js) // 1024, 'KB')

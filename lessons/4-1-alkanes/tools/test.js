@@ -2,6 +2,7 @@
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lesson41.html';
 const IDS=['goals','what','carbon','bonds','q1to4','hydro','alk','names','formula','draw','names2','states','plot','why','exq26','inert','burn','uses2','q89','dots','homol','map','ws41','ws42','eou','past1','past2','final','hw'];
+const ONLY=process.argv[2]?process.argv[2].split(','):null;   // node tools/test.js id1,id2 runs only those slides
 const results=[]; const errs=[];
 (async()=>{
   const b=await chromium.launch();
@@ -13,6 +14,7 @@ const results=[]; const errs=[];
   async function fill(sl,sel,v){const i=sl.locator(sel+' input').first(); await i.fill(String(v)); await i.press('Enter'); await sl.page().waitForTimeout(120)}
   async function tap(p,sl,k,slotSel,chipSel){await sl.locator(chipSel+'[data-k="'+k+'"]').click(); await sl.locator(slotSel+'[data-k="'+k+'"]').click(); await p.waitForTimeout(150)}
   async function T(id,fn){
+    if(ONLY&&!ONLY.includes(id)) return;
     let p; try{ p=await open(id); const sl=p.locator('.slide.on'); const r=await fn(p,sl); let fit=r===false?'':await fits(p); results.push([id,r===false?'FAIL':(fit?'FAIL: nothing may leave the stage after the steps: '+fit:'ok')]) }catch(e){ results.push([id,'FAIL: '+String(e.message).split('\n')[0]]) }
     if(p) await p.close();
   }

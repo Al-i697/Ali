@@ -2,3 +2,4 @@
 lessons/*/lesson*.slim.html
 site/preview/dist/
 site/offline/
+__pycache__/

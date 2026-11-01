@@ -243,3 +243,41 @@ div[style*="var(--cyan)"]{background:rgba(3,11,18,.84);color:#cdeff7!important;p
 .rcard .rq{color:#e9f4f6}
 .rcards.two .rcard{padding:7px 12px}
 .rcards.two{gap:8px}
+
+/* ---- unit 4 additions: reaction arrows with conditions, lab bench ---- */
+.rarr{display:inline-flex;flex-direction:column;align-items:center;margin:0 8px;line-height:1.1;vertical-align:middle}
+.rarr b{font-size:36px;font-weight:700;line-height:1}
+.rarr i{font-style:normal;color:#FFE6A0;font-size:17px;font-weight:700;min-height:20px;white-space:nowrap}
+.eqrow{display:flex;align-items:center;justify-content:center;gap:8px;direction:ltr;flex-wrap:nowrap;font-size:30px;font-weight:800}
+.eqrow .pl{font-size:30px}
+.eqrow .mslot{min-width:150px;min-height:54px}
+@keyframes shk{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(6deg)}}
+.shaking{animation:shk .5s ease-in-out 3;transform-origin:50% 100%}
+html[data-fx="0"] .shaking{animation:none}
+.bot{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:8px 10px;border-radius:16px;background:rgba(var(--d2),.55);border:2px solid rgba(255,255,255,.18);cursor:pointer;color:inherit;font:inherit}
+.bot:hover{border-color:var(--gold)} .bot.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,188,75,.25)} .bot.used{opacity:.7}
+.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} .bot span{font-size:15px;color:var(--muted)}
+.obs{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:20px} .obs th{font-size:17px;color:var(--muted);font-weight:700;text-align:center} .obs td{background:rgba(var(--d2),.55);padding:5px 10px;text-align:center;font-weight:700} .obs td:first-child{border-radius:0 12px 12px 0;color:var(--gold);font-size:24px;font-family:var(--font-display)} .obs td:last-child{border-radius:12px 0 0 12px}
+.dotc{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
+
+.rcards.tight{gap:7px} .rcards.tight .rcard{padding:8px 14px} .rcards.tight .rt{gap:1px} .rcards.tight .rt b{font-size:23px} .rcards.tight .rx{font-size:19px;line-height:1.35} .rcards.tight .rq{font-size:16px}
+.obs td.cl{padding:3px 6px} .obs .cb{display:flex;gap:6px;justify-content:center} .obs .cb .btn{min-height:34px;padding:0 10px;font-size:17px}
+.obs tr.ok td{box-shadow:inset 0 0 0 2px var(--ok)}
+
+.slide.tightq .tq .opt{min-height:0;padding:5px 14px;font-size:21px;gap:12px} .slide.tightq .tq h4{font-size:22px;line-height:1.35} .slide.tightq .tq .opt .ix{width:34px;height:34px;font-size:19px}
+
+/* ---- the fractionating tower ---- */
+.twrw{display:flex;align-items:flex-end;gap:10px;direction:ltr}
+.furn{display:flex;flex-direction:column;align-items:center;gap:2px;width:128px;flex:none;margin-bottom:6px}
+.furn .furl,.furn .cru{font-size:15px;font-weight:700;color:var(--muted);text-align:center;direction:rtl;line-height:1.2}
+.furn .cru{color:var(--gold);font-size:16px}
+.twcol{display:flex;flex-direction:column;gap:3px;padding:3px 6px;border:4px solid #9fb4b8;border-radius:34px 34px 16px 16px;background:rgba(var(--d2),.4)}
+.twrow{display:flex;align-items:center;gap:12px}
+.lv{width:300px;height:44px;border:0;color:#0d1e26;font-family:var(--font-display);font-weight:800;font-size:18px;cursor:pointer;transition:filter .2s,transform .2s,box-shadow .2s;position:relative;direction:rtl}
+.lv:hover{filter:brightness(1.12)} .lv.on{box-shadow:0 0 0 3px var(--gold),0 0 18px rgba(228,188,75,.55);transform:scale(1.03);z-index:1}
+.lv.seen::before{content:'✓';position:absolute;inset-inline-start:8px;top:50%;transform:translateY(-50%);font-size:18px;font-weight:800;color:#0d3b1e}
+.twrow .tt{width:112px;font-size:18px;font-weight:700;color:var(--gold);text-align:start}
+.lv .nm.hide,.tt.hide{visibility:hidden}
+.tw2{display:inline-flex;align-items:center;gap:4px}
+
+.cls.sm .btn{min-height:38px;padding:0 14px;font-size:18px}

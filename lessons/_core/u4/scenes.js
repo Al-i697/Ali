@@ -27,4 +27,31 @@
   R('pm_ethane', {bg:'nb_leaf_d', dim:.14, dust:20, mols:[{m:'ethane',x:.2,y:.52,s:1.15,spin:.3,pitch:.5}]});
   R('pm_family', {bg:'nb_leaf_v', dim:.20, dust:18, mols:[{m:'methane',x:.12,y:.22,s:.62,spin:.3,pitch:.45},{m:'propane',x:.9,y:.84,s:.62,spin:-.28,pitch:.5}]});
   R('pm_butane', {bg:'nb_leaf_g', dim:.22, dust:16, mols:[{m:'butane',x:.82,y:.5,s:1.0,spin:.24,pitch:.5}]});
+  /* more molecules for the alkenes and the cracking */
+  R('mol_propene', {mols:[{m:'propene',x:.84,y:.5,s:1.2,spin:.28,pitch:.55}]});
+  R('mol_butene',  {mols:[{m:'butene',x:.82,y:.5,s:1.15,spin:-.26,pitch:.5}]});
+  R('mol_ethanol', {mols:[{m:'ethanol',x:.84,y:.5,s:1.2,spin:.3,pitch:.5}]});
+  R('mol_dibromo', {mols:[{m:'dibromoethane',x:.82,y:.5,s:1.2,spin:.3,pitch:.5},{m:'br2',x:.12,y:.8,s:.8,spin:.5,pitch:.5,ph:1}]});
+  R('mol_addn',    {mols:[{m:'ethene',x:.14,y:.3,s:.8,spin:.3,pitch:.5},{m:'br2',x:.12,y:.8,s:.8,spin:-.4,pitch:.5,ph:1},{m:'h2',x:.9,y:.22,s:.8,spin:.5,pitch:.5,ph:2},{m:'ethanol',x:.88,y:.78,s:.8,spin:-.3,pitch:.5,ph:3}],dust:30});
+  R('mol_decane',  {mols:[{m:'chain10',x:.62,y:.56,s:1.5,spin:.16,pitch:.55}],dust:24});
+  R('mol_crack',   {mols:[{m:'chain8',x:.7,y:.3,s:1.1,spin:.2,pitch:.5},{m:'butane',x:.2,y:.78,s:.8,spin:-.3,pitch:.5,ph:1},{m:'butene',x:.88,y:.84,s:.8,spin:.3,pitch:.5,ph:2}],dust:26});
+  /* the teacher's own photographs (736 px sources enlarged about 1.7x, see _core/tools/make_bg.py) */
+  R('p_pump_sky',  {bg:'u_pump_sky', dim:.26, dust:14});
+  R('p_pump_head', {bg:'u_pump_head',dim:.30, dust:12, ph:1});
+  R('p_pump_base', {bg:'u_pump_base',dim:.32, dust:12, ph:2});
+  R('p_earth_top', {bg:'u_earth_top',dim:.30, dust:22});
+  R('p_earth',     {bg:'u_earth',    dim:.30, dust:18, ph:1});
+  R('p_earth_g',   {bg:'u_earth_g',  dim:.32, dust:20, ph:2});
+  R('p_ref_top',   {bg:'u_ref_top',  dim:.40, dust:10});
+  R('p_ref_mid',   {bg:'u_ref_mid',  dim:.40, dust:10, ph:1});
+  R('p_ref_low',   {bg:'u_ref_low',  dim:.42, dust:10, ph:2});
+  R('p_hands',     {bg:'u_hands',    dim:.10, dust:12});
+  R('p_pipes_sun', {bg:'u_pipes_sun',dim:.36, dust:12});
+  R('p_pipes_top', {bg:'u_pipes_top',dim:.36, dust:12, ph:1});
+  R('p_pipes_sea', {bg:'u_pipes_sea',dim:.38, dust:12, ph:2});
+  R('pm_ene',      {bg:'u_earth_g',  dim:.42, dust:16, mols:[{m:'ethene',x:.2,y:.5,s:1.15,spin:.3,pitch:.5}]});
+  R('pm_ene2',     {bg:'u_earth_top',dim:.30, dust:16, mols:[{m:'propene',x:.82,y:.5,s:1.05,spin:-.26,pitch:.5}]});
+  R('pm_ethanol',  {bg:'u_pump_sky', dim:.26, dust:14, mols:[{m:'ethanol',x:.2,y:.5,s:1.1,spin:.28,pitch:.5}]});
+  R('pm_crack',    {bg:'u_ref_top',  dim:.42, dust:8,  mols:[{m:'chain8',x:.2,y:.52,s:1.2,spin:.2,pitch:.5}]});
+  R('pm_crack2',   {bg:'u_pipes_top',dim:.38, dust:8,  mols:[{m:'chain10',x:.8,y:.55,s:1.35,spin:-.18,pitch:.5}]});
 })();
