@@ -50,21 +50,40 @@
   R('p_pipes_sun', {bg:'u_pipes_sun',dim:.36, dust:12});
   R('p_pipes_top', {bg:'u_pipes_top',dim:.36, dust:12, ph:1});
   R('p_pipes_sea', {bg:'u_pipes_sea',dim:.38, dust:12, ph:2});
-  R('pm_ene',      {bg:'u_earth_g',  dim:.42, dust:16, mols:[{m:'ethene',x:.2,y:.5,s:1.15,spin:.3,pitch:.5}]});
-  R('pm_ene2',     {bg:'u_earth_top',dim:.30, dust:16, mols:[{m:'propene',x:.82,y:.5,s:1.05,spin:-.26,pitch:.5}]});
-  R('pm_ethanol',  {bg:'u_pump_sky', dim:.26, dust:14, mols:[{m:'ethanol',x:.2,y:.5,s:1.1,spin:.28,pitch:.5}]});
-  R('pm_crack',    {bg:'u_ref_top',  dim:.42, dust:8,  mols:[{m:'chain8',x:.2,y:.52,s:1.2,spin:.2,pitch:.5}]});
-  R('pm_crack2',   {bg:'u_pipes_top',dim:.38, dust:8,  mols:[{m:'chain10',x:.8,y:.55,s:1.35,spin:-.18,pitch:.5}]});
+  R('pm_ene',      {bg:'s_atom_bubbles',dim:.10, dust:10, mols:[{m:'ethene',x:.2,y:.5,s:1.15,spin:.3,pitch:.5}]});
+  R('pm_ene2',     {bg:'s_blue_lab', dim:.16, dust:10, mols:[{m:'propene',x:.82,y:.5,s:1.05,spin:-.26,pitch:.5}]});
+  R('pm_ethanol',  {bg:'s_atom_formulas',dim:.12, dust:10, mols:[{m:'ethanol',x:.2,y:.5,s:1.1,spin:.28,pitch:.5}]});
+  R('pm_crack',    {bg:'s_molecules_circuit', dim:.22, dust:0,  mols:[{m:'chain8',x:.2,y:.52,s:1.2,spin:.2,pitch:.5}]});
+  R('pm_crack2',   {bg:'s_pipes_refinery',dim:.22, dust:6,  mols:[{m:'chain10',x:.8,y:.55,s:1.35,spin:-.18,pitch:.5}]});
   /* the teacher's 11 high-resolution photographs (1600x900, see _core/tools/add_photos.py): they drift and zoom slowly like the others; the scrim is light because the cards carry the text */
-  R('p_lab_future', {bg:'s_lab_future', dim:.14, dust:14});
-  R('p_lab_desk',   {bg:'s_lab_desk',   dim:.20, dust:12, ph:1});
-  R('p_plants_book',{bg:'s_plants_book',dim:.22, dust:12, ph:2});
+  R('p_lab_future', {bg:'s_lab_future', dim:.12, dust:14});
+  R('p_lab_desk',   {bg:'s_lab_desk',   dim:.16, dust:12, ph:1});
+  R('p_plants_book',{bg:'s_plants_book',dim:.18, dust:12, ph:2});
   R('p_lab_frame',  {bg:'s_lab_frame',  dim:0,   dust:0});
-  R('p_eco_hand',   {bg:'s_eco_hand',   dim:.20, dust:14, ph:1});
-  R('p_earth_sad',  {bg:'s_earth_sad',  dim:.24, dust:8,  ph:2});
-  R('p_pump_blue',  {bg:'s_pump_blue',  dim:.20, dust:8});
-  R('p_pump_red',   {bg:'s_pump_red',   dim:.20, dust:8,  ph:1});
-  R('p_refinery',   {bg:'s_refinery',   dim:.26, dust:8,  ph:2});
-  R('p_tower',      {bg:'s_tower',      dim:.28, dust:8});
+  R('p_eco_hand',   {bg:'s_eco_hand',   dim:.16, dust:14, ph:1});
+  R('p_earth_sad',  {bg:'s_earth_sad',  dim:.18, dust:8,  ph:2});
+  R('p_pump_blue',  {bg:'s_pump_blue',  dim:.14, dust:8});
+  R('p_pump_red',   {bg:'s_pump_red',   dim:.14, dust:8,  ph:1});
+  R('p_refinery',   {bg:'s_refinery',   dim:.18, dust:8,  ph:2});
+  R('p_tower',      {bg:'s_tower',      dim:.36, dust:8});
   R('p_well_layers',{bg:'s_well_layers',dim:.64, dust:6,  ph:1});   /* carries its own Arabic labels: pushed back */
+  /* the teacher's second set (Nov 2026), same size and same engine. The scrim is light and soft: the photograph stays clear and the cards in front stay prominent. */
+  R('p_blue_lab',       {bg:'s_blue_lab',       dim:.08, dust:10});
+  R('p_atom_bubbles',   {bg:'s_atom_bubbles',   dim:.04, dust:6,  ph:1});
+  R('p_hands_globe',    {bg:'s_hands_globe',    dim:.12, dust:8,  ph:2});
+  R('p_crystal_flask',  {bg:'s_crystal_flask',  dim:.04, dust:8});
+  R('p_lab_equations',  {bg:'s_lab_equations',  dim:.12, dust:6,  ph:1});
+  R('p_atom_formulas',  {bg:'s_atom_formulas',  dim:.12, dust:6,  ph:2});
+  R('p_molecules_circuit',{bg:'s_molecules_circuit',dim:.14,dust:0});
+  R('p_glass_lab',      {bg:'s_glass_lab',      dim:.02, dust:0});   /* light picture: almost no shade */
+  R('p_periodic_neon',  {bg:'s_periodic_neon',  dim:.20, dust:0});
+  R('p_periodic_purple',{bg:'s_periodic_purple',dim:.16, dust:0});
+  R('p_pipes_refinery', {bg:'s_pipes_refinery', dim:.14, dust:6});
+  R('p_platform_sea',   {bg:'s_platform_sea',   dim:.14, dust:6,  ph:1});
+  R('p_pumps_silhouette',{bg:'s_pumps_silhouette',dim:.10,dust:4, ph:2});
+  R('p_port_tanks',     {bg:'s_port_tanks',     dim:.16, dust:4});
+  R('p_oil_city',       {bg:'s_oil_city',       dim:.14, dust:6,  ph:1});
+  R('p_biofuel_pump',   {bg:'s_biofuel_pump',   dim:.12, dust:10});
+  R('p_solar_farm',     {bg:'s_solar_farm',     dim:.10, dust:4,  ph:2});
+  R('p_bulb_tree',      {bg:'s_bulb_tree',      dim:.10, dust:8});
 })();

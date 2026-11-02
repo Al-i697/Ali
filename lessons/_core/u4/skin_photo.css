@@ -49,7 +49,7 @@
 .app .opt .ix,.app .pr .t .ix{background:rgba(0,0,0,.3); color:#fff}
 .app .opt.solo{background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge); box-shadow:0 8px 20px rgba(0,0,0,.4)}   /* answer buttons that stand alone on the photograph */
 /* step lists that fade the steps not reached yet: keep them solid (dimmed by brightness, not by see-through) */
-.app .lstep[style*="0.42"]{opacity:1!important; background:rgba(0,0,0,.5)!important; color:rgba(255,255,255,.72)}
+.app .lstep[style*=".42"]{opacity:1!important; background:rgba(var(--d2),.92)!important; color:rgba(255,255,255,.66)}
 /* buttons and sample bottles that used to be see-through: solid, so they read over any picture */
 .app .btn:not(.acc):not(.tab),.app .bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
 .app .rn{background:#F6C945!important; color:#241800!important}   /* numbered / ticked badges: solid gold with dark ink */

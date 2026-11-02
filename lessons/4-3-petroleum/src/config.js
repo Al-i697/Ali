@@ -2,12 +2,21 @@
 var LESSON={
   short:'البترول', brand:'الدرس ٤-٣ · البترول والوقود الأحفوري', home:'index.html',
   chapters:['مدخل: الوقود الأحفوري','التكوّن والاحتراق','التقطير التجزيئي','خصائص المشتقات النفطية','التكسير الحراري','أسئلة وامتحانات'],
-  bgMap:['s_pump_blue','s_pump_red','s_tower','s_lab_desk','s_lab_future','s_plants_book'],   /* one still photograph per chapter (the 'photo' look); the teacher's high-resolution set */
+  /* Backgrounds (same rule as lesson 4-1): a live 3D molecule where the slide is about structure or a reaction, one of the teacher's high-resolution photographs
+     where it is about the real world, a lab or a question. A photograph is not repeated inside the lesson except the cover/closing pair; the general ones are shared
+     with other lessons at most once (see _core/tools/photo_usage.py). The card colour (palId) is picked to break the colour of the picture behind it. */
+  bgMap:['p_oil_city','p_earth_sad','p_pipes_refinery','p_glass_lab','mol_crack','p_oil_city'],
   palCh:['violet','emerald','navy','ember','violet','ember'],
-  bgId:{goals:'s_eco_hand', form:'s_well_layers', burn:'s_earth_sad', refine:'s_refinery', labc:'s_lab_frame', labcq:'s_lab_frame', ws43:'s_pump_red', ex44:'s_pump_red', eou4:'s_pump_red', final:'s_eco_hand', hw:'s_eco_hand'},
-  bgLight:['s_lab_frame'],
-  bgDim:['s_well_layers'],
-  palId:{goals:'ember', form:'navy', burn:'ember', refine:'violet', labc:'ember', labcq:'ember', ws43:'emerald', ex44:'emerald', eou4:'emerald', final:'ember', hw:'ember'},
+  bgId:{goals:'p_oil_city',types:'p_pumps_silhouette',form:'p_hands_globe',fields:'p_platform_sea',burn:'p_earth_sad',refine:'p_tower',
+        process:'p_pipes_refinery',tower:'p_pipes_refinery',order:'p_port_tanks',uses:'p_port_tanks',trend:'mol_decane',why:'mol_chain',
+        lab:'p_glass_lab',labq:'p_glass_lab',need:'mol_hexane',define:'pm_crack',crack1:'mol_crack',crack2:'mol_crack',
+        octane:'mol_decane',labc:'p_crystal_flask',labcq:'p_crystal_flask',ws43:'p_oil_city',ex44:'mol_decane',eou4:'mol_hexane',
+        pastA:'mol_crack',pastB:'mol_decane',pastC:'mol_chain',pastD:'p_solar_farm',final:'p_bulb_tree',hw:'p_bulb_tree'},
+  palId:{goals:'violet',types:'navy',form:'violet',fields:'violet',burn:'ember',refine:'navy',
+        process:'violet',tower:'violet',order:'navy',uses:'navy',trend:'violet',why:'emerald',
+        lab:'violet',labq:'violet',need:'navy',define:'violet',crack1:'violet',crack2:'violet',
+        octane:'violet',labc:'gold',labcq:'gold',ws43:'navy',ex44:'gold',eou4:'gold',
+        pastA:'gold',pastB:'gold',pastC:'gold',pastD:'ember',final:'violet',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
   pts:{goals:'.gi', types:'.rcard', fields:'.rcard', refine:'.rcard', trend:'.rcard', define:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s] */

@@ -2,11 +2,23 @@
 var LESSON={
   short:'الألكينات', brand:'الدرس ٤-٢ · الألكينات وتفاعلات الإضافة', home:'index.html',
   chapters:['مدخل: من الألكانات إلى الألكينات','التركيب والتسمية','الخصائص الفيزيائية','النشاط الكيميائي والاحتراق','ماء البروم: الكشف عن عدم التشبع','تفاعلات الإضافة','الاستخدامات والمقارنة','أسئلة وامتحانات'],
-  bgMap:['s_lab_future','s_lab_desk','s_pump_red','s_refinery','s_lab_frame','s_plants_book','s_eco_hand','s_pump_blue'],   /* one still photograph per chapter (the 'photo' look); the teacher's high-resolution set */
+  /* Backgrounds (same rule as lesson 4-1): a live 3D molecule where the slide is about structure or a reaction, one of the teacher's high-resolution photographs
+     where it is about the real world, a lab or a question. A photograph is not repeated inside the lesson except the cover/closing pair; the general ones are shared
+     with other lessons at most once (see _core/tools/photo_usage.py). The card colour (palId) is picked to break the colour of the picture behind it. */
+  bgMap:['p_blue_lab','mol_propene','mol_butene','mol_addn','p_crystal_flask','mol_addn','mol_ethene','mol_family'],
   palCh:['violet','ember','emerald','navy','ember','violet','ember','violet'],
-  bgId:{final:'s_lab_future', hw:'s_lab_future'},
-  bgLight:['s_lab_frame'],
-  palId:{final:'violet', hw:'violet'},
+  bgId:{goals:'p_blue_lab',recall:'mol_family',what:'mol_ethene',bondE:'pm_ene',formula:'mol_butene',names:'mol_propene',
+        draw:'p_molecules_circuit',states:'mol_propene',plotE:'mol_butene',whyE:'mol_chain',react:'mol_addn',burnE:'mol_burn',
+        lab:'p_crystal_flask',labq:'p_crystal_flask',br:'mol_dibromo',eqBr:'p_lab_equations',hyd:'mol_addn',hydr:'pm_ethanol',
+        conds:'mol_addn',q20:'mol_dibromo',uses:'p_biofuel_pump',compare:'mol_ethene',map:'mol_family',q1114:'p_lab_frame',
+        q1520:'mol_propene',ex42:'mol_butene',ex43:'mol_burn',eou3:'mol_ethanol',past1:'mol_dibromo',past2:'mol_addn',
+        final:'p_blue_lab',hw:'p_blue_lab'},
+  palId:{goals:'ember',recall:'navy',what:'navy',bondE:'violet',formula:'violet',names:'violet',
+        draw:'ember',states:'navy',plotE:'navy',whyE:'emerald',react:'ember',burnE:'ember',
+        lab:'ember',labq:'ember',br:'gold',eqBr:'emerald',hyd:'emerald',hydr:'ember',
+        conds:'gold',q20:'emerald',uses:'violet',compare:'violet',map:'emerald',q1114:'navy',
+        q1520:'gold',ex42:'emerald',ex43:'ember',eou3:'violet',past1:'gold',past2:'gold',
+        final:'violet',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
   pts:{goals:'.gi', what:'.rcard', whyE:'.rcard', uses:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
