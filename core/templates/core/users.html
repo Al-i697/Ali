@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}المستخدمون{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div><h1>المستخدمون</h1><p class="sub">كل واحد له حسابه: السائق يشوف التوزيع ويحصّل، والمدير يشوف كل شي.</p></div>
+  <div class="head-actions"><a class="btn primary small" href="{% url 'user_create' %}">{% icon 'plus' 16 %}مستخدم جديد</a></div>
+</header>
+<div class="card rows">
+  {% for u, role_label in rows %}
+    <a class="row" href="{% url 'user_edit' u.pk %}">
+      <div class="row-main"><div class="t">{{ u.first_name|default:u.username }}{% if not u.is_active %} <span class="pill">موقوف</span>{% endif %}</div><div class="s"><span dir="ltr">{{ u.username }}</span> · {{ role_label }}</div></div>
+      <span class="chev">{% icon 'next' 18 %}</span>
+    </a>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}توزيع اليوم{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <h1>توزيع اليوم</h1>
+    <p class="sub">{{ today|date:"l j F" }}</p>
+    <p class="finding">
+      {% if pending_count %}{{ pending_count }} طلب بانتظار التوصيل في {{ area_count }} {% if area_count == 1 %}منطقة{% elif area_count == 2 %}منطقتين{% elif area_count < 11 %}مناطق{% else %}منطقة{% endif %} · {{ cylinders_pending }} اسطوانة{% else %}ما في طلبات بانتظار التوصيل.{% endif %}
+    </p>
+  </div>
+  <div class="head-actions desktop-only"><a class="btn primary" href="{% url 'order_pick' %}">{% icon 'plus' 18 %}طلب جديد</a></div>
+</header>
+
+{% for area, orders in groups %}
+  <section class="area-group" aria-labelledby="area-{{ area.pk }}">
+    <h2 class="area-h" id="area-{{ area.pk }}"><span>{{ area.name }}</span><span class="count">{{ orders|length }}</span>{% if area.delivery_days %}<span class="meta">{{ area.delivery_days }}</span>{% endif %}</h2>
+    <div class="card rows">
+      {% for o in orders %}
+        <article class="job">
+          <div class="job-top">
+            <div class="job-main">
+              <a class="t" href="{% url 'customer_detail' o.customer.pk %}">{{ o.customer.name }}</a>
+              <div class="job-lines">{{ o.items_summary }} · {% amt o.total %}</div>
+            </div>
+            <a class="btn small" href="{% url 'order_deliver' o.pk %}">{% icon 'check' 16 %}تسليم</a>
+          </div>
+          {% if o.is_late or o.balance > 0 or o.notes %}
+            <div class="job-meta">
+              {% if o.is_late %}<span class="pill neg">طلب {{ o.delivery_date|ago }}</span>{% endif %}
+              {% if o.balance > 0 %}<span class="pill warn">عليه دين {% amt o.balance unit=False %}</span>{% endif %}
+              {% if o.notes %}<span class="note">{{ o.notes }}</span>{% endif %}
+            </div>
+          {% endif %}
+          {% if o.customer.address %}<div class="job-addr">{{ o.customer.address }}</div>{% endif %}
+          <div class="job-tools">
+            {% if o.customer.phone %}<a class="btn small icon-btn small" href="{{ o.customer.phone|tel }}" aria-label="اتصال بـ {{ o.customer.name }}">{% icon 'phone' 16 %}</a>{% endif %}
+            {% if o.wa %}<a class="btn small icon-btn small" href="{{ o.wa }}" target="_blank" rel="noopener" aria-label="واتساب {{ o.customer.name }}">{% icon 'chat' 16 %}</a>{% endif %}
+            {% if o.customer.location_url %}<a class="btn small" href="{{ o.customer.location_url }}" target="_blank" rel="noopener">{% icon 'pin' 16 %}الموقع</a>{% endif %}
+            <a class="btn small icon-btn small" href="{% url 'order_edit' o.pk %}" aria-label="تعديل الطلب">{% icon 'edit' 16 %}</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </section>
+{% empty %}
+  <div class="card"><p class="empty">كل الطلبات انوزعت. طلب جديد يظهر هنا لما يتسجل.</p></div>
+{% endfor %}
+
+{% if upcoming %}<p class="s wrap" style="margin-top:12px"><a style="text-decoration:underline;text-underline-offset:3px" href="{% url 'order_list' %}?status=pending">{{ upcoming }} طلب مجدول لأيام قادمة</a></p>{% endif %}
+
+{% if done %}
+  <section class="section" aria-labelledby="h-done">
+    <h2 id="h-done" style="margin-top:24px">تم توصيله اليوم ({{ done|length }})</h2>
+    <div class="card rows">
+      {% for o in done %}
+        <a class="row" href="{% url 'order_detail' o.pk %}">
+          <div class="row-main"><div class="t">{{ o.customer.name }}</div><div class="s">{{ o.items_summary }} · {{ o.customer.area.name }}</div></div>
+          <div class="row-end">
+            {% amt o.total %}
+            <div class="s">{% if o.unpaid <= 0 %}<span class="pill pos">مدفوع</span>{% elif o.paid > 0 %}<span class="pill warn">دفع جزء · الباقي {% amt o.unpaid unit=False %}</span>{% else %}<span class="pill warn">آجل</span>{% endif %}</div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+{% endblock %}

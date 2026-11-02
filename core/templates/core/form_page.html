@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}{{ title }}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <a class="back" href="{{ back }}">{% icon 'back' 16 %}رجوع</a>
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p class="sub">{{ subtitle }}</p>{% endif %}
+  </div>
+</header>
+<form method="post" class="card form-card" data-once novalidate>
+  {% csrf_token %}
+  {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+  {% for e in form.non_field_errors %}<div class="msg error" style="margin-bottom:16px">{{ e }}</div>{% endfor %}
+  {% for field in form %}{% include "core/_field.html" %}{% endfor %}
+  {% if hint %}<p class="hint">{{ hint }}</p>{% endif %}
+  <div class="actions">
+    <button type="submit" class="btn {% if danger %}danger-fill{% else %}primary{% endif %}">{{ submit }}</button>
+    <a class="btn" href="{{ back }}">إلغاء</a>
+  </div>
+</form>
+{% endblock %}

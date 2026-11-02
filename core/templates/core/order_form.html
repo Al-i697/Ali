@@ -1,0 +1,46 @@
+{% extends "core/base.html" %}{% load core_extras l10n %}
+{% block title %}{% if editing %}تعديل طلب{% else %}طلب جديد{% endif %}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <a class="back" href="{% if editing %}{% url 'order_detail' order.pk %}{% else %}{% url 'order_pick' %}{% endif %}">{% icon 'back' 16 %}رجوع</a>
+    <h1>{% if editing %}تعديل الطلب{% else %}طلب جديد{% endif %}</h1>
+  </div>
+</header>
+
+<form method="post" class="card" data-calc data-once novalidate>
+  {% csrf_token %}
+  <div class="cust-head">
+    <div style="min-width:0"><div class="t">{{ customer.name }}</div><div class="s">{{ customer.area.name }}{% if customer.address %} · {{ customer.address }}{% endif %}</div></div>
+    {% if balance > 0 %}<span class="pill warn">عليه دين {% amt balance unit=False %}</span>{% endif %}
+  </div>
+
+  {% for e in form.non_field_errors %}<div class="msg error" style="margin:0 16px 12px">{{ e }}</div>{% endfor %}
+
+  <div>
+    {% for product, field in form.product_rows %}
+      <div class="prod-row" data-price="{{ product.price|unlocalize }}">
+        <div style="min-width:0"><label class="t" for="{{ field.id_for_label }}" style="white-space:normal">{{ product.name }}</label><div class="s">{% amt product.price %}</div></div>
+        <div class="stepper" dir="ltr">
+          <button type="button" data-step="-1" aria-label="أنقص {{ product.name }}">−</button>
+          {{ field }}
+          <button type="button" data-step="1" aria-label="زِد {{ product.name }}">+</button>
+        </div>
+      </div>
+    {% empty %}
+      <p class="empty">ما في منتجات. أضف أسعار الاسطوانات أول من «المنتجات والأسعار».</p>
+    {% endfor %}
+  </div>
+  <div class="total-bar"><span class="l">المجموع</span><span class="v amt is-strong"><span class="n" data-total>0.00</span><small class="unit">د.إ</small></span></div>
+
+  <div class="card-b">
+    {% include "core/_field.html" with field=form.delivery_date %}
+    {% include "core/_field.html" with field=form.source %}
+    {% include "core/_field.html" with field=form.notes %}
+  </div>
+  <div class="sticky-actions">
+    <button type="submit" class="btn primary">{% if editing %}حفظ التعديل{% else %}تسجيل الطلب{% endif %}</button>
+  </div>
+</form>
+{% endblock %}

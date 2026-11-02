@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}تسجيل الدخول{% endblock %}
+{% block content %}
+<div class="login">
+  <form method="post" class="card login-card" novalidate>
+    {% csrf_token %}
+    <div class="login-brand">{% include "core/_mark.html" %}<h1>تسجيل الدخول</h1></div>
+    {% for e in form.non_field_errors %}<div class="msg error" style="margin-bottom:16px">{{ e }}</div>{% endfor %}
+    {% for field in form %}{% include "core/_field.html" %}{% endfor %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn primary block">دخول</button>
+  </form>
+</div>
+{% endblock %}

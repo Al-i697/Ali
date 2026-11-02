@@ -1,0 +1,69 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}ملخص اليوم{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <h1>ملخص اليوم</h1>
+    <p class="sub">{{ day|date:"l j F Y" }}{% if is_today %} · اليوم{% endif %}</p>
+  </div>
+  <form class="date-form no-print" method="get">
+    <input class="input" type="date" name="date" value="{{ day|date:'Y-m-d' }}" max="{% now 'Y-m-d' %}" aria-label="اختر التاريخ" onchange="this.form.submit()">
+  </form>
+</header>
+
+<section class="kpis" aria-label="أرقام اليوم">
+  <div class="kpi lead"><div class="kpi-l">المحصّل (نقد وغيره)</div><div class="kpi-v">{% amt summary.collected strong=True %}</div></div>
+  <div class="kpi"><div class="kpi-l">المبيعات</div><div class="kpi-v">{% amt summary.sales unit=False %}<small>د.إ</small></div></div>
+  <div class="kpi"><div class="kpi-l">دين جديد</div><div class="kpi-v">{% amt summary.new_debt unit=False %}<small>د.إ</small></div></div>
+  <div class="kpi"><div class="kpi-l">طلبات تم توصيلها</div><div class="kpi-v"><span class="num">{{ summary.deliveries }}</span></div></div>
+  <div class="kpi"><div class="kpi-l">اسطوانات</div><div class="kpi-v"><span class="num">{{ summary.cylinders_total }}</span></div></div>
+</section>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="h-coll">
+    <div class="card-h"><h2 id="h-coll">من وين جاء المحصّل</h2></div>
+    <div class="kv">
+      <div><span class="k">من توصيلات اليوم</span><span class="v">{% amt summary.collected_at_delivery %}</span></div>
+      <div><span class="k">من ديون سابقة</span><span class="v">{% amt summary.collected_old_debts %}</span></div>
+      {% for label, value in summary.by_method %}<div><span class="k">· {{ label }}</span><span class="v">{% amt value %}</span></div>{% endfor %}
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-user">
+    <div class="card-h"><h2 id="h-user">حسب الموظف (للتسليم والجرد)</h2></div>
+    {% if summary.by_user %}
+      <div class="table-wrap"><table class="tbl">
+        <thead><tr><th>الموظف</th><th class="num-col">نقد</th><th class="num-col">تحويل وغيره</th></tr></thead>
+        <tbody>{% for name, cash, other in summary.by_user %}<tr><td>{{ name }}</td><td class="num-col">{% amt cash unit=False %}</td><td class="num-col">{% amt other unit=False %}</td></tr>{% endfor %}</tbody>
+      </table></div>
+    {% else %}
+      <p class="empty">ما في تحصيل في هذا اليوم.</p>
+    {% endif %}
+  </section>
+</div>
+
+<div class="grid-2">
+  <section class="card" aria-labelledby="h-cyl">
+    <div class="card-h"><h2 id="h-cyl">الاسطوانات اللي انباعت</h2></div>
+    {% if summary.cylinders %}
+      <div class="kv">{% for name, qty in summary.cylinders %}<div><span class="k">{{ name }}</span><span class="v num">{{ qty }}</span></div>{% endfor %}</div>
+    {% else %}
+      <p class="empty">ما انباع شي في هذا اليوم.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="h-del">
+    <div class="card-h"><h2 id="h-del">التوصيلات</h2></div>
+    <div class="rows">
+      {% for o in orders %}
+        <a class="row" href="{% url 'order_detail' o.pk %}" style="min-height:56px">
+          <div class="row-main"><div class="t">{{ o.customer.name }}</div><div class="s">{{ o.items_summary }} · {{ o.delivered_at|clock }}</div></div>
+          <div class="row-end">{% amt o.total %}</div>
+        </a>
+      {% empty %}
+        <p class="empty">ما في توصيلات في هذا اليوم.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

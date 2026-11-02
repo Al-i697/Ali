@@ -1,0 +1,53 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}الديون{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <h1>الديون</h1>
+    <p class="finding">{% if rows %}{{ rows|length }} عميل · الإجمالي {% amt total strong=True %}{% else %}ما في ديون بهذا الفلتر.{% endif %}</p>
+  </div>
+  {% if is_admin %}<div class="head-actions"><a class="btn small" href="{% url 'debts_csv' %}{% qs %}">{% icon 'download' 16 %}تصدير Excel</a></div>{% endif %}
+</header>
+
+<nav class="chips" aria-label="عمر الدين">
+  {% for key, label, n in chips %}<a class="chip{% if age == key %} on{% endif %}{% if not n %} zero{% endif %}" href="{% qs age=key page=None %}"{% if age == key %} aria-current="true"{% endif %}>{{ label }} <b>{{ n }}</b></a>{% endfor %}
+</nav>
+
+<form class="filters" method="get">
+  <input type="hidden" name="age" value="{{ age }}">
+  <div class="search">{% icon 'search' 18 %}<input class="input" type="search" name="q" value="{{ q }}" placeholder="ابحث بالاسم أو الجوال" aria-label="بحث"></div>
+  <div class="filters-row">
+    <select class="select" name="area" aria-label="المنطقة" onchange="this.form.submit()">
+      <option value="">كل المناطق</option>
+      {% for a in areas %}<option value="{{ a.pk }}"{% if area == a.pk|stringformat:"s" %} selected{% endif %}>{{ a.name }}</option>{% endfor %}
+    </select>
+    <select class="select" name="sort" aria-label="الترتيب" onchange="this.form.submit()">
+      <option value="">الأكبر مبلغاً أول</option>
+      <option value="age"{% if sort == 'age' %} selected{% endif %}>الأقدم أول</option>
+    </select>
+  </div>
+</form>
+
+<div class="card rows">
+  {% for r in rows %}
+    <div class="row-x">
+      <div class="row-main">
+        <a class="t" href="{% url 'customer_detail' r.customer.pk %}">{{ r.customer.name }}</a>
+        <div class="s wrap">{{ r.customer.area.name }} · {% if r.last_payment %}آخر سداد {{ r.last_payment|ago }}{% else %}ما سدد من قبل{% endif %}</div>
+      </div>
+      <div class="row-end">
+        {% amt r.balance strong=True %}
+        <div class="s">{% if r.oldest_age > overdue_days %}<span class="pill neg">متأخر {{ r.oldest_age|days }}</span>{% else %}<span class="pill">دين {{ r.aging.oldest_date|ago }}</span>{% endif %}</div>
+      </div>
+      <div class="actions">
+        <a class="btn small" href="{% url 'customer_payment' r.customer.pk %}?next={% url 'debts' %}">{% icon 'wallet' 16 %}تحصيل</a>
+        {% if r.wa %}<a class="btn small" href="{{ r.wa }}" target="_blank" rel="noopener">{% icon 'chat' 16 %}تذكير واتساب</a>{% endif %}
+        <a class="btn small" href="{% url 'customer_promise' r.customer.pk %}?next={% url 'debts' %}">{% icon 'clock' 16 %}وعد</a>
+      </div>
+    </div>
+  {% empty %}
+    <p class="empty">ما في عملاء عليهم ديون بهذا الفلتر.</p>
+  {% endfor %}
+</div>
+{% endblock %}

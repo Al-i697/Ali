@@ -1,0 +1,61 @@
+{% extends "core/base.html" %}{% load core_extras l10n %}
+{% block title %}تسليم {{ customer.name }}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <a class="back" href="{% if next %}{{ next }}{% else %}{% url 'route' %}{% endif %}">{% icon 'back' 16 %}رجوع</a>
+    <h1>تسليم طلب</h1>
+  </div>
+</header>
+
+{% if limit_warning %}<div class="notice" style="margin:0 0 12px">{{ limit_warning }}. إذا سلّمته آجل بيزيد الدين عليه.</div>{% endif %}
+
+<form method="post" class="card" data-calc data-once novalidate>
+  {% csrf_token %}
+  {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+  <div class="cust-head">
+    <div style="min-width:0"><div class="t">{{ customer.name }}</div><div class="s">{{ customer.area.name }}{% if customer.address %} · {{ customer.address }}{% endif %}</div></div>
+    {% if balance > 0 %}<span class="pill warn">عليه قبل هذا الطلب {% amt balance unit=False %}</span>{% endif %}
+  </div>
+
+  {% for e in form.non_field_errors %}<div class="msg error" style="margin:0 16px 12px">{{ e }}</div>{% endfor %}
+
+  <div>
+    {% for item, field in form.item_rows %}
+      <div class="prod-row" data-price="{{ item.unit_price|unlocalize }}">
+        <div style="min-width:0"><label class="t" for="{{ field.id_for_label }}" style="white-space:normal">{{ item.product.name }}</label><div class="s">الكمية المطلوبة {{ item.quantity }} · {% amt item.unit_price %}</div></div>
+        <div class="stepper" dir="ltr">
+          <button type="button" data-step="-1" aria-label="أنقص {{ item.product.name }}">−</button>
+          {{ field }}
+          <button type="button" data-step="1" aria-label="زِد {{ item.product.name }}">+</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="total-bar"><span class="l">المجموع</span><span class="v amt is-strong"><span class="n" data-total>{{ order.total|unlocalize }}</span><small class="unit">د.إ</small></span></div>
+
+  <div class="card-b">
+    <div class="field">
+      <label id="pay-label">كيف دفع؟</label>
+      <div class="choices" role="radiogroup" aria-labelledby="pay-label">
+        {% for radio in form.pay_mode %}<label class="choice">{{ radio.tag }}<span>{{ radio.choice_label }}</span></label>{% endfor %}
+      </div>
+      {% for e in form.pay_mode.errors %}<p class="error">{{ e }}</p>{% endfor %}
+    </div>
+    <div class="pay-extra" data-partial>{% include "core/_field.html" with field=form.paid_amount %}</div>
+    <div data-paid-only>{% include "core/_field.html" with field=form.method %}</div>
+    {% include "core/_field.html" with field=form.note %}
+    <p class="debt-line" data-debt-line>الباقي دين على العميل من هذا الطلب: <b class="amt"><span class="n" dir="ltr" data-debt>0.00</span><small class="unit">د.إ</small></b></p>
+  </div>
+  <div class="sticky-actions">
+    <button type="submit" class="btn primary">تأكيد التسليم</button>
+  </div>
+</form>
+
+<form method="post" action="{% url 'order_cancel' order.pk %}" style="margin-top:16px">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{% url 'route' %}">
+  <button type="submit" class="linkbtn neg" data-confirm="إلغاء هذا الطلب؟ ما راح ينحسب على العميل.">إلغاء الطلب (العميل لغاه)</button>
+</form>
+{% endblock %}

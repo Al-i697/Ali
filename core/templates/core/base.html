@@ -1,0 +1,69 @@
+{% load static core_extras %}<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f2f4f7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="{{ company.company_name|default:'الغاز' }}">
+  <link rel="manifest" href="{% static 'core/manifest.webmanifest' %}">
+  <link rel="icon" href="{% static 'core/icon.svg' %}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{% static 'core/icon-180.png' %}">
+  <title>{% block title %}{% endblock %}{% if company %} · {{ company.company_name }}{% endif %}</title>
+  <link rel="preload" href="{% static 'core/fonts/plex-arabic-arabic-400.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'core/app.css' %}">
+</head>
+<body>
+{% if user.is_authenticated %}
+  <aside class="sidebar" aria-label="القائمة الرئيسية">
+    <a class="side-brand" href="{% if is_admin %}{% url 'home' %}{% else %}{% url 'route' %}{% endif %}">
+      {% include "core/_mark.html" %}
+      <span><span class="brand-name">{{ company.company_name }}</span><br><span class="brand-sub">التوزيع والديون</span></span>
+    </a>
+    <nav class="side-nav">
+      {% for i in side_main %}<a href="{{ i.url }}"{% if i.active %} class="active" aria-current="page"{% endif %}>{% icon i.icon 18 %}{{ i.label }}</a>{% endfor %}
+    </nav>
+    {% if side_admin %}
+      <p class="side-group">الإدارة</p>
+      <nav class="side-nav">
+        {% for i in side_admin %}<a href="{{ i.url }}"{% if i.active %} class="active" aria-current="page"{% endif %}>{% icon i.icon 18 %}{{ i.label }}</a>{% endfor %}
+      </nav>
+    {% endif %}
+    <div class="side-user">
+      <div class="who"><b>{{ user.first_name|default:user.username }}</b><span>{% if role == 'owner' %}مدير الشركة{% elif role == 'manager' %}مدير{% else %}سائق{% endif %}</span></div>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn small icon-btn small" type="submit" aria-label="تسجيل الخروج" title="تسجيل الخروج">{% icon 'logout' 16 %}</button></form>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <a class="brand" href="{% if is_admin %}{% url 'home' %}{% else %}{% url 'route' %}{% endif %}">
+      {% include "core/_mark.html" %}
+      <span><span class="brand-name">{{ company.company_name }}</span></span>
+    </a>
+    <a class="menu-btn" href="{% url 'more' %}" aria-label="القائمة">{% icon 'menu' 22 %}</a>
+  </header>
+{% endif %}
+
+<main class="main" id="main">
+  <div class="page {% block pageclass %}{% endblock %}">
+    {% if messages %}
+      <div class="msgs" role="status">{% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+{% if user.is_authenticated %}
+  <nav class="bottomnav" aria-label="التنقل">
+    {% for i in bottom_nav %}
+      <a href="{{ i.url }}" class="{% if i.active %}active{% endif %}{% if i.primary %} primary{% endif %}"{% if i.active %} aria-current="page"{% endif %}>
+        {% if i.primary %}<span class="fab">{% icon i.icon 20 %}</span>{% else %}{% icon i.icon 22 %}{% endif %}
+        <span>{{ i.label }}</span>
+      </a>
+    {% endfor %}
+  </nav>
+{% endif %}
+<script src="{% static 'core/app.js' %}" defer></script>
+</body>
+</html>

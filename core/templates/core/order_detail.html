@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}طلب {{ order.pk }}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <a class="back" href="{% url 'order_list' %}">{% icon 'back' 16 %}الطلبات</a>
+    <h1>طلب {{ order.customer.name }}</h1>
+    <p class="sub">
+      {% if order.status == 'pending' %}<span class="pill warn">بانتظار التوصيل</span>{% elif order.status == 'delivered' %}<span class="pill pos">تم التوصيل</span>{% else %}<span class="pill">ملغي</span>{% endif %}
+      <span style="margin-inline-start:6px">رقم الطلب {{ order.pk }}</span>
+    </p>
+  </div>
+  {% if order.status == 'pending' %}<div class="head-actions"><a class="btn primary" href="{% url 'order_deliver' order.pk %}">{% icon 'check' 18 %}تسليم</a></div>{% endif %}
+</header>
+
+<section class="card" aria-label="تفاصيل الطلب">
+  <div class="rows">
+    {% for item in order.items.all %}
+      <div class="row" style="min-height:56px">
+        <div class="row-main"><div class="t" style="white-space:normal">{{ item.product.name }}</div><div class="s">{{ item.quantity }} × {% amt item.unit_price %}</div></div>
+        <div class="row-end">{% amt item.line_total %}</div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="total-bar"><span class="l">المجموع</span><span class="v amt is-strong"><span class="n">{{ order.total|money }}</span><small class="unit">د.إ</small></span></div>
+</section>
+
+<section class="card">
+  <div class="kv">
+    <div><span class="k">العميل</span><span class="v"><a style="text-decoration:underline;text-underline-offset:3px" href="{% url 'customer_detail' order.customer.pk %}">{{ order.customer.name }}</a></span></div>
+    <div><span class="k">المنطقة</span><span class="v">{{ order.customer.area.name }}</span></div>
+    <div><span class="k">يوصل يوم</span><span class="v num">{{ order.delivery_date|iso }}</span></div>
+    <div><span class="k">وصل الطلب عن طريق</span><span class="v">{{ order.get_source_display }}</span></div>
+    {% if order.notes %}<div><span class="k">ملاحظات</span><span class="v">{{ order.notes }}</span></div>{% endif %}
+    <div><span class="k">سجّله</span><span class="v">{{ order.created_by.first_name|default:order.created_by.username }} · <span class="num">{{ order.created_at|iso }}</span></span></div>
+    {% if order.status == 'delivered' %}<div><span class="k">سلّمه</span><span class="v">{{ order.delivered_by.first_name|default:order.delivered_by.username }} · <span class="num">{{ order.delivered_at|iso }} {{ order.delivered_at|clock }}</span></span></div>{% endif %}
+    {% if order.status == 'cancelled' and order.cancel_reason %}<div><span class="k">سبب الإلغاء</span><span class="v">{{ order.cancel_reason }}</span></div>{% endif %}
+  </div>
+</section>
+
+{% if entries %}
+  <section class="card" aria-labelledby="h-money">
+    <div class="card-h"><h2 id="h-money">الحركات المالية</h2></div>
+    <div class="rows">
+      {% for e in entries %}
+        <div class="entry{% if e.voided %} voided{% endif %}">
+          <div><div class="t">{{ e.get_kind_display }}{% if e.method %} · {{ e.get_method_display }}{% endif %}</div><div class="s">{{ e.date|iso }}</div></div>
+          <div class="end {% if e.amount > 0 %}sign-in{% else %}sign-out{% endif %}">{% amt e.amount signed=True %}</div>
+          {% if e.voided %}<div class="void-note">ملغاة · {{ e.void_reason }}</div>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+{% if order.status == 'pending' %}
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
+    <a class="btn" href="{% url 'order_edit' order.pk %}">{% icon 'edit' 16 %}تعديل</a>
+    <form method="post" action="{% url 'order_cancel' order.pk %}">{% csrf_token %}<button class="btn danger" type="submit" data-confirm="إلغاء هذا الطلب؟">إلغاء الطلب</button></form>
+  </div>
+{% elif order.status == 'delivered' and is_admin %}
+  <div style="margin-top:16px"><a class="btn danger" href="{% url 'order_revert' order.pk %}">التراجع عن التسليم</a></div>
+{% endif %}
+{% endblock %}

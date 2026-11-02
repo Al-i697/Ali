@@ -1,0 +1,9 @@
+{% load core_extras %}{% if page.paginator.num_pages > 1 %}
+<nav class="pager" aria-label="الصفحات">
+  <span>{{ page.start_index }}–{{ page.end_index }} من {{ page.paginator.count }}</span>
+  <span style="display:flex;gap:8px">
+    {% if page.has_previous %}<a class="btn small" href="{% qs page=page.previous_page_number %}">السابق</a>{% endif %}
+    {% if page.has_next %}<a class="btn small" href="{% qs page=page.next_page_number %}">التالي</a>{% endif %}
+  </span>
+</nav>
+{% endif %}

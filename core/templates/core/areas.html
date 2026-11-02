@@ -1,0 +1,26 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}المناطق{% endblock %}
+{% block content %}
+<header class="head"><div><h1>المناطق</h1><p class="sub">كل عميل يتبع منطقة، وتوزيع اليوم يتجمّع حسبها.</p></div></header>
+<div class="grid-2">
+  <section class="card" aria-labelledby="h-list">
+    <div class="card-h"><h2 id="h-list">المناطق الحالية</h2></div>
+    <div class="rows">
+      {% for a in areas %}
+        <a class="row" href="{% url 'area_edit' a.pk %}">
+          <div class="row-main"><div class="t">{{ a.name }}{% if not a.is_active %} <span class="pill">متوقفة</span>{% endif %}</div><div class="s">{% if a.delivery_days %}{{ a.delivery_days }} · {% endif %}{{ a.n_customers }} عميل</div></div>
+          <span class="chev">{% icon 'next' 18 %}</span>
+        </a>
+      {% empty %}
+        <p class="empty">أضف أول منطقة من النموذج.</p>
+      {% endfor %}
+    </div>
+  </section>
+  <form method="post" class="card form-card" style="max-width:none" data-once novalidate>
+    {% csrf_token %}
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:12px">منطقة جديدة</h2>
+    {% for field in form %}{% include "core/_field.html" %}{% endfor %}
+    <button type="submit" class="btn primary block">إضافة المنطقة</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}القائمة{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head"><div><h1>القائمة</h1><p class="sub">{{ user.first_name|default:user.username }} · {% if role == 'owner' %}مدير الشركة{% elif role == 'manager' %}مدير{% else %}سائق{% endif %}</p></div></header>
+<div class="card menu-list">
+  {% for i in side_main %}<a href="{{ i.url }}">{% icon i.icon 20 %}{{ i.label }}</a>{% endfor %}
+  {% for i in side_admin %}<a href="{{ i.url }}">{% icon i.icon 20 %}{{ i.label }}</a>{% endfor %}
+</div>
+<form method="post" action="{% url 'logout' %}" class="card menu-list" style="margin-top:12px">
+  {% csrf_token %}
+  <button type="submit">{% icon 'logout' 20 %}تسجيل الخروج</button>
+</form>
+{% endblock %}

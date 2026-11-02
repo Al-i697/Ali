@@ -1,0 +1,9 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}الصفحة غير موجودة{% endblock %}
+{% block content %}
+<div class="error-page"><div>
+  <h1>ما لقينا هذي الصفحة</h1>
+  <p>يمكن انحذف الرابط أو كتبته غلط.</p>
+  <a class="btn primary" href="{% if user.is_authenticated %}{% url 'route' %}{% else %}{% url 'login' %}{% endif %}">الصفحة الرئيسية</a>
+</div></div>
+{% endblock %}

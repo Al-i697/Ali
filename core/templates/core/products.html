@@ -1,0 +1,27 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}المنتجات والأسعار{% endblock %}
+{% block content %}
+<header class="head"><div><h1>المنتجات والأسعار</h1><p class="sub">تغيير السعر يسري على الطلبات الجديدة فقط.</p></div></header>
+<div class="grid-2">
+  <section class="card" aria-labelledby="h-list">
+    <div class="card-h"><h2 id="h-list">المنتجات</h2></div>
+    <div class="rows">
+      {% for p in products %}
+        <a class="row" href="{% url 'product_edit' p.pk %}">
+          <div class="row-main"><div class="t">{{ p.name }}{% if not p.is_active %} <span class="pill">متوقف</span>{% endif %}</div></div>
+          <div class="row-end">{% amt p.price %}</div>
+          <span class="chev">{% icon 'next' 18 %}</span>
+        </a>
+      {% empty %}
+        <p class="empty">أضف أول منتج، مثل «اسطوانة 12 كجم».</p>
+      {% endfor %}
+    </div>
+  </section>
+  <form method="post" class="card form-card" style="max-width:none" data-once novalidate>
+    {% csrf_token %}
+    <h2 style="font-size:16px;font-weight:600;margin-bottom:12px">منتج جديد</h2>
+    {% for field in form %}{% include "core/_field.html" %}{% endfor %}
+    <button type="submit" class="btn primary block">إضافة المنتج</button>
+  </form>
+</div>
+{% endblock %}

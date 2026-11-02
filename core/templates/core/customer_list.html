@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}العملاء{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div><h1>العملاء</h1><p class="sub">{{ total }} عميل فعّال</p></div>
+  <div class="head-actions"><a class="btn primary small" href="{% url 'customer_create' %}">{% icon 'plus' 16 %}عميل جديد</a></div>
+</header>
+
+<form class="filters" method="get" role="search">
+  <div class="search">{% icon 'search' 18 %}<input class="input" type="search" name="q" value="{{ q }}" placeholder="ابحث بالاسم أو الجوال أو العنوان" aria-label="بحث"></div>
+  <div class="filters-row">
+    <select class="select" name="area" aria-label="المنطقة" onchange="this.form.submit()">
+      <option value="">كل المناطق</option>
+      {% for a in areas %}<option value="{{ a.pk }}"{% if area == a.pk|stringformat:"s" %} selected{% endif %}>{{ a.name }}</option>{% endfor %}
+    </select>
+    <button class="btn" type="submit">بحث</button>
+  </div>
+  {% if only_debt %}<input type="hidden" name="debt" value="1">{% endif %}
+</form>
+
+<nav class="chips" aria-label="تصفية">
+  <a class="chip{% if not only_debt %} on{% endif %}" href="{% qs debt=None page=None %}">الكل</a>
+  <a class="chip{% if only_debt %} on{% endif %}" href="{% qs debt='1' page=None %}">عليهم ديون</a>
+</nav>
+
+<div class="card rows">
+  {% for c in page %}
+    <a class="row" href="{% url 'customer_detail' c.pk %}">
+      <div class="row-main">
+        <div class="t">{{ c.name }}{% if not c.is_active %} <span class="pill">متوقف</span>{% endif %}</div>
+        <div class="s">{{ c.area.name }} · <span class="num" dir="ltr">{{ c.phone|shortphone }}</span></div>
+      </div>
+      <div class="row-end">
+        {% if c.balance > 0 %}{% amt c.balance strong=True %}<div class="s">عليه</div>{% else %}{% amt c.balance unit=False %}{% endif %}
+      </div>
+      <span class="chev">{% icon 'next' 18 %}</span>
+    </a>
+  {% empty %}
+    <p class="empty">{% if q or area or only_debt %}ما في عملاء بهذا الفلتر.{% else %}ما في عملاء بعد. اضغط «عميل جديد» وابدأ بأول عميل.{% endif %}</p>
+  {% endfor %}
+</div>
+{% include "core/_pager.html" %}
+{% endblock %}

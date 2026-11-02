@@ -1,0 +1,29 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}طلب جديد{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div><h1>طلب جديد</h1><p class="sub">اختر العميل</p></div>
+  <div class="head-actions"><a class="btn small" href="{% url 'customer_create' %}?then=order">{% icon 'plus' 16 %}عميل جديد</a></div>
+</header>
+
+<form class="filters" method="get" role="search">
+  <div class="search">
+    {% icon 'search' 18 %}
+    <input class="input" type="search" name="q" value="{{ q }}" placeholder="ابحث بالاسم أو الجوال" aria-label="بحث عن عميل" autocomplete="off" {% if not q %}autofocus{% endif %}>
+  </div>
+</form>
+
+<div class="card rows">
+  {% for c in page %}
+    <a class="row" href="{% url 'order_create' c.pk %}">
+      <div class="row-main"><div class="t">{{ c.name }}</div><div class="s">{{ c.area.name }} · <span class="num" dir="ltr">{{ c.phone|shortphone }}</span></div></div>
+      <div class="row-end">{% if c.balance > 0 %}<span class="pill warn">عليه {% amt c.balance unit=False %}</span>{% endif %}</div>
+      <span class="chev">{% icon 'next' 18 %}</span>
+    </a>
+  {% empty %}
+    <p class="empty">{% if q %}ما لقينا عميل بهذا الاسم أو الرقم. <a style="text-decoration:underline" href="{% url 'customer_create' %}?then=order">أضفه كعميل جديد</a>.{% else %}ما في عملاء بعد. أضف أول عميل.{% endif %}</p>
+  {% endfor %}
+</div>
+{% include "core/_pager.html" %}
+{% endblock %}

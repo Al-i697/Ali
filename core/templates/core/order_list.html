@@ -1,0 +1,44 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}الطلبات{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<header class="head">
+  <div><h1>الطلبات</h1><p class="sub">{{ page.paginator.count }} طلب في هذا العرض</p></div>
+  <div class="head-actions"><a class="btn primary small" href="{% url 'order_pick' %}">{% icon 'plus' 16 %}طلب جديد</a></div>
+</header>
+
+<nav class="chips" aria-label="حالة الطلب">
+  {% for key, label, n in chips %}<a class="chip{% if status == key %} on{% endif %}{% if not n %} zero{% endif %}" href="{% qs status=key page=None %}"{% if status == key %} aria-current="true"{% endif %}>{{ label }} <b>{{ n }}</b></a>{% endfor %}
+</nav>
+
+<form class="filters" method="get">
+  <input type="hidden" name="status" value="{{ status }}">
+  <div class="search">{% icon 'search' 18 %}<input class="input" type="search" name="q" value="{{ q }}" placeholder="اسم العميل أو جواله" aria-label="بحث"></div>
+  <div class="filters-row">
+    <select class="select" name="area" aria-label="المنطقة" onchange="this.form.submit()">
+      <option value="">كل المناطق</option>
+      {% for a in areas %}<option value="{{ a.pk }}"{% if area == a.pk|stringformat:"s" %} selected{% endif %}>{{ a.name }}</option>{% endfor %}
+    </select>
+    <button class="btn" type="submit">بحث</button>
+  </div>
+</form>
+
+<div class="card rows">
+  {% for o in page %}
+    <a class="row" href="{% url 'order_detail' o.pk %}">
+      <div class="row-main">
+        <div class="t">{{ o.customer.name }}</div>
+        <div class="s">{{ o.items_summary }} · {{ o.customer.area.name }}</div>
+        <div class="s"><span class="num">{{ o.delivery_date|iso }}</span>{% if o.is_late %} · <span style="color:var(--negative)">متأخر</span>{% endif %}</div>
+      </div>
+      <div class="row-end">
+        {% amt o.total %}
+        <div class="s">{% if o.status == 'delivered' %}<span class="pill pos">تم</span>{% elif o.status == 'cancelled' %}<span class="pill">ملغي</span>{% else %}<span class="pill warn">بانتظار</span>{% endif %}</div>
+      </div>
+    </a>
+  {% empty %}
+    <p class="empty">ما في طلبات بهذا الفلتر.</p>
+  {% endfor %}
+</div>
+{% include "core/_pager.html" %}
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}الرئيسية{% endblock %}
+{% block content %}
+<header class="head">
+  <div>
+    <h1>الرئيسية</h1>
+    <p class="sub">{{ today|date:"l j F Y" }}</p>
+    <p class="finding">{{ finding }}</p>
+  </div>
+  <div class="head-actions desktop-only"><a class="btn primary" href="{% url 'order_pick' %}">{% icon 'plus' 18 %}طلب جديد</a></div>
+</header>
+
+<section class="kpis" aria-label="ملخص الديون واليوم">
+  <div class="kpi lead">
+    <div class="kpi-l">إجمالي الديون على العملاء</div>
+    <div class="kpi-v">{% amt ov.total strong=True %}</div>
+    <div class="kpi-s">{{ ov.debtors }} عميل · <a class="kpi-s" href="{% url 'debts' %}">عرض الديون</a></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">متأخر أكثر من 30 يوم</div>
+    <div class="kpi-v">{% amt ov.overdue unit=False %}<small>د.إ</small></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">محصّل اليوم</div>
+    <div class="kpi-v">{% amt summary.collected unit=False %}<small>د.إ</small></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">تم توصيله اليوم</div>
+    <div class="kpi-v"><span class="num">{{ summary.deliveries }}</span><small>طلب</small></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">بانتظار التوصيل</div>
+    <div class="kpi-v"><span class="num">{{ pending_today }}</span><small>طلب</small></div>
+    <a class="kpi-s" href="{% url 'route' %}">فتح توزيع اليوم</a>
+  </div>
+</section>
+
+<div class="cols">
+  <section class="card" aria-labelledby="h-follow">
+    <div class="card-h">
+      <h2 id="h-follow">نتابعهم اليوم</h2>
+      {% if follow_total > follow|length %}<a class="link" href="{% url 'debts' %}?age=1">عرض الكل ({{ follow_total }}){% icon 'next' 16 %}</a>{% endif %}
+    </div>
+    {% if follow %}
+      <div class="rows">
+        {% for f in follow %}
+          <div class="row-x">
+            <div class="row-main">
+              <a class="t" href="{% url 'customer_detail' f.customer.pk %}">{{ f.customer.name }}</a>
+              <div class="s">{{ f.customer.area.name }} · {{ f.reason }}</div>
+            </div>
+            <div class="row-end">{% amt f.balance strong=True %}</div>
+            <div class="actions">
+              <a class="btn small" href="{% url 'customer_payment' f.customer.pk %}?next={% url 'home' %}">{% icon 'wallet' 16 %}تحصيل</a>
+              {% if f.wa %}<a class="btn small" href="{{ f.wa }}" target="_blank" rel="noopener">{% icon 'chat' 16 %}تذكير واتساب</a>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">ما في أحد نتابعه اليوم: لا وعود مستحقة ولا ديون متأخرة.</p>
+    {% endif %}
+  </section>
+
+  <div class="stack">
+  <section class="card" aria-labelledby="h-refill">
+    <div class="card-h"><h2 id="h-refill">متوقع يطلبون قريباً</h2></div>
+    {% if refills %}
+      <div class="rows">
+        {% for r in refills %}
+          <div class="row-x">
+            <div class="row-main">
+              <a class="t" href="{% url 'customer_detail' r.customer.pk %}">{{ r.customer.name }}</a>
+              <div class="s">{{ r.customer.area.name }} · آخر توصيلة {{ r.last_delivery|ago }} · يطلب غالباً كل {{ r.every_days|days }}</div>
+            </div>
+            <div class="row-end">
+              {% if r.days_until < 0 %}<span class="pill warn">متأخر {{ r.late_days|days }}</span>{% elif r.days_until == 0 %}<span class="pill">اليوم</span>{% else %}<span class="pill">بعد {{ r.days_until|days }}</span>{% endif %}
+            </div>
+            <div class="actions">
+              <a class="btn small" href="{% url 'order_create' r.customer.pk %}">{% icon 'plus' 16 %}تسجيل طلب</a>
+              <a class="btn small" href="{% wa r.customer.phone %}" target="_blank" rel="noopener">{% icon 'chat' 16 %}واتساب</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">ما في عملاء متوقع طلبهم. التوقع يبدأ لما يتسجل لكل عميل توصيلتين على الأقل.</p>
+    {% endif %}
+  </section>
+
+  <section class="card" aria-labelledby="h-aging">
+    <div class="card-h"><h2 id="h-aging">أعمار الديون</h2><a class="link" href="{% url 'debts' %}">التفاصيل{% icon 'next' 16 %}</a></div>
+    <div class="bars">
+      {% for b in aging_bars %}
+        <div class="bar-row{% if not b.amount %} zero{% endif %}">
+          <div class="top"><span>{{ b.label }}</span>{% amt b.amount %}</div>
+          <div class="bar"><i style="width:{{ b.pct|floatformat:'0u' }}%"></i></div>
+          <div class="meta">{{ b.customers }} عميل</div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-area">
+    <div class="card-h"><h2 id="h-area">الديون حسب المنطقة</h2></div>
+    {% if area_bars %}
+      <div class="bars">
+        {% for a in area_bars %}
+          <div class="bar-row">
+            <div class="top"><span>{{ a.name }}</span>{% amt a.amount %}</div>
+            <div class="bar"><i style="width:{{ a.pct|floatformat:'0u' }}%"></i></div>
+            <div class="meta">{{ a.customers }} عميل</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty">ما في ديون على أي منطقة.</p>
+    {% endif %}
+  </section>
+  </div>
+</div>
+{% endblock %}

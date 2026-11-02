@@ -1,0 +1,9 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}غير مسموح{% endblock %}
+{% block content %}
+<div class="error-page"><div>
+  <h1>هذي الصفحة غير مسموحة لحسابك</h1>
+  <p>إذا تحتاجها كلّم المدير.</p>
+  <a class="btn primary" href="{% url 'route' %}">رجوع للتوزيع</a>
+</div></div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}كشف حساب {{ customer.name }}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<div class="no-print" style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px">
+  <a class="back" href="{% url 'customer_detail' customer.pk %}">{% icon 'back' 16 %}رجوع</a>
+  <button class="btn small" type="button" onclick="window.print()">{% icon 'print' 16 %}طباعة / حفظ PDF</button>
+</div>
+<section class="card statement">
+  <p class="s">{{ company.company_name }} · كشف حساب بتاريخ <span class="num">{{ today|iso }}</span></p>
+  <h1 style="margin-top:4px">{{ customer.name }}</h1>
+  <p class="s">{{ customer.area.name }} · <span class="num" dir="ltr">{{ customer.phone|shortphone }}</span></p>
+
+  <div class="kpis" style="margin:16px 0">
+    <div class="kpi lead"><div class="kpi-l">المتبقي</div><div class="kpi-v">{% amt aging.balance strong=True %}</div></div>
+    {% for label, amount in buckets %}<div class="kpi"><div class="kpi-l">{{ label }}</div><div class="kpi-v" style="font-size:16px">{% amt amount unit=False %}</div></div>{% endfor %}
+  </div>
+
+  <div class="table-wrap">
+    <table class="tbl">
+      <thead><tr><th>التاريخ</th><th>البيان</th><th class="num-col">عليه</th><th class="num-col">سدد</th><th class="num-col">الرصيد</th></tr></thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td class="num" style="white-space:nowrap">{{ r.date|iso }}</td>
+            <td>{{ r.get_kind_display }}{% if r.method %} · {{ r.get_method_display }}{% endif %}{% if r.note %} · {{ r.note }}{% endif %}</td>
+            <td class="num-col">{% if r.amount > 0 %}{% amt r.amount unit=False %}{% endif %}</td>
+            <td class="num-col">{% if r.amount < 0 %}{% amt r.amount|absval unit=False %}{% endif %}</td>
+            <td class="num-col">{% amt r.running unit=False %}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5"><p class="empty">ما في حركات.</p></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if company.payment_note %}<p class="s wrap" style="margin-top:16px">{{ company.payment_note }}</p>{% endif %}
+</section>
+{% endblock %}

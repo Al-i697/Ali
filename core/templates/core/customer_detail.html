@@ -1,0 +1,120 @@
+{% extends "core/base.html" %}{% load core_extras %}
+{% block title %}{{ customer.name }}{% endblock %}
+{% block pageclass %}narrow{% endblock %}
+{% block content %}
+<a class="back" href="{% url 'customer_list' %}">{% icon 'back' 16 %}العملاء</a>
+
+<section class="card" aria-label="العميل">
+  <div class="cust-who">
+    <div style="min-width:0">
+      <h1>{{ customer.name }}</h1>
+      <p class="s">{{ customer.area.name }}{% if customer.address %} · {{ customer.address }}{% endif %}</p>
+      <p class="s"><span class="num" dir="ltr">{{ customer.phone|shortphone }}</span>{% if customer.phone2 %} · <span class="num" dir="ltr">{{ customer.phone2|shortphone }}</span>{% endif %}</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+        {% if not customer.is_active %}<span class="pill">متوقف</span>{% endif %}
+        {% if limit_warning %}<span class="pill neg">{{ limit_warning }}</span>{% endif %}
+      </div>
+    </div>
+    <div style="display:flex;gap:6px;flex:none">
+      {% if customer.phone %}<a class="btn icon-btn" href="{{ customer.phone|tel }}" aria-label="اتصال">{% icon 'phone' 18 %}</a><a class="btn icon-btn" href="{{ wa_chat }}" target="_blank" rel="noopener" aria-label="واتساب">{% icon 'chat' 18 %}</a>{% endif %}
+      {% if customer.location_url %}<a class="btn icon-btn" href="{{ customer.location_url }}" target="_blank" rel="noopener" aria-label="الموقع على الخريطة">{% icon 'pin' 18 %}</a>{% endif %}
+    </div>
+  </div>
+
+  <div class="balance-block">
+    <div class="l">{% if balance > 0 %}المتبقي عليه{% elif balance < 0 %}له رصيد مقدّم{% else %}الرصيد{% endif %}</div>
+    <div class="v{% if balance > 0 %} owes{% endif %}">{% amt balance strong=True %}</div>
+    {% if balance > 0 %}
+      <p class="note">أقدم دين غير مسدد: <span class="num">{{ aging.oldest_date|iso }}</span> ({{ aging.oldest_date|ago }})</p>
+      {% if aging.overdue > 0 %}<p class="note">منه متأخر أكثر من 30 يوم: {% amt aging.overdue %}</p>{% endif %}
+    {% elif balance == 0 %}
+      <p class="note">ما عليه شي.</p>
+    {% endif %}
+  </div>
+
+  {% if balance > 0 %}
+    <div class="age-grid">
+      {% for label, amount in buckets %}<div><div class="l">{{ label }}</div><div class="v{% if forloop.counter0 > 0 and amount > 0 %} late{% endif %}">{% amt amount unit=False %}</div></div>{% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="actions-grid">
+    <a class="btn {% if balance > 0 %}primary{% endif %}" href="{% url 'customer_payment' customer.pk %}">{% icon 'wallet' 18 %}تسجيل سداد</a>
+    {% if customer.is_active %}<a class="btn" href="{% url 'order_create' customer.pk %}">{% icon 'plus' 18 %}طلب جديد</a>{% endif %}
+    {% if balance > 0 %}<a class="btn" href="{% url 'customer_promise' customer.pk %}">{% icon 'clock' 18 %}وعد بالسداد</a>{% endif %}
+    {% if wa_reminder %}<a class="btn" href="{{ wa_reminder }}" target="_blank" rel="noopener">{% icon 'chat' 18 %}تذكير واتساب</a>{% endif %}
+    <a class="btn" href="{% url 'customer_statement' customer.pk %}">{% icon 'report' 18 %}كشف حساب</a>
+    <a class="btn" href="{% url 'customer_edit' customer.pk %}">{% icon 'edit' 18 %}تعديل</a>
+    {% if is_admin %}
+      <details class="more-menu">
+        <summary class="btn" aria-label="خيارات الإدارة">{% icon 'more' 18 %}الإدارة</summary>
+        <div class="menu">
+          <a href="{% url 'customer_opening' customer.pk %}">إضافة دين سابق</a>
+          <a href="{% url 'customer_writeoff' customer.pk %}">خصم أو إعفاء من الدين</a>
+        </div>
+      </details>
+    {% endif %}
+  </div>
+</section>
+
+{% if pending_orders %}
+  <div class="notice">
+    عنده طلب بانتظار التوصيل: {% for o in pending_orders %}{{ o.items_summary }}{% if not forloop.last %}، {% endif %}{% endfor %}.
+    <a style="text-decoration:underline;text-underline-offset:3px;font-weight:600" href="{% url 'order_deliver' pending_orders.0.pk %}">تسليم الآن</a>
+  </div>
+{% endif %}
+
+{% if promises %}
+  <section class="card" aria-labelledby="h-promises">
+    <div class="card-h"><h2 id="h-promises">وعود بالسداد</h2></div>
+    {% for p in promises %}
+      <div class="promise">
+        <div>
+          <div class="t" style="white-space:normal">يوم <span class="num">{{ p.promised_date|iso }}</span>{% if p.amount %} · {% amt p.amount %}{% endif %}</div>
+          <div class="s">{% if p.late %}<span style="color:var(--negative)">تأخر {{ p.late|days }}</span>{% else %}{{ p.promised_date|ago }}{% endif %}{% if p.note %} · {{ p.note }}{% endif %}</div>
+        </div>
+        <form method="post" action="{% url 'promise_done' p.pk %}">{% csrf_token %}<button class="btn small" type="submit">تم / إغلاق</button></form>
+      </div>
+    {% endfor %}
+  </section>
+{% endif %}
+
+<section class="card" aria-labelledby="h-ledger">
+  <div class="card-h"><h2 id="h-ledger">الحركات</h2>{% if not show_all and ledger_total > 12 %}<a class="link" href="?all=1">عرض الكل ({{ ledger_total }}){% icon 'next' 16 %}</a>{% endif %}</div>
+  {% for e in ledger %}
+    <div class="entry{% if e.voided %} voided{% endif %}">
+      <div>
+        <div class="t" style="white-space:normal">{{ e.get_kind_display }}{% if e.order_id %} <a class="s" style="text-decoration:underline" href="{% url 'order_detail' e.order_id %}">طلب {{ e.order_id }}</a>{% endif %}</div>
+        <div class="s"><span class="num">{{ e.date|iso }}</span>{% if e.method %} · {{ e.get_method_display }}{% endif %}{% if e.note %} · {{ e.note }}{% endif %} · {{ e.created_by.first_name|default:e.created_by.username }}{% if is_admin and e.can_void %}<span class="tools"><a class="linkbtn" href="{% url 'entry_void' e.pk %}">إلغاء</a></span>{% endif %}</div>
+      </div>
+      <div class="end {% if e.amount > 0 %}sign-in{% else %}sign-out{% endif %}">
+        {% amt e.amount signed=True %}
+        {% if e.running is not None %}<div class="s">الرصيد {% amt e.running unit=False %}</div>{% endif %}
+      </div>
+      {% if e.voided %}
+        <div class="void-note">ملغاة بواسطة {{ e.voided_by.first_name|default:e.voided_by.username }} · {{ e.void_reason }}</div>
+      {% endif %}
+    </div>
+  {% empty %}
+    <p class="empty">ما في حركات بعد. أول توصيلة أو دين سابق يظهر هنا.</p>
+  {% endfor %}
+</section>
+
+<section class="card" aria-labelledby="h-orders">
+  <div class="card-h"><h2 id="h-orders">آخر الطلبات</h2></div>
+  <div class="rows">
+    {% for o in orders %}
+      <a class="row" href="{% url 'order_detail' o.pk %}" style="min-height:56px">
+        <div class="row-main"><div class="t" style="white-space:normal">{{ o.items_summary }}</div><div class="s"><span class="num">{{ o.delivery_date|iso }}</span></div></div>
+        <div class="row-end">{% amt o.total %}<div class="s">{% if o.status == 'delivered' %}<span class="pill pos">تم</span>{% elif o.status == 'cancelled' %}<span class="pill">ملغي</span>{% else %}<span class="pill warn">بانتظار</span>{% endif %}</div></div>
+      </a>
+    {% empty %}
+      <p class="empty">ما في طلبات بعد.</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% if customer.notes %}
+  <section class="card"><div class="card-h"><h2>ملاحظات</h2></div><div class="card-b" style="padding-top:0"><p class="s wrap" style="font-size:14px;color:var(--text)">{{ customer.notes|linebreaksbr }}</p></div></section>
+{% endif %}
+{% endblock %}
