@@ -2,11 +2,28 @@
 var LESSON={
   short:'الألكانات', brand:'الدرس ٤-١ · الألكانات', home:'index.html',
   chapters:['مدخل: الكيمياء العضوية','الهيدروكربونات والألكانات','التسمية والصيغ','الخصائص الفيزيائية','الاحتراق والاستخدامات','السلسلة المتجانسة','أسئلة وامتحانات'],
-  bgMap:['s_lab_desk','s_plants_book','s_lab_frame','s_pump_blue','s_refinery','s_eco_hand','s_pump_red'],   /* one still photograph per chapter (the 'photo' look); the teacher's high-resolution set */
-  palCh:['ember','navy','ember','violet','navy','ember','emerald'],
-  bgId:{goals:'s_lab_future', ws41:'s_tower', ws42:'s_tower', final:'s_lab_future', hw:'s_lab_future'},   /* the cover and the closing slides share a picture (bookends); the worksheets get their own */
-  bgLight:['s_lab_frame'],
-  palId:{goals:'violet', ws41:'navy', ws42:'navy', final:'violet', hw:'violet'},
+  /* Backgrounds, chosen by one rule so the deck reads as a whole:
+     - a live 3D molecule where the slide is about structure (mol_*: carbon, bonds, names, formulas, boiling points, the family);
+     - one of the teacher's high-resolution photographs (p_lab_*, p_pump_*, p_eco_hand, p_refinery...) where the slide talks about the real world:
+       the opening, the sources, the uses, burning, and the closing (the cover and the last slide share the laboratory photograph);
+     - the older quiet photographs (p_leaf*, p_table*, p_rig*, p_pipes_*) behind the exercise and exam slides.
+     The card colour (palId) is picked to break the colour of the picture behind it. */
+  bgMap:['mol_carbon','mol_methane','mol_propane','mol_chain','mol_burn','mol_family','p_leaf'],
+  palCh:['navy','emerald','violet','navy','ember','emerald','gold'],
+  bgId:{goals:'p_lab_future',what:'p_lab_desk',carbon:'mol_carbon',bonds:'p_table',q1to4:'p_plants_book',
+        hydro:'mol_ethene',alk:'p_pump_blue',
+        names:'mol_methane',formula:'mol_pentane',draw:'mol_propane',names2:'p_lab_frame',
+        states:'mol_butane',plot:'mol_chain',why:'mol_hexane',exq26:'p_table_v',
+        inert:'pm_ethane',burn:'mol_burn',uses2:'p_eco_hand',q89:'p_pump_red',dots:'mol_ethane',
+        homol:'mol_family',map:'p_leaf_v',
+        ws41:'p_leaf',ws42:'p_refinery',eou:'p_rig_o',past1:'p_pipes_sun',past2:'p_leaf_d',final:'p_lab_future',hw:'p_earth'},
+  palId:{goals:'violet',what:'ember',carbon:'gold',bonds:'ember',q1to4:'violet',
+         hydro:'emerald',alk:'violet',
+         names:'violet',formula:'violet',draw:'violet',names2:'navy',
+         states:'navy',plot:'navy',why:'emerald',exq26:'gold',
+         inert:'ember',burn:'ember',uses2:'ember',q89:'navy',dots:'ember',
+         homol:'emerald',map:'gold',
+         ws41:'gold',ws42:'navy',eou:'navy',past1:'navy',past2:'gold',final:'violet',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
   pts:{goals:'.gi', what:'.rcard', carbon:'.col[style*="420px"]>.panel', inert:'.rcard', alk:'.rcard', why:'.rcard', uses2:'.rcard', homol:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */

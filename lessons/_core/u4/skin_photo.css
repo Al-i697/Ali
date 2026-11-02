@@ -53,3 +53,6 @@
 /* buttons and sample bottles that used to be see-through: solid, so they read over any picture */
 .app .btn:not(.acc):not(.tab),.app .bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
 .app .rn{background:#F6C945!important; color:#241800!important}   /* numbered / ticked badges: solid gold with dark ink */
+
+/* living-engine builds (skin 'cards'): the scrim of the background engine is lighter, so the sharp photographs show through; the cards and plates carry the text */
+.app .bgscrim{background:linear-gradient(180deg,rgba(var(--d1),.34) 0,rgba(var(--d1),.06) 22%,rgba(var(--d1),.04) 68%,rgba(var(--d1),.3) 100%),radial-gradient(ellipse at 50% 50%,transparent 58%,rgba(0,0,0,.34) 100%)}

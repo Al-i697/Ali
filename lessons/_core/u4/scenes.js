@@ -54,4 +54,16 @@
   R('pm_ethanol',  {bg:'u_pump_sky', dim:.26, dust:14, mols:[{m:'ethanol',x:.2,y:.5,s:1.1,spin:.28,pitch:.5}]});
   R('pm_crack',    {bg:'u_ref_top',  dim:.42, dust:8,  mols:[{m:'chain8',x:.2,y:.52,s:1.2,spin:.2,pitch:.5}]});
   R('pm_crack2',   {bg:'u_pipes_top',dim:.38, dust:8,  mols:[{m:'chain10',x:.8,y:.55,s:1.35,spin:-.18,pitch:.5}]});
+  /* the teacher's 11 high-resolution photographs (1600x900, see _core/tools/add_photos.py): they drift and zoom slowly like the others; the scrim is light because the cards carry the text */
+  R('p_lab_future', {bg:'s_lab_future', dim:.14, dust:14});
+  R('p_lab_desk',   {bg:'s_lab_desk',   dim:.20, dust:12, ph:1});
+  R('p_plants_book',{bg:'s_plants_book',dim:.22, dust:12, ph:2});
+  R('p_lab_frame',  {bg:'s_lab_frame',  dim:0,   dust:0});
+  R('p_eco_hand',   {bg:'s_eco_hand',   dim:.20, dust:14, ph:1});
+  R('p_earth_sad',  {bg:'s_earth_sad',  dim:.24, dust:8,  ph:2});
+  R('p_pump_blue',  {bg:'s_pump_blue',  dim:.20, dust:8});
+  R('p_pump_red',   {bg:'s_pump_red',   dim:.20, dust:8,  ph:1});
+  R('p_refinery',   {bg:'s_refinery',   dim:.26, dust:8,  ph:2});
+  R('p_tower',      {bg:'s_tower',      dim:.28, dust:8});
+  R('p_well_layers',{bg:'s_well_layers',dim:.64, dust:6,  ph:1});   /* carries its own Arabic labels: pushed back */
 })();
