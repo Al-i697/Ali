@@ -654,9 +654,12 @@ def daily(request):
         day = datetime.strptime(request.GET.get("date", ""), "%Y-%m-%d").date()
     except ValueError:
         day = timezone.localdate()
+    user_id = int(request.GET["user"]) if request.GET.get("user", "").isdigit() else None
     return render(request, "core/daily.html", {
         "day": day, "summary": s.daily_summary(day), "is_today": day == timezone.localdate(),
         "orders": Order.objects.with_details().filter(status=Order.Status.DELIVERED, delivered_on=day).order_by("delivered_at"),
+        "feed": s.activity_feed(day, user_id), "user_id": user_id,
+        "staff": User.objects.filter(is_active=True).order_by("first_name", "username"),
     })
 
 

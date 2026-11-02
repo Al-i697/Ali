@@ -336,8 +336,62 @@ class DailySummaryTests(Base):
         self.assertEqual(r["collected"], D("250"))
         self.assertEqual(r["new_debt"], D("45"))
         self.assertEqual(sum(v for _, v in r["by_method"]), r["collected"])
-        (name, cash, other), = r["by_user"]
-        self.assertEqual((name, cash, other), ("سامي", D("230"), D("20")))
+        (row,) = r["by_user"]
+        self.assertEqual((row["name"], row["cash"], row["other"]), ("سامي", D("230"), D("20")))
+        self.assertEqual((row["deliveries"], row["cylinders"], row["credit"]), (2, 3, D("45")))
+
+    def test_each_employee_gets_his_own_row(self):
+        omar = User.objects.create_user("omar", password="x", first_name="عمر")
+        s.deliver_order(self.order(2), self.user, {}, pay_mode="full")
+        s.deliver_order(self.order(1), omar, {}, pay_mode="none")
+        rows = {r["name"]: r for r in s.daily_summary(timezone.localdate())["by_user"]}
+        self.assertEqual((rows["سامي"]["cash"], rows["سامي"]["credit"]), (D("130"), D("0")))
+        self.assertEqual((rows["عمر"]["cash"], rows["عمر"]["credit"], rows["عمر"]["deliveries"]), (D("0"), D("65"), 1))
+
+
+class ActivityTests(Base):
+    def setUp(self):
+        super().setUp()
+        self.omar = User.objects.create_user("omar", password="x", first_name="عمر")
+
+    def feed(self, user_id=None):
+        return s.activity_feed(timezone.localdate(), user_id)
+
+    def test_feed_says_who_did_what_and_flags_the_risky_actions(self):
+        o = self.order(2)
+        s.deliver_order(o, self.omar, {}, pay_mode="partial", paid_amount=D("30"))
+        o2 = self.order(1)
+        s.cancel_order(o2, self.omar, "العميل غير موجود")
+        pay = s.record_payment(self.c, self.user, D("40"), method="transfer")
+        s.void_entry(pay, self.user, "سجلناه غلط")
+        s.record_writeoff(self.c, self.user, D("5"), note="خصم من المدير")
+        by = {(e["label"], e["user"]): e for e in self.feed()}
+        self.assertIn("دفع 30.00 والباقي دين 100.00", by[("تسليم", "عمر")]["detail"])
+        self.assertFalse(by[("تسليم", "عمر")]["flag"])
+        self.assertIn("العميل غير موجود", by[("إلغاء طلب", "عمر")]["detail"])
+        self.assertEqual(by[("إلغاء حركة", "سامي")]["amount"], D("40"))
+        for key in [("إلغاء طلب", "عمر"), ("إلغاء حركة", "سامي"), ("خصم / إعفاء", "سامي")]:
+            self.assertTrue(by[key]["flag"], key)
+        o2.refresh_from_db()
+        self.assertEqual((o2.cancelled_by, o2.cancelled_at is not None), (self.omar, True))
+
+    def test_filter_by_employee(self):
+        s.deliver_order(self.order(1), self.omar, {}, pay_mode="full")
+        mine = self.feed(self.omar.pk)
+        self.assertTrue(mine and all(e["user"] == "عمر" for e in mine))
+        self.assertTrue(all(e["user"] == "سامي" for e in self.feed(self.user.pk)))
+
+    def test_a_reverted_delivery_is_listed_once(self):
+        o = self.order(1)
+        s.deliver_order(o, self.omar, {}, pay_mode="partial", paid_amount=D("10"))  # two money entries
+        s.revert_delivery(o, self.user, "غلط")
+        labels = [e["label"] for e in self.feed()]
+        self.assertEqual(labels.count("تراجع عن تسليم"), 1)
+        self.assertNotIn("تسليم", labels)  # the delivery no longer stands
+
+    def test_other_days_are_not_mixed_in(self):
+        s.deliver_order(self.order(1), self.omar, {}, pay_mode="full")
+        self.assertEqual(s.activity_feed(timezone.localdate() - timedelta(days=1)), [])
 
 
 class SearchTests(Base):

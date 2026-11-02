@@ -79,15 +79,21 @@ class Command(BaseCommand):
             for product, qty in items:
                 OrderItem.objects.create(order=order, product=product, quantity=qty, unit_price=product.price)
                 total += product.price * qty
-            LedgerEntry.objects.create(customer=customer, kind="charge", amount=total, date=day, order=order, created_by=by)
+            charge = LedgerEntry.objects.create(customer=customer, kind="charge", amount=total, date=day, order=order, created_by=by)
+            if day < today:  # history should look like history, not like something typed in today
+                Order.objects.filter(pk=order.pk).update(created_at=when - timedelta(hours=rng.randint(1, 20)))
+                LedgerEntry.objects.filter(pk=charge.pk).update(created_at=when)
             return order, total
 
         def pay(customer, day, amount, by, order=None):
             if amount > 0 and day <= today:
-                LedgerEntry.objects.create(
+                entry = LedgerEntry.objects.create(
                     customer=customer, kind="payment", amount=-amount, date=day, order=order,
                     method=rng.choice(["cash", "cash", "transfer"]), created_by=by,
                 )
+                if day < today:
+                    noon = timezone.make_aware(datetime.combine(day, time(12, 0)), tz)
+                    LedgerEntry.objects.filter(pk=entry.pk).update(created_at=noon)
 
         for customer in customers:
             profile = rng.choices(["good", "credit", "slow", "partial"], [50, 25, 15, 10])[0]

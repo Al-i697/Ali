@@ -9,6 +9,7 @@ from datetime import date, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from statistics import mean
 
+from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.db.models import Sum
 from django.utils import timezone
@@ -22,6 +23,8 @@ from .models import (
     PaymentPromise,
     Product,
 )
+
+User = get_user_model()
 
 OVERDUE_DAYS = 30
 BUCKET_LABELS = ["حتى 30 يوم", "31 – 60 يوم", "61 – 90 يوم", "أكثر من 90 يوم"]
@@ -282,7 +285,8 @@ def cancel_order(order: Order, user, reason: str = "") -> Order:
         raise ServiceError("يمكن إلغاء الطلبات التي لم تُوصَّل فقط.")
     order.status = Order.Status.CANCELLED
     order.cancel_reason = reason[:200]
-    order.save(update_fields=["status", "cancel_reason"])
+    order.cancelled_by, order.cancelled_at = user, timezone.now()
+    order.save(update_fields=["status", "cancel_reason", "cancelled_by", "cancelled_at"])
     return order
 
 
@@ -527,12 +531,32 @@ def daily_summary(day: date) -> dict:
     for method, total in payments.values_list("method").annotate(t=Sum("amount")):
         by_method[method] = -total
 
-    users = defaultdict(lambda: {"cash": ZERO, "other": ZERO})
-    for username, first_name, method, total in payments.values_list(
-        "created_by__username", "created_by__first_name", "method"
-    ).annotate(t=Sum("amount")):
+    # One row per employee: what he delivered, the cash he is holding, and how
+    # much he gave on credit (sales of his deliveries that were not paid on the spot).
+    staff = defaultdict(lambda: {"deliveries": 0, "cylinders": 0, "sales": ZERO, "cash": ZERO, "other": ZERO,
+                                 "paid_on_spot": ZERO, "name": "", "user_id": None})
+
+    def person(user):
+        row = staff[user.pk]
+        row["name"], row["user_id"] = user.first_name or user.username, user.pk
+        return row
+
+    for order in delivered.select_related("delivered_by").prefetch_related("items"):
+        row = person(order.delivered_by)
+        row["deliveries"] += 1
+        row["cylinders"] += order.cylinders
+        row["sales"] += order.total
+    for user_id, total in payments.filter(order__isnull=False).values_list("order__delivered_by_id").annotate(t=Sum("amount")):
+        if user_id is not None:
+            staff[user_id]["paid_on_spot"] += -total
+    for user_id, method, total in payments.values_list("created_by_id", "method").annotate(t=Sum("amount")):
         key = "cash" if method == LedgerEntry.Method.CASH else "other"
-        users[first_name or username][key] += -total
+        staff[user_id][key] += -total
+    names = {u.pk: u for u in User.objects.filter(pk__in=list(staff))}
+    for user_id, row in staff.items():
+        person(names[user_id])
+        row["credit"] = row["sales"] - row["paid_on_spot"]
+    by_user = sorted(staff.values(), key=lambda r: r["name"])
 
     return {
         "date": day,
@@ -545,6 +569,78 @@ def daily_summary(day: date) -> dict:
         "collected_old_debts": collected - at_delivery,
         "new_debt": sales - at_delivery,
         "by_method": [(LedgerEntry.Method(m).label, v) for m, v in by_method.items() if v],
-        "by_user": [(name, v["cash"], v["other"]) for name, v in sorted(users.items())],
+        "by_user": by_user,
         "cancelled": Order.objects.filter(status=Order.Status.CANCELLED, delivery_date=day).count(),
     }
+
+
+# ---------------------------------------------------------------- activity log
+
+
+def activity_feed(day: date, user_id=None, limit: int = 300) -> list[dict]:
+    """Everything the team did on one day, newest first, built from the records
+    themselves (no separate log to forget to update). `flag` marks actions the
+    manager usually wants to look at: cancellations, discounts, corrections."""
+    events = []
+
+    def add(when, user, label, customer, *, order=None, detail="", amount=None, flag=False):
+        events.append({
+            "when": when, "user_id": user.pk if user else None,
+            "user": (user.first_name or user.username) if user else "—",
+            "label": label, "customer": customer, "order_id": order.pk if order else None,
+            "detail": detail, "amount": amount, "flag": flag,
+        })
+
+    orders = Order.objects.with_details()
+    for o in orders.filter(created_at__date=day):
+        add(o.created_at, o.created_by, "طلب جديد", o.customer, order=o, detail=o.items_summary, amount=o.total)
+
+    delivered = list(orders.filter(status=Order.Status.DELIVERED, delivered_at__date=day))
+    paid = {
+        oid: -total
+        for oid, total in LedgerEntry.objects.effective()
+        .filter(order__in=delivered, kind=LedgerEntry.Kind.PAYMENT)
+        .values_list("order_id").annotate(t=Sum("amount"))
+    }
+    for o in delivered:
+        total, got = o.total, paid.get(o.pk, ZERO)
+        if got >= total:
+            how = "مدفوع كامل"
+        elif got > 0:
+            how = f"دفع {got:,.2f} والباقي دين {total - got:,.2f}"
+        else:
+            how = "آجل (دين)"
+        add(o.delivered_at, o.delivered_by, "تسليم", o.customer, order=o, detail=f"{o.items_summary} · {how}", amount=total)
+
+    for o in orders.filter(status=Order.Status.CANCELLED, cancelled_at__date=day):
+        add(o.cancelled_at, o.cancelled_by, "إلغاء طلب", o.customer, order=o,
+            detail=" · ".join(x for x in (o.items_summary, o.cancel_reason) if x), amount=o.total, flag=True)
+
+    entries = LedgerEntry.objects.select_related("customer", "created_by", "order")
+    for e in entries.filter(created_at__date=day):
+        if e.kind == LedgerEntry.Kind.PAYMENT and e.order_id is None:
+            add(e.created_at, e.created_by, "تحصيل", e.customer, detail=e.get_method_display(), amount=-e.amount)
+        elif e.kind == LedgerEntry.Kind.OPENING:
+            add(e.created_at, e.created_by, "دين سابق", e.customer, detail=e.note, amount=e.amount)
+        elif e.kind == LedgerEntry.Kind.WRITEOFF:
+            add(e.created_at, e.created_by, "خصم / إعفاء", e.customer, detail=e.note, amount=-e.amount, flag=True)
+
+    reverted = set()
+    for e in entries.select_related("voided_by").filter(voided_at__date=day):
+        if e.order_id:  # a reverted delivery voids two entries: show it once
+            if e.order_id in reverted:
+                continue
+            reverted.add(e.order_id)
+            add(e.voided_at, e.voided_by, "تراجع عن تسليم", e.customer, order=e.order, detail=e.void_reason, flag=True)
+        else:
+            add(e.voided_at, e.voided_by, "إلغاء حركة", e.customer,
+                detail=f"{e.get_kind_display()}: {e.void_reason}", amount=abs(e.amount), flag=True)
+
+    for p in PaymentPromise.objects.select_related("customer", "created_by").filter(created_at__date=day):
+        add(p.created_at, p.created_by, "وعد بالسداد", p.customer,
+            detail=f"يسدد يوم {p.promised_date:%Y-%m-%d}", amount=p.amount)
+
+    if user_id:
+        events = [e for e in events if e["user_id"] == user_id]
+    events.sort(key=lambda e: e["when"], reverse=True)
+    return events[:limit]

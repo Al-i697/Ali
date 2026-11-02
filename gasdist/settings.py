@@ -7,6 +7,7 @@ import os
 import sys
 from pathlib import Path
 
+import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,16 +85,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "gasdist.wsgi.application"
 
-# One SQLite file. Back it up by copying the file in DATA_DIR.
+# Local use: one SQLite file in DATA_DIR (back it up by copying it).
+# On a real server set DATABASE_URL to a PostgreSQL database
+# (postgres://user:password@host:5432/dbname); hosts keep backups of it for you.
 DATA_DIR = Path(os.environ.get("GASDIST_DATA_DIR", BASE_DIR / "data"))
-DATA_DIR.mkdir(parents=True, exist_ok=True)
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": DATA_DIR / "db.sqlite3",
-        "OPTIONS": {"timeout": 20},
-    }
+    "default": dj_database_url.config(default=f"sqlite:///{DATA_DIR / 'db.sqlite3'}", conn_max_age=60)
 }
+if DATABASES["default"]["ENGINE"].endswith("sqlite3"):
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    DATABASES["default"].setdefault("OPTIONS", {})["timeout"] = 20
 
 AUTH_PASSWORD_VALIDATORS = [
     # Drivers need passwords they can actually type on a phone: length only.

@@ -32,30 +32,15 @@ python manage.py createsuperuser
 |---|---|---|
 | توزيع اليوم، الطلبات، التسليم | ✓ | ✓ |
 | العملاء وتسجيل السداد ووعود السداد | ✓ | ✓ |
-| الرئيسية، ملخص اليوم، تصدير Excel | ✓ | ✗ |
+| الرئيسية، ملخص اليوم وسجل نشاط كل موظف، تصدير Excel | ✓ | ✗ |
 | الأسعار، المناطق، المستخدمون، الإعدادات | ✓ | ✗ |
 | إلغاء حركة، خصم، دين سابق، التراجع عن تسليم | ✓ | ✗ |
 
 ## التشغيل على سيرفر حقيقي
 
-المتغيرات المطلوبة:
+السائقين يحتاجون رابط يفتحونه من الجوال، فالنظام لازم يشتغل على سيرفر. الخطوات الكاملة، وشرح العلاقة بين GitHub والسيرفر والجوالات، والنسخ الاحتياطي، في **[DEPLOY.md](DEPLOY.md)**.
 
-| المتغير | المعنى |
-|---|---|
-| `DJANGO_SECRET_KEY` | نص عشوائي طويل وسري (**مطلوب**) |
-| `DJANGO_ALLOWED_HOSTS` | اسم الموقع، مثل `gas.example.com` |
-| `DJANGO_CSRF_TRUSTED_ORIGINS` | مثل `https://gas.example.com` |
-| `GASDIST_HTTPS=1` | فعّله إذا الموقع على https (**لازم للعمل الحقيقي**) |
-| `GASDIST_DATA_DIR` | مجلد حفظ قاعدة البيانات (لازم يكون مجلد دائم) |
-
-```bash
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py collectstatic --noinput
-gunicorn gasdist.wsgi --bind 0.0.0.0:8000
-```
-
-**النسخ الاحتياطي:** كل البيانات في ملف واحد `db.sqlite3` داخل `GASDIST_DATA_DIR`. انسخه يومياً لمكان ثاني. بدون نسخة احتياطية، لو ضاع السيرفر تضيع الديون.
+باختصار: `Dockerfile` جاهز، وقاعدة البيانات PostgreSQL عن طريق `DATABASE_URL`، وحساب مدير الشركة ينشأ تلقائي من `GASDIST_OWNER_USERNAME` و`GASDIST_OWNER_PASSWORD`. بدون `DATABASE_URL` يستخدم ملف SQLite محلي للتجربة فقط.
 
 ## الفحص
 
