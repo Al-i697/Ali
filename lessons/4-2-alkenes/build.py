@@ -2,4 +2,4 @@
 import sys
 sys.path.insert(0, '../_core/tools')
 from u4build import build
-build('42', 'الألكينات وتفاعلات الإضافة ٤-٢', ['alk.js', 'part_a.js', 'part_b.js', 'part_c.js', 'part_d.js', 'past.js', 'tail.js'], sys.argv)
+build('42', 'الألكينات وتفاعلات الإضافة ٤-٢', ['alk.js', 'part_a.js', 'part_b.js', 'part_c.js', 'part_d.js', 'past.js', 'tail.js'], sys.argv, skin='photo')

@@ -6,7 +6,7 @@ const {chromium}=require('playwright');const path=require('path');
  for(const tierClicks of [0,1,2]){ // 0 clicks=full, 1=calm, 2=still
   for(const [name,n] of Object.entries(slides)){
    const ctx=await b.newContext({viewport:{width:1920,height:1080}}); const p=await ctx.newPage();
-   await p.goto('file://'+path.resolve('lesson42.html')+'#s'+n);
+   await p.goto('file://'+path.resolve('lesson42.html')+'?pts=all#s'+n);
    for(let i=0;i<tierClicks;i++) await p.click('#bFx');
    await p.waitForTimeout(2200);
    const cdp=await ctx.newCDPSession(p); await cdp.send('Performance.enable');

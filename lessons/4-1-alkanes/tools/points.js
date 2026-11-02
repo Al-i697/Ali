@@ -5,7 +5,7 @@ const URL='file://'+process.cwd()+'/lesson41.html';
   const b=await chromium.launch(); const p=await b.newPage({viewport:{width:1280,height:720}}); const errs=[]; let bad=0;
   p.on('pageerror',e=>errs.push(e.message)); p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
   const ck=(name,ok,info)=>{ if(!ok) bad++; console.log((ok?'ok  ':'FAIL')+' '+name+(info?'  '+info:'')) };
-  const st=()=>p.evaluate(()=>{const s=document.querySelector('.slide.on'); const pts=[...s.querySelectorAll('.pt')]; return {id:s.dataset.id,n:pts.length,hid:pts.filter(e=>e.classList.contains('pt-h')).length,vis:pts.filter(e=>getComputedStyle(e).visibility!=='hidden').length,where:document.querySelector('#where small').textContent}});
+  const st=()=>p.evaluate(()=>{const s=document.querySelector('.slide.on'); const pts=[...s.querySelectorAll('.ptn')]; return {id:s.dataset.id,n:pts.length,hid:pts.filter(e=>e.classList.contains('pt-h')).length,vis:pts.filter(e=>getComputedStyle(e).visibility!=='hidden').length,where:document.querySelector('#where small').textContent}});
   await p.goto(URL+'#s1'); await p.waitForTimeout(1800);
   let s=await st(); ck('goals starts with all points hidden',s.id==='goals'&&s.n===7&&s.hid===7&&s.vis===0,JSON.stringify(s));
   for(let i=1;i<=7;i++){ await p.keyboard.press('ArrowLeft'); await p.waitForTimeout(150); s=await st(); if(!(s.id==='goals'&&s.hid===7-i)) ck('next #'+i+' reveals one point',false,JSON.stringify(s)) }

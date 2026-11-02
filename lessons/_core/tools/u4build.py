@@ -20,7 +20,7 @@ def build(num, title, parts, args, css_extra=(), skin=None):
     config = open(d + 'config.js').read()
     lesson_js = [open(d + f).read() for f in parts]
     scenes = open(CORE + 'u4/scenes.js').read()
-    keep = used_photos(config, '\n'.join(lesson_js), scenes) if skin != 'photo' else set(re.findall(r"['\"]((?:u|nb)_\w+)['\"]", config))
+    keep = used_photos(config, '\n'.join(lesson_js), scenes) if skin != 'photo' else set(re.findall(r"['\"]((?:u|nb|s)_\w+)['\"]", config))
     raw = open(CORE + 'bgimg_assets.js').read()
     body = raw[raw.index('var BGIMG=') + 10:]
     pack = json.loads(body[:body.rindex('}') + 1])

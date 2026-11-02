@@ -1,20 +1,22 @@
 /* ===== "photo" look: a still photograph behind, solid coloured cards in front (loaded after lesson.css when a lesson is built with skin='photo') ===== */
 
 /* card colours per palette: deep and saturated, so white text stays clear and the card never melts into the picture */
-:root,[data-pal="emerald"]{--cardA:#0f6a52; --cardB:#08463a; --edge:rgba(130,238,200,.55)}
-[data-pal="navy"]{--cardA:#16459a; --cardB:#0b2c6b; --edge:rgba(160,205,255,.55)}
-[data-pal="ember"]{--cardA:#b34a1a; --cardB:#80300f; --edge:rgba(255,196,150,.62)}
-[data-pal="gold"]{--cardA:#70530e; --cardB:#4a3607; --edge:rgba(246,216,125,.62)}
-[data-pal="violet"]{--cardA:#4e2eb2; --cardB:#32197e; --edge:rgba(205,180,255,.6)}
+:root,[data-pal="emerald"]{--cardA:#0f6a52; --cardB:#08463a; --edge:rgba(130,238,200,.55); --muted:#dcf5ec}
+[data-pal="navy"]{--cardA:#16459a; --cardB:#0b2c6b; --edge:rgba(160,205,255,.55); --muted:#dbe7fc}
+[data-pal="ember"]{--cardA:#b34a1a; --cardB:#80300f; --edge:rgba(255,196,150,.62); --muted:#fff0e1}
+[data-pal="gold"]{--cardA:#70530e; --cardB:#4a3607; --edge:rgba(246,216,125,.62); --muted:#f0e6c8}
+[data-pal="violet"]{--cardA:#4e2eb2; --cardB:#32197e; --edge:rgba(205,180,255,.6); --muted:#ebe2fd}
 
 /* the picture: two layers that cross-fade, a shade that keeps the title and the edges calm */
 .pbg{position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; background:linear-gradient(160deg,var(--f3),var(--ground) 55%,var(--f4))}
-.pl{position:absolute; inset:-10px; background:center/cover no-repeat; opacity:0; transition:opacity 1000ms ease; filter:blur(1.4px) saturate(1.06)}
-.pl.on{opacity:1}
-.pshade{position:absolute; inset:0; background:
-  linear-gradient(180deg,rgba(var(--d1),.6) 0,rgba(var(--d1),.32) 20%,rgba(var(--d1),.28) 64%,rgba(var(--d1),.55) 100%),
-  radial-gradient(ellipse at 50% 46%,transparent 56%,rgba(0,0,0,.4) 100%); transition:opacity 600ms}
-.pbg.off .pl{opacity:0!important}
+.pbl{position:absolute; inset:0; background:center/cover no-repeat; opacity:0; transition:opacity 1000ms ease; filter:saturate(1.04)}
+.pbl.on{opacity:1}
+.pshade{position:absolute; inset:0; z-index:5; background:
+  linear-gradient(180deg,rgba(var(--d1),.46) 0,rgba(var(--d1),.2) 22%,rgba(var(--d1),.14) 62%,rgba(var(--d1),.4) 100%),
+  radial-gradient(ellipse at 50% 46%,transparent 58%,rgba(0,0,0,.34) 100%); transition:opacity 600ms}   /* above the picture layers (z-index 1-2); light on purpose, the cards and plates carry the text */
+.pbg.off .pbl{opacity:0!important}
+.pbg.light .pshade{opacity:.12}
+.pbg.dim .pshade{background:linear-gradient(180deg,rgba(var(--d1),.84),rgba(var(--d1),.76))}   /* a picture that carries its own labels is pushed back so they do not fight the slide's text */
 
 /* solid cards (prefixed with .app so they win over the older, more specific glass rules) */
 .app .panel,.app .frm,.app .mod,.app .qd,.app .rc,.app .mrc,.app .pq,.app .goal,.app .tq,.app .sent,.app .stp,.app .rcard,.app .panel:not(.dark){
@@ -36,13 +38,18 @@
 .hd h2{text-shadow:0 2px 12px rgba(0,0,0,.75)}
 
 /* small plates that used to be see-through: solid dark so the picture never runs behind text */
-.app .tile,.app .pf,.app .qr:not(.ok),.app .cls,.app .tray,.app .mtray,.app .mslot,.app .zone{background:rgba(var(--d2),.9)!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important}
+.app .lstep,.app .tile,.app .pf,.app .qr:not(.ok),.app .cls,.app .tray,.app .mtray,.app .mslot,.app .zone{background:rgba(var(--d2),.9)!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important}
 .app .tile{background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge)}
 .app .mchip{background:rgba(255,255,255,.16)!important}
 .app input{background:rgba(var(--d1),.9)}
 
 /* the title and loose text sit on quiet plates (box-shadow instead of padding, so no layout moves) */
 .app .hd h2 .tp{background:rgba(var(--d1),.6); box-shadow:0 0 0 9px rgba(var(--d1),.6); border-radius:12px; -webkit-box-decoration-break:clone; box-decoration-break:clone; text-shadow:0 2px 10px rgba(0,0,0,.7)}
-.app .free{background:rgba(var(--d1),.66); box-shadow:0 0 0 6px rgba(var(--d1),.66); border-radius:8px; -webkit-box-decoration-break:clone; box-decoration-break:clone}
+.app .onpic{background:rgba(var(--d1),.66); box-shadow:0 0 0 6px rgba(var(--d1),.66); border-radius:8px; -webkit-box-decoration-break:clone; box-decoration-break:clone}
 .app .opt .ix,.app .pr .t .ix{background:rgba(0,0,0,.3); color:#fff}
 .app .opt.solo{background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge); box-shadow:0 8px 20px rgba(0,0,0,.4)}   /* answer buttons that stand alone on the photograph */
+/* step lists that fade the steps not reached yet: keep them solid (dimmed by brightness, not by see-through) */
+.app .lstep[style*="0.42"]{opacity:1!important; background:rgba(0,0,0,.5)!important; color:rgba(255,255,255,.72)}
+/* buttons and sample bottles that used to be see-through: solid, so they read over any picture */
+.app .btn:not(.acc):not(.tab),.app .bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
+.app .rn{background:#F6C945!important; color:#241800!important}   /* numbered / ticked badges: solid gold with dark ink */

@@ -2,10 +2,11 @@
 var LESSON={
   short:'الألكانات', brand:'الدرس ٤-١ · الألكانات', home:'index.html',
   chapters:['مدخل: الكيمياء العضوية','الهيدروكربونات والألكانات','التسمية والصيغ','الخصائص الفيزيائية','الاحتراق والاستخدامات','السلسلة المتجانسة','أسئلة وامتحانات'],
-  bgMap:['u_earth','nb_leaf','nb_rig','u_pump_head','u_ref_mid','u_pipes_sun','u_hands'],   /* one still photograph per chapter (the 'photo' look) */
-  palCh:['violet','ember','violet','navy','emerald','violet','ember'],
-  bgId:{},
-  palId:{},
+  bgMap:['s_lab_desk','s_plants_book','s_lab_frame','s_pump_blue','s_refinery','s_eco_hand','s_pump_red'],   /* one still photograph per chapter (the 'photo' look); the teacher's high-resolution set */
+  palCh:['ember','navy','ember','violet','navy','ember','emerald'],
+  bgId:{goals:'s_lab_future', ws41:'s_tower', ws42:'s_tower', final:'s_lab_future', hw:'s_lab_future'},   /* the cover and the closing slides share a picture (bookends); the worksheets get their own */
+  bgLight:['s_lab_frame'],
+  palId:{goals:'violet', ws41:'navy', ws42:'navy', final:'violet', hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
   pts:{goals:'.gi', what:'.rcard', carbon:'.col[style*="420px"]>.panel', inert:'.rcard', alk:'.rcard', why:'.rcard', uses2:'.rcard', homol:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */

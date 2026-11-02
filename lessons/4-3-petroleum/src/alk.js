@@ -28,3 +28,6 @@ function bp2(f){return f.t}
 
 /* the carbon range of a fraction as a label: C4–C12, > C70 */
 function cLabel(f){return /^أكثر/.test(f.c)?'> C70':'C'+f.c.replace('–','–C')}
+
+/* a lighter shade of a band colour (mixed with white), for text that must stay readable on a dark plate */
+function lighten(hex,k){ var n=parseInt(String(hex).replace('#',''),16); if(isNaN(n)) return hex; var r=n>>16&255,g=n>>8&255,b=n&255; function m(v){return Math.round(v+(255-v)*k)} return 'rgb('+m(r)+','+m(g)+','+m(b)+')' }

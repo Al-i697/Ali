@@ -94,7 +94,7 @@ slide({id:'uses',ch:2,title:'استخدامات المشتقات النفطية'
  html:function(){
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:4px;justify-content:center">
-    ${FR.map(function(f,i){return '<div style="display:grid;grid-template-columns:230px 1fr;gap:10px;align-items:center"><b style="font-size:20px;color:'+LVC[i]+';line-height:1.2">'+f.n+'</b><div class="mslot" data-k="'+f.k+'" style="min-height:42px;font-size:18px"><span class="ph" style="font-size:16px">الاستخدام</span></div></div>'}).join('')}
+    ${FR.map(function(f,i){return '<div style="display:grid;grid-template-columns:230px 1fr;gap:10px;align-items:center"><b style="font-size:20px;color:'+lighten(LVC[i],.55)+';line-height:1.2">'+f.n+'</b><div class="mslot" data-k="'+f.k+'" style="min-height:42px;font-size:18px"><span class="ph" style="font-size:16px">الاستخدام</span></div></div>'}).join('')}
     <div class="fb" style="min-height:24px;text-align:center"></div></div>
    <div class="col" style="width:400px;flex:none;gap:8px;justify-content:center">
     <div style="font-size:21px;font-weight:800;color:var(--cyan)">اسحب كل استخدام إلى مشتقه (أو اضغط ثم اضغط المكان):</div>

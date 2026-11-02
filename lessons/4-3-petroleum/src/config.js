@@ -2,10 +2,14 @@
 var LESSON={
   short:'البترول', brand:'الدرس ٤-٣ · البترول والوقود الأحفوري', home:'index.html',
   chapters:['مدخل: الوقود الأحفوري','التكوّن والاحتراق','التقطير التجزيئي','خصائص المشتقات النفطية','التكسير الحراري','أسئلة وامتحانات'],
-  bgMap:['p_pump_sky','p_pump_head','p_ref_top','p_ref_mid','mol_crack','p_pipes_top'],
-  palCh:['ember','ember','gold','navy','violet','gold'],
-  bgId:{goals:'p_pump_sky',types:'nb_rig_s',form:'p_pump_head',fields:'p_pipes_sun',burn:'mol_burn',refine:'p_ref_top',process:'p_ref_mid',tower:'p_ref_low',order:'p_pipes_top',uses:'p_pump_base',trend:'mol_decane',why:'p_hands',lab:'nb_rig_o',labq:'p_ref_top',need:'p_pipes_sea',define:'pm_crack',crack1:'mol_crack',crack2:'pm_crack2',octane:'mol_decane',labc:'p_ref_low',labcq:'p_ref_low',ws43:'p_pipes_sun',ex44:'p_pump_sky',eou4:'p_ref_mid',pastA:'p_pump_head',pastB:'p_pipes_top',pastC:'p_hands',pastD:'p_ref_top',final:'mol_decane',hw:'p_earth_g'},
-  palId:{goals:'ember',types:'gold',form:'ember',fields:'gold',burn:'ember',refine:'gold',process:'ember',tower:'gold',order:'navy',uses:'ember',trend:'violet',why:'emerald',lab:'gold',labq:'gold',need:'navy',define:'violet',crack1:'violet',crack2:'violet',octane:'violet',labc:'gold',labcq:'gold',ws43:'gold',ex44:'gold',eou4:'gold',pastA:'gold',pastB:'gold',pastC:'gold',pastD:'gold',final:'navy',hw:'emerald'},
+  bgMap:['s_pump_blue','s_pump_red','s_tower','s_lab_desk','s_lab_future','s_plants_book'],   /* one still photograph per chapter (the 'photo' look); the teacher's high-resolution set */
+  palCh:['violet','emerald','navy','ember','violet','ember'],
+  bgId:{goals:'s_eco_hand', form:'s_well_layers', burn:'s_earth_sad', refine:'s_refinery', labc:'s_lab_frame', labcq:'s_lab_frame', ws43:'s_pump_red', ex44:'s_pump_red', eou4:'s_pump_red', final:'s_eco_hand', hw:'s_eco_hand'},
+  bgLight:['s_lab_frame'],
+  bgDim:['s_well_layers'],
+  palId:{goals:'ember', form:'navy', burn:'ember', refine:'violet', labc:'ember', labcq:'ember', ws43:'emerald', ex44:'emerald', eou4:'emerald', final:'ember', hw:'ember'},
+  /* points that appear one click at a time (slide id: selector) */
+  pts:{goals:'.gi', types:'.rcard', fields:'.rcard', refine:'.rcard', trend:'.rcard', define:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s] */
   stk:{
     goals:[['m_flask',1130,556,96,5,1.0]], types:[['m_flame',1130,556,100,6,1.0]], form:[['m_mole',40,556,100,-5,1.0]], fields:[['m_star',1130,556,90,6,1.0]], burn:[['m_flame',1130,556,100,6,1.0]],

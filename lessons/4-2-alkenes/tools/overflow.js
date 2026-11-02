@@ -1,6 +1,6 @@
 const {chromium}=require('playwright');const path=require('path');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1920,height:1080}});
- await p.goto('file://'+path.resolve(process.argv[2]||'lesson42.html'));await p.waitForTimeout(1200);
+ await p.goto('file://'+path.resolve(process.argv[2]||'lesson42.html')+'?pts=all');await p.waitForTimeout(1200);
  const n=await p.evaluate(()=>document.querySelectorAll('.prog .seg').length);const bad=[];
  for(let i=1;i<=n;i++){await p.waitForTimeout(3000);
   const r=await p.evaluate(()=>{const s=document.querySelector('.slide.on');const st=document.getElementById('stage').getBoundingClientRect();const sc=st.height/720;
