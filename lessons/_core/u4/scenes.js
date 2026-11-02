@@ -35,7 +35,8 @@
   R('mol_addn',    {mols:[{m:'ethene',x:.14,y:.3,s:.8,spin:.3,pitch:.5},{m:'br2',x:.12,y:.8,s:.8,spin:-.4,pitch:.5,ph:1},{m:'h2',x:.9,y:.22,s:.8,spin:.5,pitch:.5,ph:2},{m:'ethanol',x:.88,y:.78,s:.8,spin:-.3,pitch:.5,ph:3}],dust:30});
   R('mol_decane',  {mols:[{m:'chain10',x:.62,y:.56,s:1.5,spin:.16,pitch:.55}],dust:24});
   R('mol_crack',   {mols:[{m:'chain8',x:.7,y:.3,s:1.1,spin:.2,pitch:.5},{m:'butane',x:.2,y:.78,s:.8,spin:-.3,pitch:.5,ph:1},{m:'butene',x:.88,y:.84,s:.8,spin:.3,pitch:.5,ph:2}],dust:26});
-  /* the teacher's own photographs (736 px sources enlarged about 1.7x, see _core/tools/make_bg.py) */
+  /* RETIRED by the teacher (Nov 2026): his first five photographs (u_*, 736 px enlarged about 1.7x). Not used by 4-1 any more and not to be used in new lessons;
+     the files stay in the repository until 4-2 and 4-3 are rebuilt with new photos. See _core/tools/photo_usage.py. */
   R('p_pump_sky',  {bg:'u_pump_sky', dim:.26, dust:14});
   R('p_pump_head', {bg:'u_pump_head',dim:.30, dust:12, ph:1});
   R('p_pump_base', {bg:'u_pump_base',dim:.32, dust:12, ph:2});

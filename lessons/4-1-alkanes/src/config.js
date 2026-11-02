@@ -5,8 +5,8 @@ var LESSON={
   /* Backgrounds, chosen by one rule so the deck reads as a whole:
      - a live 3D molecule where the slide is about structure (mol_*: carbon, bonds, names, formulas, boiling points, the family);
      - one of the teacher's high-resolution photographs (p_lab_*, p_pump_*, p_eco_hand, p_refinery...) where the slide talks about the real world:
-       the opening, the sources, the uses, burning, and the closing (the cover and the last slide share the laboratory photograph);
-     - the older quiet photographs (p_leaf*, p_table*, p_rig*, p_pipes_*) behind the exercise and exam slides.
+       the opening, the sources, the uses, burning, and the closing (the cover and the last two slides share the laboratory photograph);
+     - the older quiet photographs (p_leaf*, p_table*, p_rig*) behind the exercise and exam slides.
      The card colour (palId) is picked to break the colour of the picture behind it. */
   bgMap:['mol_carbon','mol_methane','mol_propane','mol_chain','mol_burn','mol_family','p_leaf'],
   palCh:['navy','emerald','violet','navy','ember','emerald','gold'],
@@ -16,7 +16,7 @@ var LESSON={
         states:'mol_butane',plot:'mol_chain',why:'mol_hexane',exq26:'p_table_v',
         inert:'pm_ethane',burn:'mol_burn',uses2:'p_eco_hand',q89:'p_pump_red',dots:'mol_ethane',
         homol:'mol_family',map:'p_leaf_v',
-        ws41:'p_leaf',ws42:'p_refinery',eou:'p_rig_o',past1:'p_pipes_sun',past2:'p_leaf_d',final:'p_lab_future',hw:'p_earth'},
+        ws41:'p_leaf',ws42:'p_refinery',eou:'p_rig_o',past1:'p_rig',past2:'p_leaf_d',final:'p_lab_future',hw:'p_lab_future'},
   palId:{goals:'violet',what:'ember',carbon:'gold',bonds:'ember',q1to4:'violet',
          hydro:'emerald',alk:'violet',
          names:'violet',formula:'violet',draw:'violet',names2:'navy',
