@@ -42,3 +42,42 @@
 .eqb-name{text-align:center; font-size:25px; min-height:62px}
 .eqb-final{direction:ltr; display:inline-block; font-size:50px; font-weight:800; font-family:var(--font-display); color:var(--ok)}
 .eqb-final sub{font-size:.55em}
+
+/* ===== the atom balancer and the equation ladder ===== */
+.eqx-row{direction:ltr; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 10px; padding:6px 4px}
+.eqx-term{display:flex; align-items:center; gap:5px}
+.eqx-coef{display:flex; flex-direction:column; align-items:center; gap:1px}
+.eqx-coef button{width:34px; height:24px; border-radius:8px; border:1px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; font-size:13px; cursor:pointer; padding:0; line-height:1}
+.eqx-coef b{font-size:30px; font-family:var(--font-display); min-width:30px; text-align:center; color:var(--gold)}
+.eqx-coef b.one{color:rgba(255,255,255,.55)}
+.eqx-fm{font-size:34px; font-weight:800; font-family:var(--font-display); white-space:nowrap}
+.eqx-fm small{font-size:16px; font-weight:600; margin-inline-start:3px}
+.eqx-fm sub.eqx-lk{cursor:not-allowed}
+.eqx-op{font-size:30px; font-weight:700} .eqx-arr{font-size:40px; font-weight:700; padding:0 6px}
+.eqx-ctr{direction:ltr; display:grid; grid-template-columns:44px 1fr 1fr 34px; gap:5px 10px; align-items:center; padding:4px}
+.eqx-ctr .h{font-size:15px; direction:rtl; text-align:center; background:rgba(6,20,44,.8); border-radius:8px; padding:0 6px}
+.eqx-ctr .es{font-size:25px; font-weight:800; font-family:var(--font-display); text-align:center; text-shadow:0 0 6px rgba(0,0,0,.9)}
+.eqx-dots{display:flex; flex-wrap:wrap; gap:4px; align-items:center; min-height:26px; background:rgba(6,20,44,.72); border-radius:10px; padding:3px 8px}
+.eqx-dots i{width:14px; height:14px; border-radius:50%; box-shadow:inset -2px -2px 3px rgba(0,0,0,.35)}
+.eqx-dots em{font-style:normal; font-weight:800; font-size:19px; margin-inline-start:6px; font-family:var(--font-display)}
+.eqx-ctr .ck{font-size:24px; font-weight:800} .eqx-ctr .ck.ok{color:var(--ok)} .eqx-ctr .ck.no{color:var(--bad)}
+.eqx-msg{min-height:28px; font-size:20px; line-height:1.4; padding:6px 12px; border-radius:12px; background:rgba(6,20,44,.82); margin-top:6px}
+.eqx-msg.ok{color:#bff5a6; background:rgba(23,114,74,.78)} .eqx-msg.bad{color:#ffd2cb; background:rgba(138,42,34,.78)}
+.eqx-btns{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:6px}
+.eqx-btns .btn{min-height:44px; font-size:19px; padding:0 16px}
+.eqx-prog{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px}
+.eqx-pg{padding:4px 12px; border-radius:12px; font-weight:800; font-family:var(--font-display); font-size:16px; background:rgba(6,20,44,.82); border:1.5px solid rgba(255,255,255,.35); color:#fff}
+.eqx-pg.cur{background:var(--gold); color:#241800} .eqx-pg.done{background:#17724a}
+.eqx-p{margin:2px 0 6px; font-size:20px; background:rgba(6,20,44,.8); border-radius:10px; padding:2px 10px; display:inline-block}
+.eqx-slots{display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:20px; padding:4px 0}
+.eqx-slot{min-width:150px; min-height:50px; border:2px dashed rgba(255,255,255,.6); border-radius:12px; display:grid; place-items:center; padding:2px 10px; text-align:center; font-weight:700; background:rgba(6,20,44,.7)}
+.eqx-slot.f{border-style:solid; border-color:rgba(166,242,138,.8); background:rgba(23,114,74,.78)}
+.eqx-chips{display:flex; gap:7px; flex-wrap:wrap; margin-top:6px; justify-content:center}
+.eqx-chip{font-family:var(--font-display); font-weight:700; font-size:19px; padding:6px 13px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
+.eqx-chip.okc{background:#17724a} .eqx-chip[disabled]{opacity:.6; cursor:default}
+.eqx-subrow{display:grid; grid-template-columns:230px 1fr; gap:10px; align-items:center; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.2)}
+.eqx-subrow>b{background:rgba(6,20,44,.8); border-radius:10px; padding:0 8px; font-size:21px}
+.eqx-opts{display:flex; gap:8px; flex-wrap:wrap}
+.eqx-opt{direction:ltr; font-family:var(--font-display); font-weight:800; font-size:25px; padding:4px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
+.eqx-opt.okc{background:#17724a; border-color:rgba(166,242,138,.8)} .eqx-opt.badc{background:#8a2a22}
+.eqx-note{font-size:16px; background:rgba(6,20,44,.8); border-radius:8px; padding:0 8px; display:inline-block; margin-top:4px}

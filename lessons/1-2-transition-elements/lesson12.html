@@ -1436,6 +1436,45 @@ html[data-fx="0"] .shaking{animation:none}
 .eqb-final{direction:ltr; display:inline-block; font-size:50px; font-weight:800; font-family:var(--font-display); color:var(--ok)}
 .eqb-final sub{font-size:.55em}
 
+/* ===== the atom balancer and the equation ladder ===== */
+.eqx-row{direction:ltr; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 10px; padding:6px 4px}
+.eqx-term{display:flex; align-items:center; gap:5px}
+.eqx-coef{display:flex; flex-direction:column; align-items:center; gap:1px}
+.eqx-coef button{width:34px; height:24px; border-radius:8px; border:1px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; font-size:13px; cursor:pointer; padding:0; line-height:1}
+.eqx-coef b{font-size:30px; font-family:var(--font-display); min-width:30px; text-align:center; color:var(--gold)}
+.eqx-coef b.one{color:rgba(255,255,255,.55)}
+.eqx-fm{font-size:34px; font-weight:800; font-family:var(--font-display); white-space:nowrap}
+.eqx-fm small{font-size:16px; font-weight:600; margin-inline-start:3px}
+.eqx-fm sub.eqx-lk{cursor:not-allowed}
+.eqx-op{font-size:30px; font-weight:700} .eqx-arr{font-size:40px; font-weight:700; padding:0 6px}
+.eqx-ctr{direction:ltr; display:grid; grid-template-columns:44px 1fr 1fr 34px; gap:5px 10px; align-items:center; padding:4px}
+.eqx-ctr .h{font-size:15px; direction:rtl; text-align:center; background:rgba(6,20,44,.8); border-radius:8px; padding:0 6px}
+.eqx-ctr .es{font-size:25px; font-weight:800; font-family:var(--font-display); text-align:center; text-shadow:0 0 6px rgba(0,0,0,.9)}
+.eqx-dots{display:flex; flex-wrap:wrap; gap:4px; align-items:center; min-height:26px; background:rgba(6,20,44,.72); border-radius:10px; padding:3px 8px}
+.eqx-dots i{width:14px; height:14px; border-radius:50%; box-shadow:inset -2px -2px 3px rgba(0,0,0,.35)}
+.eqx-dots em{font-style:normal; font-weight:800; font-size:19px; margin-inline-start:6px; font-family:var(--font-display)}
+.eqx-ctr .ck{font-size:24px; font-weight:800} .eqx-ctr .ck.ok{color:var(--ok)} .eqx-ctr .ck.no{color:var(--bad)}
+.eqx-msg{min-height:28px; font-size:20px; line-height:1.4; padding:6px 12px; border-radius:12px; background:rgba(6,20,44,.82); margin-top:6px}
+.eqx-msg.ok{color:#bff5a6; background:rgba(23,114,74,.78)} .eqx-msg.bad{color:#ffd2cb; background:rgba(138,42,34,.78)}
+.eqx-btns{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:6px}
+.eqx-btns .btn{min-height:44px; font-size:19px; padding:0 16px}
+.eqx-prog{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:6px}
+.eqx-pg{padding:4px 12px; border-radius:12px; font-weight:800; font-family:var(--font-display); font-size:16px; background:rgba(6,20,44,.82); border:1.5px solid rgba(255,255,255,.35); color:#fff}
+.eqx-pg.cur{background:var(--gold); color:#241800} .eqx-pg.done{background:#17724a}
+.eqx-p{margin:2px 0 6px; font-size:20px; background:rgba(6,20,44,.8); border-radius:10px; padding:2px 10px; display:inline-block}
+.eqx-slots{display:flex; align-items:center; justify-content:center; gap:8px; flex-wrap:wrap; font-size:20px; padding:4px 0}
+.eqx-slot{min-width:150px; min-height:50px; border:2px dashed rgba(255,255,255,.6); border-radius:12px; display:grid; place-items:center; padding:2px 10px; text-align:center; font-weight:700; background:rgba(6,20,44,.7)}
+.eqx-slot.f{border-style:solid; border-color:rgba(166,242,138,.8); background:rgba(23,114,74,.78)}
+.eqx-chips{display:flex; gap:7px; flex-wrap:wrap; margin-top:6px; justify-content:center}
+.eqx-chip{font-family:var(--font-display); font-weight:700; font-size:19px; padding:6px 13px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
+.eqx-chip.okc{background:#17724a} .eqx-chip[disabled]{opacity:.6; cursor:default}
+.eqx-subrow{display:grid; grid-template-columns:230px 1fr; gap:10px; align-items:center; padding:3px 0; border-bottom:1px solid rgba(255,255,255,.2)}
+.eqx-subrow>b{background:rgba(6,20,44,.8); border-radius:10px; padding:0 8px; font-size:21px}
+.eqx-opts{display:flex; gap:8px; flex-wrap:wrap}
+.eqx-opt{direction:ltr; font-family:var(--font-display); font-weight:800; font-size:25px; padding:4px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
+.eqx-opt.okc{background:#17724a; border-color:rgba(166,242,138,.8)} .eqx-opt.badc{background:#8a2a22}
+.eqx-note{font-size:16px; background:rgba(6,20,44,.8); border-radius:8px; padding:0 8px; display:inline-block; margin-top:4px}
+
 /* ===== lesson 1-2: components that only this lesson uses ===== */
 .ok-t{color:var(--ok); font-weight:800} .no-t{color:var(--bad); font-weight:800}
 
@@ -3412,7 +3451,7 @@ var EQL=(function(){
   function gcd(a,b){return b?gcd(b,a%b):Math.abs(a)}
   /* positive and negative ions: s symbol, c charge size, n Arabic name, v =1 when the metal has more than one valency, poly =1 for a bracketed group */
   var CAT={
-    Li:{s:'Li',c:1,n:'الليثيوم'}, Na:{s:'Na',c:1,n:'الصوديوم'}, K:{s:'K',c:1,n:'البوتاسيوم'}, Ag:{s:'Ag',c:1,n:'الفضة'},
+    Li:{s:'Li',c:1,n:'الليثيوم'}, Na:{s:'Na',c:1,n:'الصوديوم'}, K:{s:'K',c:1,n:'البوتاسيوم'}, Rb:{s:'Rb',c:1,n:'الروبيديوم'}, Cs:{s:'Cs',c:1,n:'السيزيوم'}, Ag:{s:'Ag',c:1,n:'الفضة'},
     Mg:{s:'Mg',c:2,n:'الماغنيسيوم'}, Ca:{s:'Ca',c:2,n:'الكالسيوم'}, Zn:{s:'Zn',c:2,n:'الخارصين'},
     Cu:{s:'Cu',c:2,n:'النحاس (II)',v:1}, Fe2:{s:'Fe',c:2,n:'الحديد (II)',v:1}, Al:{s:'Al',c:3,n:'الألومنيوم'}, Fe3:{s:'Fe',c:3,n:'الحديد (III)',v:1}
   };
@@ -3531,7 +3570,124 @@ var EQL=(function(){
     paintIons();paintBench();
     return {state:B,cats:cats,anis:anis,reset:reset,select:function(c,a){B.ci=c;B.ai=a;reset()}};
   }
-  return {gcd:gcd,CAT:CAT,ANI:ANI,parse:parse,ionH:ionH,formulaH:formulaH,formulaT:formulaT,right:right,builderHTML:builderHTML,bindBuilder:bindBuilder,subs:subs};
+
+  /* ---- 2. the atom balancer: change the coefficients only and watch the atoms of every element on both sides ---- */
+  var COLR={H:'#6ec3ff',O:'#ff7a6b',Na:'#f6c945',Li:'#c79bff',K:'#d9a8ff',Cs:'#ffb3d9',Ca:'#7be39a',Mg:'#b6f26a',Cl:'#5ee0e0',Fe:'#d98a5a',C:'#b5bcc8',Cu:'#ff9a45',Al:'#d5dbe6',S:'#f2e35a'};
+  function colr(e){return COLR[e]||'#fff'}
+  function subL(f){return String(f).replace(/(\d+)/g,'<sub class="eqx-lk">$1</sub>')}
+  function setMsg(el,cls,html){el.className='eqx-msg '+(cls||'');el.innerHTML=html||''}
+  function eqHTML(def,co){
+    function side(a,off){return a.map(function(t,i){var c=co[off+i];return (c>1?'<span style="color:var(--gold)">'+c+'</span>':'')+subs(t.f)+'<small style="font-size:.5em">('+t.st+')</small>'}).join(' + ')}
+    return side(def.l,0)+' → '+side(def.r,def.l.length);
+  }
+  /* def: {l:[{f,st}], r:[{f,st}], co:[solution], tip}; opt: {onSolved} */
+  function balancer(root,def,opt){
+    opt=opt||{};
+    var nl=def.l.length, terms=def.l.concat(def.r), sol=def.co, atoms=terms.map(function(t){return parse(t.f)}), els=[], lvl=0, done=false, co=terms.map(function(){return 1});
+    atoms.forEach(function(a){Object.keys(a).forEach(function(k){if(els.indexOf(k)<0)els.push(k)})});
+    var prio=els.filter(function(e){return e!=='H'&&e!=='O'}).concat(els.filter(function(e){return e==='H'}),els.filter(function(e){return e==='O'}));
+    root.innerHTML='<div class="eqx-row"></div><div class="eqx-ctr"></div><div class="eqx-msg"></div><div class="eqx-btns"><button type="button" class="btn acc" data-a="hint">💡 تلميح</button><button type="button" class="btn" data-a="reset">↺ من جديد</button><span class="eqx-aw"></span></div>';
+    var eqr=$('.eqx-row',root), ctr=$('.eqx-ctr',root), msg=$('.eqx-msg',root), aw=$('.eqx-aw',root);
+    function counts(){return els.map(function(e){var L=0,R=0;terms.forEach(function(t,i){var c=(atoms[i][e]||0)*co[i];if(i<nl)L+=c;else R+=c});return{e:e,L:L,R:R}})}
+    function term(i){var t=terms[i];return '<div class="eqx-term"><div class="eqx-coef"><button type="button" data-i="'+i+'" data-d="1" aria-label="زيادة المعامل">▲</button><b class="'+(co[i]===1?'one':'')+'">'+co[i]+'</b><button type="button" data-i="'+i+'" data-d="-1" aria-label="إنقاص المعامل">▼</button></div><span class="eqx-fm">'+subL(t.f)+'<small>('+t.st+')</small></span></div>'}
+    function dots(n,e){var s='',k=Math.min(n,16),i;for(i=0;i<k;i++)s+='<i style="background:'+colr(e)+'"></i>';return '<div class="eqx-dots">'+s+'<em>'+n+'</em></div>'}
+    function paint(){
+      var h='',i;
+      for(i=0;i<nl;i++){h+=(i?'<span class="eqx-op">+</span>':'')+term(i)}
+      h+='<span class="eqx-arr">→</span>';
+      for(i=nl;i<terms.length;i++){h+=(i>nl?'<span class="eqx-op">+</span>':'')+term(i)}
+      eqr.innerHTML=h;
+      var cs=counts();
+      ctr.innerHTML='<span></span><span class="h">ذرات المتفاعلات (يسار)</span><span class="h">ذرات النواتج (يمين)</span><span></span>'+cs.map(function(c){return '<span class="es" style="color:'+colr(c.e)+'">'+c.e+'</span>'+dots(c.L,c.e)+dots(c.R,c.e)+'<span class="ck '+(c.L===c.R?'ok':'no')+'">'+(c.L===c.R?'✓':'✗')+'</span>'}).join('');
+      var bal=cs.every(function(c){return c.L===c.R}), g=co.reduce(gcd);
+      if(!bal){ if(!lvl) setMsg(msg,'','الأعمدة التي عليها ✗ غير متوازنة. غيّر المعاملات (الأرقام الكبيرة) فقط.'); done=false }
+      else if(g>1){ setMsg(msg,'bad','موزونة ✓ لكن اكتبها بأبسط نسبة: اقسم كل المعاملات على '+g+'.') }
+      else{ setMsg(msg,'ok','✓ موزونة بأبسط نسبة: '+co.join(' : ')+'<br><span class="eqx-fm" style="font-size:30px;direction:ltr;display:inline-block">'+eqHTML(def,co)+'</span>');
+        if(!done){done=true; if(opt.onSolved) opt.onSolved()} }
+    }
+    function firstBad(){var cs=counts(),i,c;for(i=0;i<prio.length;i++){c=cs.filter(function(x){return x.e===prio[i]})[0];if(c.L!==c.R)return c}return null}
+    root.addEventListener('click',function(e){
+      var t=e.target;
+      if(t.classList&&t.classList.contains('eqx-lk')){shake(eqr);setMsg(msg,'bad','الرقم السفلي لا يتغيّر! هو جزء من هوية المادة (H₂O ماء، أما H₂O₂ فمادة أخرى تماماً). غيّر <b>المعامل</b> الذي أمام الصيغة.');return}
+      var b=t.closest&&t.closest('button'); if(!b) return;
+      if(b.hasAttribute('data-i')){var i=+b.getAttribute('data-i');co[i]=Math.max(1,Math.min(12,co[i]+ +b.getAttribute('data-d')));lvl=0;aw.innerHTML='';paint();return}
+      var a=b.getAttribute('data-a');
+      if(a==='reset'){co=terms.map(function(){return 1});lvl=0;done=false;aw.innerHTML='';paint()}
+      else if(a==='hint'){
+        lvl++; var fb=firstBad();
+        if(!fb){setMsg(msg,'','المعادلة متوازنة. تأكد أنها بأبسط نسبة.');return}
+        if(lvl===1) setMsg(msg,'','<b>استراتيجية:</b> '+(def.tip||'ابدأ بالفلزات، وأخّر الهيدروجين والأكسجين.'));
+        else if(lvl===2) setMsg(msg,'','العنصر <b>'+fb.e+'</b> غير متوازن الآن: '+fb.L+' ذرة في المتفاعلات و'+fb.R+' في النواتج.');
+        else{ var k=-1; terms.forEach(function(tm,i){if(k<0&&atoms[i][fb.e]&&co[i]!==sol[i])k=i}); if(k<0)terms.forEach(function(tm,i){if(k<0&&co[i]!==sol[i])k=i});
+          if(lvl===3) setMsg(msg,'','جرّب أن تجعل معامل <b class="eqx-fm" style="font-size:24px;direction:ltr;display:inline-block">'+subs(terms[k].f)+'</b> يساوي <b>'+sol[k]+'</b>.');
+          else{ setMsg(msg,'','الحل: <b>'+sol.join(' : ')+'</b>'); aw.innerHTML='<button type="button" class="btn" data-a="apply">طبّق الحل</button>' } }
+      }
+      else if(a==='apply'){co=sol.slice();lvl=0;aw.innerHTML='';paint()}
+    });
+    paint();
+    return {solution:sol,counts:counts,setCo:function(c){co=c.slice();paint()},isDone:function(){return done}};
+  }
+
+  /* ---- 3. the equation ladder: words, formulas, states, balancing (one step at a time; every wrong choice says what is wrong) ----
+     def: {steps:[names], word:{R,P,bank,why}, subs:[{n,o:[[formula, 1 if right, message]]}], stw:{formula:[state, message]}, eq:{l,r,co,tip}} */
+  function ladder(host,d,opt){
+    opt=opt||{};
+    var st={step:0,done:[]}, names=['المعادلة اللفظية','الصيغ','الحالات','الموازنة'];
+    function eqText(co){return '<span class="eqx-fm" style="font-size:32px;direction:ltr;display:inline-block">'+eqHTML(d.eq,co)+'</span>'}
+    function paint(){
+      host.innerHTML='<div class="eqx-prog">'+names.map(function(s,i){return '<span class="eqx-pg'+(st.done[i]?' done':'')+(i===st.step?' cur':'')+'">'+(i+1)+'. '+s+'</span>'}).join('')+'</div><div class="eqx-body"></div><div class="eqx-btns" style="justify-content:space-between"><button type="button" class="btn" data-a="prev"'+(st.step===0?' disabled':'')+'>▸ السابق</button><button type="button" class="btn acc" data-a="next"'+((st.done[st.step]&&st.step<names.length-1)?'':' disabled')+'>التالي ◂</button></div>';
+      var body=$('.eqx-body',host);
+      function fin(){ st.done[st.step]=true; var n=$('[data-a="next"]',host); if(n&&st.step<names.length-1) n.disabled=false; var pg=$$('.eqx-pg',host)[st.step]; if(pg) pg.classList.add('done');
+        if(st.step===names.length-1){ if(opt.onDone) opt.onDone() } }   /* the balancer has already written the final equation */
+      [stepWord,stepForm,stepState,stepBal][st.step](body,fin);
+    }
+    function stepWord(el,fin){
+      var R=d.word.R, P=d.word.P, pl={r:[],p:[]};
+      el.innerHTML='<p class="eqx-p">اكتب المعادلة اللفظية: اضغط على البطاقات بالترتيب، <b>المتفاعلات أولاً</b> ثم النواتج.</p>'+
+        '<div class="eqx-slots"><div class="eqx-slot" data-s="r0"></div><b>+</b><div class="eqx-slot" data-s="r1"></div><b style="font-size:34px">←</b><div class="eqx-slot" data-s="p0"></div><b>+</b><div class="eqx-slot" data-s="p1"></div></div>'+
+        '<div class="eqx-chips">'+d.word.bank.map(function(w){return '<button type="button" class="eqx-chip" data-w="'+w+'">'+w+'</button>'}).join('')+'</div><div class="eqx-msg"></div>';
+      var msg=$('.eqx-msg',el);
+      el.addEventListener('click',function(e){
+        var c=e.target.closest('.eqx-chip[data-w]'); if(!c||c.disabled) return;
+        var w=c.getAttribute('data-w'), g=pl.r.length<2?'r':'p', set=g==='r'?R:P;
+        if(set.indexOf(w)>-1&&pl[g].indexOf(w)<0){
+          var s=$('[data-s="'+g+pl[g].length+'"]',el); pl[g].push(w); s.textContent=w; s.classList.add('f'); c.disabled=true; c.classList.add('okc'); setMsg(msg,'','');
+          if(pl.r.length===2&&pl.p.length===2){ setMsg(msg,'ok','✓ معادلة لفظية صحيحة.'); fin() }
+        }else{ shake(c); var other=(g==='r'?P:R).indexOf(w)>-1; setMsg(msg,'bad',other?'هذه مادة '+(g==='r'?'<b>ناتجة</b>':'<b>متفاعلة</b>')+'. نبدأ بالمتفاعلات ثم النواتج.':(d.word.why[w]||'ليست من مواد هذا التفاعل.')) }
+      });
+    }
+    function stepForm(el,fin){
+      var ok=0;
+      el.innerHTML='<p class="eqx-p">اختر الصيغة الكيميائية الصحيحة لكل مادة:</p>'+d.subs.map(function(s,i){return '<div class="eqx-subrow"><b>'+s.n+'</b><div class="eqx-opts" data-i="'+i+'">'+s.o.map(function(o,j){return '<button type="button" class="eqx-opt" data-j="'+j+'">'+subs(o[0])+'</button>'}).join('')+'</div></div>'}).join('')+'<div class="eqx-msg"></div>';
+      var msg=$('.eqx-msg',el);
+      el.addEventListener('click',function(e){
+        var b=e.target.closest('.eqx-opt'); if(!b||b.classList.contains('okc')) return;
+        var row=b.parentNode, s=d.subs[+row.getAttribute('data-i')], o=s.o[+b.getAttribute('data-j')];
+        if(o[1]){ b.classList.add('okc'); $$('.eqx-opt',row).forEach(function(x){x.disabled=true}); ok++; setMsg(msg,'ok','✓ '+s.n+': '+subs(o[0])); if(ok===d.subs.length){ setMsg(msg,'ok','✓ كل الصيغ صحيحة.'); fin() } }
+        else{ b.classList.add('badc'); shake(b); setMsg(msg,'bad',o[2]) }
+      });
+    }
+    function stepState(el,fin){
+      var ok=0, fs=Object.keys(d.stw);
+      el.innerHTML='<p class="eqx-p">اختر رمز الحالة الفيزيائية لكل مادة:</p>'+fs.map(function(f){return '<div class="eqx-subrow"><b style="direction:ltr;font-size:30px;font-family:var(--font-display)">'+subs(f)+'</b><div class="eqx-opts" data-f="'+f+'">'+['s','l','g','aq'].map(function(s){return '<button type="button" class="eqx-opt" data-s="'+s+'">('+s+')</button>'}).join('')+'</div></div>'}).join('')+'<div class="eqx-note">(s) صلب · (l) سائل · (g) غاز · (aq) محلول مائي (ذائب في الماء)</div><div class="eqx-msg"></div>';
+      var msg=$('.eqx-msg',el);
+      el.addEventListener('click',function(e){
+        var b=e.target.closest('.eqx-opt'); if(!b||b.classList.contains('okc')) return;
+        var row=b.parentNode, f=row.getAttribute('data-f'), want=d.stw[f];
+        if(b.getAttribute('data-s')===want[0]){ b.classList.add('okc'); $$('.eqx-opt',row).forEach(function(x){x.disabled=true}); ok++; setMsg(msg,'ok','✓ '+want[1]); if(ok===fs.length){ setMsg(msg,'ok','✓ كل الحالات صحيحة.'); fin() } }
+        else{ b.classList.add('badc'); shake(b); setMsg(msg,'bad','ليست هذه. فكّر: '+want[1]) }
+      });
+    }
+    function stepBal(el,fin){ el.innerHTML='<p class="eqx-p">وازن المعادلة بتغيير المعاملات فقط:</p><div class="eqx-bal"></div>'; balancer($('.eqx-bal',el),d.eq,{onSolved:fin}) }
+    host.addEventListener('click',function(e){
+      var b=e.target.closest('[data-a="prev"],[data-a="next"]'); if(!b||b.disabled) return;
+      st.step+=b.getAttribute('data-a')==='next'?1:-1; paint();
+    });
+    paint();
+    return {state:st};
+  }
+
+  return {balancer:balancer,ladder:ladder,eqHTML:eqHTML,gcd:gcd,CAT:CAT,ANI:ANI,parse:parse,ionH:ionH,formulaH:formulaH,formulaT:formulaT,right:right,builderHTML:builderHTML,bindBuilder:bindBuilder,subs:subs};
 })();
 
 window.EQL=EQL;   /* exposed for the tests */
@@ -3754,7 +3910,7 @@ slide({id:'props',ch:1,title:'خصائص العناصر الانتقالية',ta
    ${cardsHTML(items,'three')}
    <div class="gbar hide" id="gb" style="font-size:21px">منها <b>خصائص عامة للفلزات</b>، ومنها ما <b>يميّز</b> العناصر الانتقالية. أيّها؟ هذا ما سنصنّفه الآن.</div></div>`;},
  init:function(el){ bindCards(el,function(){unhide(el)}) },
- note:'<ul><li>كتاب الطالب ص١٨ (صندوق الخصائص): صلبة وقوية، انصهار مرتفع، كثافة عالية، موصلة جيدة، تُطرق وتُسحب، كثير من مركّباتها ملوّنة، أكثر من حالة تكافؤ (Fe²⁺ وFe³⁺)، غالباً حفّازات، وبعضها مغناطيسي (Fe وCo وNi). هي <b>تسع خصائص</b> في الكتاب والصفحات السبع، و<b>ثماني</b> في عرضك وعرض NotebookLM (الحفّازية في شريحة مستقلة). اتبعتُ الكتاب.</li><li>الخصائص المميزة في هدف ٤-٣: كثافة عالية، انصهار مرتفع، مركّبات ملوّنة، حفّازات. سؤال ١-٣ في الكتاب يطلب ثلاثاً منها.</li><li>امتحانات: ٢٠٢٤/٢٠٢٥ الدور الأول س٢، و٢٠٢٣/٢٠٢٤ الدور الأول س٢ والدور الثاني س٢، و٢٠٢٢/٢٠٢٣ (الصباحي س١، المسائي س٢).</li></ul>'});
+ note:'<ul><li>كتاب الطالب ص١٨ (صندوق الخصائص): صلبة وقوية، انصهار مرتفع، كثافة عالية، موصلة جيدة، تُطرق وتُسحب، كثير من مركّباتها ملوّنة، أكثر من حالة تكافؤ (Fe²⁺ وFe³⁺)، غالباً حفّازات، وبعضها مغناطيسي (Fe وCo وNi). هي <b>تسع خصائص</b> في الكتاب والصفحات السبع، و<b>ثماني</b> في عرضك وعرض NotebookLM (الحفّازية في شريحة مستقلة). اتبعتُ الكتاب.</li><li>الخصائص المميزة في هدف ٤-٣: كثافة عالية، انصهار مرتفع، مركّبات ملوّنة، حفّازات. سؤال ١-٣ في الكتاب يطلب ثلاثاً منها.</li><li>امتحانات: ٢٠٢٤/٢٠٢٥ الدور الأول س٢، و٢٠٢٣/٢٠٢٤ الدور الأول س٢ والدور الثاني س٢، و٢٠٢٢/٢٠٢٣ (الصباحي س١، والدور الثاني س٢).</li></ul>'});
 
 /* 6 sort: shared with all metals, or distinctive of the transition elements? */
 slide({id:'sort',ch:1,title:'مشتركة أم مميِّزة؟',tag:'صنّف',
@@ -4117,12 +4273,12 @@ function cardsRow(){
    {q:'<b>امتحان ٢٠٢٢/٢٠٢٣، الدور الأول (الصباحي)، س١:</b> ضع العبارات المناسبة لخصائص العنصر الفلزي الانتقالي (غالباً له أكثر من حالة تكافؤ، يتفاعل مع الماء بشدة، يكوّن أملاحاً ملوّنة).',opts:[{t:'له أكثر من حالة تكافؤ، ويكوّن أملاحاً ملوّنة',ok:true,why:'جواب النموذج: أكثر من حالة تكافؤ + أملاح ملوّنة'},{t:'يتفاعل مع الماء بشدة، ويكوّن أملاحاً ملوّنة',why:'التفاعل العنيف مع الماء من صفات فلزات المجموعة I'},{t:'له أكثر من حالة تكافؤ، ويتفاعل مع الماء بشدة',why:'التفاعل العنيف مع الماء ليس من صفات الانتقالية'}]},
    {q:'<b>٢٠٢٢/٢٠٢٣، الصباحي، س٢:</b> ضع رمز الفلز (W، Ti، Fe) مقابل الاستخدام الصحيح: «رؤوس معدات الحفر».',opts:[{t:'<b class="num">Ti</b> التيتانيوم',ok:true,why:'جواب النموذج: Ti (والتنغستن W لفتيل المصابيح، والحديد Fe حفّاز الأمونيا)'},{t:'<b class="num">W</b> التنغستن',why:'W لفتيل المصابيح'},{t:'<b class="num">Fe</b> الحديد',why:'Fe عامل حفّاز لتصنيع الأمونيا'}]},
    {q:'<b>٢٠٢٢/٢٠٢٣، الدور المسائي، س١:</b> اذكر اسم المادة المستخدمة كعامل حفّاز في تصنيع البولي إيثيلين.',opts:[{t:'كلوريد التيتانيوم (IV)',ok:true,why:'جواب النموذج: كلوريد التيتانيوم (IV) (وللمارغرين: النيكل)'},{t:'النيكل',why:'النيكل لهدرجة الزيوت وصنع الزبدة'},{t:'الحديد',why:'الحديد لتصنيع الأمونيا'}]},
-   {q:'<b>٢٠٢٢/٢٠٢٣، الدور المسائي، س٢:</b> أي مما يأتي ينطبق على خصائص عنصر انتقالي؟',opts:[{t:'الانصهار: عالٍ — مركّبات ملوّنة: لا — حفّاز: لا',why:'العناصر الانتقالية تكوّن مركّبات ملوّنة'},{t:'الانصهار: عالٍ — مركّبات ملوّنة: نعم — حفّاز: نعم',ok:true,why:'جواب النموذج: انصهار عالٍ، تكوّن مركّبات ملوّنة، وتُستخدم حفّازات'},{t:'الانصهار: منخفض — مركّبات ملوّنة: لا — حفّاز: نعم',why:'انصهارها مرتفع'},{t:'الانصهار: منخفض — مركّبات ملوّنة: نعم — حفّاز: لا',why:'انصهارها مرتفع، وغالباً حفّازات'}]}
+   {q:'<b>٢٠٢٢/٢٠٢٣، الدور الثاني، س٢:</b> أي مما يأتي ينطبق على خصائص عنصر انتقالي؟',opts:[{t:'الانصهار: عالٍ — مركّبات ملوّنة: لا — حفّاز: لا',why:'العناصر الانتقالية تكوّن مركّبات ملوّنة'},{t:'الانصهار: عالٍ — مركّبات ملوّنة: نعم — حفّاز: نعم',ok:true,why:'جواب النموذج: انصهار عالٍ، تكوّن مركّبات ملوّنة، وتُستخدم حفّازات'},{t:'الانصهار: منخفض — مركّبات ملوّنة: لا — حفّاز: نعم',why:'انصهارها مرتفع'},{t:'الانصهار: منخفض — مركّبات ملوّنة: نعم — حفّاز: لا',why:'انصهارها مرتفع، وغالباً حفّازات'}]}
   ];
   slide({id:'ex4',ch:5,title:'أسئلة امتحانات ٢٠٢٢/٢٠٢٣',tag:'امتحانات سابقة',
    html:function(){return ticketHTML(items)},
    init:function(el){bindTicket(el,items,'ex4')},
-   note:'<ul><li>امتحان ٢٠٢٢/٢٠٢٣: الدور الأول (الصباحي) س١ (ضع العبارات المناسبة: له أكثر من حالة تكافؤ، يكوّن أملاحاً ملوّنة) وس٢ (ضع رمز الفلز W وTi وFe مقابل الاستخدام: فتيل المصابيح W، عامل حفّاز لتصنيع الأمونيا Fe، رؤوس معدات الحفر Ti)؛ والدور المسائي س١ (المارغرين ← النيكل، والبولي إيثيلين ← كلوريد التيتانيوم IV) وس٢ (الجدول: انصهار عالٍ، ملوّنة نعم، حفّاز نعم).</li><li>الأسئلة المفتوحة (س١ و٢ في الصباحي، وس١ في المسائي) حوّلتها إلى اختيار.</li></ul>'});
+   note:'<ul><li>امتحان ٢٠٢٢/٢٠٢٣: الدور الأول (الصباحي) س١ (ضع العبارات المناسبة: له أكثر من حالة تكافؤ، يكوّن أملاحاً ملوّنة) وس٢ (ضع رمز الفلز W وTi وFe مقابل الاستخدام: فتيل المصابيح W، عامل حفّاز لتصنيع الأمونيا Fe، رؤوس معدات الحفر Ti)؛ والدور المسائي س١ (المارغرين ← النيكل، والبولي إيثيلين ← كلوريد التيتانيوم IV)؛ والدور الثاني س٢ (الجدول: انصهار عالٍ، ملوّنة نعم، حفّاز نعم).</li><li>الأسئلة المفتوحة (س١ و٢ في الصباحي، وس١ في المسائي، وس٢ في الدور الثاني) حوّلتها إلى اختيار.</li></ul>'});
 })();
 
 /* 25 exit ticket */
