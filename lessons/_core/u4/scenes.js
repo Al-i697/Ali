@@ -96,4 +96,10 @@
   R('p_m_collage',  {bg:'s_m_collage',  dim:0,   dust:0});   /* white dividing lines: used as a picture inside a slide, not as a backdrop */
   R('p_m_pour',     {bg:'s_m_pour',     dim:.08, dust:6,  ph:1});
   R('p_m_pylons',   {bg:'s_m_pylons',   dim:.08, dust:4,  ph:2});
+  /* the teacher's metal photographs, second batch (Nov 2026): used as decoration, they do not have to match the slide */
+  R('p_m_bulb',     {bg:'s_m_bulb',     dim:.04, dust:10});
+  R('p_m_gears',    {bg:'s_m_gears',    dim:.14, dust:6,  ph:1});
+  R('p_m_coils',    {bg:'s_m_coils',    dim:.10, dust:4,  ph:2});
+  R('p_m_lab',      {bg:'s_m_lab',      dim:.10, dust:6});
+  R('p_m_coins',    {bg:'s_m_coins',    dim:.22, dust:6,  ph:1});   /* blurred on purpose: the coin legends must stay unreadable */
 })();
