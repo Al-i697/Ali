@@ -62,7 +62,7 @@ slide({id:'myth',ch:3,title:'صح أم خطأ؟',tag:'مفاهيم خاطئة',
 /* 17 summary */
 slide({id:'sum',ch:3,title:'خلاصة: ما يميّز العناصر الانتقالية',tag:'اجمع',
  html:function(){
-  var items=[['موقعها','كتلة في الجدول بين المجموعتين II وIII، تبدأ من الدورة ٤.'],['كثافة عالية وانصهار مرتفع','أعلى بكثير من فلزات المجموعة I.'],['مركّبات ملوّنة','Cu²⁺ أزرق وFe²⁺ أخضر وCo²⁺ وردي. وأملاح المجموعات I–III بيضاء.'],['أكثر من حالة تكافؤ','Fe²⁺ وFe³⁺: راسباهما مع NaOH أخضر وبني محمر.'],['حفّازات','Fe وNi وPt/Rh وTiCl₄ وV₂O₅: تسرّع التفاعل ولا تُستهلك.'],['استخدامات','Ti رؤوس الحفر، Au تلامسات، Cr مقاومة التآكل، W فتائل، Cu-Ni عملات.']];
+  var items=[['موقعها','كتلة في الجدول بين المجموعتين II وIII، تبدأ من الدورة ٤.'],['كثافة عالية وانصهار مرتفع','أعلى بكثير من فلزات المجموعة I.'],['مركّبات ملوّنة','Cu²⁺ أزرق وFe²⁺ أخضر وCo²⁺ وردي. وأملاح المجموعات I–III بيضاء.'],['أكثر من حالة تكافؤ','Fe²⁺ وFe³⁺: راسباهما مع NaOH أخضر باهت وبني مصفرّ.'],['حفّازات','Fe وNi وPt/Rh وTiCl₄ وV₂O₅: تسرّع التفاعل ولا تُستهلك.'],['استخدامات','Ti رؤوس الحفر، Au تلامسات، Cr مقاومة التآكل، W فتائل، Cu-Ni عملات.']];
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="width:320px;flex:none;gap:10px;align-items:center;justify-content:center"><div class="panel" style="padding:14px 12px;align-items:center;gap:8px;width:100%"><div class="ptw sh-t mini" style="width:100%">${ptCellsHTML()}</div><div class="sm" style="font-size:19px;text-align:center">الكتلة الملوّنة: العناصر الانتقالية</div></div></div>
    <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">

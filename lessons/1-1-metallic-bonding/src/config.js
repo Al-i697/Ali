@@ -5,15 +5,15 @@ var LESSON={
   /* Backgrounds (the teacher's metal photographs 43 to 49, Nov 2026, plus a live 3D model of the metal lattice):
      - the 3D lattice of positive ions with its free electrons stays behind the slides about the structure and the bond;
      - each property has its own photograph: the pour of molten metal (melting), the smith (malleability), the pylons (conduction), the ore (density);
-     - the book questions share the gold-mine photograph; the quiet built-in scenes sit behind the exam slides.
+     - the book questions share the gold-mine photograph; the exam slides and the sorting, comparing and true/false slides use the teacher's second batch of photographs (gears, steel coils, blurred coins, lab, bulb) and two lab photographs from the pool, as decoration.
      The card colour (palId) is picked to break the colour of the picture behind it. */
   bgMap:['p_m_samples','mol_metal','p_m_pour','p_m_samples','p_m_gold_mine','hexes'],
   palCh:['navy','violet','ember','emerald','gold','navy'],
-  bgId:{goals:'p_m_smith',pt:'p_m_samples',samples:'p_m_samples',sort:'hexes',
-        where:'mol_metal_l',struct:'mol_metal',bond:'mol_metal_l',compare:'bonds',
-        dens:'p_m_gold_ore',mpbp:'p_m_pour',malle:'p_m_smith',cond:'p_m_pylons',myth:'hexes',sum:'mol_metal',why:'p_m_pylons',
+  bgId:{goals:'p_m_smith',pt:'p_m_samples',samples:'p_m_samples',sort:'p_m_gears',
+        where:'mol_metal_l',struct:'mol_metal',bond:'mol_metal_l',compare:'p_m_coils',
+        dens:'p_m_gold_ore',mpbp:'p_m_pour',malle:'p_m_smith',cond:'p_m_pylons',myth:'p_m_coins',sum:'mol_metal',why:'p_m_pylons',
         lab:'p_m_samples',formula:'p_m_gold_mine',q11:'p_m_gold_mine',q12:'p_m_gold_mine',eou1:'p_m_gold_mine',
-        ex1:'waves',ex2:'waves',ex3:'hexes',ex4:'hexes',tk:'p_m_pour',hw:'p_m_gold_ore'},
+        ex1:'p_m_lab',ex2:'p_m_bulb',ex3:'p_glass_lab',ex4:'p_lab_desk',tk:'p_m_pour',hw:'p_m_gold_ore'},
   palId:{goals:'navy',pt:'emerald',samples:'ember',sort:'violet',where:'violet',struct:'violet',bond:'navy',compare:'gold',
          dens:'gold',mpbp:'ember',malle:'emerald',cond:'navy',myth:'ember',sum:'violet',why:'gold',
          lab:'emerald',formula:'navy',q11:'violet',q12:'violet',eou1:'violet',
