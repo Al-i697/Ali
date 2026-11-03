@@ -86,4 +86,14 @@
   R('p_biofuel_pump',   {bg:'s_biofuel_pump',   dim:.12, dust:10});
   R('p_solar_farm',     {bg:'s_solar_farm',     dim:.10, dust:4,  ph:2});
   R('p_bulb_tree',      {bg:'s_bulb_tree',      dim:.10, dust:8});
+  /* unit 1 (metals): the lattice of positive ions with a sea of free electrons, and the teacher's seven metal photographs (Nov 2026) */
+  R('mol_metal',    {mols:[{m:'metal',x:.84,y:.5,s:1.3,spin:.2,pitch:.34}],dust:24});
+  R('mol_metal_l',  {mols:[{m:'metal',x:.16,y:.52,s:1.25,spin:-.18,pitch:.4}],dust:22});
+  R('p_m_smith',    {bg:'s_m_smith',    dim:.08, dust:10});
+  R('p_m_gold_mine',{bg:'s_m_gold_mine',dim:.14, dust:8,  ph:1});
+  R('p_m_gold_ore', {bg:'s_m_gold_ore', dim:.12, dust:8,  ph:2});
+  R('p_m_samples',  {bg:'s_m_samples',  dim:.10, dust:6});
+  R('p_m_collage',  {bg:'s_m_collage',  dim:0,   dust:0});   /* white dividing lines: used as a picture inside a slide, not as a backdrop */
+  R('p_m_pour',     {bg:'s_m_pour',     dim:.08, dust:6,  ph:1});
+  R('p_m_pylons',   {bg:'s_m_pylons',   dim:.08, dust:4,  ph:2});
 })();

@@ -4,7 +4,7 @@
    spec = {mols:[{m:'methane', x:.72, y:.5, s:1.2, spin:.3, pitch:.35, ph:0, roll:0}], dust:34}
    x, y are fractions of the stage; s scales the model; spin is radians per second. */
 var MOL3D=(function(){
-  var EL={C:{r:.60,c:[118,132,158]},H:{r:.36,c:[244,247,252]},O:{r:.56,c:[240,72,64]},Br:{r:.76,c:[196,96,38]},N:{r:.56,c:[84,126,245]},Cl:{r:.68,c:[70,204,104]}};
+  var EL={C:{r:.60,c:[118,132,158]},H:{r:.36,c:[244,247,252]},O:{r:.56,c:[240,72,64]},Br:{r:.76,c:[196,96,38]},N:{r:.56,c:[84,126,245]},Cl:{r:.68,c:[70,204,104]},M:{r:.62,c:[205,176,122]},E:{r:.17,c:[110,205,255]}};   /* M: a metal cation (bronze), E: a free electron */
   function add(a,b){return[a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
   function sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
   function mul(a,k){return[a[0]*k,a[1]*k,a[2]*k]}
@@ -92,6 +92,20 @@ var MOL3D=(function(){
     }
     return lattice(at,1.4,1.65);
   }
+  /* a block of metal: a regular lattice of positive ions (M) with free electrons (E) wandering between them (they jitter in draw()) */
+  function metal(){
+    var at=[],i,j,k,a=2.05,s=11,n=0,tries=0;
+    function r(){s=(s*16807)%2147483647;return (s-1)/2147483646}
+    for(i=0;i<4;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)at.push({e:'M',p:[(i-1.5)*a,(j-1)*a,(k-1)*a]});
+    var ions=at.slice();
+    while(n<46&&tries<4000){
+      tries++;
+      var p=[(r()-.5)*8.2,(r()-.5)*6.2,(r()-.5)*6.2],ok=true;
+      for(i=0;i<ions.length;i++){if(len(sub(ions[i].p,p))<1.0){ok=false;break}}
+      if(ok){at.push({e:'E',p:p,j:.5,ph:r()*6.28});n++}
+    }
+    return {at:at,bd:[]};
+  }
   var BUILD={
     methane:function(){return chain(1,-1)},
     ethane:function(){return chain(2,-1)},
@@ -113,9 +127,9 @@ var MOL3D=(function(){
     o2:function(){return {at:[{e:'O',p:[-.65,0,0]},{e:'O',p:[.65,0,0]}],bd:[[0,1,2]]}},
     h2:function(){return {at:[{e:'H',p:[-.4,0,0]},{e:'H',p:[.4,0,0]}],bd:[[0,1,1]]}},
     br2:function(){return {at:[{e:'Br',p:[-1.1,0,0]},{e:'Br',p:[1.1,0,0]}],bd:[[0,1,1]]}},
-    ring:ring6, graphite:graphite, diamond:diamond
+    ring:ring6, graphite:graphite, diamond:diamond, metal:metal
   };
-  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain10:50,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52};
+  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain10:50,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52,metal:46};
   var CACHE={};
   function build(name){
     if(CACHE[name])return CACHE[name];
@@ -192,6 +206,7 @@ var MOL3D=(function(){
           var cy1=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pit),sp=Math.sin(pit),cr=Math.cos(roll),sr=Math.sin(roll);
           var P=b.at.map(function(a){
             var x=a.p[0],y=a.p[1],z=a.p[2],t;
+            if(a.j){x+=a.j*Math.sin(T*1.3+a.ph);y+=a.j*Math.sin(T*1.7+a.ph*1.7);z+=a.j*Math.cos(T*1.1+a.ph)}   /* free electrons wander */
             t=x*cy1+z*sy;z=-x*sy+z*cy1;x=t;
             t=y*cp-z*sp;z=y*sp+z*cp;y=t;
             t=x*cr-y*sr;y=x*sr+y*cr;x=t;
