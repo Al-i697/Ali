@@ -34,25 +34,25 @@ function ion(s,c){ return '<span class="num">'+s+'<sup>'+c+'</sup></span>' }
 slide({id:'uses',ch:1,title:'استخدامات العناصر الانتقالية',tag:'اضغط وتعرّف',
  html:function(){
   var items=[
-   ['التيتانيوم <span class="num">Ti</span>','قويّ جداً: يُستخدم في رؤوس الحفر.'],
-   ['الذهب <span class="num">Au</span>','لا يتآكل ويوصل الكهرباء: تلامسات كهربائية في الأجهزة.'],
-   ['الكروم <span class="num">Cr</span>','يقاوم التآكل: طلاء الصنابير وأدوات المائدة وقطع السيارات.'],
-   ['التنغستن <span class="num">W</span>','ينصهر عند نحو ٣٤٢٢ °C: فتائل المصابيح الكهربائية.'],
-   ['النحاس والنيكل','العملات المعدنية: سبيكة من ٧٥٪ نحاس و٢٥٪ نيكل.']];
+   ['التيتانيوم <span class="num">Ti</span>','فلز متين جداً: يُستخدم في رؤوس معدات الحفر ذات السرعات العالية.'],
+   ['الذهب <span class="num">Au</span>','قابلية عالية للتوصيل الكهربائي: يُستخدم في التوصيلات الكهربائية الداخلية للأجهزة الإلكترونية.'],
+   ['الكروم <span class="num">Cr</span>','مقاومة ممتازة ضد التآكل: مثل سدادات العبوات المصنوعة منه.'],
+   ['التنغستن <span class="num">W</span>','انصهاره مرتفع جداً (بين ٣٤١٤ و٣٤٢٢ °C): فتيل المصابيح الكهربائية.'],
+   ['النحاس والنيكل','العملات المعدنية من مزيج النحاس–النيكل: ٧٥٪ نحاس و٢٥٪ نيكل.']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
    <div class="col" style="width:340px;flex:none;gap:10px;align-items:center;justify-content:center">
     <div class="panel" style="padding:14px 12px;align-items:center;gap:8px;width:100%">${coinSVG(230)}<div class="sm" style="font-size:19px;text-align:center">عملة معدنية: ٧٥٪ نحاس (برتقالي) و٢٥٪ نيكل (فضي)</div></div></div>
    <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">
     <div style="font-size:22px;font-weight:800;color:var(--cyan)">اضغط على كل بطاقة:</div>
     ${cardsHTML(items,'tight')}
-    <div class="gbar hide" id="gb" style="font-size:21px">لكل عنصر استخدام يناسب <b>خاصية</b> فيه: القوة، مقاومة التآكل، ارتفاع الانصهار.</div></div></div>`;},
+    <div class="gbar hide" id="gb" style="font-size:21px">لكل عنصر استخدام يناسب <b>خاصية</b> فيه: المتانة، التوصيل، مقاومة التآكل، ارتفاع الانصهار.</div></div></div>`;},
  init:function(el){ bindCards(el,function(){unhide(el)}) },
- note:'<ul><li>كتاب الطالب ص١٧: Ti (قوي، رؤوس الحفر)، Au (تلامسات كهربائية)، Cr (مقاوم للتآكل)، W (انصهاره ٣٤١٤–٣٤٢٢ °C، فتائل المصابيح)، والعملات (Cu ٧٥٪ وNi ٢٥٪). عرضك: جدول الاستخدامات. تفاصيل الكروم (الصنابير وأدوات المائدة) من عرض NotebookLM وعرضك.</li><li>سؤال نهاية الوحدة ٤(ب): استخدام للنحاس مع أسبابه (سنراه في شريحة أسئلة نهاية الوحدة). الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الأول س١ (Ti ورؤوس الحفر)، ٢٠٢٥/٢٠٢٦ الدور الثاني س٥ (فتيل المصباح ← التنغستن)، ٢٠٢٣/٢٠٢٤ الدور الأول س٣ (W وAu)، ٢٠٢٢/٢٠٢٣ الصباحي س٢.</li><li>رسم العملة مرسوم لهذا الدرس وليس صورة عملة حقيقية.</li></ul>'});
+ note:'<ul><li>كتاب الطالب ص١٧: Ti (قوي، رؤوس الحفر)، Au (تلامسات كهربائية)، Cr (مقاوم للتآكل)، W (انصهاره ٣٤١٤–٣٤٢٢ °C، فتائل المصابيح)، والعملات (Cu ٧٥٪ وNi ٢٥٪). عرضك: جدول الاستخدامات.  كل وصف هنا من نص الكتاب وصورة ١-١ (سدادات العبوات الكرومية، العملات من مزيج النحاس–النيكل).</li><li>سؤال نهاية الوحدة ٤(ب): استخدام للنحاس مع أسبابه (سنراه في شريحة أسئلة نهاية الوحدة). الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الأول س١ (Ti ورؤوس الحفر)، ٢٠٢٥/٢٠٢٦ الدور الثاني س٥ (فتيل المصباح ← التنغستن)، ٢٠٢٣/٢٠٢٤ الدور الأول س٣ (W وAu)، ٢٠٢٢/٢٠٢٣ الصباحي س٢.</li><li>رسم العملة مرسوم لهذا الدرس وليس صورة عملة حقيقية.</li></ul>'});
 
 /* 9 "who am I?": match each clue with its element */
 slide({id:'who',ch:1,title:'نشاط: من أنا؟',tag:'اسحب',
  html:function(){
-  var R=[['ti','أنا <b>قويّ جداً</b>، وأُستخدم في رؤوس الحفر.'],['w','لا أنصهر إلا عند حرارة <b>عالية جداً</b>، وأُستخدم في فتائل المصابيح.'],['au','<b>لا أتآكل</b>، وأُستخدم في التلامسات الكهربائية في الأجهزة.'],['cr','أقاوم التآكل، ويُطلى بي <b>الصنبور</b> وأدوات المائدة.'],['cuni','نحن معاً (٧٥٪ و٢٥٪) في صنع <b>العملات</b>.']];
+  var R=[['ti','أنا <b>متين جداً</b>، وأُستخدم في رؤوس معدات الحفر.'],['w','لا أنصهر إلا عند حرارة <b>عالية جداً</b>، وأُستخدم في فتائل المصابيح.'],['au','أوصّل الكهرباء <b>توصيلاً عالياً</b>، وأُستخدم في التوصيلات الداخلية للأجهزة.'],['cr','أقاوم <b>التآكل</b> مقاومة ممتازة، وتُصنع مني سدادات العبوات.'],['cuni','نحن معاً (٧٥٪ و٢٥٪) في صنع <b>العملات</b>.']];
   return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:7px;justify-content:center">
     <div style="font-size:22px;font-weight:800;color:var(--cyan)">اسحب كل عنصر إلى وصفه:</div>
@@ -64,7 +64,7 @@ slide({id:'who',ch:1,title:'نشاط: من أنا؟',tag:'اسحب',
  init:function(el){
   bindMatch(el,[['ti','<b class="num">Ti</b> التيتانيوم'],['w','<b class="num">W</b> التنغستن'],['au','<b class="num">Au</b> الذهب'],['cr','<b class="num">Cr</b> الكروم'],['cuni','<b class="num">Cu</b> و<b class="num">Ni</b>']],{css:'font-size:21px;padding:8px 14px',more:'صح! كمّل',done:'ممتاز: عرفتَ استخدامات العناصر الانتقالية',bad:'فكّر في الخاصية المطلوبة في الاستخدام'});
  },
- note:'<ul><li>نشاط «من أنا؟» من عرض NotebookLM (العملات Cu/Ni، صنبور Cr، رأس حفر Ti، مصباح W، إلكترونيات Au). الاستخدامات من كتاب الطالب ص١٧.</li><li>اسحب العنصر إلى الوصف أو اضغط العنصر ثم الوصف (للشاشات التي تعمل باللمس).</li></ul>'});
+ note:'<ul><li>نشاط «من أنا؟» فكرته من عرض NotebookLM، وأوصاف الاستخدامات كلها من كتاب الطالب ص١٧ (وفي العرض كان الكروم «صنبوراً»، والكتاب يذكر سدادات العبوات المصنوعة من الكروم، فاتبعتُ الكتاب).</li><li>اسحب العنصر إلى الوصف أو اضغط العنصر ثم الوصف (للشاشات التي تعمل باللمس).</li></ul>'});
 
 /* 10 coloured compounds: white salts of groups I to III against coloured salts of transition elements */
 slide({id:'white',ch:2,title:'المركّبات الملوّنة',tag:'أضف الماء',
@@ -140,7 +140,7 @@ slide({id:'fe',ch:2,title:'الحديد: Fe²⁺ وFe³⁺',tag:'ورشة الص
 slide({id:'naoh',ch:2,title:'اختبار هيدروكسيد الصوديوم',tag:'مختبر افتراضي · داعم',
  html:function(){
   function ppt(c,seed){ var R=rnd(seed), s='', i; for(i=0;i<26;i++){ s+='<circle cx="'+(20+R()*30).toFixed(1)+'" cy="'+(64+R()*70).toFixed(1)+'" r="'+(5+R()*5).toFixed(1)+'" fill="'+c+'" opacity="'+(.55+R()*.45).toFixed(2)+'"/>' } return '<g class="ppt">'+s+'</g>' }
-  var T=[{k:'X',ok:'fe2',c:'#5aa84f',s:3},{k:'Y',ok:'fe3',c:'#c98a2e',s:8}];
+  var T=[{k:'X',ok:'fe2',c:'#86c874',s:3},{k:'Y',ok:'fe3',c:'#dc9a35',s:8}];
   return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
     <div style="font-size:22px;font-weight:800;color:var(--cyan)">محلولان: أحدهما FeCl<sub>2</sub> والآخر FeCl<sub>3</sub>. أضف إليهما NaOH:</div>
@@ -148,7 +148,7 @@ slide({id:'naoh',ch:2,title:'اختبار هيدروكسيد الصوديوم',t
     <div class="fb" style="min-height:26px;text-align:center"></div></div>
    <div class="col" style="width:340px;flex:none;gap:12px;justify-content:center">
     <div class="panel" style="padding:12px 18px;gap:6px"><div style="font-size:23px;font-weight:800;color:var(--gold)">ماذا تفعل؟</div><div class="sm" style="font-size:20px">أضف NaOH إلى كل محلول، وانظر لون الراسب، ثم حدّد أيون الحديد.</div></div>
-    <div class="gbar hide" id="gb" style="font-size:20px"><b>Fe(OH)<sub>2</sub></b> راسب أخضر (حديد II)، و<b>Fe(OH)<sub>3</sub></b> راسب بني مصفرّ أو برتقالي (حديد III).</div></div></div>`;},
+    <div class="gbar hide" id="gb" style="font-size:20px"><b>Fe(OH)<sub>2</sub></b> راسب أخضر فاتح (حديد II)، و<b>Fe(OH)<sub>3</sub></b> راسب أصفر مُحمرّ (حديد III).</div></div></div>`;},
  init:function(el){
   var done=0, T=['fe2','fe3'];
   $$('.nt',el).forEach(function(box,i){
@@ -159,9 +159,9 @@ slide({id:'naoh',ch:2,title:'اختبار هيدروكسيد الصوديوم',t
     });
     $$('button',idr).forEach(function(b){b.addEventListener('click',function(){
       if(box.classList.contains('ok')) return;
-      if(b.getAttribute('data-v')===T[i]){ box.classList.add('ok'); $('.idr',box).innerHTML='<span class="ok-t" style="font-size:22px">✓ '+(i===0?'Fe²⁺: الراسب أخضر':'Fe³⁺: الراسب بني مصفرّ')+'</span>'; done++; if(done===2){ say($('.fb',el),'✓ ميّزتَ ملحي الحديد (II) و(III) بالراسب','ok'); unhide(el) } }
-      else{ b.classList.add('bad-b','shake'); later(function(){b.classList.remove('shake')},340); say($('.fb',el),'تذكّر: الأخضر للحديد (II) والبني المصفرّ للحديد (III)','bad') }
+      if(b.getAttribute('data-v')===T[i]){ box.classList.add('ok'); $('.idr',box).innerHTML='<span class="ok-t" style="font-size:22px">✓ '+(i===0?'Fe²⁺: الراسب أخضر فاتح':'Fe³⁺: الراسب أصفر مُحمرّ')+'</span>'; done++; if(done===2){ say($('.fb',el),'✓ ميّزتَ ملحي الحديد (II) و(III) بالراسب','ok'); unhide(el) } }
+      else{ b.classList.add('bad-b','shake'); later(function(){b.classList.remove('shake')},340); say($('.fb',el),'تذكّر: الأخضر الفاتح للحديد (II) والأصفر المُحمرّ للحديد (III)','bad') }
     })});
   });
  },
- note:'<ul><li>كتاب الطالب ص١٩ (التحليل): إضافة هيدروكسيد الصوديوم تعطي راسب Fe(OH)₂ أخضر باهتاً وFe(OH)₃ بنياً مصفرّاً أو برتقالياً. التمييز بين FeCl₂ وFeCl₃ بالراسب (أخضر مقابل بني) مذكور أيضاً في عروضك. وصفُ لون Fe(OH)₃ في بعض العروض «بني محمر»، واعتمدتُ وصف الكتاب «بني مصفرّ أو برتقالي» (قاعدتك: الكتب أولاً).</li><li>الشريحة <b>داعمة</b> (ليست في نص الهدف ٤-٣) وتُحذف دون أثر على الدرس. المحلولان مخفّفان فلا يظهر لونهما قبل الإضافة، ليكون الراسب هو الدليل.</li><li>لا أكتب المعادلة الأيونية هنا لأنها من أهداف الدرس ١-٤.</li></ul>'});
+ note:'<ul><li>كتاب الطالب ص١٩ (التحليل الكيميائي): عند إضافة هيدروكسيد الصوديوم إلى محلول ملح عنصر انتقالي تتكوّن رواسب هيدروكسيدات ذات ألوان مميزة: هيدروكسيد الحديد (II) أخضر فاتح، وهيدروكسيد الحديد (III) أصفر مُحمرّ. استعملتُ ألفاظ الكتاب نفسها (الصفحات السبع والنوت يقولان «بني محمر»، وهذا من الأخطاء في العروض فصحّحته).</li><li>الشريحة <b>داعمة</b> (ليست في نص الهدف ٤-٣) وتُحذف دون أثر على الدرس. المحلولان مخفّفان فلا يظهر لونهما قبل الإضافة، ليكون الراسب هو الدليل.</li><li>لا أكتب المعادلة الأيونية هنا لأنها من أهداف الدرس ١-٤.</li></ul>'});
