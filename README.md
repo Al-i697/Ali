@@ -42,6 +42,14 @@ python manage.py createsuperuser
 
 باختصار: `Dockerfile` جاهز، وقاعدة البيانات PostgreSQL عن طريق `DATABASE_URL`، وحساب مدير الشركة ينشأ تلقائي من `GASDIST_OWNER_USERNAME` و`GASDIST_OWNER_PASSWORD`. بدون `DATABASE_URL` يستخدم ملف SQLite محلي للتجربة فقط.
 
+## بديل بدون سيرفر: شيت + نموذج Google
+
+مجلد [`sheets/`](sheets/) فيه نسخة مبسطة تشتغل على Google Sheets وGoogle Forms بدون استضافة ولا دفع: السائق يسجل من نموذج، والمدير يشوف الأرصدة والمتأخر أكثر من 30 يوم من الشيت. التفاصيل في [`sheets/GUIDE.md`](sheets/GUIDE.md).
+
+- `gas-ledger-template.xlsx`: القالب الفاضي للاستخدام.
+- `gas-ledger-DEMO.xlsx`: نفس القالب ببيانات وهمية للمعاينة فقط.
+- `verify_template.py`: يحسب المعادلات في LibreOffice ويقارنها بحسابات البرنامج (يحتاج `pip install openpyxl` ولا يدخل في `requirements.txt`).
+
 ## الفحص
 
 ```bash
