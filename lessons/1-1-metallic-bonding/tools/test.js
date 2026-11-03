@@ -82,7 +82,7 @@ const results=[]; const errs=[];
   await T('q12',async(p,sl)=>ticket(p,sl,[{opt:0},{opt:0},{opt:0}]));
   await T('eou1',async(p,sl)=>{ if(!await cards(sl)) return false; return await gb(p,sl)});
   await T('ex1',async(p,sl)=>ticket(p,sl,[{opt:3},{opt:3},{opt:2}]));
-  await T('ex2',async(p,sl)=>ticket(p,sl,[{opt:0},{opt:2},{opt:2}]));
+  await T('ex2',async(p,sl)=>ticket(p,sl,[{opt:0},{opt:1},{opt:2}]));
   await T('ex3',async(p,sl)=>{ for(const k of ['a','b','c']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
   await T('ex4',async(p,sl)=>ticket(p,sl,[{opt:2},{opt:3}]));
   await T('tk',async(p,sl)=>ticket(p,sl,[{num:1},{opt:0},{opt:0},{opt:0}]));
