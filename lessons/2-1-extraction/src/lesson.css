@@ -1,0 +1,65 @@
+/* lesson 2-1 styles: the series strip comes from lesson 1-4; bands, the Activity 2-1 tube and the scrap are new */
+.ser{display:flex; gap:6px; direction:rtl; justify-content:center; flex-wrap:nowrap}
+.sc{flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; padding:8px 2px 6px; border-radius:12px; border:2.5px solid rgba(255,255,255,.55); background:var(--c); color:#fff; cursor:pointer; font-family:var(--font-display); text-shadow:0 1px 3px rgba(0,0,0,.55)}
+.sc b{font-size:27px; font-weight:800; line-height:1.1} .sc small{font-size:14px; font-weight:700; line-height:1.2}
+.sc.nm{border-style:dashed; border-color:#fff}
+.sc.sel{transform:translateY(-6px); box-shadow:0 0 0 3px var(--gold), 0 10px 22px rgba(0,0,0,.5)}
+.ser.mini .sc{padding:5px 2px 4px; border-radius:9px; border-width:2px} .ser.mini .sc b{font-size:21px}
+.ser.byg .sc[data-g=I]{background:#b0312a} .ser.byg .sc[data-g=II]{background:#9a5a08} .ser.byg .sc[data-g=III]{background:#7d7410} .ser.byg .sc[data-g=T]{background:#20704f} .ser.byg .sc[data-g=IV]{background:#2f6fb0} .ser.byg .sc[data-g=nm]{background:#4a505c}
+.sarrow{display:flex; align-items:center; gap:10px; font-weight:800; font-size:20px; direction:rtl}
+.sarrow i{flex:1; height:6px; border-radius:3px; background:linear-gradient(270deg,#e24b3a,#e8c23b,#4cbf6a,#3e8fe0)}
+.sarrow span{background:rgba(6,20,44,.86); padding:2px 12px; border-radius:10px}
+.ser{width:100%}
+
+/* ===== the four bands of Table 2-2 ===== */
+.bands{display:grid; grid-template-columns:1fr 1fr; gap:10px; flex:1; min-height:0}
+.band{display:flex; flex-direction:column; gap:6px; border-radius:16px; padding:10px 14px; background:rgba(10,24,52,.78); border:2.5px dashed rgba(255,255,255,.45); min-height:0}
+.band.hot{border-color:var(--gold); background:rgba(40,60,100,.9)}
+.band h4{margin:0; font-size:20px; font-weight:800; line-height:1.25; color:var(--gold)}
+.band small{display:block; font-size:15.5px; font-weight:700; color:#d9e6f5; line-height:1.3}
+.bchips{display:flex; flex-wrap:wrap; gap:6px; min-height:40px}
+.bchips .mchip{font-size:21px; padding:3px 14px; font-family:var(--font-display)}
+.band.shake{animation:shk .34s}
+#tray.tray{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+
+/* ===== Activity 2-1: heating copper(II) oxide with charcoal ===== */
+.lab .flame{opacity:0; transition:opacity .5s} .lab.s1 .flame,.lab.s2 .flame{opacity:1}
+.lab.s3 .flame{opacity:0}
+.lab .glow{transition:opacity .8s} .lab.s1 .glow{opacity:.55}
+.lab .cu{transition:opacity 1.2s} .lab.s2 .cu,.lab.s3 .cu{opacity:1}
+.lab .milk{transition:opacity 2.2s} .lab.s3 .milk{opacity:.92}
+.lab .lb{fill:rgba(255,255,255,.9); opacity:0} .lab.s3 .lb{opacity:1; animation:lrise 2s linear infinite; animation-delay:var(--d)}
+@keyframes lrise{0%{transform:translateY(0); opacity:0} 15%{opacity:1} 100%{transform:translateY(-38px); opacity:0}}
+.labsteps{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:7px}
+.labsteps li{font-size:20px; font-weight:700; line-height:1.35; padding:7px 12px; border-radius:12px; background:rgba(10,24,52,.72); opacity:.45; transition:opacity .4s, box-shadow .4s}
+.labsteps li.on{opacity:1; box-shadow:inset 0 0 0 2.5px var(--gold)}
+
+/* ===== scrap sorting (the magnet of question 2-7) ===== */
+.scrap{display:flex; flex-wrap:wrap; gap:10px; justify-content:center}
+.scrap button{font-family:var(--font-display); font-size:22px; font-weight:800; padding:10px 18px; border-radius:14px; border:2.5px solid rgba(255,255,255,.55); background:rgba(40,60,100,.9); color:#fff; cursor:pointer; transition:transform .25s}
+.scrap button.pulled{transform:translateY(-60px) scale(.8); opacity:.0; pointer-events:none}
+.scrap button.nope{animation:shk .34s; border-color:#ff8a7a}
+.scrap button.kept{background:#1f6a4a; border-color:#7be0a8}
+.magnet{font-size:62px; text-align:center; line-height:1}
+.pile{min-height:72px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; border-radius:14px; border:2px dashed #7be0a8; padding:8px}
+.pile span{font-size:19px; font-weight:800; background:#1f6a4a; padding:4px 12px; border-radius:10px}
+
+/* ===== "which substance is reduced?" ===== */
+.rtk{font-family:var(--font-display); font-size:36px; font-weight:800; padding:12px 20px 14px; border-radius:14px; border:3px solid rgba(255,255,255,.55); background:rgba(20,40,80,.9); color:#fff; cursor:pointer; line-height:1.2}
+.rtk sub{font-size:.62em}
+.rtk.ok{background:#1f6a4a; border-color:#7be0a8} .rtk.bad{border-color:#ff8a7a}
+.rop{font-size:34px; font-weight:800; color:var(--gold)}
+.rxrow.ok{box-shadow:inset 0 0 0 3px var(--ok)}
+
+/* three cards across */
+.rcards.three{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.rcards.three .rcard{padding:10px 14px; align-items:start}
+.rcards.three .rcard .rt b{font-size:23px; line-height:1.3} .rcards.three .rcard .rx{font-size:19px; line-height:1.4}
+
+/* tickets: tight, so that the longest exam stems and choices fit the stage */
+.slide[data-id=method] .tq,.slide[data-id=res21] .tq,.slide[data-id=q21] .tq,.slide[data-id=q25] .tq,.slide[data-id=eou] .tq,.slide[data-id=ex1] .tq,.slide[data-id=ex2] .tq,.slide[data-id=ex3] .tq,.slide[data-id=ex4] .tq,.slide[data-id=tk] .tq{padding:12px 22px; gap:8px}
+.slide[data-id=method] .tq h4,.slide[data-id=res21] .tq h4,.slide[data-id=q21] .tq h4,.slide[data-id=q25] .tq h4,.slide[data-id=eou] .tq h4,.slide[data-id=ex1] .tq h4,.slide[data-id=ex2] .tq h4,.slide[data-id=ex3] .tq h4,.slide[data-id=ex4] .tq h4,.slide[data-id=tk] .tq h4{font-size:22px; line-height:1.35}
+.slide[data-id=method] .tq .opt,.slide[data-id=res21] .tq .opt,.slide[data-id=q21] .tq .opt,.slide[data-id=q25] .tq .opt,.slide[data-id=eou] .tq .opt,.slide[data-id=ex1] .tq .opt,.slide[data-id=ex2] .tq .opt,.slide[data-id=ex3] .tq .opt,.slide[data-id=ex4] .tq .opt,.slide[data-id=tk] .tq .opt{min-height:42px; font-size:19.5px; padding-top:2px; padding-bottom:2px}
+.slide[data-id=method] .tq .opt .num,.slide[data-id=res21] .tq .opt .num,.slide[data-id=q21] .tq .opt .num,.slide[data-id=q25] .tq .opt .num,.slide[data-id=eou] .tq .opt .num,.slide[data-id=ex1] .tq .opt .num,.slide[data-id=ex2] .tq .opt .num,.slide[data-id=ex3] .tq .opt .num,.slide[data-id=ex4] .tq .opt .num,.slide[data-id=tk] .tq .opt .num{font-size:.92em}
+.slide[data-id=method] .tq .fb,.slide[data-id=res21] .tq .fb,.slide[data-id=q21] .tq .fb,.slide[data-id=q25] .tq .fb,.slide[data-id=eou] .tq .fb,.slide[data-id=ex1] .tq .fb,.slide[data-id=ex2] .tq .fb,.slide[data-id=ex3] .tq .fb,.slide[data-id=ex4] .tq .fb,.slide[data-id=tk] .tq .fb{min-height:24px; font-size:19px}
+.slide[data-id=res21] .tq h4{font-size:20.5px} .slide[data-id=res21] .tq .opt{font-size:18px; min-height:40px}

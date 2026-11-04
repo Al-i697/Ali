@@ -106,4 +106,19 @@
   R('p_lab_pipettes',{bg:'s_lab_pipettes',dim:.02, dust:0});   /* light picture: almost no shade */
   R('p_m_zn_cu',    {bg:'s_m_zn_cu',    dim:.12, dust:6,  ph:1});
   R('p_m_k_na_mg',  {bg:'s_m_k_na_mg',  dim:.10, dust:6,  ph:2});
+  /* fourth batch (Nov 2026, unit 2: extraction, alloys, rusting). Not used as backgrounds: the mineral chart (Arabic labels + a stock-photo watermark) and the Zn + CuSO4 picture with its printed equation. */
+  R('p_e_furnace_ore', {bg:'s_e_furnace_ore',   dim:.12, dust:6,  ph:1});
+  R('p_e_blue_lab',    {bg:'s_e_blue_lab',      dim:.04, dust:8,  ph:2});
+  R('p_e_malachite',   {bg:'s_e_mine_malachite',dim:.12, dust:6,  ph:3});
+  R('p_e_cubes',       {bg:'s_e_cu_zn_cubes',   dim:.08, dust:4,  ph:4});   /* labels blurred on purpose */
+  R('p_e_ptable',      {bg:'s_e_ptable_metals', dim:.24, dust:4,  ph:5});   /* the printed tiles are blurred on purpose (their text must stay unreadable), and the picture is shaded so the slide text wins */
+  R('p_e_beakers',     {bg:'s_e_beakers',       dim:.10, dust:4,  ph:6});
+  R('p_e_electrolysis',{bg:'s_e_electrolysis',  dim:.12, dust:6,  ph:7});
+  R('p_e_pour',        {bg:'s_e_pour_ingots',   dim:.12, dust:8,  ph:8});
+  R('p_e_sunset',      {bg:'s_e_mine_sunset',   dim:.12, dust:6,  ph:9});
+  /* plain backgrounds (no picture): the palette of the slide with a few soft lights. The teacher dislikes repeated pictures (Nov 2026), so a slide may stay plain instead. */
+  R('p_plain_a', {dust:12, seed:3});
+  R('p_plain_b', {dust:6,  seed:11});
+  R('p_plain_c', {dust:20, seed:23});
+  R('p_plain_d', {dust:0,  seed:5});
 })();
