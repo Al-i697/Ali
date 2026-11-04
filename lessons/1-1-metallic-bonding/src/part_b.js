@@ -122,29 +122,25 @@ slide({id:'dens',ch:2,title:'الخاصية ١: الكثافة العالية',t
  enter:function(el){ later(function(){ $('#db',el).classList.add('go') },250) },
  note:'<ul><li>كتاب الطالب ص١٦: الفلزات «كثيفة لأن ذراتها متراصة»، والحديد قوي وصلب. عرضك: ألواح ألومنيوم وتراص الذرات. الامتحان: ٢٠٢٥/٢٠٢٦ الدور الأول س١ «أي مما يلي يفسّر كثافة الحديد المرتفعة حسب التركيب البنائي؟» والجواب: تقارب وتراص الذرات.</li><li>قيم الكثافة من جدول ورقة العمل ١-٣ في كتاب النشاط (Na ٠٫٩٧، Al ٢٫٧، Fe ٧٫٩، Cu ٨٫٩، Au ١٨٫٩ بالوحدة g/mL) والماء ١٫٠. الكثافة والشد ليستا في نص الهدف ٤-١ لكنها في الكتاب وفي عرضك، فأعلّمهما إثرائيتين.</li><li>الصوديوم أخف من الماء وهو فلز: هذا يعالج مفهوماً خاطئاً مذكوراً في الدليل (ليست كل الفلزات متينة وصلدة).</li></ul>'});
 
-/* 10 melting and boiling points */
+/* 10 melting points (the boiling-point column was dropped: the three books give no boiling points for metals) */
 (function(){
-  var MP=[['Li',181,1347],['Sn',232,2623],['Al',660,2467],['Ba',727,1850],['Ag',961,2155],['Cu',1084,2570]];   /* m.p. of Li (181) from the student book table of group I, Al (660) and Cu (1084) from activity-book worksheet 1-3; Sn, Ba, Ag and every b.p. come from the teacher's deck only */
-  function bars(k){ return barsHTML('mb',MP.map(function(r){return {lab:'<span class="num">'+r[0]+'</span><small style="display:block;font-size:15px;color:var(--muted);font-weight:700">'+ar(r[k])+' °C</small>',parts:[[r[k],k===1?'used':'prod','']]}}),3000) }
+  var MP=[['Li',181],['Sn',232],['Al',660],['Ba',727],['Ag',961],['Cu',1084]];   /* m.p. of Li (181) from the student book table of group I, Al (660) and Cu (1084) from activity-book worksheet 1-3; Sn, Ba and Ag come from the teacher's deck only */
+  function bars(){ return barsHTML('mb',MP.map(function(r){return {lab:'<span class="num">'+r[0]+'</span><small style="display:block;font-size:15px;color:var(--muted);font-weight:700">'+ar(r[1])+' °C</small>',parts:[[r[1],'used','']]}}),1200) }
   slide({id:'mpbp',ch:2,title:'الخاصية ٢: انصهار وغليان مرتفعان',tag:'اختر وتوقّع',
    html:function(){
     return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
      <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
-      <div class="tabs2" id="tb"><button type="button" class="on" data-k="1">درجة الانصهار</button><button type="button" data-k="2">درجة الغليان</button></div>
-      <div class="panel" style="padding:12px 16px" id="bw">${bars(1)}</div>
+      <div class="panel" style="padding:12px 16px" id="bw"><div style="font-size:21px;font-weight:800;margin-bottom:6px">درجة الانصهار (°C)</div>${bars()}</div>
       <div class="sm" style="font-size:17px;color:var(--muted)">قيم تقريبية من عرض المعلم (°C). تختلف قليلاً بين المراجع.</div></div>
      <div class="col" style="width:400px;flex:none;gap:12px;justify-content:center">
       <div class="panel compact" id="q" style="padding:12px 16px;gap:8px"><div style="font-size:22px;font-weight:800">أي هذه الفلزات يحتاج أكبر طاقة لينصهر؟</div>
        ${optsHTML([{t:'الليثيوم Li'},{t:'النحاس Cu'},{t:'القصدير Sn'}])}<div class="fb" style="min-height:26px"></div></div>
-      <div class="gbar hide" id="gb" style="font-size:21px">الرابطة الفلزية <b>قوية</b>، فتحتاج طاقة كبيرة لكسرها: لذلك الفلزات <b>صلبة</b> في درجة حرارة الغرفة في الغالب.</div></div></div>`;},
+      <div class="gbar hide" id="gb" style="font-size:21px">الرابطة الفلزية <b>قوية</b>، فتحتاج طاقة كبيرة لكسرها: لذلك درجتا الانصهار والغليان <b>مرتفعتان</b> والفلزات <b>صلبة</b> في درجة حرارة الغرفة في الغالب.</div></div></div>`;},
    init:function(el){
-    $$('#tb button',el).forEach(function(b){b.addEventListener('click',function(){
-      $$('#tb button',el).forEach(function(x){x.classList.toggle('on',x===b)}); $('#bw',el).innerHTML=bars(+b.getAttribute('data-k')); later(function(){$('#mb',el).classList.add('go')},30);
-    })});
     bindMcq($('#q',el),[{t:'',why:'انصهاره عند 181 °C فقط: الأقل بين الستة'},{t:'',ok:true,why:'صح: النحاس ينصهر عند نحو 1084 °C، أعلاها بين هذه الفلزات'},{t:'',why:'القصدير ينصهر عند 232 °C'}],$('.fb',el),function(){unhide(el)});
    },
    enter:function(el){ later(function(){$('#mb',el).classList.add('go')},120) },
-   note:'<ul><li>كتاب الطالب ص١٦: الرابطة الفلزية القوية تعني درجات انصهار وغليان مرتفعة، ومعظم الفلزات صلبة في درجة حرارة الغرفة. سؤال ١-٢ (أ).</li><li>الأرقام: انصهار Li ‏١٨١ (جدول المجموعة I في كتاب الطالب) وAl ‏٦٦٠ وCu ‏١٠٨٤ (ورقة العمل ١-٣ في كتاب النشاط)، أما Sn ‏٢٣٢ وBa ‏٧٢٧ وAg ‏٩٦١ وكل درجات الغليان (Li ‏١٣٤٧، Sn ‏٢٦٢٣، Al ‏٢٤٦٧، Ba ‏١٨٥٠، Ag ‏٢١٥٥، Cu ‏٢٥٧٠) فمن جدول عرضك فقط وليست في كتبك الثلاثة. عرضك كان يكتب Li ‏١٨٠ وCu ‏١٠٨٣، وصحّحتهما حسب الكتب (قاعدتك: عند التعارض يُعتمد الكتاب). والأرقام عليها عبارة «قيم تقريبية».</li><li>الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الثاني س١ (الكثافة والانصهار والتوصيل).</li></ul>'});
+   note:'<ul><li>كتاب الطالب ص١٦: الرابطة الفلزية القوية تعني درجات انصهار وغليان مرتفعة، ومعظم الفلزات صلبة في درجة حرارة الغرفة. سؤال ١-٢ (أ).</li><li>الأرقام: انصهار Li ‏١٨١ (جدول المجموعة I في كتاب الطالب) وAl ‏٦٦٠ وCu ‏١٠٨٤ (ورقة العمل ١-٣ في كتاب النشاط)، أما Sn ‏٢٣٢ وBa ‏٧٢٧ وAg ‏٩٦١ فمن جدول عرضك فقط وليست في كتبك الثلاثة. عرضك كان يكتب Li ‏١٨٠ وCu ‏١٠٨٣، وصحّحتهما حسب الكتب (قاعدتك: عند التعارض يُعتمد الكتاب). والأرقام عليها عبارة «قيم تقريبية».</li><li>حذفتُ عمود درجات الغليان بقرارك: الكتب الثلاثة لا تذكر درجات غليان للفلزات، فبقي القول أنها مرتفعة (نص الكتاب) بلا أرقام.</li><li>الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الثاني س١ (الكثافة والانصهار والتوصيل).</li></ul>'});
 })();
 
 /* 11 malleability: the hammer */

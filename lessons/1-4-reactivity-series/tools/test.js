@@ -1,7 +1,7 @@
 /* Interaction tests for lesson 1-4: every slide is driven the way a student would use it. Run from the lesson folder: node tools/test.js [id1,id2] */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lesson14.html';
-const IDS=['goals','prior','hist','series','chh','tbl14','cold','steam','act12','lab12','acid','disp','oxtab','carbon','gap','act14','lab14','act14c','tbl16','zncu','ionic','ladder4','balance4','act13','q1417','q1820','ex12','ex13','ws13','ws14','eou2','eou5','ex1','ex2','ex3','ex4','tk','hw'];
+const IDS=['goals','prior','hist','series','chh','tbl14','cold','steam','act12','lab12','acid','disp','oxtab','carbon','gap','act14','lab14','act14c','tbl16','zncu','ionic','ladder4','balance4','act13','q1417','q1820','ex12','ex13','ws13','ladderws','ws14','eou2','eou5','ex1','ex2','ex3','ex4','tk','hw'];
 const ONLY=process.argv[2]?process.argv[2].split(','):null;
 const results=[]; const errs=[];
 (async()=>{
@@ -106,7 +106,22 @@ const results=[]; const errs=[];
     for(const s of ['zn','fe']){ await sl.locator('#sers button[data-s="'+s+'"]').click(); for(let i=0;i<7;i++){ await p.mouse.click(px(i),py(D[s][i])); await p.waitForTimeout(80) } }
     await p.waitForTimeout(300); if(await cnt(sl.locator('#pts circle'))!==14) return false; if(!(await vis(sl.locator('#q')))) return false;
     if(!await mcq(p,sl,'#q')) return false; await p.waitForTimeout(1700); if(!(await vis(sl.locator('#q2')))) return false; if(!await mcq(p,sl,'#q2')) return false; await p.waitForTimeout(1700); return await gb(p,sl)});
-  await T('ws13',async(p,sl)=>ticket(p,sl,6));
+  await T('ws13',async(p,sl)=>ticket(p,sl,8));
+  await T('ladderws',async(p,sl)=>{
+    await sl.locator('.eqx-chip[data-w="أكسيد الخارصين"]').click(); if(!(await sl.locator('.eqx-msg').first().evaluate(e=>/أكسجين/.test(e.textContent)))) return false;
+    for(const w of ['ماغنيسيوم','كبريتات الخارصين','كبريتات الماغنيسيوم','خارصين']) await sl.locator('.eqx-chip[data-w="'+w+'"]').click();
+    await sl.locator('[data-a="next"]').click(); await p.waitForTimeout(150);
+    for(const [i,j] of [[0,0],[1,0],[2,0],[3,0]]) await sl.locator('.eqx-opts[data-i="'+i+'"] .eqx-opt[data-j="'+j+'"]').click();
+    await sl.locator('[data-a="next"]').click(); await p.waitForTimeout(150);
+    for(const [f,s] of [['Mg','s'],['ZnSO4','aq'],['MgSO4','aq'],['Zn','s']]) await sl.locator('.eqx-opts[data-f="'+f+'"] .eqx-opt[data-s="'+s+'"]').click();
+    await sl.locator('[data-a="next"]').click(); await p.waitForTimeout(250);
+    if(!(await sl.locator('.eqx-msg.ok').count())) return false;
+    await sl.locator('[data-a="next"]').click(); await p.waitForTimeout(150);
+    await sl.locator('.eqx-tk[data-k="zn"]').first().click(); if(!(await sl.locator('.eqx-msg').first().evaluate(e=>/يتحوّل|يتغيّر/.test(e.textContent)))) return false;
+    await sl.locator('.eqx-tk[data-k="so4"]').nth(0).click(); await sl.locator('.eqx-tk[data-k="so4"]').nth(1).click(); await p.waitForTimeout(150);
+    if(await cnt(sl.locator('.eqx-tk.out'))!==2) return false;
+    const o=sl.locator('.eqx-ionopt'); const n=await o.count(); for(let i=0;i<n;i++){ await o.nth(i).click(); if(await sl.locator('.eqx-ionopt.okc').count()) break }
+    await p.waitForTimeout(300); return await cnt(sl.locator('.eqx-pg.done'))===5});
   await T('ws14',async(p,sl)=>{ await sl.locator('#all4').click(); await p.waitForTimeout(500); if(await cnt(sl.locator('.pcl.on'))!==20) return false; if(await cnt(sl.locator('.pcl.yes'))!==10) return false;
     if(!(await vis(sl.locator('#ordp')))) return false; for(const k of ['0','1','2','3','4']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
   await T('eou2',async(p,sl)=>ticket(p,sl,5));
@@ -121,7 +136,7 @@ const results=[]; const errs=[];
   /* the options of every question are shuffled: there must be no group in which the right answer is always first (checked over all the slides) */
   if(!ONLY||ONLY.includes('shuffle')){
     const p=await b.newPage({viewport:{width:1600,height:900}}); await p.goto(URL+'?pts=all'); await p.waitForTimeout(1500);
-    const n=await p.evaluate(()=>document.querySelectorAll('#prog > *').length); results.push(['slides',n===38?'ok':'FAIL '+n]); await p.close();
+    const n=await p.evaluate(()=>document.querySelectorAll('#prog > *').length); results.push(['slides',n===39?'ok':'FAIL '+n]); await p.close();
   }
   /* the formula builder gives the right formula for every pair of ions (checked against an independent computation) */
   if(!ONLY||ONLY.includes('eqlab')){

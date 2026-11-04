@@ -436,7 +436,6 @@ body{font-family:var(--font-body)}
      linear-gradient(90deg,rgba(var(--t2),.07) 1px,transparent 1px),
      radial-gradient(circle at 92% 12%, transparent 0 120px, rgba(var(--t1),.16) 121px 122px, transparent 123px 190px, rgba(var(--t1),.10) 191px 192px, transparent 193px 270px, rgba(var(--t1),.07) 271px 272px, transparent 273px);
    background-size:64px 64px,64px 64px,100% 100%}
-.stage::after{content:"Gemini Notebook"; display:none}
 .slide{z-index:1}
 h2,h3,h4,.btn,.nav,.chip,.tag,.brand{font-family:var(--font-display)}
 
@@ -1474,6 +1473,18 @@ html[data-fx="0"] .shaking{animation:none}
 .eqx-opt{direction:ltr; font-family:var(--font-display); font-weight:800; font-size:25px; padding:4px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
 .eqx-opt.okc{background:#17724a; border-color:rgba(166,242,138,.8)} .eqx-opt.badc{background:#8a2a22}
 .eqx-note{font-size:16px; background:rgba(6,20,44,.8); border-radius:8px; padding:0 8px; display:inline-block; margin-top:4px}
+
+/* the ionic-equation step of the ladder (lesson 1-4) */
+.eqx-ionrow{direction:ltr; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 10px; padding:8px 4px; font-family:var(--font-display)}
+.eqx-tk{display:inline-block; padding:2px 10px 4px; border:2px dashed rgba(255,255,255,.55); border-radius:12px; font-size:30px; font-weight:800; cursor:pointer; background:rgba(6,20,44,.78); white-space:nowrap}
+.eqx-tk small{font-size:15px; font-weight:600}
+.eqx-tk.ion{border-color:rgba(130,210,255,.85)}
+.eqx-tk.out{text-decoration:line-through; opacity:.35; cursor:default}
+.eqx-c{color:var(--gold); margin-inline-end:4px}
+.eqx-ionopt{font-size:22px; padding:1px 14px; text-align:center; width:100%}
+.eqx-th{display:inline-block}
+.slide[data-id=ladder4] .eqx-p{margin:1px 0 4px}
+.slide[data-id=ladder4] .eqx-ionrow{padding:2px}
 
 /* ===== lesson 1-1: components that only this lesson uses ===== */
 .ok-t{color:var(--ok); font-weight:800} .no-t{color:var(--bad); font-weight:800}
@@ -3468,6 +3479,10 @@ function ch2(n,o){ o=o||{}; var u=[],d=[],i; for(i=0;i<n;i++){u.push('H');d.push
   R('p_m_coils',    {bg:'s_m_coils',    dim:.10, dust:4,  ph:2});
   R('p_m_lab',      {bg:'s_m_lab',      dim:.10, dust:6});
   R('p_m_coins',    {bg:'s_m_coins',    dim:.22, dust:6,  ph:1});   /* blurred on purpose: the coin legends must stay unreadable */
+  /* third batch (Nov 2026): a clean pipette bench, zinc in copper(II) sulfate, K / Na / Mg in water. The template with the phone frame (no. 59) is not used. */
+  R('p_lab_pipettes',{bg:'s_lab_pipettes',dim:.02, dust:0});   /* light picture: almost no shade */
+  R('p_m_zn_cu',    {bg:'s_m_zn_cu',    dim:.12, dust:6,  ph:1});
+  R('p_m_k_na_mg',  {bg:'s_m_k_na_mg',  dim:.10, dust:6,  ph:2});
 })();
 
 /* ---------- the formulas and equations workshop (shared by the unit-1 lessons) ----------
@@ -3661,14 +3676,14 @@ var EQL=(function(){
      def: {steps:[names], word:{R,P,bank,why}, subs:[{n,o:[[formula, 1 if right, message]]}], stw:{formula:[state, message]}, eq:{l,r,co,tip}} */
   function ladder(host,d,opt){
     opt=opt||{};
-    var st={step:0,done:[]}, names=['المعادلة اللفظية','الصيغ','الحالات','الموازنة'];
+    var st={step:0,done:[]}, names=['المعادلة اللفظية','الصيغ','الحالات','الموازنة'].concat(d.ion?['المعادلة الأيونية']:[]);
     function eqText(co){return '<span class="eqx-fm" style="font-size:32px;direction:ltr;display:inline-block">'+eqHTML(d.eq,co)+'</span>'}
     function paint(){
       host.innerHTML='<div class="eqx-prog">'+names.map(function(s,i){return '<span class="eqx-pg'+(st.done[i]?' done':'')+(i===st.step?' cur':'')+'">'+(i+1)+'. '+s+'</span>'}).join('')+'</div><div class="eqx-body"></div><div class="eqx-btns" style="justify-content:space-between"><button type="button" class="btn" data-a="prev"'+(st.step===0?' disabled':'')+'>▸ السابق</button><button type="button" class="btn acc" data-a="next"'+((st.done[st.step]&&st.step<names.length-1)?'':' disabled')+'>التالي ◂</button></div>';
       var body=$('.eqx-body',host);
       function fin(){ st.done[st.step]=true; var n=$('[data-a="next"]',host); if(n&&st.step<names.length-1) n.disabled=false; var pg=$$('.eqx-pg',host)[st.step]; if(pg) pg.classList.add('done');
         if(st.step===names.length-1){ if(opt.onDone) opt.onDone() } }   /* the balancer has already written the final equation */
-      [stepWord,stepForm,stepState,stepBal][st.step](body,fin);
+      [stepWord,stepForm,stepState,stepBal,stepIon][st.step](body,fin);
     }
     function stepWord(el,fin){
       var R=d.word.R, P=d.word.P, pl={r:[],p:[]};
@@ -3708,6 +3723,37 @@ var EQL=(function(){
       });
     }
     function stepBal(el,fin){ el.innerHTML='<p class="eqx-p">وازن المعادلة بتغيير المعاملات فقط:</p><div class="eqx-bal"></div>'; balancer($('.eqx-bal',el),d.eq,{onSolved:fin}) }
+    /* step 5 (lesson 1-4): the ionic equation. The soluble salts are split into ions, the student strikes out the spectator ions, then picks the net ionic equation.
+       d.ion: {l:[{h,st,k,c}], r:[...], spect:key of the spectator ion, nm:{key:message when pressed}, opts:[[html, 1 if right, message]]} */
+    function stepIon(el,fin){
+      var I=d.ion, need=0, all=I.l.concat(I.r);
+      all.forEach(function(t){ if(t.k===I.spect) need++ });
+      function tok(t){ return '<span class="eqx-tk'+(t.k?' ion':'')+'" data-k="'+(t.k||'')+'"><span class="eqx-th">'+(t.c>1?'<b class="eqx-c">'+t.c+'</b>':'')+t.h+'</span><small>('+t.st+')</small></span>' }
+      function side(a){ return a.map(tok).join('<span class="eqx-op">+</span>') }
+      el.innerHTML='<p class="eqx-p">المعادلة الأيونية التامة: المحاليل المائية تتفكّك إلى أيونات. <b>اضغط على الأيونات التي تظهر في الطرفين دون أي تغيّر</b> (الأيونات المتفرّجة).</p>'+
+        '<div class="eqx-ionrow">'+side(I.l)+'<b class="eqx-arr">→</b>'+side(I.r)+'</div><div class="eqx-msg"></div><div class="eqx-ionq hide"></div>';
+      var msg=$('.eqx-msg',el), q=$('.eqx-ionq',el);
+      el.addEventListener('click',function(e){
+        var t=e.target.closest('.eqx-tk');
+        if(t){
+          if(t.classList.contains('out')||need===0) return;
+          var k=t.getAttribute('data-k');
+          if(k&&k===I.spect){
+            t.classList.add('out'); need--;
+            if(need===0){
+              setMsg(msg,'ok','✓ '+((I.nm&&I.nm[k])||'أيون متفرّج: يظهر في الطرفين كما هو، فنحذفه.'));
+              q.classList.remove('hide');
+              q.innerHTML='<p class="eqx-p">اختر <b>المعادلة الأيونية الصافية</b> بعد حذف المتفرّجات:</p><div class="eqx-opts" style="flex-direction:column;align-items:stretch">'+I.opts.map(function(o,j){return '<button type="button" class="eqx-opt eqx-ionopt" data-j="'+j+'">'+o[0]+'</button>'}).join('')+'</div>';
+            }else setMsg(msg,'ok','✓ متفرّج. ابحث عن الآخر في الطرف الثاني.');
+          }else{ shake(t); setMsg(msg,'bad',k?((I.nm&&I.nm[k])||'هذا الأيون يتغيّر في التفاعل.'):'هذه مادة صلبة تتغيّر في التفاعل، وليست أيوناً في المحلول.') }
+          return;
+        }
+        var b=e.target.closest('.eqx-ionopt'); if(!b||b.classList.contains('okc')) return;
+        var o=I.opts[+b.getAttribute('data-j')];
+        if(o[1]){ b.classList.add('okc'); $$('.eqx-ionopt',el).forEach(function(x){x.disabled=true}); setMsg(msg,'ok','✓ '+(o[2]||'معادلة أيونية صحيحة: الذرات والشحنات متساوية في الطرفين.')); fin() }
+        else{ b.classList.add('badc'); shake(b); setMsg(msg,'bad',o[2]||'راجع الذرات والشحنات في الطرفين.') }
+      });
+    }
     host.addEventListener('click',function(e){
       var b=e.target.closest('[data-a="prev"],[data-a="next"]'); if(!b||b.disabled) return;
       st.step+=b.getAttribute('data-a')==='next'?1:-1; paint();
@@ -3720,6 +3766,21 @@ var EQL=(function(){
 })();
 
 window.EQL=EQL;   /* exposed for the tests */
+
+/* Unit-1 lessons: the right answer must not always be the first choice.
+   Every group of choices (.opts) is shuffled when its slide is built, the same way every time (seeded by the slide id and the group's place),
+   and the letters (أ ب ج د هـ) are renumbered. The answers are bound by data-i, so only the order on screen changes. */
+function shuffleOpts(el,id){
+  var R=rnd(id.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))%2147483000},7)+1), L='أبجدهـ';
+  $$('.opts',el).forEach(function(box){
+    var kids=Array.prototype.slice.call(box.children), i, j, t;
+    if(kids.length<2) return;
+    for(i=kids.length-1;i>0;i--){ j=Math.floor(R()*(i+1)); t=kids[i]; kids[i]=kids[j]; kids[j]=t }
+    kids.forEach(function(k,n){ box.appendChild(k); var ix=k.querySelector('.ix'); if(ix) ix.textContent=L[n] });
+  });
+}
+var _slide=slide;
+slide=function(o){ var oi=o.init; o.init=function(el){ shuffleOpts(el,o.id); if(oi) oi.apply(this,arguments) }; _slide(o) };
 
 /* ---------- the card look: helper that keeps loose text readable over any background (photo or live scene).
    Used by lessons built with skin 'photo' (still pictures) or 'cards' (the living background engine). ---------- */
@@ -4037,29 +4098,25 @@ slide({id:'dens',ch:2,title:'الخاصية ١: الكثافة العالية',t
  enter:function(el){ later(function(){ $('#db',el).classList.add('go') },250) },
  note:'<ul><li>كتاب الطالب ص١٦: الفلزات «كثيفة لأن ذراتها متراصة»، والحديد قوي وصلب. عرضك: ألواح ألومنيوم وتراص الذرات. الامتحان: ٢٠٢٥/٢٠٢٦ الدور الأول س١ «أي مما يلي يفسّر كثافة الحديد المرتفعة حسب التركيب البنائي؟» والجواب: تقارب وتراص الذرات.</li><li>قيم الكثافة من جدول ورقة العمل ١-٣ في كتاب النشاط (Na ٠٫٩٧، Al ٢٫٧، Fe ٧٫٩، Cu ٨٫٩، Au ١٨٫٩ بالوحدة g/mL) والماء ١٫٠. الكثافة والشد ليستا في نص الهدف ٤-١ لكنها في الكتاب وفي عرضك، فأعلّمهما إثرائيتين.</li><li>الصوديوم أخف من الماء وهو فلز: هذا يعالج مفهوماً خاطئاً مذكوراً في الدليل (ليست كل الفلزات متينة وصلدة).</li></ul>'});
 
-/* 10 melting and boiling points */
+/* 10 melting points (the boiling-point column was dropped: the three books give no boiling points for metals) */
 (function(){
-  var MP=[['Li',181,1347],['Sn',232,2623],['Al',660,2467],['Ba',727,1850],['Ag',961,2155],['Cu',1084,2570]];   /* m.p. of Li (181) from the student book table of group I, Al (660) and Cu (1084) from activity-book worksheet 1-3; Sn, Ba, Ag and every b.p. come from the teacher's deck only */
-  function bars(k){ return barsHTML('mb',MP.map(function(r){return {lab:'<span class="num">'+r[0]+'</span><small style="display:block;font-size:15px;color:var(--muted);font-weight:700">'+ar(r[k])+' °C</small>',parts:[[r[k],k===1?'used':'prod','']]}}),3000) }
+  var MP=[['Li',181],['Sn',232],['Al',660],['Ba',727],['Ag',961],['Cu',1084]];   /* m.p. of Li (181) from the student book table of group I, Al (660) and Cu (1084) from activity-book worksheet 1-3; Sn, Ba and Ag come from the teacher's deck only */
+  function bars(){ return barsHTML('mb',MP.map(function(r){return {lab:'<span class="num">'+r[0]+'</span><small style="display:block;font-size:15px;color:var(--muted);font-weight:700">'+ar(r[1])+' °C</small>',parts:[[r[1],'used','']]}}),1200) }
   slide({id:'mpbp',ch:2,title:'الخاصية ٢: انصهار وغليان مرتفعان',tag:'اختر وتوقّع',
    html:function(){
     return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
      <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
-      <div class="tabs2" id="tb"><button type="button" class="on" data-k="1">درجة الانصهار</button><button type="button" data-k="2">درجة الغليان</button></div>
-      <div class="panel" style="padding:12px 16px" id="bw">${bars(1)}</div>
+      <div class="panel" style="padding:12px 16px" id="bw"><div style="font-size:21px;font-weight:800;margin-bottom:6px">درجة الانصهار (°C)</div>${bars()}</div>
       <div class="sm" style="font-size:17px;color:var(--muted)">قيم تقريبية من عرض المعلم (°C). تختلف قليلاً بين المراجع.</div></div>
      <div class="col" style="width:400px;flex:none;gap:12px;justify-content:center">
       <div class="panel compact" id="q" style="padding:12px 16px;gap:8px"><div style="font-size:22px;font-weight:800">أي هذه الفلزات يحتاج أكبر طاقة لينصهر؟</div>
        ${optsHTML([{t:'الليثيوم Li'},{t:'النحاس Cu'},{t:'القصدير Sn'}])}<div class="fb" style="min-height:26px"></div></div>
-      <div class="gbar hide" id="gb" style="font-size:21px">الرابطة الفلزية <b>قوية</b>، فتحتاج طاقة كبيرة لكسرها: لذلك الفلزات <b>صلبة</b> في درجة حرارة الغرفة في الغالب.</div></div></div>`;},
+      <div class="gbar hide" id="gb" style="font-size:21px">الرابطة الفلزية <b>قوية</b>، فتحتاج طاقة كبيرة لكسرها: لذلك درجتا الانصهار والغليان <b>مرتفعتان</b> والفلزات <b>صلبة</b> في درجة حرارة الغرفة في الغالب.</div></div></div>`;},
    init:function(el){
-    $$('#tb button',el).forEach(function(b){b.addEventListener('click',function(){
-      $$('#tb button',el).forEach(function(x){x.classList.toggle('on',x===b)}); $('#bw',el).innerHTML=bars(+b.getAttribute('data-k')); later(function(){$('#mb',el).classList.add('go')},30);
-    })});
     bindMcq($('#q',el),[{t:'',why:'انصهاره عند 181 °C فقط: الأقل بين الستة'},{t:'',ok:true,why:'صح: النحاس ينصهر عند نحو 1084 °C، أعلاها بين هذه الفلزات'},{t:'',why:'القصدير ينصهر عند 232 °C'}],$('.fb',el),function(){unhide(el)});
    },
    enter:function(el){ later(function(){$('#mb',el).classList.add('go')},120) },
-   note:'<ul><li>كتاب الطالب ص١٦: الرابطة الفلزية القوية تعني درجات انصهار وغليان مرتفعة، ومعظم الفلزات صلبة في درجة حرارة الغرفة. سؤال ١-٢ (أ).</li><li>الأرقام: انصهار Li ‏١٨١ (جدول المجموعة I في كتاب الطالب) وAl ‏٦٦٠ وCu ‏١٠٨٤ (ورقة العمل ١-٣ في كتاب النشاط)، أما Sn ‏٢٣٢ وBa ‏٧٢٧ وAg ‏٩٦١ وكل درجات الغليان (Li ‏١٣٤٧، Sn ‏٢٦٢٣، Al ‏٢٤٦٧، Ba ‏١٨٥٠، Ag ‏٢١٥٥، Cu ‏٢٥٧٠) فمن جدول عرضك فقط وليست في كتبك الثلاثة. عرضك كان يكتب Li ‏١٨٠ وCu ‏١٠٨٣، وصحّحتهما حسب الكتب (قاعدتك: عند التعارض يُعتمد الكتاب). والأرقام عليها عبارة «قيم تقريبية».</li><li>الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الثاني س١ (الكثافة والانصهار والتوصيل).</li></ul>'});
+   note:'<ul><li>كتاب الطالب ص١٦: الرابطة الفلزية القوية تعني درجات انصهار وغليان مرتفعة، ومعظم الفلزات صلبة في درجة حرارة الغرفة. سؤال ١-٢ (أ).</li><li>الأرقام: انصهار Li ‏١٨١ (جدول المجموعة I في كتاب الطالب) وAl ‏٦٦٠ وCu ‏١٠٨٤ (ورقة العمل ١-٣ في كتاب النشاط)، أما Sn ‏٢٣٢ وBa ‏٧٢٧ وAg ‏٩٦١ فمن جدول عرضك فقط وليست في كتبك الثلاثة. عرضك كان يكتب Li ‏١٨٠ وCu ‏١٠٨٣، وصحّحتهما حسب الكتب (قاعدتك: عند التعارض يُعتمد الكتاب). والأرقام عليها عبارة «قيم تقريبية».</li><li>حذفتُ عمود درجات الغليان بقرارك: الكتب الثلاثة لا تذكر درجات غليان للفلزات، فبقي القول أنها مرتفعة (نص الكتاب) بلا أرقام.</li><li>الامتحانات: ٢٠٢٤/٢٠٢٥ الدور الثاني س١ (الكثافة والانصهار والتوصيل).</li></ul>'});
 })();
 
 /* 11 malleability: the hammer */

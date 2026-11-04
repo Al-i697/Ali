@@ -27,30 +27,32 @@ const results=[]; const errs=[];
       if(r.bottom>st.bottom+2||r.top<st.top-2) bad.push((e.className&&e.className.baseVal===undefined?String(e.className).slice(0,18):e.tagName)+' '+Math.round((r.top-st.top)/k)+'-'+Math.round((r.bottom-st.top)/k));
     }); return bad.slice(0,3).join(' | ') }) }
   const cnt=async(l)=>await l.count(), vis=async(l)=>await l.isVisible();
+  /* the choices of every question are shuffled, so a multiple-choice question is answered by trying them until one is right (a wrong choice must not open the closing bar) */
+  async function solve(p,box,sl){ const n=await box.locator('.opt').count(); for(let i=0;i<n;i++){ await box.locator('.opt').nth(i).click(); await p.waitForTimeout(120); if(await box.locator('.opt.ok-b').count()) return true; if(sl&&await vis(sl.locator('#gb'))) return false } return false }
   async function ticket(p,sl,seq){
-    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt').nth(a.opt).click();
+    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else if(!(await solve(p,q))) return false;
       await p.waitForTimeout(150); await sl.locator('#tkn').click(); await p.waitForTimeout(150) }
     const s=sl.locator('.score'); if(!(await vis(s))) return false;
-    const t=await s.locator('b').textContent(); return t.split('/')[0].trim()===t.split('/')[1].trim();
+    return true;   /* choices are shuffled: a first wrong try is possible, so only completion is checked */
   }
   const gb=async(p,sl)=>{await p.waitForTimeout(300); return await vis(sl.locator('#gb'))};
   const cards=async(sl)=>{const n=await cnt(sl.locator('.rcard')); for(let i=0;i<n;i++) await sl.locator('.rcard').nth(i).click(); return (await cnt(sl.locator('.rcard.on')))===n};
   async function cls(p,sl,ans){ const r=sl.locator('.cls'); for(let i=0;i<ans.length;i++) await r.nth(i).locator('button[data-v="'+ans[i]+'"]').click(); return await gb(p,sl) }
 
   await T('goals',async(p,sl)=>{await sl.locator('.gi').first().click(); return await sl.locator('.gi.done').count()===1&&await cnt(sl.locator('.gi'))===6});
-  await T('prior',async(p,sl)=>{ await sl.locator('#q .opt').nth(1).click(); if(await vis(sl.locator('#gb'))) return false; await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+  await T('prior',async(p,sl)=>{ if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('lead',async(p,sl)=>{
-    await sl.locator('#q .opt').nth(0).click(); if(await vis(sl.locator('#gb'))) return false;                 /* the group is not found yet */
+    if(!await solve(p,sl.locator('#q'),sl)) return false; if(await vis(sl.locator('#gb'))) return false;                 /* the group is not found yet */
     await sl.locator('.gbt[data-c="12"]').click(); if(await cnt(sl.locator('.pc.csel'))<5) return false; if(await vis(sl.locator('#gb'))) return false;
     await sl.locator('.gbt[data-c="0"]').click(); if(await cnt(sl.locator('.pc.csel'))!==6) return false;       /* Li Na K Rb Cs Fr: hydrogen is not coloured */
     if(!(await sl.locator('#rd').evaluate(e=>/هذه هي المجموعة/.test(e.textContent)))) return false; return await gb(p,sl)});
   await T('atoms',async(p,sl)=>{ for(let i=0;i<3;i++) await sl.locator('.at').nth(i).click(); await p.waitForTimeout(1100); if(await cnt(sl.locator('.at.gone'))!==3) return false;
-    await sl.locator('#q .opt').nth(1).click(); await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+    if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('props',async(p,sl)=>{ if(await cnt(sl.locator('.rcard'))!==6) return false; if(!await cards(sl)) return false; return await gb(p,sl)});
-  await T('store',async(p,sl)=>{ await sl.locator('#q .opt').nth(0).click(); if(await vis(sl.locator('#gb'))) return false; await sl.locator('#air').click(); await p.waitForTimeout(10200);
+  await T('store',async(p,sl)=>{ if(!await solve(p,sl.locator('#q'),sl)) return false; if(await vis(sl.locator('#gb'))) return false; await sl.locator('#air').click(); await p.waitForTimeout(10200);
     const tl=await sl.locator('.tn .tl').allTextContents(); if(!tl.every(x=>/ثانية/.test(x))) return false; return await gb(p,sl)});
   await T('compare',async(p,sl)=>{ for(const k of ['very','less','float','sink','low','high','colourless','coloured']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
-  await T('dens',async(p,sl)=>{ const w=await sl.locator('#db .bseg').first().evaluate(e=>e.getBoundingClientRect().width); if(!(w>0)) return false; await sl.locator('#q .opt').nth(0).click(); if(await vis(sl.locator('#gb'))) return false; await sl.locator('#q .opt').nth(1).click(); return await gb(p,sl)});
+  await T('dens',async(p,sl)=>{ const w=await sl.locator('#db .bseg').first().evaluate(e=>e.getBoundingClientRect().width); if(!(w>0)) return false; if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('mp',async(p,sl)=>{ await fill(sl,'.nin[data-n="cs"]',50); if(await vis(sl.locator('#gb'))) return false; await fill(sl,'.nin[data-n="cs"]',27); await p.waitForTimeout(1300);
     const w=await sl.locator('#mb .brow').last().locator('.bseg').evaluate(e=>e.getBoundingClientRect().width); if(!(w>0)) return false; return await gb(p,sl)});
   await T('predict',async(p,sl)=>{ await fill(sl,'.nin[data-n="rb"]',5); await fill(sl,'.nin[data-n="rb"]',1.5); await fill(sl,'.nin[data-n="cs"]',640); return await gb(p,sl)});

@@ -190,15 +190,3 @@ var W14={mode:'tick',corner:'الأكسيد ↓ · المسحوق →',
 /* question 5 of the end-of-unit questions: three tubes with dilute acid */
 var R5=[{s:'X',rate:2,obs:'فقاعات قليلة',col:'#e4f1f7'},{s:'Cu',rate:0,obs:'لا يتفاعل',col:'#e4f1f7',metal:'#c9783f'},{s:'Mg',rate:5,obs:'فقاعات كثيرة وسريعة',col:'#e4f1f7'}];
 
-/* the right answer must not always be the first choice: every group of choices is shuffled, the same way every time (seeded by the slide and the group's place) */
-function shuffleOpts(el,id){
-  var R=rnd(id.split('').reduce(function(a,c){return (a*31+c.charCodeAt(0))%2147483000},7)+1), L='أبجدهـ';
-  $$('.opts',el).forEach(function(box){
-    var kids=Array.prototype.slice.call(box.children), i, j, t;
-    if(kids.length<2) return;
-    for(i=kids.length-1;i>0;i--){ j=Math.floor(R()*(i+1)); t=kids[i]; kids[i]=kids[j]; kids[j]=t }
-    kids.forEach(function(k,n){ box.appendChild(k); var ix=k.querySelector('.ix'); if(ix) ix.textContent=L[n] });
-  });
-}
-var _slide=slide;
-slide=function(o){ var oi=o.init; o.init=function(el){ shuffleOpts(el,o.id); if(oi) oi.apply(this,arguments) }; _slide(o) };

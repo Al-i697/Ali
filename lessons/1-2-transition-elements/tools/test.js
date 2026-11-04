@@ -27,21 +27,23 @@ const results=[]; const errs=[];
       if(r.bottom>st.bottom+2||r.top<st.top-2) bad.push((e.className&&e.className.baseVal===undefined?String(e.className).slice(0,18):e.tagName)+' '+Math.round((r.top-st.top)/k)+'-'+Math.round((r.bottom-st.top)/k));
     }); return bad.slice(0,3).join(' | ') }) }
   const cnt=async(l)=>await l.count(), vis=async(l)=>await l.isVisible();
+  /* the choices of every question are shuffled, so a multiple-choice question is answered by trying them until one is right (a wrong choice must not open the closing bar) */
+  async function solve(p,box,sl){ const n=await box.locator('.opt').count(); for(let i=0;i<n;i++){ await box.locator('.opt').nth(i).click(); await p.waitForTimeout(120); if(await box.locator('.opt.ok-b').count()) return true; if(sl&&await vis(sl.locator('#gb'))) return false } return false }
   async function ticket(p,sl,seq){
-    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt').nth(a.opt).click();
+    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else if(!(await solve(p,q))) return false;
       await p.waitForTimeout(150); await sl.locator('#tkn').click(); await p.waitForTimeout(150) }
     const s=sl.locator('.score'); if(!(await vis(s))) return false;
-    const t=await s.locator('b').textContent(); return t.split('/')[0].trim()===t.split('/')[1].trim();
+    return true;   /* choices are shuffled: a first wrong try is possible, so only completion is checked */
   }
   const gb=async(p,sl)=>{await p.waitForTimeout(300); return await vis(sl.locator('#gb'))};
   const cards=async(sl)=>{const n=await cnt(sl.locator('.rcard')); for(let i=0;i<n;i++) await sl.locator('.rcard').nth(i).click(); return (await cnt(sl.locator('.rcard.on')))===n};
   async function cls(p,sl,ans){ const r=sl.locator('.cls'); for(let i=0;i<ans.length;i++) await r.nth(i).locator('button[data-v="'+ans[i]+'"]').click(); return await gb(p,sl) }
 
   await T('goals',async(p,sl)=>{await sl.locator('.gi').first().click(); return await sl.locator('.gi.done').count()===1&&await cnt(sl.locator('.gi'))===5});
-  await T('prior',async(p,sl)=>{ await sl.locator('#q .opt').nth(1).click(); if(await vis(sl.locator('#gb'))) return false; await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+  await T('prior',async(p,sl)=>{ if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('where',async(p,sl)=>{
     if(await cnt(sl.locator('.pc.t'))!==38||await cnt(sl.locator('.pc.cm'))!==12) return false;            /* the block: 10 + 10 + 9 + 9 cells, 12 named common elements */
-    await sl.locator('#q .opt').nth(1).click(); await sl.locator('#q .opt').nth(0).click(); if(await vis(sl.locator('#gb'))) return false;   /* the block is not coloured yet: no closing bar */
+    if(!await solve(p,sl.locator('#q'),sl)) return false; if(await vis(sl.locator('#gb'))) return false;   /* the block is not coloured yet: no closing bar */
     await sl.locator('.pt-leg button[data-s="cm"]').click(); await sl.locator('.pt-leg button[data-s="t"]').click();
     if(!(await sl.locator('#ptw').evaluate(e=>e.classList.contains('sh-t')&&e.classList.contains('sh-cm')))) return false;
     await sl.locator('.pc[data-s="Fe"]').click(); if(!(await sl.locator('#pfb').evaluate(e=>/الحديد/.test(e.textContent)&&/انتقالي/.test(e.textContent)))) return false;
@@ -51,11 +53,11 @@ const results=[]; const errs=[];
   await T('props',async(p,sl)=>{ if(await cnt(sl.locator('.rcard'))!==9) return false; if(!await cards(sl)) return false; return await gb(p,sl)});
   await T('sort',async(p,sl)=>cls(p,sl,['s','d','s','d','d','s']));
   await T('mp',async(p,sl)=>{ const w0=await sl.locator('#pb .bseg').first().evaluate(e=>e.getBoundingClientRect().width); await sl.locator('#tb button[data-k="2"]').click(); await p.waitForTimeout(1300); const w1=await sl.locator('#pb .bseg').first().evaluate(e=>e.getBoundingClientRect().width);
-    if(!(w0>0&&w1>0)) return false; await sl.locator('#q .opt').nth(1).click(); await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+    if(!(w0>0&&w1>0)) return false; if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('uses',async(p,sl)=>{ if(!await cards(sl)) return false; if(!(await sl.locator('svg text').first().evaluate(e=>/75/.test(e.textContent)))) return false; return await gb(p,sl)});
   await T('who',async(p,sl)=>{ for(const k of ['ti','w','au','cr','cuni']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
   await T('white',async(p,sl)=>{ if(await vis(sl.locator('#q'))) return false; await sl.locator('#addw').click(); await p.waitForTimeout(3200);
-    if(await cnt(sl.locator('.tbx.on'))!==7||!(await vis(sl.locator('#q')))) return false; await sl.locator('#q .opt').nth(1).click(); await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+    if(await cnt(sl.locator('.tbx.on'))!==7||!(await vis(sl.locator('#q')))) return false; if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('ions',async(p,sl)=>{ const order=['blue','green','ybrown','green','pink','purple','yellow','orange'];
     await sl.locator('#tray .mchip[data-k="blue"]').first().click(); await sl.locator('.mslot[data-k="pink"]').click(); if(await cnt(sl.locator('.mslot .mchip'))!==0) return false;   /* a wrong colour does not stay */
     for(const k of order){ await sl.locator('#tray .mchip[data-k="'+k+'"]').first().click(); await sl.locator('.mslot[data-k="'+k+'"]:not(:has(.mchip))').first().click(); await p.waitForTimeout(150) }
@@ -69,7 +71,7 @@ const results=[]; const errs=[];
     await nt.nth(0).locator('.idr button[data-v="fe3"]').click(); if(await cnt(sl.locator('.nt.ok'))!==0) return false;                 /* wrong answer: explained, not accepted */
     await nt.nth(0).locator('.idr button[data-v="fe2"]').click(); await nt.nth(1).locator('.idr button[data-v="fe3"]').click(); return await cnt(sl.locator('.nt.ok'))===2&&await gb(p,sl)});
   await T('cat',async(p,sl)=>{ const d0=await sl.locator('#pcurve').getAttribute('d'); await sl.locator('#tb button[data-s="1"]').click(); const d1=await sl.locator('#pcurve').getAttribute('d'); if(d0===d1) return false;
-    await sl.locator('#q .opt').nth(1).click(); await sl.locator('#q .opt').nth(0).click(); return await gb(p,sl)});
+    if(!await solve(p,sl.locator('#q'),sl)) return false; return await gb(p,sl)});
   await T('catm',async(p,sl)=>{ for(const k of ['fe','ni','pt','ti','v']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
   await T('myth',async(p,sl)=>cls(p,sl,['f','t','f','t','f','f']));
   await T('sum',async(p,sl)=>{ if(!await cards(sl)) return false; return await gb(p,sl)});
