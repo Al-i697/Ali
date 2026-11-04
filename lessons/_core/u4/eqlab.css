@@ -81,3 +81,15 @@
 .eqx-opt{direction:ltr; font-family:var(--font-display); font-weight:800; font-size:25px; padding:4px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.5); background:rgba(6,20,44,.86); color:#fff; cursor:pointer}
 .eqx-opt.okc{background:#17724a; border-color:rgba(166,242,138,.8)} .eqx-opt.badc{background:#8a2a22}
 .eqx-note{font-size:16px; background:rgba(6,20,44,.8); border-radius:8px; padding:0 8px; display:inline-block; margin-top:4px}
+
+/* the ionic-equation step of the ladder (lesson 1-4) */
+.eqx-ionrow{direction:ltr; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px 10px; padding:8px 4px; font-family:var(--font-display)}
+.eqx-tk{display:inline-block; padding:2px 10px 4px; border:2px dashed rgba(255,255,255,.55); border-radius:12px; font-size:30px; font-weight:800; cursor:pointer; background:rgba(6,20,44,.78); white-space:nowrap}
+.eqx-tk small{font-size:15px; font-weight:600}
+.eqx-tk.ion{border-color:rgba(130,210,255,.85)}
+.eqx-tk.out{text-decoration:line-through; opacity:.35; cursor:default}
+.eqx-c{color:var(--gold); margin-inline-end:4px}
+.eqx-ionopt{font-size:22px; padding:1px 14px; text-align:center; width:100%}
+.eqx-th{display:inline-block}
+.slide[data-id=ladder4] .eqx-p{margin:1px 0 4px}
+.slide[data-id=ladder4] .eqx-ionrow{padding:2px}

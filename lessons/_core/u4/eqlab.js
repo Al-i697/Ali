@@ -189,14 +189,14 @@ var EQL=(function(){
      def: {steps:[names], word:{R,P,bank,why}, subs:[{n,o:[[formula, 1 if right, message]]}], stw:{formula:[state, message]}, eq:{l,r,co,tip}} */
   function ladder(host,d,opt){
     opt=opt||{};
-    var st={step:0,done:[]}, names=['المعادلة اللفظية','الصيغ','الحالات','الموازنة'];
+    var st={step:0,done:[]}, names=['المعادلة اللفظية','الصيغ','الحالات','الموازنة'].concat(d.ion?['المعادلة الأيونية']:[]);
     function eqText(co){return '<span class="eqx-fm" style="font-size:32px;direction:ltr;display:inline-block">'+eqHTML(d.eq,co)+'</span>'}
     function paint(){
       host.innerHTML='<div class="eqx-prog">'+names.map(function(s,i){return '<span class="eqx-pg'+(st.done[i]?' done':'')+(i===st.step?' cur':'')+'">'+(i+1)+'. '+s+'</span>'}).join('')+'</div><div class="eqx-body"></div><div class="eqx-btns" style="justify-content:space-between"><button type="button" class="btn" data-a="prev"'+(st.step===0?' disabled':'')+'>▸ السابق</button><button type="button" class="btn acc" data-a="next"'+((st.done[st.step]&&st.step<names.length-1)?'':' disabled')+'>التالي ◂</button></div>';
       var body=$('.eqx-body',host);
       function fin(){ st.done[st.step]=true; var n=$('[data-a="next"]',host); if(n&&st.step<names.length-1) n.disabled=false; var pg=$$('.eqx-pg',host)[st.step]; if(pg) pg.classList.add('done');
         if(st.step===names.length-1){ if(opt.onDone) opt.onDone() } }   /* the balancer has already written the final equation */
-      [stepWord,stepForm,stepState,stepBal][st.step](body,fin);
+      [stepWord,stepForm,stepState,stepBal,stepIon][st.step](body,fin);
     }
     function stepWord(el,fin){
       var R=d.word.R, P=d.word.P, pl={r:[],p:[]};
@@ -236,6 +236,37 @@ var EQL=(function(){
       });
     }
     function stepBal(el,fin){ el.innerHTML='<p class="eqx-p">وازن المعادلة بتغيير المعاملات فقط:</p><div class="eqx-bal"></div>'; balancer($('.eqx-bal',el),d.eq,{onSolved:fin}) }
+    /* step 5 (lesson 1-4): the ionic equation. The soluble salts are split into ions, the student strikes out the spectator ions, then picks the net ionic equation.
+       d.ion: {l:[{h,st,k,c}], r:[...], spect:key of the spectator ion, nm:{key:message when pressed}, opts:[[html, 1 if right, message]]} */
+    function stepIon(el,fin){
+      var I=d.ion, need=0, all=I.l.concat(I.r);
+      all.forEach(function(t){ if(t.k===I.spect) need++ });
+      function tok(t){ return '<span class="eqx-tk'+(t.k?' ion':'')+'" data-k="'+(t.k||'')+'"><span class="eqx-th">'+(t.c>1?'<b class="eqx-c">'+t.c+'</b>':'')+t.h+'</span><small>('+t.st+')</small></span>' }
+      function side(a){ return a.map(tok).join('<span class="eqx-op">+</span>') }
+      el.innerHTML='<p class="eqx-p">المعادلة الأيونية التامة: المحاليل المائية تتفكّك إلى أيونات. <b>اضغط على الأيونات التي تظهر في الطرفين دون أي تغيّر</b> (الأيونات المتفرّجة).</p>'+
+        '<div class="eqx-ionrow">'+side(I.l)+'<b class="eqx-arr">→</b>'+side(I.r)+'</div><div class="eqx-msg"></div><div class="eqx-ionq hide"></div>';
+      var msg=$('.eqx-msg',el), q=$('.eqx-ionq',el);
+      el.addEventListener('click',function(e){
+        var t=e.target.closest('.eqx-tk');
+        if(t){
+          if(t.classList.contains('out')||need===0) return;
+          var k=t.getAttribute('data-k');
+          if(k&&k===I.spect){
+            t.classList.add('out'); need--;
+            if(need===0){
+              setMsg(msg,'ok','✓ '+((I.nm&&I.nm[k])||'أيون متفرّج: يظهر في الطرفين كما هو، فنحذفه.'));
+              q.classList.remove('hide');
+              q.innerHTML='<p class="eqx-p">اختر <b>المعادلة الأيونية الصافية</b> بعد حذف المتفرّجات:</p><div class="eqx-opts" style="flex-direction:column;align-items:stretch">'+I.opts.map(function(o,j){return '<button type="button" class="eqx-opt eqx-ionopt" data-j="'+j+'">'+o[0]+'</button>'}).join('')+'</div>';
+            }else setMsg(msg,'ok','✓ متفرّج. ابحث عن الآخر في الطرف الثاني.');
+          }else{ shake(t); setMsg(msg,'bad',k?((I.nm&&I.nm[k])||'هذا الأيون يتغيّر في التفاعل.'):'هذه مادة صلبة تتغيّر في التفاعل، وليست أيوناً في المحلول.') }
+          return;
+        }
+        var b=e.target.closest('.eqx-ionopt'); if(!b||b.classList.contains('okc')) return;
+        var o=I.opts[+b.getAttribute('data-j')];
+        if(o[1]){ b.classList.add('okc'); $$('.eqx-ionopt',el).forEach(function(x){x.disabled=true}); setMsg(msg,'ok','✓ '+(o[2]||'معادلة أيونية صحيحة: الذرات والشحنات متساوية في الطرفين.')); fin() }
+        else{ b.classList.add('badc'); shake(b); setMsg(msg,'bad',o[2]||'راجع الذرات والشحنات في الطرفين.') }
+      });
+    }
     host.addEventListener('click',function(e){
       var b=e.target.closest('[data-a="prev"],[data-a="next"]'); if(!b||b.disabled) return;
       st.step+=b.getAttribute('data-a')==='next'?1:-1; paint();

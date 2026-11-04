@@ -102,4 +102,8 @@
   R('p_m_coils',    {bg:'s_m_coils',    dim:.10, dust:4,  ph:2});
   R('p_m_lab',      {bg:'s_m_lab',      dim:.10, dust:6});
   R('p_m_coins',    {bg:'s_m_coins',    dim:.22, dust:6,  ph:1});   /* blurred on purpose: the coin legends must stay unreadable */
+  /* third batch (Nov 2026): a clean pipette bench, zinc in copper(II) sulfate, K / Na / Mg in water. The template with the phone frame (no. 59) is not used. */
+  R('p_lab_pipettes',{bg:'s_lab_pipettes',dim:.02, dust:0});   /* light picture: almost no shade */
+  R('p_m_zn_cu',    {bg:'s_m_zn_cu',    dim:.12, dust:6,  ph:1});
+  R('p_m_k_na_mg',  {bg:'s_m_k_na_mg',  dim:.10, dust:6,  ph:2});
 })();
