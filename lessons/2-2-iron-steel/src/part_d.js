@@ -5,7 +5,7 @@
 slide({id:'ws21',ch:4,title:'ورقة العمل ٢-١: الفرن العالي',tag:'اختر الحرف على الرسم',
  html:function(){
   var L=['A','B','C','D','E','F','G'];
-  var marks=[[640,128,'<b class="bdg">A</b>'],[722,74,'<b class="bdg">B</b>'],[858,470,'<b class="bdg">C</b>'],[460,520,'<b class="bdg">D</b>'],[820,516,'<b class="bdg">E</b>'],[640,290,'<b class="bdg">F</b>'],[640,462,'<b class="bdg">G</b>']];
+  var marks=[[640,128,'<b class="bdg">A</b>'],[722,74,'<b class="bdg">B</b>'],[846,466,'<b class="bdg">C</b>'],[460,520,'<b class="bdg">D</b>'],[820,516,'<b class="bdg">E</b>'],[640,290,'<b class="bdg">F</b>'],[640,462,'<b class="bdg">G</b>']];
   var S=[['خروج الحديد المنصهر','E','E: الحديد المنصهر يخرج من فتحة في القاع'],['التفاعل بين خام الحديد وCO','F','F: في الأعلى يختزل CO أكسيد الحديد'],['خروج الغازات العادمة الساخنة','B','B: الغازات العادمة الساخنة تخرج من أعلى الفرن'],['ضخ تيارات قوية من الهواء الساخن','C','C: الهواء الساخن يُنفخ بقوة عند القاعدة'],['خليط من خام الحديد وفحم الكوك والحجر الجيري','A','A: الحمولة تدخل من أعلى الفرن'],['خروج الخبث','D','D: الخبث يخرج من فتحة منفصلة'],['التفاعل بين فحم الكوك والهواء الساخن','G','G: الكربون يحترق عند القاعدة']];
   return `<div style="display:flex;gap:18px;flex:1;align-items:center;min-height:0">
    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">${clsHTML(S,L.map(function(l){return [l,l]}),20)}<div class="fb" style="min-height:26px"></div>
