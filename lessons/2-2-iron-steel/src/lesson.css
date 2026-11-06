@@ -1,0 +1,78 @@
+/* lesson 2-2 styles: the template frames (picture + live boxes), the bands of the sorter, the ticket squeeze, the atoms of the alloy and the carbon meter */
+
+/* ===== template frames: the picture fills the stage, the boxes are laid over its empty panels ===== */
+.tpl{position:absolute; left:0; top:0; width:1280px; height:720px; overflow:hidden; z-index:0; border-radius:6px}
+.tpl>.bgp{position:absolute; left:0; top:0; width:1280px; height:720px; display:block}
+.tpl>.bgp.flip{transform:scaleX(-1)}
+.tb{position:absolute; box-sizing:border-box; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; text-align:center; padding:4px 12px; font-family:var(--font-display); line-height:1.3; border-radius:12px; overflow:hidden}
+.tb.l{background:rgba(236,241,247,.97); color:#0e2747; font-weight:700}
+.tb.d{background:rgba(9,26,54,.95); color:#fff; font-weight:800}
+.tb.n{color:#0e2747; font-weight:700}
+.tb b{font-weight:800}
+.tb .eq{font-size:30px; font-weight:800; direction:ltr; line-height:1.15}
+.tb button,.tb .btn{font-family:var(--font-display)}
+.tb.hot{cursor:pointer; transition:transform .2s, box-shadow .2s} .tb.hot:hover{transform:translateY(-2px)}
+.tb.hot.on{box-shadow:0 0 0 4px var(--gold), 0 10px 24px rgba(0,0,0,.35)}
+.tb .veil{font-size:21px; font-weight:800; color:#34506f}
+.bdg{position:absolute; width:46px; height:46px; margin:-23px 0 0 -23px; padding:0; border-radius:50%; border:3px solid #fff; background:#0b3a78; color:#fff; font-family:var(--font-display); font-size:25px; font-weight:800; line-height:1; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.45); transition:transform .2s, background .2s}
+.bdg:hover{transform:scale(1.1)} .bdg.sel{background:#b8860b; transform:scale(1.18); box-shadow:0 0 0 4px #ffd24a, 0 4px 14px rgba(0,0,0,.5)} .bdg.seen{background:#1f6a4a}
+.crop{position:relative; flex:none; border-radius:16px; overflow:hidden; background-repeat:no-repeat; border:3px solid rgba(255,255,255,.6)}
+.crop .mk{position:absolute; transform:translate(-50%,-50%)}
+.crop .mk .bdg{position:static; margin:0; width:36px; height:36px; font-size:20px}
+.cut{display:block; flex:none; max-width:none}
+.cut.half{background-repeat:no-repeat}
+
+/* ===== the sorter bands (impurities: gas or slag) ===== */
+.bands{display:grid; grid-template-columns:1fr 1fr; gap:12px; flex:1; min-height:0}
+.band{display:flex; flex-direction:column; gap:6px; border-radius:16px; padding:10px 14px; background:rgba(10,24,52,.82); border:2.5px dashed rgba(255,255,255,.45); min-height:0}
+.band h4{margin:0; font-size:22px; font-weight:800; line-height:1.25; color:var(--gold)}
+.band small{display:block; font-size:16px; font-weight:700; color:#d9e6f5; line-height:1.3}
+.band.gas{border-color:#5cc4ff} .band.gas h4{color:#8fd8ff} .band.slg{border-color:#ff9a4a} .band.slg h4{color:#ffc084}
+.bchips{display:flex; flex-wrap:wrap; gap:8px; min-height:44px}
+.bchips .mchip{font-size:22px; padding:3px 16px; font-family:var(--font-display)}
+.band.shake{animation:shk .34s}
+#tray.tray{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+
+/* three or four cards across */
+.rcards.three{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.rcards.three .rcard{padding:10px 14px; align-items:start}
+.rcards.three .rcard .rt b{font-size:23px; line-height:1.3} .rcards.three .rcard .rx{font-size:19px; line-height:1.4}
+.rcards.four{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+.rcards.four .rcard{padding:10px 12px; align-items:start}
+.rcards.four .rcard .rt b{font-size:21px; line-height:1.3} .rcards.four .rcard .rx{font-size:17.5px; line-height:1.4}
+
+/* ===== the alloy: rows of atoms (pure iron slides, the steel jams) ===== */
+.atoms{width:100%; height:auto; display:block}
+.atoms .row{transition:transform .9s cubic-bezier(.3,.7,.3,1)}
+.atoms.push .pure .row.t{transform:translateX(56px)}
+.atoms.push .alloy .row.t{transform:translateX(9px); animation:jam .9s}
+@keyframes jam{0%{transform:translateX(0)} 40%{transform:translateX(12px)} 100%{transform:translateX(9px)}}
+
+/* ===== carbon meter ===== */
+.cmeter{display:flex; flex-direction:column; gap:8px}
+.cmeter input[type=range]{width:100%; accent-color:var(--gold); height:34px}
+.cmeter .cval{font-family:var(--font-display); font-size:34px; font-weight:800; color:var(--gold); direction:ltr; text-align:center}
+.cmeter .ckind{font-size:22px; font-weight:800; text-align:center; min-height:34px}
+.cmeter .cscale{display:flex; justify-content:space-between; font-size:16px; font-weight:700; color:#cfe0f3; direction:ltr}
+
+/* heat exchange diagram */
+.hx path.flow{stroke-dasharray:9 8; animation:dash 1.1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-34}}
+
+/* tickets: tight, so that the longest exam stems and choices fit the stage */
+.slide.tkt .tq{padding:12px 22px; gap:8px}
+.slide.tkt .tq h4{font-size:22px; line-height:1.35}
+.slide.tkt .tq .opt{min-height:42px; font-size:19.5px; padding-top:2px; padding-bottom:2px}
+.slide.tkt .tq .opt .num{font-size:.92em}
+.slide.tkt .tq .fb{min-height:24px; font-size:19px}
+
+/* choices laid in a row inside a template frame */
+.tpl .opts{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; width:100%}
+.tpl .opt{min-height:58px; font-size:19px; padding:4px 12px; line-height:1.3}
+.tpl .opt .ix{flex:none}
+
+/* the zones of the furnace lit up on the picture */
+.tb.zh{border:4px solid #fff; background:rgba(255,255,255,.10); opacity:0; transition:opacity .45s; pointer-events:none}
+.tb.zh.on{opacity:1}
+.tb.zh[data-z="0"]{border-color:#ff4d3a} .tb.zh[data-z="1"]{border-color:#ff9a2a} .tb.zh[data-z="2"]{border-color:#ffe24a}
+.tb.hot .rx{pointer-events:none}

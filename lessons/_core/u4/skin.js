@@ -3,7 +3,7 @@
 /* text that sits straight on the photograph (not inside a card) gets a quiet dark plate, so it stays readable over any picture.
    Called by the player for every slide it builds; the class 'onpic' is styled in skin_photo.css (no padding, so nothing moves). */
 var SKIN=(function(){
-  var CARD='.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq,.sent,.stp,.rcard,.tile,.opt,.btn,.qr,.cls,.tray,.mtray,.mslot,.pf,.zone,.pill,.chip,.callout,.gbar,.ls,.gi,.team,.score,.tag,.fb,.hd,.nav,.steps,.rd,button,input,select,table,svg,.ptn';
+  var CARD='.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq,.sent,.stp,.rcard,.tile,.opt,.btn,.qr,.cls,.tray,.mtray,.mslot,.pf,.zone,.pill,.chip,.callout,.gbar,.ls,.gi,.team,.score,.tag,.fb,.hd,.nav,.steps,.rd,button,input,select,table,svg,.ptn,.tb';
   /* text that already sits on a surface with its own colour (a card, a badge, a band) must not get a plate */
   function opaque(e){
     var c=getComputedStyle(e); if(c.backgroundImage&&c.backgroundImage!=='none') return true;

@@ -116,6 +116,12 @@
   R('p_e_electrolysis',{bg:'s_e_electrolysis',  dim:.12, dust:6,  ph:7});
   R('p_e_pour',        {bg:'s_e_pour_ingots',   dim:.12, dust:8,  ph:8});
   R('p_e_sunset',      {bg:'s_e_mine_sunset',   dim:.12, dust:6,  ph:9});
+  /* fifth batch (Nov 2026, lesson 2-2): circuit and molten-metal pictures without any text; used once each as backgrounds. */
+  R('p_w_circ1',  {bg:'s_w_circ1',  dim:.08, dust:0, ph:10});
+  R('p_w_circ2',  {bg:'s_w_circ2',  dim:.08, dust:0, ph:11});
+  R('p_w_circ3',  {bg:'s_w_circ3',  dim:.08, dust:0, ph:12});
+  R('p_w_split',  {bg:'s_w_split',  dim:.04, dust:0, ph:13});
+  R('p_w_molten', {bg:'s_w_molten', dim:.06, dust:0, ph:14});
   /* plain backgrounds (no picture): the palette of the slide with a few soft lights. The teacher dislikes repeated pictures (Nov 2026), so a slide may stay plain instead. */
   R('p_plain_a', {dust:12, seed:3});
   R('p_plain_b', {dust:6,  seed:11});
