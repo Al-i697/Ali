@@ -40,22 +40,26 @@
       {
        "code": "1-1",
        "title": "الترابط وخصائص الفلزات",
-       "id": "chem10:1_1"
+       "id": "chem10:1_1",
+       "page": "lesson11.html"
       },
       {
        "code": "1-2",
        "title": "العناصر الانتقالية",
-       "id": "chem10:1_2"
+       "id": "chem10:1_2",
+       "page": "lesson12.html"
       },
       {
        "code": "1-3",
        "title": "الفلزات القلوية",
-       "id": "chem10:1_3"
+       "id": "chem10:1_3",
+       "page": "lesson13.html"
       },
       {
        "code": "1-4",
        "title": "نشاط الفلزات وسلسلة النشاط الكيميائي",
-       "id": "chem10:1_4"
+       "id": "chem10:1_4",
+       "page": "lesson14.html"
       }
      ]
     },
@@ -67,12 +71,14 @@
       {
        "code": "2-1",
        "title": "استخلاص الفلزات وإعادة تدويرها",
-       "id": "chem10:2_1"
+       "id": "chem10:2_1",
+       "page": "lesson21.html"
       },
       {
        "code": "2-2",
        "title": "إنتاج الحديد والفولاذ في الفرن العالي",
-       "id": "chem10:2_2"
+       "id": "chem10:2_2",
+       "page": "lesson22.html"
       },
       {
        "code": "2-3",

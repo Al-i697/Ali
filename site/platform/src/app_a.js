@@ -129,7 +129,7 @@ function courseId(g,s){return s+g}
 function courseCounts(cid,sem){var c=CATALOG.courses[cid], tot=0, b=0; if(c) c.units.forEach(function(u){ if(sem&&u.sem!==sem) return; u.lessons.forEach(function(l){tot++; if(l.page) b++})}); return {tot:tot,built:b}}
 function gradeCounts(g){var tot=0,b=0,subs=0; Object.keys(CATALOG.subjects).forEach(function(s){var k=courseCounts(courseId(g,s)); if(k.tot){subs++; tot+=k.tot; b+=k.built}}); return {tot:tot,built:b,subjects:subs}}
 var GPAL={10:'emerald',11:'navy',12:'violet'}, SPAL={chem:'emerald',phys:'navy',bio:'ember',env:'violet'}, GSTK={10:'m_flask',11:'m_atom',12:'m_star'}, SSTK={chem:'m_flask',phys:'m_bulb',bio:'micro',env:'lens'};
-function readyText(k){return k.built?ar(k.built)+' '+(k.built===1?'درس جاهز':'دروس جاهزة'):'قريباً'}
+function readyText(k){return k.built?ar(k.built)+' '+(k.built===1?'درس جاهز':(k.built>10?'درساً جاهزاً':'دروس جاهزة')):'قريباً'}
 function countText(k){return k.built?readyText(k)+' من '+ar(k.tot):(k.tot?'قريباً · '+ar(k.tot)+' '+(k.tot>10?'درساً':'دروس'):'قريباً')}
 function backBar(title,sub){return '<div class="backbar"><button class="sbtn big" type="button" data-back>'+ic('chevr')+'رجوع</button><div><h1 class="h1" style="font-size:42px">'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div></div>'}
 function stk(name,css,w,r){return typeof STK!=='undefined'&&STK.has&&STK.has(name)!==false?STK.html(name,{css:css,w:w,r:r,d:.5,free:1}):''}

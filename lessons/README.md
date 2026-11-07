@@ -8,6 +8,8 @@
 | ١-٢ العناصر الانتقالية | [`1-2-transition-elements`](1-2-transition-elements/README.md) |
 | ١-٣ الفلزات القلوية | [`1-3-alkali-metals`](1-3-alkali-metals/README.md) |
 | ١-٤ نشاط الفلزات | [`1-4-reactivity-series`](1-4-reactivity-series/README.md) |
+| ٢-١ استخلاص الفلزات | [`2-1-extraction`](2-1-extraction/README.md) |
+| ٢-٢ إنتاج الحديد والفولاذ | [`2-2-iron-steel`](2-2-iron-steel/README.md) |
 | ٣-١ الكتل النسبية | [`3-1-relative-masses`](3-1-relative-masses/README.md) |
 | ٣-٢ المول | [`3-2-the-mole`](3-2-the-mole/README.md) |
 | ٣-٣ حسابات تتضمن كتلاً متفاعلة | [`3-3-reacting-masses`](3-3-reacting-masses/README.md) |
@@ -17,11 +19,11 @@
 | ٤-٢ الألكينات وتفاعلات الإضافة | [`4-2-alkenes`](4-2-alkenes/README.md) |
 | ٤-٣ البترول والوقود الأحفوري | [`4-3-petroleum`](4-3-petroleum/README.md) |
 
-الوحدتان ١ و٤ تُبنيان بالأداة المشتركة `_core/tools/u4build.py` (انظر `build.py` في كل درس). خيارات: `skin='cards'` (الخلفيات الحية خلف بطاقات ملوّنة)، `eqlab=True` (ورشة الصيغ والمعادلات)، `shuffle=True` (خلط ترتيب خيارات الأسئلة؛ الوحدة ١). الدروس ١-١ إلى ١-٤ على فرع `lessons/unit-1-metals` ولم تُضَف بعد إلى الموقع (`site/`).
+الوحدات ١ و٢ و٤ تُبنى بالأداة المشتركة `_core/tools/u4build.py` (انظر `build.py` في كل درس). خيارات: `skin='cards'` (الخلفيات الحية خلف بطاقات ملوّنة)، `eqlab=True` (ورشة الصيغ والمعادلات)، `shuffle=True` (خلط ترتيب خيارات الأسئلة؛ الوحدة ١). الدروس ١-١ إلى ١-٤ على فرع `lessons/unit-1-metals` ولم تُضَف بعد إلى الموقع (`site/`).
 
 ## الموقع
 ```bash
-python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson31.html + lesson32.html + lesson33.html + lesson34.html + lesson35.html + lesson41.html + lesson42.html + lesson43.html
+python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson11.html إلى lesson22.html + lesson31.html إلى lesson35.html + lesson41.html إلى lesson43.html
 ```
 افتح `site/dist/index.html` وستجد الدروس كبطاقات؛ كل درس فيه زر «الدروس» للعودة.
 
