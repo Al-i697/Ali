@@ -1508,14 +1508,14 @@ html[data-fx="0"] .shaking{animation:none}
 .tcol.r1 .rs{opacity:.8} .tcol.r2 .rs{opacity:1}
 .tcol.r2 .nl line.rs{stroke-width:11}
 #wk{align-self:center}
-.slide[data-id=tubes] #q .opts,.slide[data-id=speed] #q .opts,.slide[data-id=galvlad] #q .opts{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.slide[data-id=tubes] #q .opts,.slide[data-id=speed] #q .opts,.slide[data-id=galvlad] #q .opts,.slide[data-id=al1] #q .opts,.slide[data-id=scratch] #q .opts{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
 
 /* ===== scratch demo (tin and zinc) ===== */
 .scw{display:grid; grid-template-columns:1fr 1fr; gap:14px; flex:1; min-height:0}
 .scp{display:flex; flex-direction:column; gap:6px; padding:10px 14px; border-radius:16px; background:rgba(10,24,52,.82); border:2.5px solid rgba(255,255,255,.28)}
 .scp h4{margin:0; font-size:23px; font-weight:800; color:var(--gold)}
-.scp .sv{height:150px; flex:none}
-.scp .cap{font-size:18px; font-weight:700; line-height:1.4; min-height:50px}
+.scp .sv{height:130px; flex:none}
+.scp .cap{font-size:18px; font-weight:700; line-height:1.4; min-height:46px}
 .scw .gap,.scw .rust,.scw .zni,.scw .zfilm,.scw .zl{opacity:0; transition:opacity .8s}
 .scw.s1 .gap{opacity:1} .scw.s2 .rust,.scw.s2 .zni{opacity:1} .scw.s2 .zfilm,.scw.s2 .zl{opacity:1}
 .scw .zi{animation:zup 2.4s ease-in infinite; animation-delay:var(--d)}
@@ -1537,8 +1537,8 @@ html[data-fx="0"] .shaking{animation:none}
 /* ===== iron rust flakes off, aluminium oxide stays ===== */
 .oxp{display:flex; flex-direction:column; gap:6px; padding:10px 14px; border-radius:16px; background:rgba(10,24,52,.82); border:2.5px solid rgba(255,255,255,.28)}
 .oxp h4{margin:0; font-size:23px; font-weight:800; color:var(--gold)}
-.oxp .sv{height:170px; flex:none}
-.oxp .cap{font-size:18px; font-weight:700; line-height:1.4; min-height:50px}
+.oxp .sv{height:140px; flex:none}
+.oxp .cap{font-size:18px; font-weight:700; line-height:1.4; min-height:46px}
 .rl1,.rl2,.ox,.fl{opacity:0}
 .oxw.go .rl1{animation:grow3 1.4s forwards} .oxw.go .rl2{animation:grow2 1.6s .8s forwards}
 .oxw.go .fl{animation:flake 2.6s forwards; animation-delay:calc(1.7s + var(--d))}
@@ -1562,6 +1562,8 @@ html[data-fx="0"] .shaking{animation:none}
 .slide.tkt .tq .opt .num{font-size:.92em}
 .slide.tkt .tq .fb{min-height:24px; font-size:19px}
 .slide[data-id=galvlad] #q .opt{font-size:17px; padding:2px 8px; min-height:44px}
+.slide[data-id=al1] #q .opt,.slide[data-id=scratch] #q .opt{font-size:17.5px; padding:2px 8px; min-height:44px}
+.scw{align-items:start}
 
 
 </style>
