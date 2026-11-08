@@ -10,6 +10,7 @@
 | ١-٤ نشاط الفلزات | [`1-4-reactivity-series`](1-4-reactivity-series/README.md) |
 | ٢-١ استخلاص الفلزات | [`2-1-extraction`](2-1-extraction/README.md) |
 | ٢-٢ إنتاج الحديد والفولاذ | [`2-2-iron-steel`](2-2-iron-steel/README.md) |
+| ٢-٣ السبائك | [`2-3-alloys`](2-3-alloys/README.md) |
 | ٢-٤ تآكل الفلزات وحمايتها | [`2-4-corrosion`](2-4-corrosion/README.md) |
 | ٣-١ الكتل النسبية | [`3-1-relative-masses`](3-1-relative-masses/README.md) |
 | ٣-٢ المول | [`3-2-the-mole`](3-2-the-mole/README.md) |
