@@ -8,7 +8,7 @@ const results=[]; const errs=[];
   async function open(id){
     const n=IDS.indexOf(id)+1; const p=await b.newPage({viewport:{width:1600,height:900}});
     p.on('console',m=>{if(m.type()==='error')errs.push('['+id+'] '+m.text())}); p.on('pageerror',e=>errs.push('['+id+'] PAGEERR '+e.message));
-    await p.goto(URL+'#s'+n); await p.waitForTimeout(1900); return p;
+    await p.goto(URL+'?pts=all#s'+n); await p.waitForTimeout(1900); return p;
   }
   async function fill(sl,sel,v){const i=sl.locator(sel+' input').first(); await i.fill(String(v)); await i.press('Enter'); await sl.page().waitForTimeout(120)}
   async function tap(p,sl,k,slotSel,chipSel){await sl.locator(chipSel+'[data-k="'+k+'"]').click(); await sl.locator(slotSel+'[data-k="'+k+'"]').click(); await p.waitForTimeout(150)}
@@ -27,7 +27,7 @@ const results=[]; const errs=[];
     }); return bad.slice(0,3).join(' | ') }) }
   const cnt=async(l)=>await l.count(), vis=async(l)=>await l.isVisible();
   async function ticket(p,sl,seq){
-    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt').nth(a.opt).click();
+    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt[data-i="'+a.opt+'"]').click();
       await p.waitForTimeout(150); await sl.locator('#tkn').click(); await p.waitForTimeout(150) }
     return await vis(sl.locator('.score'));
   }
@@ -36,10 +36,10 @@ const results=[]; const errs=[];
   const gb=async(p,sl)=>{await p.waitForTimeout(300); return await vis(sl.locator('#gb'))};
 
   await T('goals',async(p,sl)=>{await sl.locator('.gi').first().click(); return await sl.locator('.gi.done').count()===1});
-  await T('who',async(p,sl)=>{for(let i=0;i<3;i++) await sl.locator('.clue').nth(i).click(); if((await cnt(sl.locator('.clue.on')))!==3) return false; await sl.locator('.opt').nth(0).click(); await sl.locator('.opt').nth(1).click(); return await gb(p,sl)});
-  await T('predict',async(p,sl)=>{await sl.locator('.opt').nth(0).click(); await sl.locator('.opt').nth(3).click(); await p.waitForTimeout(1500); const op=await sl.locator('.gfill').first().evaluate(e=>getComputedStyle(e).opacity); return +op===1 && await gb(p,sl)});
+  await T('who',async(p,sl)=>{for(let i=0;i<3;i++) await sl.locator('.clue').nth(i).click(); if((await cnt(sl.locator('.clue.on')))!==3) return false; await sl.locator('.opt[data-i="0"]').click(); await sl.locator('.opt[data-i="1"]').click(); return await gb(p,sl)});
+  await T('predict',async(p,sl)=>{await sl.locator('.opt[data-i="0"]').click(); await sl.locator('.opt[data-i="3"]').click(); await p.waitForTimeout(1500); const op=await sl.locator('.gfill').first().evaluate(e=>getComputedStyle(e).opacity); return +op===1 && await gb(p,sl)});
   await T('avog',async(p,sl)=>{await rows(sl,[['av1',44],['av2',30]]); return await gb(p,sl)});
-  await T('rtp',async(p,sl)=>{await sl.locator('.tbtn2[data-k="2"]').click(); const hot=await sl.locator('#psvg.hot').count(); await sl.locator('.tbtn2[data-k="0"]').click(); const cold=await sl.locator('#psvg.cold').count(); await sl.locator('#pq .opt').nth(0).click(); return hot===1&&cold===1&&await gb(p,sl)});
+  await T('rtp',async(p,sl)=>{await sl.locator('.tbtn2[data-k="2"]').click(); const hot=await sl.locator('#psvg.hot').count(); await sl.locator('.tbtn2[data-k="0"]').click(); const cold=await sl.locator('#psvg.cold').count(); await sl.locator('#pq .opt[data-i="0"]').click(); return hot===1&&cold===1&&await gb(p,sl)});
   await T('tri',async(p,sl)=>{for(const k of ['V','n','M']) await sl.locator('.cv[data-k="'+k+'"]').click({force:true}); const t=await sl.locator('#tf').textContent(); return t.includes('V')&&await gb(p,sl)});
   await T('ex1',async(p,sl)=>{await rows(sl,[['v1',2.88],['v2',2880]]); return (await cnt(sl.locator('.ccell.on')))===3 && await gb(p,sl)});
   await T('ex2',async(p,sl)=>{await rows(sl,[['w1',0.2],['w2',0.0083]]); return (await cnt(sl.locator('.ccell.on')))===3 && await gb(p,sl)});
@@ -47,10 +47,10 @@ const results=[]; const errs=[];
   await T('q313',async(p,sl)=>{await rows(sl,[['a',0.02],['b',2],['c',0.07]]); return await gb(p,sl)});
   await T('tk1',async(p,sl)=>ticket(p,sl,[{num:12},{num:0.25},{opt:0},{num:0.005}]));
   await T('gasonly',async(p,sl)=>{await sl.locator('#gsl').evaluate(e=>{e.value=30; e.dispatchEvent(new Event('input'))}); const v=await sl.locator('#gsv').textContent(); await fill(sl,'.nin',30); return v==='30 mL'&&await gb(p,sl)});
-  await T('shrink',async(p,sl)=>{await sl.locator('#srun').click(); await p.waitForTimeout(1500); if(!(await vis(sl.locator('#s1')))) return false; const g=await cnt(sl.locator('.mol.gone')), pr=await cnt(sl.locator('.prod.on')); await sl.locator('#s1 .opt').nth(0).click(); await sl.locator('#s1 .opt').nth(1).click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#s2')))) return false; await sl.locator('#s2 .opt').nth(0).click(); return g===3&&pr===2&&await gb(p,sl)});
+  await T('shrink',async(p,sl)=>{await sl.locator('#srun').click(); await p.waitForTimeout(1500); if(!(await vis(sl.locator('#s1')))) return false; const g=await cnt(sl.locator('.mol.gone')), pr=await cnt(sl.locator('.prod.on')); await sl.locator('#s1 .opt[data-i="0"]').click(); await sl.locator('#s1 .opt[data-i="1"]').click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#s2')))) return false; await sl.locator('#s2 .opt[data-i="0"]').click(); return g===3&&pr===2&&await gb(p,sl)});
   await T('matrix',async(p,sl)=>{await rows(sl,[['m1',48],['m2',15],['m3',15],['m4',200],['m5',12],['m6',6],['m7',75],['m8',60],['m9',4],['m10',20],['m11',16]]); return (await okIn(sl))===11&&await gb(p,sl)});
   await T('q314',async(p,sl)=>{await rows(sl,[['a1',1],['a2',2],['b1',80],['b2',50],['b3',60],['c1',4.29],['c2',8.57],['c3',12.86]]); return (await okIn(sl))===8&&await gb(p,sl)});
-  await T('challenge',async(p,sl)=>{await sl.locator('.frm .opt').nth(1).click(); await sl.locator('.frm .opt').nth(0).click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#qn')))) return false; const go=await cnt(sl.locator('#cbars.go')); await rows(sl,[['n1',60],['n2',20]]); await p.waitForTimeout(300); return go===1&&await vis(sl.locator('#defs'))});
+  await T('challenge',async(p,sl)=>{await sl.locator('.frm .opt[data-i="1"]').click(); await sl.locator('.frm .opt[data-i="0"]').click(); await p.waitForTimeout(300); if(!(await vis(sl.locator('#qn')))) return false; const go=await cnt(sl.locator('#cbars.go')); await rows(sl,[['n1',60],['n2',20]]); await p.waitForTimeout(300); return go===1&&await vis(sl.locator('#defs'))});
   await T('flow34',async(p,sl)=>{for(const g of ['m','v']) for(const w of ['m','v']){ await sl.locator('.pk[data-g="'+g+'"]').click(); await sl.locator('.pw[data-w="'+w+'"]').click(); await p.waitForTimeout(80) } const on=await cnt(sl.locator('.rbx.on')); return on===5&&await gb(p,sl)});
   await T('q315',async(p,sl)=>{await rows(sl,[['s1',0.0217],['s2',0.0109],['s3',261]]); return (await cnt(sl.locator('.ccell.on')))===4&&await gb(p,sl)});
   await T('zn',async(p,sl)=>{await rows(sl,[['z1',0.0615],['z2',0.0615],['z3',1477]]); return (await cnt(sl.locator('.ccell.on')))===4&&await gb(p,sl)});
@@ -65,7 +65,7 @@ const results=[]; const errs=[];
     }
     const rowsN=await cnt(sl.locator('#lvtab tbody tr')), dots=await cnt(sl.locator('#lvplot circle'));
     if(!(await vis(sl.locator('#lvq')))) return false;
-    await sl.locator('#lvq .opt').nth(0).click(); return rowsN===4&&dots===4&&await gb(p,sl)});
+    await sl.locator('#lvq .opt[data-i="0"]').click(); return rowsN===4&&dots===4&&await gb(p,sl)});
   await T('labq',async(p,sl)=>ticket(p,sl,[{opt:0},{opt:0},{opt:0},{num:0.0017},{num:0.041}]));
   await T('ex34a',async(p,sl)=>{await fill(sl,'.nin',82); await p.waitForTimeout(300); if(!(await vis(sl.locator('#rsn')))) return false; await sl.locator('.rsb[data-i="4"]').click(); for(const i of [0,1,2,3]) await sl.locator('.rsb[data-i="'+i+'"]').click(); return await gb(p,sl)});
   await T('ex34b',async(p,sl)=>{await rows(sl,[['b1',0.00342],['b2',0.082],['b3',0.41]]); return (await cnt(sl.locator('.ccell.on')))===4&&await gb(p,sl)});

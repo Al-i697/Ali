@@ -2,9 +2,15 @@
 var LESSON={
   short:'محاليل ومعايرة', brand:'الدرس ٣-٥ · محاليل ومعايرة', home:'index.html',
   chapters:['مدخل','تركيز الكتلة','التركيز المولي','المعايرة','حسابات المعايرة','تطبيقات','الخريطة والامتحانات','ختام'],
-  bgMap:['waves','hexes','bubbles','reactions','bonds','organic','periodic','doodles'],
+  /* Backgrounds (new look, as in the later lessons): the teacher's photographs mixed freely, each used once in this lesson, with plain palette backgrounds between them because he dislikes repeated pictures. */
+  bgMap:['p_plain_a','p_plain_b','p_plain_c','p_plain_d','p_plain_a','p_plain_b','p_plain_c','p_plain_d'],
   palCh:['navy','emerald','violet','gold','ember','navy','gold','emerald'],
-  bgId:{mix:'bubbles',vocab:'doodles',cg:'hexes',ex37:'hexes',q316:'periodic',tk1:'doodles',cm:'atomic',ex38:'bubbles',ncv:'bubbles',q317:'periodic',ex36:'hexes',tk2:'doodles',what:'organic',tsteps:'waves',lab0:'waves',lab:'bubbles',labq:'doodles',method:'hexes',ex39:'bonds',ex310:'bonds',q318:'reactions',q319:'reactions',q320:'bonds',ws35:'periodic',citric:'organic',na2co3:'bubbles',wsburette:'waves',wsorg:'organic',map:'atomic',q5:'periodic',race:'doodles',past1:'periodic',past2:'hexes',final:'doodles',hw:'bubbles'},
+  bgId:{goals:'p_glass_lab',mix:'p_plain_a',vocab:'p_plain_b',cg:'p_blue_lab',tk1:'p_plain_c',ex37:'p_plain_d',
+        q316:'p_plain_a',cm:'p_crystal_flask',ex36:'p_plain_b',tk2:'p_plain_c',ex38:'p_plain_d',ncv:'p_plain_a',
+        q317:'p_plain_b',what:'p_plain_a',tsteps:'p_plain_c',lab0:'p_m_lab',lab:'p_plain_d',labq:'p_plain_a',
+        method:'p_plain_c',ex39:'p_plain_b',ex310:'p_plain_c',q318:'p_plain_d',q319:'p_plain_a',q320:'p_plain_b',
+        ws35:'p_plain_c',wsburette:'p_lab_desk',wsorg:'p_plain_d',map:'p_plain_b',q5:'p_plain_a',race:'p_plain_b',
+        citric:'p_lab_equations',na2co3:'p_plain_b',past1:'p_e_blue_lab',past2:'p_plain_c',final:'p_lab_future',hw:'p_atom_bubbles'},
   palId:{mix:'violet',vocab:'gold',cg:'emerald',ex37:'emerald',q316:'navy',tk1:'ember',cm:'violet',ex38:'violet',ncv:'violet',q317:'navy',ex36:'emerald',tk2:'ember',what:'gold',tsteps:'navy',lab0:'navy',lab:'navy',labq:'violet',method:'gold',ex39:'ember',ex310:'ember',q318:'gold',q319:'gold',q320:'ember',ws35:'navy',citric:'violet',na2co3:'emerald',wsburette:'navy',wsorg:'gold',map:'violet',q5:'gold',race:'ember',past1:'gold',past2:'navy',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{

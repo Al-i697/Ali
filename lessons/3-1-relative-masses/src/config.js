@@ -2,9 +2,18 @@
 var LESSON={
   short:'الكتل النسبية', brand:'الدرس ٣-١ · الكتل النسبية', home:'index.html',
   chapters:['مدخل','لماذا نقيس الكميات؟','الكتلة الذرية النسبية Ar','كتلة الصيغة النسبية Mr','الصيغة من نموذج أو مخطط','نشاط عملي','أسئلة على نمط الامتحان','ختام'],
-  bgMap:['doodles','bubbles','atomic','hexes','bonds','reactions','periodic','waves'], bgId:{eou1:'reactions',table:'periodic',balance:'periodic',q32:'periodic',imp:'bubbles',shop:'doodles',calc:'waves',iso:'doodles',isoH:'hexes',tk1:'bubbles',race:'waves',tk2:'doodles',models:'bonds',lattice:'hexes',final:'reactions',hw:'doodles'},
+  /* Backgrounds (new look, as in the later lessons): the teacher's photographs mixed freely, each used once in this lesson, with plain palette backgrounds between them because he dislikes repeated pictures. */
+  bgMap:['p_plain_a','p_plain_b','p_plain_c','p_plain_d','p_plain_a','p_plain_b','p_plain_c','p_plain_d'],
   palCh:['navy','emerald','navy','emerald','navy','ember','gold','violet'],
+  bgId:{goals:'p_atom_formulas',imp:'p_plain_a',npk:'p_plain_c',shop:'p_plain_b',parts:'p_plain_a',c12:'p_plain_c',
+        balance:'p_plain_d',calc:'p_blue_lab',q32:'p_plain_a',table:'p_periodic_purple',iso:'p_plain_b',isoH:'p_plain_c',
+        cl:'p_plain_d',tk1:'p_glass_lab',types:'p_plain_b',mr:'p_plain_a',mr2:'p_plain_c',mr3:'p_plain_b',
+        ex31b:'p_plain_d',race:'p_plain_a',tk2:'p_molecules_circuit',models:'p_plain_b',lattice:'p_plain_c',q31:'p_crystal_flask',
+        ex31a:'p_plain_d',lab:'p_plain_a',eou1:'p_plain_b',past1:'p_lab_desk',past2:'p_plain_c',final:'p_lab_future',
+        hw:'p_bulb_tree'},
   palId:{eou1:'gold',imp:'emerald',npk:'ember',shop:'navy',c12:'violet',balance:'gold',q32:'gold',table:'gold',isoH:'violet',iso:'navy',tk1:'ember',race:'ember',tk2:'ember',final:'ember',hw:'violet'},
+  /* points that appear one click at a time (slide id: selector) */
+  pts:{goals:'.gi', hw:'.panel.dark li'},
   /* stickers placed under the content, where the slide has room: [sticker, x, y, width, tilt, entrance delay s] */
   stk:{
     goals:[['m_star',1130,556,90,6,1.0]],

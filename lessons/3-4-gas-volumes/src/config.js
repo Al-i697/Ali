@@ -2,9 +2,15 @@
 var LESSON={
   short:'حجوم الغازات', brand:'الدرس ٣-٤ · حجوم الغازات', home:'index.html',
   chapters:['مدخل','أفوجادرو والحجم المولي','الحجم والمولات','تفاعلات الغازات فقط','كتلة وغاز في تفاعل','نشاط ٣-٣ (إثرائي)','أسئلة امتحانات','ختام'],
-  bgMap:['bubbles','atomic','hexes','reactions','bonds','waves','periodic','doodles'],
+  /* Backgrounds (new look, as in the later lessons): the teacher's photographs mixed freely, each used once in this lesson, with plain palette backgrounds between them because he dislikes repeated pictures. */
+  bgMap:['p_plain_a','p_plain_b','p_plain_c','p_plain_d','p_plain_a','p_plain_b','p_plain_c','p_plain_d'],
   palCh:['navy','violet','emerald','gold','ember','navy','gold','emerald'],
-  bgId:{who:'doodles',predict:'bubbles',avog:'atomic',rtp:'waves',tri:'hexes',ex1:'hexes',ex2:'hexes',q312:'periodic',q313:'periodic',tk1:'doodles',gasonly:'reactions',shrink:'bubbles',matrix:'periodic',q314:'hexes',challenge:'waves',flow34:'organic',q315:'bonds',zn:'reactions',mgno3:'bonds',lab0:'waves',lab:'bubbles',labq:'doodles',ex34a:'hexes',ex34b:'bonds',ex34c:'organic',race:'doodles',past1:'periodic',past2:'hexes',final:'doodles',hw:'bubbles'},
+  bgId:{goals:'p_atom_formulas',who:'p_plain_a',predict:'p_plain_b',avog:'p_plain_a',rtp:'p_plain_c',tri:'p_plain_d',
+        tk1:'p_plain_a',ex1:'p_plain_b',ex2:'p_plain_c',q312:'p_plain_d',q313:'p_plain_a',gasonly:'p_blue_lab',
+        shrink:'p_plain_b',matrix:'p_plain_c',q314:'p_plain_d',challenge:'p_molecules_circuit',flow34:'p_plain_a',mgno3:'p_plain_b',
+        q315:'p_plain_c',zn:'p_m_zn_cu',lab0:'p_m_lab',lab:'p_plain_d',labq:'p_plain_a',ex34a:'p_plain_b',
+        ex34c:'p_plain_c',race:'p_plain_a',ex34b:'p_plain_d',past1:'p_plain_b',past2:'p_plain_a',final:'p_lab_future',
+        hw:'p_hands_globe'},
   palId:{who:'gold',predict:'navy',avog:'violet',rtp:'ember',tri:'emerald',ex1:'emerald',ex2:'emerald',q312:'navy',q313:'navy',tk1:'ember',gasonly:'gold',shrink:'violet',matrix:'emerald',q314:'gold',challenge:'ember',flow34:'violet',q315:'ember',zn:'ember',mgno3:'gold',lab0:'navy',lab:'navy',labq:'violet',ex34a:'gold',ex34b:'emerald',ex34c:'violet',race:'ember',past1:'gold',past2:'gold',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{

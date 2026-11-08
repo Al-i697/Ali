@@ -198,7 +198,7 @@ function bindFlow(el,C,mode){
      '.slide[data-id=ex31b] .xr>div:first-child{border-radius:0 14px 14px 0;justify-content:space-between}'+
      '.slide[data-id=ex31b] .xr>div:last-child{border-radius:14px 0 0 14px;justify-content:center}'+
      '.slide[data-id=ex31b] .xn{font-size:19px;white-space:nowrap}.slide[data-id=ex31b] .xf{font-family:var(--font-display);font-weight:800;font-size:25px;direction:ltr}'+
-     '.slide[data-id=ex31b] .xc{display:inline-block;direction:ltr;background:rgba(255,255,255,.1);border-radius:8px;padding:1px 9px;font-size:20px;margin-inline-end:6px}.slide[data-id=ex31b] .xc b{color:var(--gold)}'+
+     '.slide[data-id=ex31b] .xc{display:inline-block;direction:ltr;background:rgba(10,24,52,.92);color:#fff;border-radius:8px;padding:1px 9px;font-size:20px;margin-inline-end:6px}.slide[data-id=ex31b] .xc b{color:var(--gold)}'+
      '.slide[data-id=ex31b] .xv{font-size:19px;direction:ltr}'+
      '.slide[data-id=ex31b] .rv{border:0;border-radius:10px;padding:4px 12px;font:700 17px var(--font-body);background:var(--field);color:var(--field-ink);cursor:pointer}'+
      '.slide[data-id=ex31b] .xr.done>div{box-shadow:inset 0 0 0 2px rgba(120,220,150,.45)}'+

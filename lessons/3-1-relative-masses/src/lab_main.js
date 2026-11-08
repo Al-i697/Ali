@@ -103,7 +103,7 @@
     function phaseSafety(){
       setStep(0);
       say_('<b>السلامة أولاً.</b> البس معدّات الحماية قبل ما تلمس أي شي. (شريط الماغنيسيوم سريع الاشتعال.)');
-      ctl('<button class="gear" type="button" data-g="eye">'+gearSVG('eye')+'نظارة واقية</button><button class="gear" type="button" data-g="coat">'+gearSVG('coat')+'معطف المختبر</button><button class="gear" type="button" data-g="glove">'+gearSVG('glove')+'قفازان واقيان</button>'+btn('go0','ابدأ التجربة','hide'));
+      ctl('<button class="gear" type="button" data-g="eye">'+gearSVG('eye')+'<span>نظارة واقية</span></button><button class="gear" type="button" data-g="coat">'+gearSVG('coat')+'<span>معطف المختبر</span></button><button class="gear" type="button" data-g="glove">'+gearSVG('glove')+'<span>قفازان واقيان</span></button>'+btn('go0','ابدأ التجربة','hide'));
       $$('.gear',ct).forEach(function(g){g.addEventListener('click',function(){
         g.classList.toggle('on'); S.gear[g.getAttribute('data-g')]=g.classList.contains('on');
         var all=S.gear.eye&&S.gear.coat&&S.gear.glove; $('#go0',ct).classList.toggle('hide',!all);

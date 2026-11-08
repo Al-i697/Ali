@@ -131,3 +131,9 @@ html[data-fx="0"] .lbub{animation:none}
 .slide[data-id=ag] .opt .ix{width:32px; height:32px; font-size:19px}
 .slide[data-id=ag] #pick .opts,.slide[data-id=ag] #pick .col{gap:6px}
 .slide[data-id=ag] .fb{min-height:22px; font-size:19px; line-height:1.2}
+
+/* new look: contrast of the small exam-source badge and of the answer rows */
+.pq .yr{background:rgba(10,24,52,.92); color:#fff}
+.qr{background:rgba(var(--d2),.85)}
+.nin.lock{opacity:.62}   /* the rows that wait for the previous answer stay readable */
+.bigeq sub{font-size:19px}   /* gold subscripts count as large bold text for contrast */

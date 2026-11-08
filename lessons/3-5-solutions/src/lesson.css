@@ -189,3 +189,8 @@ text.hl{fill:var(--gold)!important}
 .slide[data-id=past2] .sel button{min-height:34px!important}
 .slide[data-id=ex310] .bigeq{font-size:26px!important}
 .slide[data-id=ex310] .frm .sm{font-size:18px!important}
+
+/* new look: contrast of the small exam-source badge and of the answer rows */
+.pq .yr{background:rgba(10,24,52,.92); color:#fff}
+.qr{background:rgba(var(--d2),.85)}
+.nin.lock{opacity:.62}   /* the rows that wait for the previous answer stay readable */

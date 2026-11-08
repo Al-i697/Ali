@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');const path=require('path');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1600,height:900}});const errs=[];
  p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
- await p.goto('file://'+path.resolve('lesson31.html'));await p.waitForTimeout(1500);
+ await p.goto('file://'+path.resolve('lesson31.html')+'?pts=all');await p.waitForTimeout(1500);
  const n=await p.evaluate(()=>document.querySelectorAll('.prog .seg').length);const bad=[];let totalFx=0;
  for(let i=1;i<=n;i++){
    const fx=await p.evaluate(()=>document.querySelectorAll('.slide.on .fx').length); totalFx+=fx;

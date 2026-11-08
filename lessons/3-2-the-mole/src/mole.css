@@ -53,3 +53,7 @@ tr.qr.ok{background:none; box-shadow:none}
 .body>div{max-width:100%}
 /* end-of-unit question 2: four compact options next to the chained steps */
 .slide[data-id=eou2] .opt{min-height:50px; font-size:23px; padding:4px 16px}
+
+/* new look: contrast of the small exam-source badge and of the answer rows */
+.pq .yr{background:rgba(10,24,52,.92); color:#fff}
+.qr{background:rgba(var(--d2),.85)}

@@ -152,8 +152,8 @@ slide({id:'c12',ch:2,title:'الذرة المقياس: لماذا الكربون
   slide({id:'balance',ch:2,title:'الكتلة الذرية النسبية (Ar)',tag:'سحب وإفلات',
    html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="frm brk gold" style="padding:12px 24px"><p style="font-size:23px;line-height:1.55;text-align:center"><b>الكتلة الذرية النسبية (A<sub>r</sub>):</b> متوسط كتل ذرات العنصر التي توجد في الطبيعة وفقاً لمقياس تكون فيه كتلة ذرة الكربون-12 مساوية لـ 12 وحدة كتلة ذرية (ذ.ك.ذ).</p></div>'+
     '<div style="display:flex;gap:16px;flex:1;min-height:0">'+
-    '<div class="frm brk" style="width:280px;flex:none;padding:12px 16px;gap:10px"><div class="rounds" id="rds">'+ROUNDS.map(function(r,i){return '<span class="rd" data-i="'+i+'">'+ar(i+1)+'</span>'}).join('')+'</div>'+
-     '<p id="rq" style="font-size:25px;line-height:1.5"></p><div class="tray" id="tr"></div><div class="fb" id="bfb" style="font-size:20px"></div><button class="btn acc sm hide" type="button" id="nx">الجولة التالية</button></div>'+
+    '<div class="frm brk" style="width:340px;flex:none;padding:10px 14px;gap:6px"><div class="rounds" id="rds">'+ROUNDS.map(function(r,i){return '<span class="rd" data-i="'+i+'">'+ar(i+1)+'</span>'}).join('')+'</div>'+
+     '<p id="rq" style="font-size:22px;line-height:1.4"></p><div class="tray" id="tr"></div><div class="fb" id="bfb" style="font-size:18px;line-height:1.35"></div><button class="btn acc sm hide" type="button" id="nx">الجولة التالية</button></div>'+
     '<div class="bal" id="bal" style="flex:1"><svg viewBox="0 0 900 460" id="bsvg"></svg><div class="zone" id="zL" style="left:6%;top:38%;width:28%;height:46%"></div><div class="zone" id="zR" style="left:66%;top:38%;width:28%;height:46%"></div></div></div></div>';},
    init:function(el){
     var round=0, L=[], Rr=[], ang=0, tgt=0, vel=0, raf=0, locked=false, svg=$('#bsvg',el);
@@ -206,7 +206,7 @@ slide({id:'c12',ch:2,title:'الذرة المقياس: لماذا الكربون
         locked=true; tgt=0; anim();
         later(function(){
           say(fb,'⚖ توازنت!','ok'); var d=document.createElement('div'); d.className='panel pop'; d.style.cssText='margin-top:6px;padding:10px 14px;font-size:21px;line-height:1.5'; d.innerHTML=r.res+'<div class="sm muted" style="margin-top:4px;font-size:17px">'+r.fig+' في الكتاب</div>'; fb.appendChild(d);
-          if(round<ROUNDS.length-1) nx.classList.remove('hide'); else { $$('.rd',el).forEach(function(x){x.className='rd done'}); var s=document.createElement('div'); s.className='panel dark pop'; s.style.cssText='margin-top:8px;padding:10px 14px;font-size:21px;line-height:1.5'; s.innerHTML='H = 1 · He = 4 · Mg = 24 ... هذي الكتل الذرية النسبية <b>Ar</b>'; fb.appendChild(s)}
+          if(round<ROUNDS.length-1) nx.classList.remove('hide'); else { $$('.rd',el).forEach(function(x){x.className='rd done'}); var s=document.createElement('div'); s.className='panel dark pop'; s.style.cssText='margin-top:4px;padding:8px 12px;font-size:18px;line-height:1.4'; s.innerHTML='H = 1 · He = 4 · Mg = 24 ... هذي الكتل الذرية النسبية <b>Ar</b>'; fb.appendChild(s)}
         },520);
       }else{ var dd=sum(Rr)-sum(L); say(fb, dd>0?'الكفة اليمنى أثقل':'الكفة اليسرى أثقل','') }
     }

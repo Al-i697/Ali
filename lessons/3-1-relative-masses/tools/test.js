@@ -6,7 +6,7 @@ const results=[]; const errs=[];
   async function open(n){
     const p=await b.newPage({viewport:{width:1600,height:900}});
     p.on('console',m=>{if(m.type()==='error')errs.push('[s'+n+'] '+m.text())}); p.on('pageerror',e=>errs.push('[s'+n+'] PAGEERR '+e.message));
-    await p.goto(URL+'#s'+n); await p.waitForTimeout(1900); return p;
+    await p.goto(URL+'?pts=all#s'+n); await p.waitForTimeout(1900); return p;
   }
   async function fill(sl,sel,v){const i=sl.locator(sel+' input').first(); await i.fill(String(v)); await i.press('Enter')}
   async function drag(p,from,to){const a=await from.boundingBox(), c=await to.boundingBox();
@@ -14,10 +14,21 @@ const results=[]; const errs=[];
     await p.mouse.move(c.x+c.width/2,c.y+c.height/2,{steps:8}); await p.mouse.up(); await p.waitForTimeout(150)}
   async function T(name,n,fn){
     const p=await open(n); const sl=p.locator('.slide.on');
-    try{ const r=await fn(p,sl); results.push([name,r===false?'FAIL':'ok']) }catch(e){ results.push([name,'FAIL: '+e.message.split('\n')[0]]) }
+    try{ const r=await fn(p,sl); let fit=r===false?'':await fits(p); results.push([name,r===false?'FAIL':(fit?'FAIL: nothing may leave the stage: '+fit:'ok')]) }catch(e){ results.push([name,'FAIL: '+e.message.split('\n')[0]]) }
     await p.close();
   }
+  /* after the steps of a slide, nothing may stick out of the stage */
+  async function fits(p){ await p.waitForTimeout(500); return await p.evaluate(()=>{
+    const st=document.querySelector('.stage').getBoundingClientRect(), k=st.width/1280, bad=[];
+    document.querySelectorAll('.slide.on *').forEach(e=>{
+      if(e.closest('.stk,.spk,.stk-pop')||(e.closest('svg')&&e.tagName.toLowerCase()!=='svg')) return;
+      const cs=getComputedStyle(e); if(cs.display==='none'||cs.visibility==='hidden'||+cs.opacity===0) return;
+      const r=e.getBoundingClientRect(); if(r.width<4||r.height<4) return;
+      if(r.bottom>st.bottom+2||r.top<st.top-2) bad.push((e.className&&e.className.baseVal===undefined?String(e.className).slice(0,18):e.tagName)+' '+Math.round((r.top-st.top)/k)+'-'+Math.round((r.bottom-st.top)/k));
+    }); return bad.slice(0,3).join(' | ') }) }
   const cnt=async(l)=>await l.count();
+  /* the options are shuffled, so a multiple-choice question is answered by trying the choices until one is right */
+  async function solve(p,box){ const n=await box.locator('.opt').count(); for(let i=0;i<n;i++){ await box.locator('.opt').nth(i).click(); await p.waitForTimeout(120); if(await box.locator('.opt.ok-b').count()) return true } return false }
 
   await T('npk',3,async(p,sl)=>{
     await sl.locator('.pr[data-i="1"] button[data-d="1"]').click(); await sl.locator('.pr[data-i="1"] button[data-d="1"]').click();
@@ -63,7 +74,7 @@ const results=[]; const errs=[];
   });
   await T('ex31a',25,async(p,sl)=>{const v=[12,3,4,2]; for(let i=0;i<4;i++) await fill(sl.locator('.sent').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.sent .ok-b')))===4});
   await T('tk1',14,async(p,sl)=>{
-    const pick=[1,1,1]; for(let i=0;i<3;i++){ await sl.locator('.tq.cur .opt').nth(pick[i]).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250) }
+    const pick=[1,1,1]; for(let i=0;i<3;i++){ await sl.locator('.tq.cur .opt[data-i="'+pick[i]+'"]').click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250) }
     await fill(sl,'.tq.cur .nin',10.2); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
     return (await sl.locator('.score b').textContent()).trim()==='4 / 4';
   });
@@ -76,8 +87,7 @@ const results=[]; const errs=[];
   await T('race',20,async(p,sl)=>{const v=[32,17,64,114,98,119,187.5,133.5]; for(let i=0;i<8;i++) await fill(sl.locator('.rc').nth(i),'.nin',v[i]); await p.waitForTimeout(150); return (await cnt(sl.locator('.rc.ok')))===8});
   await T('tk2',21,async(p,sl)=>{
     await fill(sl,'.tq.cur .nin',74); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
-    await sl.locator('.tq.cur .opt').nth(2).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
-    await sl.locator('.tq.cur .opt').nth(2).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
+    for(let i=0;i<2;i++){ await sl.locator('.tq.cur .opt[data-i="2"]').click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250) }
     return (await sl.locator('.score b').textContent()).trim()==='3 / 3';
   });
   await T('models',22,async(p,sl)=>{
@@ -131,13 +141,11 @@ const results=[]; const errs=[];
   });
   await T('final',30,async(p,sl)=>{
     await fill(sl,'.tq.cur .nin',58); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
-    await sl.locator('.tq.cur .opt').nth(1).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
-    await sl.locator('.tq.cur .opt').nth(1).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
-    await sl.locator('.tq.cur .opt').nth(0).click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250);
+    for(const k of [1,1,0]){ await sl.locator('.tq.cur .opt[data-i="'+k+'"]').click(); await sl.locator('#tkn').click(); await p.waitForTimeout(250) }
     return (await sl.locator('.score b').textContent()).trim()==='4 / 4';
   });
   await T('isoH',12,async(p,sl)=>{ const v=[0,1,2]; for(let i=0;i<3;i++) await fill(sl.locator('.mod').nth(i),'.nin',v[i]); await p.waitForTimeout(200); return (await cnt(sl.locator('.mod .ok-b')))===3 });
-  await T('eou1',27,async(p,sl)=>{await sl.locator('#eoa .opt').nth(1).click(); await sl.locator('#eoa .opt').nth(0).click(); await fill(sl,'.nin[data-n="b"]',8); await fill(sl,'.nin[data-n="c"]',98); await fill(sl,'.nin[data-n="d"]',13.2); await p.waitForTimeout(200); return (await cnt(sl.locator('.nin .ok-b, .nin input.ok-b')))===3 && (await sl.locator('#eoa .fb').textContent()).includes('أحسنت')});
+  await T('eou1',27,async(p,sl)=>{if(!(await solve(p,sl.locator('#eoa')))) return false; await fill(sl,'.nin[data-n="b"]',8); await fill(sl,'.nin[data-n="c"]',98); await fill(sl,'.nin[data-n="d"]',13.2); await p.waitForTimeout(200); return (await cnt(sl.locator('.nin .ok-b, .nin input.ok-b')))===3 && (await sl.locator('#eoa .fb').textContent()).includes('أحسنت')});
   await T('past1',28,async(p,sl)=>{
     await fill(sl.locator('.pq').nth(0),'.nin',19); await fill(sl.locator('.pq').nth(1),'.nin',24);
     await sl.locator('.pq').nth(2).locator('.sel button').nth(1).click(); await fill(sl.locator('.pq').nth(3),'.nin',12);

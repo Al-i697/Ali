@@ -8,7 +8,7 @@ const results=[]; const errs=[];
   async function open(id){
     const n=IDS.indexOf(id)+1; const p=await b.newPage({viewport:{width:1600,height:900}});
     p.on('console',m=>{if(m.type()==='error')errs.push('['+id+'] '+m.text())}); p.on('pageerror',e=>errs.push('['+id+'] PAGEERR '+e.message));
-    await p.goto(URL+'#s'+n); await p.waitForTimeout(1900); return p;
+    await p.goto(URL+'?pts=all#s'+n); await p.waitForTimeout(1900); return p;
   }
   async function fill(sl,sel,v){const i=sl.locator(sel+' input').first(); await i.fill(String(v)); await i.press('Enter'); await sl.page().waitForTimeout(120)}
   async function tap(p,sl,k,slotSel,chipSel){await sl.locator(chipSel+'[data-k="'+k+'"]').click(); await sl.locator(slotSel+'[data-k="'+k+'"]').click(); await p.waitForTimeout(150)}
@@ -27,7 +27,7 @@ const results=[]; const errs=[];
     }); return bad.slice(0,3).join(' | ') }) }
   const cnt=async(l)=>await l.count(), vis=async(l)=>await l.isVisible();
   async function ticket(p,sl,seq){
-    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt').nth(a.opt).click();
+    for(const a of seq){ const q=sl.locator('.tq.cur'); if(a.num!==undefined) await fill(q,'.nin',a.num); else await q.locator('.opt[data-i="'+a.opt+'"]').click();
       await p.waitForTimeout(150); await sl.locator('#tkn').click(); await p.waitForTimeout(150) }
     return await vis(sl.locator('.score'));
   }
@@ -37,13 +37,13 @@ const results=[]; const errs=[];
 
 
   await T('goals',async(p,sl)=>{await sl.locator('.gi').first().click(); return await sl.locator('.gi.done').count()===1});
-  await T('mix',async(p,sl)=>{await sl.locator('#mxm').evaluate(e=>{e.value=200; e.dispatchEvent(new Event('input'))}); await sl.locator('#mxv').evaluate(e=>{e.value=2; e.dispatchEvent(new Event('input'))}); const c=await sl.locator('#mxc').textContent(); await sl.locator('#mq .opt').nth(0).click(); await sl.locator('#mq .opt').nth(2).click(); return c.includes('100')&&await gb(p,sl)});
+  await T('mix',async(p,sl)=>{await sl.locator('#mxm').evaluate(e=>{e.value=200; e.dispatchEvent(new Event('input'))}); await sl.locator('#mxv').evaluate(e=>{e.value=2; e.dispatchEvent(new Event('input'))}); const c=await sl.locator('#mxc').textContent(); await sl.locator('#mq .opt[data-i="0"]').click(); await sl.locator('#mq .opt[data-i="2"]').click(); return c.includes('100')&&await gb(p,sl)});
   await T('vocab',async(p,sl)=>{for(const k of ['s','v','m']) await tap(p,sl,k,'.mslot','.mchip'); return await gb(p,sl)});
   await T('cg',async(p,sl)=>{for(const k of ['t','l','r']) await sl.locator('.cv[data-k="'+k+'"]').click({force:true}); const t=await sl.locator('#tf').textContent(); return t.includes('C')&&await gb(p,sl)});
   await T('ex37',async(p,sl)=>{await rows(sl,[['e1',0.25],['e2',40]]); return (await cnt(sl.locator('.ccell.on')))===3&&await gb(p,sl)});
   await T('q316',async(p,sl)=>{await rows(sl,[['a',2.5],['b',50],['c',0.02]]); return await gb(p,sl)});
   await T('tk1',async(p,sl)=>ticket(p,sl,[{num:40},{opt:0},{num:10},{num:0.5}]));
-  await T('cm',async(p,sl)=>{for(const k of ['t','l','r']) await sl.locator('.cv[data-k="'+k+'"]').click({force:true}); if(!(await vis(sl.locator('#mq')))) return false; await sl.locator('#mq .opt').nth(0).click(); await sl.locator('#mq .opt').nth(1).click(); return await gb(p,sl)});
+  await T('cm',async(p,sl)=>{for(const k of ['t','l','r']) await sl.locator('.cv[data-k="'+k+'"]').click({force:true}); if(!(await vis(sl.locator('#mq')))) return false; await sl.locator('#mq .opt[data-i="0"]').click(); await sl.locator('#mq .opt[data-i="1"]').click(); return await gb(p,sl)});
   await T('ex38',async(p,sl)=>{await rows(sl,[['e1',2.5],['e2',2.5],['e3',1]]); return (await cnt(sl.locator('.ccell.on')))===4&&await gb(p,sl)});
   await T('ncv',async(p,sl)=>{await rows(sl,[['e1',0.5],['e2',1.5]]); return (await cnt(sl.locator('.ccell.on')))===3&&await gb(p,sl)});
   await T('q317',async(p,sl)=>{await rows(sl,[['a',2],['b',0.2],['c',1],['d',0.02]]); return await gb(p,sl)});

@@ -78,7 +78,9 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   });
   await T('the slide number follows the lesson, the lesson home button returns to the platform, leaving unloads the lesson',async()=>{
     const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await openByHash(p);
-    await p.frameLocator('#lf').locator('#bNext').click(); await p.waitForTimeout(1300); assert.ok((await p.innerText('#dLs')).includes('شريحة ٢'),await p.innerText('#dLs'));
+    /* the first slide shows its goals one click at a time (click-by-click points), so Next is pressed until the slide changes */
+    for(let i=0;i<12&&!(await p.innerText('#dLs')).includes('شريحة ٢');i++){ await p.frameLocator('#lf').locator('#bNext').click(); await p.waitForTimeout(450) }
+    await p.waitForTimeout(900); assert.ok((await p.innerText('#dLs')).includes('شريحة ٢'),await p.innerText('#dLs'));
     await p.frameLocator('#lf').locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10-chem-1','the lesson home button returns to the lessons page of its semester'); assert.strictEqual(await p.evaluate(()=>document.getElementById('lf').getAttribute('src')),'about:blank');
     await p.context().close();
   });

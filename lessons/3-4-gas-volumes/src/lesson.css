@@ -186,3 +186,8 @@ button.pill:disabled{opacity:.5; cursor:default}
 .slide[data-id=q314] .frm{padding:5px 18px!important}
 .slide[data-id=zn] .frm,.slide[data-id=q315] .frm{padding:8px 18px!important}
 .slide[data-id=zn] .frm .sm{font-size:19px!important}
+
+/* new look: contrast of the small exam-source badge and of the answer rows */
+.pq .yr{background:rgba(10,24,52,.92); color:#fff}
+.qr{background:rgba(var(--d2),.85)}
+.nin.lock{opacity:.62}   /* the rows that wait for the previous answer stay readable */

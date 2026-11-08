@@ -1,0 +1,10 @@
+/* lesson 3-1: small contrast fixes for the solid-card look */
+.lnote th{color:#FFF3D6}                         /* the virtual-lab table heads sit on a warm card */
+.gear span{display:block}
+.rd{color:#fff}
+.rd.cur{background:rgba(10,24,52,.92); color:#fff; border-color:var(--cyan)}   /* the current round of the balance slide */
+.slide[data-id=table] .atab{font-size:20px}      /* the Ar table (12 rows) fits the card of the new look */
+.slide[data-id=parts] .body{padding-bottom:0}
+
+/* new look: contrast of the small exam-source badge */
+.pq .yr{background:rgba(10,24,52,.92); color:#fff}

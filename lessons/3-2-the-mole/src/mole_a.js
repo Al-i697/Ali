@@ -29,7 +29,7 @@ slide({id:'count',ch:1,title:'تمهيد: كم عدد…؟',tag:'سؤال',
  html:function(){
   var C=[['coins','كم عدد القطع المعدنية في الصورة؟'],['balloons','كم عدد البالونات في الصورة؟'],['rice','كم عدد حبات الأرز في الصورة؟']];
   return `<div class="col grow" style="gap:12px;justify-content:flex-start">
-   <div style="display:flex;gap:16px">${C.map(function(c){return `<div class="frm brk" style="flex:1;align-items:center;padding:12px 12px 10px;gap:6px"><img class="pic" src="${IMG[c[0]]}" alt="" style="width:150px;height:150px"><h3 style="margin:0;font-family:var(--font-display);font-size:23px;text-align:center;line-height:1.25">${c[1]}</h3></div>`}).join('')}</div>
+   <div style="display:flex;gap:16px">${C.map(function(c){return `<div class="frm brk" style="flex:1;align-items:center;padding:8px 12px 8px;gap:4px"><img class="pic" src="${IMG[c[0]]}" alt="" style="width:112px;height:112px"><h3 style="margin:0;font-family:var(--font-display);font-size:23px;text-align:center;line-height:1.25">${c[1]}</h3></div>`}).join('')}</div>
    <div class="panel" style="padding:12px 20px;gap:6px"><p class="lead" style="font-size:27px;margin:0"><b>لو كان عندنا كيس كامل من الأرز، ما أنسب طريقة لمعرفة عدد حباته؟</b></p>
     ${optsHTML([{t:'نعدّها حبة حبة'},{t:'نخمّن بالنظر فقط'},{t:'نزن الكتلة الكلية ثم نقسمها على كتلة الحبة الواحدة'}])}
     <div class="fb" style="min-height:28px"></div></div>
@@ -256,7 +256,7 @@ slide({id:'avo',ch:3,title:'عدد أفوجادرو ثابت',tag:'اختر ما
  html:function(){
   var S=[['C','كربون','12'],['Fe','حديد','56'],['H2O','ماء','18'],['MgO','أكسيد الماغنيسيوم','40']];
   return `<div class="col grow" style="gap:10px;justify-content:flex-start">
-   <div class="gbar" style="font-size:26px;padding:10px 22px">اختلاف الكتلة المولية واختلاف الصيغة يؤدي إلى أن عدد أفوجادرو يبقى ثابتاً رغم اختلاف الصيغة وكتلة المول الواحد</div>
+   <div class="gbar" style="font-size:22px;padding:8px 20px">اختلاف الكتلة المولية واختلاف الصيغة يؤدي إلى أن عدد أفوجادرو يبقى ثابتاً رغم اختلاف الصيغة وكتلة المول الواحد</div>
    <div style="display:flex;gap:18px;flex:1;min-height:0;align-items:stretch">
     <div class="frm brk" style="flex:1;align-items:center;justify-content:center;padding:8px">
      <svg viewBox="0 0 640 300" style="width:100%;height:100%" aria-hidden="true">
@@ -272,10 +272,10 @@ slide({id:'avo',ch:3,title:'عدد أفوجادرو ثابت',tag:'اختر ما
       <text x="490" y="128" text-anchor="middle" direction="ltr" font-family="Cairo,sans-serif" font-weight="800" font-size="26" fill="#2a1a00">6.02×10²³</text>
       <text id="cwhat" x="490" y="158" text-anchor="middle" font-family="Cairo,sans-serif" font-weight="700" font-size="17" fill="#2a1a00">ذرة كربون</text>
      </svg></div>
-    <div class="col" style="width:380px;flex:none;gap:10px;justify-content:center">
-     <div class="panel" style="padding:12px 18px;gap:8px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">ضع مول واحد من:</div>
+    <div class="col" style="width:470px;flex:none;gap:8px;justify-content:center">
+     <div class="panel" style="padding:10px 16px;gap:6px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">ضع مول واحد من:</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${S.map(function(s,i){return `<button type="button" class="btn sm sb" data-i="${i}" style="font-size:20px">${s[1]}</button>`}).join('')}</div></div>
-     <div class="panel" style="padding:12px 18px;gap:6px"><p class="lead" style="margin:0;font-size:24px"><b>عند الانتقال من مادة إلى أخرى:</b></p>${optsHTML([{t:'الكتلة تتغير وعدد الجسيمات ثابت'},{t:'الكتلة ثابتة وعدد الجسيمات يتغير'}])}<div class="fb" style="min-height:24px"></div></div></div></div></div>`;},
+     <div class="panel" style="padding:10px 16px;gap:6px"><p class="lead" style="margin:0;font-size:22px"><b>عند الانتقال من مادة إلى أخرى:</b></p>${optsHTML([{t:'الكتلة تتغير وعدد الجسيمات ثابت'},{t:'الكتلة ثابتة وعدد الجسيمات يتغير'}])}<div class="fb" style="min-height:24px"></div></div></div></div></div>`;},
  init:function(el){
   var S=[['C','12','ذرة كربون'],['Fe','56','ذرة حديد'],['H₂O','18','جزيء H₂O'],['MgO','40','وحدة صيغة MgO']], seen={};
   function pick(i){
