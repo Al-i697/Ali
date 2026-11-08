@@ -41,6 +41,8 @@
 .app .lstep,.app .tile,.app .pf,.app .qr:not(.ok),.app .cls,.app .tray,.app .mtray,.app .mslot,.app .zone{background:rgba(var(--d2),.9)!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important}
 .app .tile{background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge)}
 .app .mchip{background:rgba(255,255,255,.16)!important}
+.app .mchip.gold{background:linear-gradient(145deg,#F3D27A,#D9A92B)!important; color:#171100}   /* the coloured chips (limiting / excess) keep their colours */
+.app .mchip.blue{background:linear-gradient(145deg,#3f78b0,#245283)!important; color:#fff}
 .app input{background:rgba(var(--d1),.9)}
 
 /* the title and loose text sit on quiet plates (box-shadow instead of padding, so no layout moves) */
@@ -51,7 +53,7 @@
 /* step lists that fade the steps not reached yet: keep them solid (dimmed by brightness, not by see-through) */
 .app .lstep[style*=".42"]{opacity:1!important; background:rgba(var(--d2),.92)!important; color:rgba(255,255,255,.66)}
 /* buttons and sample bottles that used to be see-through: solid, so they read over any picture */
-.app .btn:not(.acc):not(.tab),.app .bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
+.app .btn:not(.acc):not(.tab),.app button.bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
 .app .rn{background:#F6C945!important; color:#241800!important}   /* numbered / ticked badges: solid gold with dark ink */
 
 /* living-engine builds (skin 'cards'): the scrim of the background engine is lighter, so the sharp photographs show through; the cards and plates carry the text */

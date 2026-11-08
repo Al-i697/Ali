@@ -1300,9 +1300,10 @@ div[style*="var(--cyan)"]{background:rgba(3,11,18,.84);color:#cdeff7!important;p
 @keyframes shk{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(6deg)}}
 .shaking{animation:shk .5s ease-in-out 3;transform-origin:50% 100%}
 html[data-fx="0"] .shaking{animation:none}
-.bot{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:8px 10px;border-radius:16px;background:rgba(var(--d2),.55);border:2px solid rgba(255,255,255,.18);cursor:pointer;color:inherit;font:inherit}
-.bot:hover{border-color:var(--gold)} .bot.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,188,75,.25)} .bot.used{opacity:.7}
-.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} .bot span{font-size:15px;color:var(--muted)}
+/* the sample bottles of 4-2 are buttons: the selector says so, because the player's own bottom bar is a <footer class="bot"> and must keep its row layout */
+button.bot{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:8px 10px;border-radius:16px;background:rgba(var(--d2),.55);border:2px solid rgba(255,255,255,.18);cursor:pointer;color:inherit;font:inherit}
+button.bot:hover{border-color:var(--gold)} button.bot.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,188,75,.25)} button.bot.used{opacity:.7}
+button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} button.bot span{font-size:15px;color:var(--muted)}
 .obs{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:20px} .obs th{font-size:17px;color:var(--muted);font-weight:700;text-align:center} .obs td{background:rgba(var(--d2),.55);padding:5px 10px;text-align:center;font-weight:700} .obs td:first-child{border-radius:0 12px 12px 0;color:var(--gold);font-size:24px;font-family:var(--font-display)} .obs td:last-child{border-radius:12px 0 0 12px}
 .dotc{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
 
@@ -1374,6 +1375,8 @@ html[data-fx="0"] .shaking{animation:none}
 .app .lstep,.app .tile,.app .pf,.app .qr:not(.ok),.app .cls,.app .tray,.app .mtray,.app .mslot,.app .zone{background:rgba(var(--d2),.9)!important; -webkit-backdrop-filter:none!important; backdrop-filter:none!important}
 .app .tile{background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge)}
 .app .mchip{background:rgba(255,255,255,.16)!important}
+.app .mchip.gold{background:linear-gradient(145deg,#F3D27A,#D9A92B)!important; color:#171100}   /* the coloured chips (limiting / excess) keep their colours */
+.app .mchip.blue{background:linear-gradient(145deg,#3f78b0,#245283)!important; color:#fff}
 .app input{background:rgba(var(--d1),.9)}
 
 /* the title and loose text sit on quiet plates (box-shadow instead of padding, so no layout moves) */
@@ -1384,7 +1387,7 @@ html[data-fx="0"] .shaking{animation:none}
 /* step lists that fade the steps not reached yet: keep them solid (dimmed by brightness, not by see-through) */
 .app .lstep[style*=".42"]{opacity:1!important; background:rgba(var(--d2),.92)!important; color:rgba(255,255,255,.66)}
 /* buttons and sample bottles that used to be see-through: solid, so they read over any picture */
-.app .btn:not(.acc):not(.tab),.app .bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
+.app .btn:not(.acc):not(.tab),.app button.bot{background:rgba(var(--d2),.92); box-shadow:inset 0 0 0 1.5px rgba(var(--t1),.5)}
 .app .rn{background:#F6C945!important; color:#241800!important}   /* numbered / ticked badges: solid gold with dark ink */
 
 /* living-engine builds (skin 'cards'): the scrim of the background engine is lighter, so the sharp photographs show through; the cards and plates carry the text */
@@ -2316,7 +2319,7 @@ var BGIMG={"nb_leaf": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA
    spec = {mols:[{m:'methane', x:.72, y:.5, s:1.2, spin:.3, pitch:.35, ph:0, roll:0}], dust:34}
    x, y are fractions of the stage; s scales the model; spin is radians per second. */
 var MOL3D=(function(){
-  var EL={C:{r:.60,c:[118,132,158]},H:{r:.36,c:[244,247,252]},O:{r:.56,c:[240,72,64]},Br:{r:.76,c:[196,96,38]},N:{r:.56,c:[84,126,245]},Cl:{r:.68,c:[70,204,104]}};
+  var EL={C:{r:.60,c:[118,132,158]},H:{r:.36,c:[244,247,252]},O:{r:.56,c:[240,72,64]},Br:{r:.76,c:[196,96,38]},N:{r:.56,c:[84,126,245]},Cl:{r:.68,c:[70,204,104]},M:{r:.62,c:[205,176,122]},E:{r:.17,c:[110,205,255]}};   /* M: a metal cation (bronze), E: a free electron */
   function add(a,b){return[a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
   function sub(a,b){return[a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
   function mul(a,k){return[a[0]*k,a[1]*k,a[2]*k]}
@@ -2404,6 +2407,20 @@ var MOL3D=(function(){
     }
     return lattice(at,1.4,1.65);
   }
+  /* a block of metal: a regular lattice of positive ions (M) with free electrons (E) wandering between them (they jitter in draw()) */
+  function metal(){
+    var at=[],i,j,k,a=2.05,s=11,n=0,tries=0;
+    function r(){s=(s*16807)%2147483647;return (s-1)/2147483646}
+    for(i=0;i<4;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)at.push({e:'M',p:[(i-1.5)*a,(j-1)*a,(k-1)*a]});
+    var ions=at.slice();
+    while(n<46&&tries<4000){
+      tries++;
+      var p=[(r()-.5)*8.2,(r()-.5)*6.2,(r()-.5)*6.2],ok=true;
+      for(i=0;i<ions.length;i++){if(len(sub(ions[i].p,p))<1.0){ok=false;break}}
+      if(ok){at.push({e:'E',p:p,j:.5,ph:r()*6.28});n++}
+    }
+    return {at:at,bd:[]};
+  }
   var BUILD={
     methane:function(){return chain(1,-1)},
     ethane:function(){return chain(2,-1)},
@@ -2425,9 +2442,9 @@ var MOL3D=(function(){
     o2:function(){return {at:[{e:'O',p:[-.65,0,0]},{e:'O',p:[.65,0,0]}],bd:[[0,1,2]]}},
     h2:function(){return {at:[{e:'H',p:[-.4,0,0]},{e:'H',p:[.4,0,0]}],bd:[[0,1,1]]}},
     br2:function(){return {at:[{e:'Br',p:[-1.1,0,0]},{e:'Br',p:[1.1,0,0]}],bd:[[0,1,1]]}},
-    ring:ring6, graphite:graphite, diamond:diamond
+    ring:ring6, graphite:graphite, diamond:diamond, metal:metal
   };
-  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain10:50,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52};
+  var DEFPX={methane:140,ethane:120,propane:104,butane:92,pentane:80,hexane:70,chain8:58,chain10:50,chain12:44,ethene:140,propene:112,butene:96,ethyne:120,ethanol:104,dibromoethane:92,co2:100,h2o:120,o2:110,h2:130,br2:100,ring:92,graphite:50,diamond:52,metal:46};
   var CACHE={};
   function build(name){
     if(CACHE[name])return CACHE[name];
@@ -2504,6 +2521,7 @@ var MOL3D=(function(){
           var cy1=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pit),sp=Math.sin(pit),cr=Math.cos(roll),sr=Math.sin(roll);
           var P=b.at.map(function(a){
             var x=a.p[0],y=a.p[1],z=a.p[2],t;
+            if(a.j){x+=a.j*Math.sin(T*1.3+a.ph);y+=a.j*Math.sin(T*1.7+a.ph*1.7);z+=a.j*Math.cos(T*1.1+a.ph)}   /* free electrons wander */
             t=x*cy1+z*sy;z=-x*sy+z*cy1;x=t;
             t=y*cp-z*sp;z=y*sp+z*cp;y=t;
             t=x*cr-y*sr;y=x*sr+y*cr;x=t;
@@ -3246,6 +3264,47 @@ function ch2(n,o){ o=o||{}; var u=[],d=[],i; for(i=0;i<n;i++){u.push('H');d.push
   R('p_biofuel_pump',   {bg:'s_biofuel_pump',   dim:.12, dust:10});
   R('p_solar_farm',     {bg:'s_solar_farm',     dim:.10, dust:4,  ph:2});
   R('p_bulb_tree',      {bg:'s_bulb_tree',      dim:.10, dust:8});
+  /* unit 1 (metals): the lattice of positive ions with a sea of free electrons, and the teacher's seven metal photographs (Nov 2026) */
+  R('mol_metal',    {mols:[{m:'metal',x:.84,y:.5,s:1.3,spin:.2,pitch:.34}],dust:24});
+  R('mol_metal_l',  {mols:[{m:'metal',x:.16,y:.52,s:1.25,spin:-.18,pitch:.4}],dust:22});
+  R('p_m_smith',    {bg:'s_m_smith',    dim:.08, dust:10});
+  R('p_m_gold_mine',{bg:'s_m_gold_mine',dim:.14, dust:8,  ph:1});
+  R('p_m_gold_ore', {bg:'s_m_gold_ore', dim:.12, dust:8,  ph:2});
+  R('p_m_samples',  {bg:'s_m_samples',  dim:.10, dust:6});
+  R('p_m_collage',  {bg:'s_m_collage',  dim:0,   dust:0});   /* white dividing lines: used as a picture inside a slide, not as a backdrop */
+  R('p_m_pour',     {bg:'s_m_pour',     dim:.08, dust:6,  ph:1});
+  R('p_m_pylons',   {bg:'s_m_pylons',   dim:.08, dust:4,  ph:2});
+  /* the teacher's metal photographs, second batch (Nov 2026): used as decoration, they do not have to match the slide */
+  R('p_m_bulb',     {bg:'s_m_bulb',     dim:.04, dust:10});
+  R('p_m_gears',    {bg:'s_m_gears',    dim:.14, dust:6,  ph:1});
+  R('p_m_coils',    {bg:'s_m_coils',    dim:.10, dust:4,  ph:2});
+  R('p_m_lab',      {bg:'s_m_lab',      dim:.10, dust:6});
+  R('p_m_coins',    {bg:'s_m_coins',    dim:.22, dust:6,  ph:1});   /* blurred on purpose: the coin legends must stay unreadable */
+  /* third batch (Nov 2026): a clean pipette bench, zinc in copper(II) sulfate, K / Na / Mg in water. The template with the phone frame (no. 59) is not used. */
+  R('p_lab_pipettes',{bg:'s_lab_pipettes',dim:.02, dust:0});   /* light picture: almost no shade */
+  R('p_m_zn_cu',    {bg:'s_m_zn_cu',    dim:.12, dust:6,  ph:1});
+  R('p_m_k_na_mg',  {bg:'s_m_k_na_mg',  dim:.10, dust:6,  ph:2});
+  /* fourth batch (Nov 2026, unit 2: extraction, alloys, rusting). Not used as backgrounds: the mineral chart (Arabic labels + a stock-photo watermark) and the Zn + CuSO4 picture with its printed equation. */
+  R('p_e_furnace_ore', {bg:'s_e_furnace_ore',   dim:.12, dust:6,  ph:1});
+  R('p_e_blue_lab',    {bg:'s_e_blue_lab',      dim:.04, dust:8,  ph:2});
+  R('p_e_malachite',   {bg:'s_e_mine_malachite',dim:.12, dust:6,  ph:3});
+  R('p_e_cubes',       {bg:'s_e_cu_zn_cubes',   dim:.08, dust:4,  ph:4});   /* labels blurred on purpose */
+  R('p_e_ptable',      {bg:'s_e_ptable_metals', dim:.24, dust:4,  ph:5});   /* the printed tiles are blurred on purpose (their text must stay unreadable), and the picture is shaded so the slide text wins */
+  R('p_e_beakers',     {bg:'s_e_beakers',       dim:.10, dust:4,  ph:6});
+  R('p_e_electrolysis',{bg:'s_e_electrolysis',  dim:.12, dust:6,  ph:7});
+  R('p_e_pour',        {bg:'s_e_pour_ingots',   dim:.12, dust:8,  ph:8});
+  R('p_e_sunset',      {bg:'s_e_mine_sunset',   dim:.12, dust:6,  ph:9});
+  /* fifth batch (Nov 2026, lesson 2-2): circuit and molten-metal pictures without any text; used once each as backgrounds. */
+  R('p_w_circ1',  {bg:'s_w_circ1',  dim:.08, dust:0, ph:10});
+  R('p_w_circ2',  {bg:'s_w_circ2',  dim:.08, dust:0, ph:11});
+  R('p_w_circ3',  {bg:'s_w_circ3',  dim:.08, dust:0, ph:12});
+  R('p_w_split',  {bg:'s_w_split',  dim:.04, dust:0, ph:13});
+  R('p_w_molten', {bg:'s_w_molten', dim:.06, dust:0, ph:14});
+  /* plain backgrounds (no picture): the palette of the slide with a few soft lights. The teacher dislikes repeated pictures (Nov 2026), so a slide may stay plain instead. */
+  R('p_plain_a', {dust:12, seed:3});
+  R('p_plain_b', {dust:6,  seed:11});
+  R('p_plain_c', {dust:20, seed:23});
+  R('p_plain_d', {dust:0,  seed:5});
 })();
 
 /* ---------- the card look: helper that keeps loose text readable over any background (photo or live scene).
@@ -3253,7 +3312,7 @@ function ch2(n,o){ o=o||{}; var u=[],d=[],i; for(i=0;i<n;i++){u.push('H');d.push
 /* text that sits straight on the photograph (not inside a card) gets a quiet dark plate, so it stays readable over any picture.
    Called by the player for every slide it builds; the class 'onpic' is styled in skin_photo.css (no padding, so nothing moves). */
 var SKIN=(function(){
-  var CARD='.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq,.sent,.stp,.rcard,.tile,.opt,.btn,.qr,.cls,.tray,.mtray,.mslot,.pf,.zone,.pill,.chip,.callout,.gbar,.ls,.gi,.team,.score,.tag,.fb,.hd,.nav,.steps,.rd,button,input,select,table,svg,.ptn';
+  var CARD='.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq,.sent,.stp,.rcard,.tile,.opt,.btn,.qr,.cls,.tray,.mtray,.mslot,.pf,.zone,.pill,.chip,.callout,.gbar,.ls,.gi,.team,.score,.tag,.fb,.hd,.nav,.steps,.rd,button,input,select,table,svg,.ptn,.tb';
   /* text that already sits on a surface with its own colour (a card, a badge, a band) must not get a plate */
   function opaque(e){
     var c=getComputedStyle(e); if(c.backgroundImage&&c.backgroundImage!=='none') return true;

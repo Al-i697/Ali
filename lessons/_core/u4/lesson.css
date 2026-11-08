@@ -254,9 +254,10 @@ div[style*="var(--cyan)"]{background:rgba(3,11,18,.84);color:#cdeff7!important;p
 @keyframes shk{0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(8deg)}60%{transform:rotate(-7deg)}80%{transform:rotate(6deg)}}
 .shaking{animation:shk .5s ease-in-out 3;transform-origin:50% 100%}
 html[data-fx="0"] .shaking{animation:none}
-.bot{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:8px 10px;border-radius:16px;background:rgba(var(--d2),.55);border:2px solid rgba(255,255,255,.18);cursor:pointer;color:inherit;font:inherit}
-.bot:hover{border-color:var(--gold)} .bot.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,188,75,.25)} .bot.used{opacity:.7}
-.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} .bot span{font-size:15px;color:var(--muted)}
+/* the sample bottles of 4-2 are buttons: the selector says so, because the player's own bottom bar is a <footer class="bot"> and must keep its row layout */
+button.bot{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:8px 10px;border-radius:16px;background:rgba(var(--d2),.55);border:2px solid rgba(255,255,255,.18);cursor:pointer;color:inherit;font:inherit}
+button.bot:hover{border-color:var(--gold)} button.bot.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(228,188,75,.25)} button.bot.used{opacity:.7}
+button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} button.bot span{font-size:15px;color:var(--muted)}
 .obs{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:20px} .obs th{font-size:17px;color:var(--muted);font-weight:700;text-align:center} .obs td{background:rgba(var(--d2),.55);padding:5px 10px;text-align:center;font-weight:700} .obs td:first-child{border-radius:0 12px 12px 0;color:var(--gold);font-size:24px;font-family:var(--font-display)} .obs td:last-child{border-radius:12px 0 0 12px}
 .dotc{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:middle;margin-inline-end:6px}
 
