@@ -10,6 +10,7 @@
 | ١-٤ نشاط الفلزات | [`1-4-reactivity-series`](1-4-reactivity-series/README.md) |
 | ٢-١ استخلاص الفلزات | [`2-1-extraction`](2-1-extraction/README.md) |
 | ٢-٢ إنتاج الحديد والفولاذ | [`2-2-iron-steel`](2-2-iron-steel/README.md) |
+| ٢-٤ تآكل الفلزات وحمايتها | [`2-4-corrosion`](2-4-corrosion/README.md) |
 | ٣-١ الكتل النسبية | [`3-1-relative-masses`](3-1-relative-masses/README.md) |
 | ٣-٢ المول | [`3-2-the-mole`](3-2-the-mole/README.md) |
 | ٣-٣ حسابات تتضمن كتلاً متفاعلة | [`3-3-reacting-masses`](3-3-reacting-masses/README.md) |
@@ -23,7 +24,7 @@
 
 ## الموقع
 ```bash
-python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson11.html إلى lesson22.html + lesson31.html إلى lesson35.html + lesson41.html إلى lesson43.html
+python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئيسية) + lesson11.html إلى lesson24.html + lesson31.html إلى lesson35.html + lesson41.html إلى lesson43.html
 ```
 افتح `site/dist/index.html` وستجد الدروس كبطاقات؛ كل درس فيه زر «الدروس» للعودة.
 
