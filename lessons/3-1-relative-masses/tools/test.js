@@ -30,18 +30,18 @@ const results=[]; const errs=[];
   /* the options are shuffled, so a multiple-choice question is answered by trying the choices until one is right */
   async function solve(p,box){ const n=await box.locator('.opt').count(); for(let i=0;i<n;i++){ await box.locator('.opt').nth(i).click(); await p.waitForTimeout(120); if(await box.locator('.opt.ok-b').count()) return true } return false }
 
-  await T('npk',3,async(p,sl)=>{
+  await T('npk',2,async(p,sl)=>{
     await sl.locator('.pr[data-i="1"] button[data-d="1"]').click(); await sl.locator('.pr[data-i="1"] button[data-d="1"]').click();
     await sl.locator('#rv').click(); await p.waitForTimeout(300);
     if(!(await cnt(sl.locator('.pr.right')))) return false;
     await fill(sl,'.nin[data-n="n"]',1); await p.waitForTimeout(200);
     return (await sl.locator('#calc .fb').textContent()).includes('✓');
   });
-  await T('imp drag',2,async(p,sl)=>{
+  await T('imp drag',3,async(p,sl)=>{
     for(const k of ['med','agri','env']){ await drag(p,sl.locator('.mchip[data-k="'+k+'"]'),sl.locator('.mslot[data-k="'+k+'"]')) }
     await p.waitForTimeout(200); return (await cnt(sl.locator('.mslot .mchip')))===3 && await sl.locator('#gb').isVisible();
   });
-  await T('imp wrong then tap',2,async(p,sl)=>{
+  await T('imp wrong then tap',3,async(p,sl)=>{
     await drag(p,sl.locator('.mchip[data-k="med"]'),sl.locator('.mslot[data-k="agri"]'));
     const bad=(await sl.locator('.fb').textContent()).length>0 && (await cnt(sl.locator('.mslot .mchip')))===0;
     await sl.locator('.mchip[data-k="med"]').click(); await sl.locator('.mslot[data-k="med"]').click(); await p.waitForTimeout(150);
