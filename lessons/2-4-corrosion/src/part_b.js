@@ -59,14 +59,14 @@ slide({id:'scratch',ch:2,title:'خُدشت الطبقة: ماذا يحدث؟',ta
   return `<div class="col" style="flex:1;gap:8px;min-height:0">
    <div class="scw" id="scw"><div class="scp"><h4>الفولاذ المصفّح بالقصدير</h4><div class="sv">${scratchSVG('tin')}</div><div class="cap" id="ct">طبقة القصدير (فلز <b>أقل</b> نشاطاً من الحديد) تغطي الفولاذ.</div></div>
     <div class="scp"><h4>الفولاذ المجلفن</h4><div class="sv">${scratchSVG('zn')}</div><div class="cap" id="cz">طبقة الخارصين (فلز <b>أنشط</b> من الحديد) تغطي الفولاذ.</div></div></div>
-   <div style="display:flex;gap:12px;justify-content:center"><button type="button" class="btn acc" id="b1">١ · اخدش الطبقة</button><button type="button" class="btn acc" id="b2" disabled>٢ · عرّضها للماء والأكسجين</button></div>
+   <div style="display:flex;gap:12px;justify-content:center"><button type="button" class="btn acc" id="b1">١ · اخدش الطبقة</button><button type="button" class="btn acc" id="b2">٢ · عرّضها للماء والأكسجين</button></div>
    <div class="panel compact hide" id="q" style="padding:10px 18px;gap:7px"><div style="font-size:21px;font-weight:800">أيّ الطريقتين تستمر في حماية الحديد بعد الخدش؟</div>
     ${optsHTML([{t:'الجلفنة'},{t:'التصفيح بالقصدير'},{t:'الطريقتان معاً'}])}<div class="fb" style="min-height:24px"></div></div>
    <div class="gbar hide" id="gb" style="font-size:19px;padding:6px 14px">القصدير <b>حاجز فقط</b>؛ أما الخارصين فحاجز <b>وحماية كيميائية</b>.</div></div>`;},
  init:function(el){
   var w=$('#scw',el);
-  $('#b1',el).addEventListener('click',function(){ w.classList.add('s1'); $('#b1',el).disabled=true; $('#b2',el).disabled=false; $('#ct',el).innerHTML='الخدش كشف الحديد.'; $('#cz',el).innerHTML='الخدش كشف الحديد.' });
-  $('#b2',el).addEventListener('click',function(){ w.classList.add('s2'); $('#b2',el).disabled=true;
+  $('#b1',el).addEventListener('click',function(){ w.classList.add('s1'); $('#b1',el).disabled=true; $('#ct',el).innerHTML='الخدش كشف الحديد.'; $('#cz',el).innerHTML='الخدش كشف الحديد.' });
+  $('#b2',el).addEventListener('click',function(){ if(!w.classList.contains('s1')||w.classList.contains('s2')) return; w.classList.add('s2'); $('#b2',el).disabled=true;
    $('#ct',el).innerHTML='الحديد <b>أنشط</b> من القصدير فيصدأ، والصدأ يتسع تحت الطبقة.'; $('#cz',el).innerHTML='الخارصين <b>الأنشط</b> يتفاعل أولاً (<span class="num">Zn → Zn²⁺</span>) فلا يصدأ الحديد.';
    later(function(){ $('#q',el).classList.remove('hide') },900) });
   bindMcq($('#q',el),[{t:'',ok:true,why:'صحيح: الخارصين يتفاعل بدلاً من الحديد حتى مع الخدش'},{t:'',why:'مع القصدير يصدأ الحديد عند الخدش: القصدير أقل نشاطاً من الحديد'},{t:'',why:'تفرق الطريقتان: واحدة فقط تستمر في الحماية'}],$('#q .fb',el),function(){unhide(el)});

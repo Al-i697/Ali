@@ -4063,14 +4063,14 @@ slide({id:'scratch',ch:2,title:'خُدشت الطبقة: ماذا يحدث؟',ta
   return `<div class="col" style="flex:1;gap:8px;min-height:0">
    <div class="scw" id="scw"><div class="scp"><h4>الفولاذ المصفّح بالقصدير</h4><div class="sv">${scratchSVG('tin')}</div><div class="cap" id="ct">طبقة القصدير (فلز <b>أقل</b> نشاطاً من الحديد) تغطي الفولاذ.</div></div>
     <div class="scp"><h4>الفولاذ المجلفن</h4><div class="sv">${scratchSVG('zn')}</div><div class="cap" id="cz">طبقة الخارصين (فلز <b>أنشط</b> من الحديد) تغطي الفولاذ.</div></div></div>
-   <div style="display:flex;gap:12px;justify-content:center"><button type="button" class="btn acc" id="b1">١ · اخدش الطبقة</button><button type="button" class="btn acc" id="b2" disabled>٢ · عرّضها للماء والأكسجين</button></div>
+   <div style="display:flex;gap:12px;justify-content:center"><button type="button" class="btn acc" id="b1">١ · اخدش الطبقة</button><button type="button" class="btn acc" id="b2">٢ · عرّضها للماء والأكسجين</button></div>
    <div class="panel compact hide" id="q" style="padding:10px 18px;gap:7px"><div style="font-size:21px;font-weight:800">أيّ الطريقتين تستمر في حماية الحديد بعد الخدش؟</div>
     ${optsHTML([{t:'الجلفنة'},{t:'التصفيح بالقصدير'},{t:'الطريقتان معاً'}])}<div class="fb" style="min-height:24px"></div></div>
    <div class="gbar hide" id="gb" style="font-size:19px;padding:6px 14px">القصدير <b>حاجز فقط</b>؛ أما الخارصين فحاجز <b>وحماية كيميائية</b>.</div></div>`;},
  init:function(el){
   var w=$('#scw',el);
-  $('#b1',el).addEventListener('click',function(){ w.classList.add('s1'); $('#b1',el).disabled=true; $('#b2',el).disabled=false; $('#ct',el).innerHTML='الخدش كشف الحديد.'; $('#cz',el).innerHTML='الخدش كشف الحديد.' });
-  $('#b2',el).addEventListener('click',function(){ w.classList.add('s2'); $('#b2',el).disabled=true;
+  $('#b1',el).addEventListener('click',function(){ w.classList.add('s1'); $('#b1',el).disabled=true; $('#ct',el).innerHTML='الخدش كشف الحديد.'; $('#cz',el).innerHTML='الخدش كشف الحديد.' });
+  $('#b2',el).addEventListener('click',function(){ if(!w.classList.contains('s1')||w.classList.contains('s2')) return; w.classList.add('s2'); $('#b2',el).disabled=true;
    $('#ct',el).innerHTML='الحديد <b>أنشط</b> من القصدير فيصدأ، والصدأ يتسع تحت الطبقة.'; $('#cz',el).innerHTML='الخارصين <b>الأنشط</b> يتفاعل أولاً (<span class="num">Zn → Zn²⁺</span>) فلا يصدأ الحديد.';
    later(function(){ $('#q',el).classList.remove('hide') },900) });
   bindMcq($('#q',el),[{t:'',ok:true,why:'صحيح: الخارصين يتفاعل بدلاً من الحديد حتى مع الخدش'},{t:'',why:'مع القصدير يصدأ الحديد عند الخدش: القصدير أقل نشاطاً من الحديد'},{t:'',why:'تفرق الطريقتان: واحدة فقط تستمر في الحماية'}],$('#q .fb',el),function(){unhide(el)});
@@ -4168,7 +4168,7 @@ slide({id:'act23',ch:4,title:'نشاط ٢-٣: منع الصدأ',tag:'الطري
     <div class="panel" style="padding:8px 14px;gap:3px"><div style="font-size:20px;font-weight:800;color:var(--cyan)">المواد والأدوات</div><div style="font-size:16px;line-height:1.35">٨ أنابيب اختبار، ٦ مسامير حديدية، مسمار أو برغي فولاذ مقاوم للصدأ، مسماران مجلفنان، محلول حمض الهيدروكلوريك المخفّف للتنظيف، شريط ماغنيسيوم، رقائق نحاس وخارصين، زيت، دهان وفرشاة، حامل أنابيب، ملصقات.</div></div>
     <div class="panel safe" style="padding:8px 14px;gap:3px"><div style="font-size:20px;font-weight:800;color:#ffb3a8">⚠ احتياطات الأمان</div><ul style="margin:0;padding-inline-start:20px;font-size:16px;line-height:1.35"><li>ضع النظارة الواقية وارتدِ معطف المختبر، واغسل يديك بعد التجربة.</li><li>حمض الهيدروكلوريك المخفّف يهيّج الجلد؛ اغسل مكان أي ملامسة.</li><li>شريط الماغنيسيوم سريع الاشتعال: أبعده عن اللهب.</li></ul></div></div>
    <div class="panel" style="flex:1;min-width:0;padding:10px 16px;gap:4px"><div style="font-size:22px;font-weight:800;color:var(--gold)">الطريقة</div><ol class="acts">${S.map(function(s){return '<li>'+s+'</li>'}).join('')}</ol>
-    <div class="gbar hide" id="gb" style="font-size:18px;padding:6px 14px">نتوقع النتائج في الشريحة التالية.</div></div></div>`;},
+    <div class="gbar hide" id="gb" style="font-size:19px;padding:6px 14px">نتوقع النتائج في الشريحة التالية.</div></div></div>`;},
  init:function(el){ later(function(){ unhide(el) },400) },
  note:'<ul><li>نشاط ٢-٣ في كتاب الطالب ص٤٨–٤٩: الطريقة والمواد والأمان بتصرّف قليل. المهارات من دليل المعلم (الصفحة ٤٣). الدليل: يوجَّه الطلاب إلى استقصاء الطرق المستخدمة لمنع الصدأ وأيّها أكثر فاعلية.</li><li>مكوّنات الأنابيب ٢–٦ كما في الكتاب (بلاستيك، طلاء، شحم أو زيت، ماغنيسيوم أو خارصين، نحاس)؛ الأنبوبة ٧ فولاذ مقاوم للصدأ، والثامنة مسماران مجلفنان أحدهما مخدوش. في الكتاب تفصيل ترقيم بعض الأنابيب قد يختلف قليلاً بحسب طبعتك.</li></ul>'});
 
