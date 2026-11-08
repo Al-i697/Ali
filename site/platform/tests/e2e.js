@@ -147,6 +147,22 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('lesson hash survives a reload: opening #l-chem10-3-4 directly shows lesson 3-4 with the drawer',async()=>{
     const st=seed(), p=await page({state:st,hash:'#l-chem10-3-4'}); await p.waitForTimeout(1500); assert.ok((await p.innerText('#dLs')).includes('٣-٤')); assert.strictEqual(await p.locator('#slist .stu').count(),6); await p.context().close();
   });
+  await T('offline copy: the home page offers a download that builds ONE file with all 16 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
+    const p=await page();
+    if(process.env.OFFLINE){ assert.strictEqual(await p.locator('[data-act=offline]').count(),0,'no download button inside the offline copy itself'); await p.context().close(); return }
+    assert.strictEqual(await p.locator('#v-home .bcard').count(),4); assert.ok(await p.isVisible('#v-home .dlbar [data-act=offline]'));
+    await p.click('[data-act=offline]'); await p.click('#ofGo'); await p.waitForFunction(()=>/الملف جاهز/.test(document.getElementById('ofMsg').textContent),null,{timeout:120000});
+    assert.ok((await p.innerText('#ofMsg')).includes('ميغا'));
+    const [dl]=await Promise.all([p.waitForEvent('download',{timeout:120000}),p.click('#ofGo')]); assert.strictEqual(dl.suggestedFilename(),'platform-offline.html');
+    const out=path.join(require('os').tmpdir(),'e2e-offline-'+process.pid+'.html'); await dl.saveAs(out);
+    const ref=path.resolve(__dirname,'../../offline/platform-offline.html'); if(fs.existsSync(ref)) assert.ok(Math.abs(fs.statSync(out).size-fs.statSync(ref).size)<600,'same size as the file the build script writes: '+fs.statSync(out).size+' vs '+fs.statSync(ref).size);
+    await p.context().close();
+    const ctx=await b.newContext({viewport:{width:1280,height:720}}), q=await ctx.newPage(); const e2=[]; q.on('pageerror',e=>e2.push(e.message)); await q.route(/^https?:\/\//,r=>r.abort());
+    await q.goto('file://'+out+'#l-chem10-3-3'); await q.waitForTimeout(2500);
+    const info=await q.evaluate(()=>({n:Object.keys(window.OFFLINE_LESSONS).length,ok:Object.values(window.OFFLINE_LESSONS).every(t=>t.startsWith('<!doctype html>')&&!t.includes('shared/stickers_assets.js')),stk:typeof STK_IMG}));
+    assert.deepStrictEqual(info,{n:16,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
+    assert.strictEqual(e2.length,0,e2.join('|')); await ctx.close(); fs.unlinkSync(out);
+  });
   await b.close(); srv.close();
   console.log('\n'+n+' passed, '+bad+' failed'+(errs.length?'\nconsole/page errors:\n  '+[...new Set(errs)].slice(0,8).join('\n  '):'\nno console or page errors')); process.exitCode=bad||errs.length?1:0;
 })();

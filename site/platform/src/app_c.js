@@ -76,6 +76,55 @@ function exportBackup(){
   var d=D(); if(!d.classes.length){toast('لا بيانات لتصديرها بعد: أضف شعبة أولاً.'); return}
   saveFile('platform-backup-'+PL.todayISO()+'.json',PL.exportBackup(d),'application/json').then(function(ok){ if(ok){PStore.markBackup(); renderView()} });
 }
+/* ---- the single-file copy: built here, in the browser, from this site's own pages. One file with every lesson that opens by double-click on any device without a server or internet. The students' data is never part of it ---- */
+function canOffline(){return !window.OFFLINE_LESSONS&&/^https?:$/.test(location.protocol)}
+function saveBig(name,blob){   /* true saved, null declined, false not possible from this page */
+  return new Promise(function(done){
+    function plain(){try{var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove()},120000); done(true)}catch(e){done(false)}}
+    if(typeof claude==='undefined'||!claude||!claude.use){plain(); return}
+    claude.use('downloads').then(function(d){
+      if(!d){done(false); return}
+      d.save({filename:name,data:blob}).then(function(){done(true)},function(e){done(e&&e.code==='declined'?null:false)});
+    },function(){done(false)});
+  });
+}
+function buildOffline(pages,step,alive){
+  var TAG='<script src="shared/stickers_assets.js"><\/script>', parts=[];
+  function get(u){return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('http '+r.status+' '+u); return r.text() })}
+  return Promise.all([get('index.html').catch(function(){return get(location.href.split('#')[0])}),get('shared/stickers_assets.js')]).then(function(a){
+    var host=a[0], stk=a[1], i=host.indexOf(TAG); if(i<0) throw new Error('home page');
+    parts.push(host.slice(0,i),'<script>',stk,'<\/script>\n<script>window.OFFLINE_LESSONS={');
+    return pages.reduce(function(pr,p,idx){return pr.then(function(){
+      if(!alive()) throw new Error('cancel');
+      return get(p).then(function(t){
+        if(t.indexOf(TAG)<0) throw new Error(p);
+        t=t.split(TAG).join('<script>var STK_IMG=parent.STK_IMG,STK_WH=parent.STK_WH;<\/script>');
+        parts.push(new Blob([JSON.stringify(p)+':'+JSON.stringify(t).replace(/<\//g,'<\\/').replace(/<!--/g,'<\\!--')+(idx<pages.length-1?',':'')]));
+        step(idx+1);
+      });
+    })},Promise.resolve()).then(function(){ parts.push('};<\/script>',host.slice(i+TAG.length)); return new Blob(parts,{type:'text/html'}) });
+  });
+}
+function offlineDialog(){
+  var pages=[]; Object.keys(LESSONS).forEach(function(id){var p=LESSONS[id].page; if(p&&pages.indexOf(p)<0) pages.push(p)});
+  var blob=null, running=false, NAME='platform-offline.html';
+  var m=modal('<h2>نسخة بلا إنترنت</h2><p class="hint" style="margin:0">ملف واحد فيه كل الدروس ('+ar(pages.length)+') يُفتح بالنقر المزدوج على أي جهاز بلا إنترنت وبلا خادم. حجمه أكثر من ٦٠ ميغا. يُجهَّز هنا في متصفحك من صفحات هذا الموقع، وبيانات الطلاب لا تدخل فيه.</p>'+
+   '<div class="bar" style="height:14px"><i id="ofBar" style="width:0"></i></div><p class="hint" id="ofMsg" style="margin:0" role="status" aria-live="polite">اضغط «جهّز الملف» وانتظر قليلاً.</p>'+
+   '<div class="acts2"><button class="gbtn" type="button" id="ofGo">'+ic('dl')+'جهّز الملف</button><button class="sbtn" type="button" data-close>إغلاق</button></div>');
+  var msg=function(t,bad){var e=$('#ofMsg',m); e.textContent=t; e.style.color=bad?'#ffb3a8':''};
+  var go=$('#ofGo',m);
+  go.addEventListener('click',function(){
+    if(running) return;
+    if(blob){ go.disabled=true; saveBig(NAME,blob).then(function(ok){ go.disabled=false;
+      if(ok) msg('تم. افتح الملف «'+NAME+'» بالنقر المزدوج من مجلد التنزيلات. تقدر تنسخه على فلاشة أو ترسله لأي جهاز.');
+      else if(ok===null) msg('أُلغي الحفظ. اضغط «احفظ على جهازك» لتجرب مرة ثانية.');
+      else msg('التنزيل المباشر غير متاح من هذا العرض. افتح رابط الموقع في متصفح الجهاز نفسه وجرّب من هناك.',true) }); return }
+    running=true; go.disabled=true; msg('جارٍ جمع الدروس: ٠ من '+ar(pages.length)); var bar=$('#ofBar',m);
+    buildOffline(pages,function(n){ bar.style.width=Math.round(n/pages.length*100)+'%'; msg('جارٍ جمع الدروس: '+ar(n)+' من '+ar(pages.length)) },function(){return modalEl===m}).then(function(b){
+      blob=b; running=false; go.disabled=false; go.innerHTML=ic('dl')+'احفظ على جهازك'; msg('الملف جاهز ('+ar(Math.round(b.size/1048576))+' ميغا). اضغط «احفظ على جهازك».'); go.focus();
+    },function(e){ running=false; go.disabled=false; if(e&&e.message==='cancel') return; bar.style.width='0'; msg('تعذّر تجهيز الملف من هذه الصفحة ('+(e&&e.message||'خطأ')+'). تأكد من الاتصال وجرّب مرة ثانية.',true) });
+  });
+}
 function importDialog(){
   var parsed=null;
   var m=modal('<h2>استيراد نسخة احتياطية</h2><p class="hint" style="margin:0">اختر ملف نسخة احتياطية من هذا الموقع أو من موقع «الإدارة الصفية» القديم. الاستيراد يضيف ولا يحذف شيئاً مما عندك.</p>'+
@@ -151,6 +200,7 @@ function onDocClick(e){
   if(!b) return;
   var act=b.getAttribute('data-act');
   if(act==='newclass') classDialog(); else if(act==='import') importDialog(); else if(act==='export') exportBackup();
+  else if(act==='offline') offlineDialog();
   else if(act==='csv'){ var sm=PL.classSummary(D(),sumSt.classId,rangeOf(sumSt.range)); if(sm) saveFile('class-summary-'+slug(sm.cls.name)+'.csv',PL.summaryCSV(sm),'text/csv') }
   else if(act==='report'){ var rp=PL.studentReport(D(),stSt.classId,stSt.sid,rangeOf(stSt.range)); if(rp) saveFile('student-report-'+slug(rp.cls.name)+'-'+PL.todayISO()+'.txt',PL.reportText(rp,lessonTitle),'text/plain') }
   else if(b.hasAttribute('data-start')) startLesson(b.getAttribute('data-start'),+b.getAttribute('data-per')||0);

@@ -196,7 +196,7 @@ select.inp{appearance:auto}
 .hint{font:600 17px var(--font-body); color:var(--muted)}
 
 /* ---- the pages of big cards ---- */
-.strip{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; padding:12px 20px}
+.strip,.dlbar{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; padding:12px 20px}
 .bigcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr)); gap:24px}
 .bcard{position:relative; display:flex; flex-direction:column; justify-content:flex-end; gap:10px; min-height:320px; padding:30px 32px 28px; border-radius:28px; text-decoration:none; color:var(--ink); cursor:pointer;
   background:linear-gradient(150deg,rgba(var(--p1),.9),rgba(var(--p2),.82)); border:2px solid rgba(var(--t2),.5); box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14),0 0 30px rgba(var(--t1),.12);

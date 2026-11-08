@@ -936,7 +936,7 @@ select.inp{appearance:auto}
 .hint{font:600 17px var(--font-body); color:var(--muted)}
 
 /* ---- the pages of big cards ---- */
-.strip{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; padding:12px 20px}
+.strip,.dlbar{display:flex; flex-wrap:wrap; gap:12px 16px; align-items:center; padding:12px 20px}
 .bigcards{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr)); gap:24px}
 .bcard{position:relative; display:flex; flex-direction:column; justify-content:flex-end; gap:10px; min-height:320px; padding:30px 32px 28px; border-radius:28px; text-decoration:none; color:var(--ink); cursor:pointer;
   background:linear-gradient(150deg,rgba(var(--p1),.9),rgba(var(--p2),.82)); border:2px solid rgba(var(--t2),.5); box-shadow:0 18px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.14),0 0 30px rgba(var(--t1),.12);
@@ -2255,7 +2255,7 @@ function renderHome(){
   } else if(PL.dayIndex(today)<0){ h+='<div class="glass strip"><span class="hint" style="font-size:20px">اليوم إجازة.</span>'+d.classes.map(function(c){return '<button class="sbtn" type="button" data-start="'+esc(c.id)+'" data-per="0">'+ic('play')+'ابدأ حصة '+lat(c.name)+'</button>'}).join('')+'</div>' }
   h+='<div class="bigcards three">'+Object.keys(CATALOG.grades).map(function(g){var k=gradeCounts(g);
     return '<a class="bcard" href="#'+gradeHash(g)+'" data-pal="'+(GPAL[g]||'emerald')+'" data-pick="'+(GPAL[g]||'emerald')+'"><span class="bnum">'+ar(g)+'</span><span class="bname">'+esc(CATALOG.grades[g].replace(/^الصف\s*/,''))+'</span><span class="bmeta">'+(k.subjects?ar(k.subjects)+' '+(k.subjects>2?'مواد':'مادة')+' · '+readyText(k):'قريباً')+'</span>'+stk(GSTK[g]||'m_star','left:14px;top:-34px;',104,-6)+'</a>'}).join('')+
-   '</div><a class="bcard wide" href="#classes" data-pal="gold" data-pick="gold"><span class="bnum">'+ic('users')+'</span><span><span class="bname" style="display:block">سجل المعلم</span><span class="bmeta">شعبي · ملخص الشعبة · تقرير الطالب</span></span></a>';
+   '</div><a class="bcard wide" href="#classes" data-pal="gold" data-pick="gold"><span class="bnum">'+ic('users')+'</span><span><span class="bname" style="display:block">سجل المعلم</span><span class="bmeta">شعبي · ملخص الشعبة · تقرير الطالب</span></span></a>'+(canOffline()?'<div class="glass dlbar"><span class="hint" style="font-size:20px">تشتغل بلا إنترنت؟ نزّل كل الدروس في ملف واحد يُفتح بالنقر المزدوج.</span><button class="sbtn" type="button" data-act="offline">'+ic('dl')+'تنزيل نسخة بلا إنترنت</button></div>':'');
   $('#v-home').innerHTML='<header class="hero" style="position:relative"><h1 class="h1">اختر <b>الصف</b></h1><p class="sub">ثم المادة، ثم الدرس، فيفتح الشرح مباشرة</p><div class="hrule"></div></header>'+h;
   $$('#v-home [data-pick]').forEach(function(c){c.addEventListener('mouseenter',function(){$('.app').setAttribute('data-pal',c.getAttribute('data-pick')); BG.go('doodles',c.getAttribute('data-pick'),1)})});
 }
@@ -2542,6 +2542,55 @@ function exportBackup(){
   var d=D(); if(!d.classes.length){toast('لا بيانات لتصديرها بعد: أضف شعبة أولاً.'); return}
   saveFile('platform-backup-'+PL.todayISO()+'.json',PL.exportBackup(d),'application/json').then(function(ok){ if(ok){PStore.markBackup(); renderView()} });
 }
+/* ---- the single-file copy: built here, in the browser, from this site's own pages. One file with every lesson that opens by double-click on any device without a server or internet. The students' data is never part of it ---- */
+function canOffline(){return !window.OFFLINE_LESSONS&&/^https?:$/.test(location.protocol)}
+function saveBig(name,blob){   /* true saved, null declined, false not possible from this page */
+  return new Promise(function(done){
+    function plain(){try{var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); setTimeout(function(){URL.revokeObjectURL(a.href); a.remove()},120000); done(true)}catch(e){done(false)}}
+    if(typeof claude==='undefined'||!claude||!claude.use){plain(); return}
+    claude.use('downloads').then(function(d){
+      if(!d){done(false); return}
+      d.save({filename:name,data:blob}).then(function(){done(true)},function(e){done(e&&e.code==='declined'?null:false)});
+    },function(){done(false)});
+  });
+}
+function buildOffline(pages,step,alive){
+  var TAG='<script src="shared/stickers_assets.js"><\/script>', parts=[];
+  function get(u){return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error('http '+r.status+' '+u); return r.text() })}
+  return Promise.all([get('index.html').catch(function(){return get(location.href.split('#')[0])}),get('shared/stickers_assets.js')]).then(function(a){
+    var host=a[0], stk=a[1], i=host.indexOf(TAG); if(i<0) throw new Error('home page');
+    parts.push(host.slice(0,i),'<script>',stk,'<\/script>\n<script>window.OFFLINE_LESSONS={');
+    return pages.reduce(function(pr,p,idx){return pr.then(function(){
+      if(!alive()) throw new Error('cancel');
+      return get(p).then(function(t){
+        if(t.indexOf(TAG)<0) throw new Error(p);
+        t=t.split(TAG).join('<script>var STK_IMG=parent.STK_IMG,STK_WH=parent.STK_WH;<\/script>');
+        parts.push(new Blob([JSON.stringify(p)+':'+JSON.stringify(t).replace(/<\//g,'<\\/').replace(/<!--/g,'<\\!--')+(idx<pages.length-1?',':'')]));
+        step(idx+1);
+      });
+    })},Promise.resolve()).then(function(){ parts.push('};<\/script>',host.slice(i+TAG.length)); return new Blob(parts,{type:'text/html'}) });
+  });
+}
+function offlineDialog(){
+  var pages=[]; Object.keys(LESSONS).forEach(function(id){var p=LESSONS[id].page; if(p&&pages.indexOf(p)<0) pages.push(p)});
+  var blob=null, running=false, NAME='platform-offline.html';
+  var m=modal('<h2>نسخة بلا إنترنت</h2><p class="hint" style="margin:0">ملف واحد فيه كل الدروس ('+ar(pages.length)+') يُفتح بالنقر المزدوج على أي جهاز بلا إنترنت وبلا خادم. حجمه أكثر من ٦٠ ميغا. يُجهَّز هنا في متصفحك من صفحات هذا الموقع، وبيانات الطلاب لا تدخل فيه.</p>'+
+   '<div class="bar" style="height:14px"><i id="ofBar" style="width:0"></i></div><p class="hint" id="ofMsg" style="margin:0" role="status" aria-live="polite">اضغط «جهّز الملف» وانتظر قليلاً.</p>'+
+   '<div class="acts2"><button class="gbtn" type="button" id="ofGo">'+ic('dl')+'جهّز الملف</button><button class="sbtn" type="button" data-close>إغلاق</button></div>');
+  var msg=function(t,bad){var e=$('#ofMsg',m); e.textContent=t; e.style.color=bad?'#ffb3a8':''};
+  var go=$('#ofGo',m);
+  go.addEventListener('click',function(){
+    if(running) return;
+    if(blob){ go.disabled=true; saveBig(NAME,blob).then(function(ok){ go.disabled=false;
+      if(ok) msg('تم. افتح الملف «'+NAME+'» بالنقر المزدوج من مجلد التنزيلات. تقدر تنسخه على فلاشة أو ترسله لأي جهاز.');
+      else if(ok===null) msg('أُلغي الحفظ. اضغط «احفظ على جهازك» لتجرب مرة ثانية.');
+      else msg('التنزيل المباشر غير متاح من هذا العرض. افتح رابط الموقع في متصفح الجهاز نفسه وجرّب من هناك.',true) }); return }
+    running=true; go.disabled=true; msg('جارٍ جمع الدروس: ٠ من '+ar(pages.length)); var bar=$('#ofBar',m);
+    buildOffline(pages,function(n){ bar.style.width=Math.round(n/pages.length*100)+'%'; msg('جارٍ جمع الدروس: '+ar(n)+' من '+ar(pages.length)) },function(){return modalEl===m}).then(function(b){
+      blob=b; running=false; go.disabled=false; go.innerHTML=ic('dl')+'احفظ على جهازك'; msg('الملف جاهز ('+ar(Math.round(b.size/1048576))+' ميغا). اضغط «احفظ على جهازك».'); go.focus();
+    },function(e){ running=false; go.disabled=false; if(e&&e.message==='cancel') return; bar.style.width='0'; msg('تعذّر تجهيز الملف من هذه الصفحة ('+(e&&e.message||'خطأ')+'). تأكد من الاتصال وجرّب مرة ثانية.',true) });
+  });
+}
 function importDialog(){
   var parsed=null;
   var m=modal('<h2>استيراد نسخة احتياطية</h2><p class="hint" style="margin:0">اختر ملف نسخة احتياطية من هذا الموقع أو من موقع «الإدارة الصفية» القديم. الاستيراد يضيف ولا يحذف شيئاً مما عندك.</p>'+
@@ -2617,6 +2666,7 @@ function onDocClick(e){
   if(!b) return;
   var act=b.getAttribute('data-act');
   if(act==='newclass') classDialog(); else if(act==='import') importDialog(); else if(act==='export') exportBackup();
+  else if(act==='offline') offlineDialog();
   else if(act==='csv'){ var sm=PL.classSummary(D(),sumSt.classId,rangeOf(sumSt.range)); if(sm) saveFile('class-summary-'+slug(sm.cls.name)+'.csv',PL.summaryCSV(sm),'text/csv') }
   else if(act==='report'){ var rp=PL.studentReport(D(),stSt.classId,stSt.sid,rangeOf(stSt.range)); if(rp) saveFile('student-report-'+slug(rp.cls.name)+'-'+PL.todayISO()+'.txt',PL.reportText(rp,lessonTitle),'text/plain') }
   else if(b.hasAttribute('data-start')) startLesson(b.getAttribute('data-start'),+b.getAttribute('data-per')||0);
