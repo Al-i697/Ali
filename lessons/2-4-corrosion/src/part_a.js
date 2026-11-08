@@ -78,14 +78,15 @@ slide({id:'tubes',ch:1,title:'تجربة: ما الذي يلزم لحدوث ال
          {svg:tubeSVG({id:'f3',lq:'o',top:82,nail:[44,196]}),t:'الأنبوبة ٣',d:'ماء مغلي (بلا هواء ذائب) + طبقة زيت',btns:B},
          {svg:tubeSVG({id:'f4',lq:'w',o2:1}),t:'الأنبوبة ٤',d:'أكسجين نقي + ماء مغلي',btns:B}];
   return `<div class="col" style="flex:1;gap:8px;min-height:0">${tubeCols(T,'')}
-   <div style="display:flex;justify-content:center"><button type="button" class="btn acc" id="wk" disabled>مرّ أسبوع ▸</button></div>
+   <div style="display:flex;justify-content:center"><button type="button" class="btn acc" id="wk">مرّ أسبوع ▸</button></div>
    <div class="panel compact hide" id="q" style="padding:10px 18px;gap:7px"><div style="font-size:21px;font-weight:800">ما الشرطان اللازمان معاً لصدأ الحديد؟</div>
     ${optsHTML([{t:'الأكسجين (الهواء) والماء'},{t:'الأكسجين والزيت'},{t:'الماء وكلوريد الكالسيوم'}])}<div class="fb" style="min-height:24px"></div></div>
    <div class="gbar hide" id="gb" style="font-size:19px;padding:6px 14px">الحديد يصدأ عند تعرّضه للأكسجين <b>و</b>الماء معاً؛ ولا يكفي أحدهما.</div></div>`;},
  init:function(el){
   var ANS=[1,0,0,2], MSG=['تصدأ: يوجد هواء (أكسجين) وماء','لا تصدأ: لا يوجد ماء','لا تصدأ: لا يوجد أكسجين ذائب، والزيت يمنع وصوله','صدئة جداً: أكسجين نقي وماء'], pred={}, cols=$$('.tcol',el);
-  cols.forEach(function(c,i){ $$('.pb',c).forEach(function(b){ b.addEventListener('click',function(){ if(c.classList.contains('done')) return; $$('.pb',c).forEach(function(x){x.classList.remove('sel')}); b.classList.add('sel'); pred[i]=+b.getAttribute('data-v'); if(Object.keys(pred).length===4) $('#wk',el).disabled=false }) }) });
+  cols.forEach(function(c,i){ $$('.pb',c).forEach(function(b){ b.addEventListener('click',function(){ if(c.classList.contains('done')) return; $$('.pb',c).forEach(function(x){x.classList.remove('sel')}); b.classList.add('sel'); pred[i]=+b.getAttribute('data-v'); }) }) });
   $('#wk',el).addEventListener('click',function(){
+   if(Object.keys(pred).length<4){ $('#wk',el).classList.add('shake'); later(function(){$('#wk',el).classList.remove('shake')},340); return }
    $('#wk',el).classList.add('hide');
    cols.forEach(function(c,i){ c.classList.add('done','r'+ANS[i],pred[i]===ANS[i]?'hit':'miss'); var m=$('.tm',c); m.textContent=(pred[i]===ANS[i]?'✓ ':'✗ ')+MSG[i]; if(pred[i]!==ANS[i]) m.classList.add('no') });
    later(function(){ $('#q',el).classList.remove('hide') },900);

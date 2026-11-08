@@ -54,9 +54,9 @@ const results=[]; const errs=[];
   await T('terms',async(p,sl)=>cls(p,sl,['c','r','r','c','r']));
   await T('rust',async(p,sl)=>{ if(!await cards(sl)) return false; if(await vis(sl.locator('#gb'))) return false; if(!await mcq(p,sl,'#q')) return false; return await gb(p,sl)});
   await T('tubes',async(p,sl)=>{
-    if(await sl.locator('#wk').isEnabled()) return false;
+    await sl.locator('#wk').click(); await p.waitForTimeout(200); if(await cnt(sl.locator('.tcol.done'))) return false;   /* nothing is revealed before every tube is predicted */
     const A=[1,0,0,2]; for(let i=0;i<4;i++) await sl.locator('.tcol[data-i="'+i+'"] .pb[data-v="'+A[i]+'"]').click();
-    if(!await sl.locator('#wk').isEnabled()) return false; await sl.locator('#wk').click(); await p.waitForTimeout(1300);
+    await sl.locator('#wk').click(); await p.waitForTimeout(1300);
     if(await cnt(sl.locator('.tcol.hit'))!==4||await cnt(sl.locator('.tcol.r2'))!==1) return false;
     if(!await mcq(p,sl,'#q')) return false; return await gb(p,sl)});
   await T('speed',async(p,sl)=>{ if(!await cards(sl)) return false; if(await vis(sl.locator('#gb'))) return false; if(!await mcq(p,sl,'#q')) return false; return await gb(p,sl)});
