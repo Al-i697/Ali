@@ -1406,6 +1406,10 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 /* new look: contrast of the small exam-source badge */
 .pq .yr{background:rgba(10,24,52,.92); color:#fff}
 
+/* the balance: the drop zones sit on top of the pans, so they must stay see-through (the shared card skin paints every .zone as a dark card, which hid the atoms) */
+.app .bal .zone{background:transparent!important; border:3px dashed transparent!important; box-shadow:none!important}
+.app .bal .zone.show{border-color:rgba(var(--t2),.6)!important}
+
 
 </style>
 <script src="shared/stickers_assets.js"></script>
