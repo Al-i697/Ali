@@ -17,5 +17,5 @@ const {chromium}=require('playwright');const path=require('path');
  // small / tablet viewports
  for(const [w,h] of [[1024,768],[800,1280]]){
   const c2=await b.newContext({viewport:{width:w,height:h}});const q=await c2.newPage();q.on('pageerror',e=>errs.push('PAGEERR '+e.message));
-  await q.goto('file://'+path.resolve('lesson31.html')+'#s17');await q.waitForTimeout(1800);await q.screenshot({path:'shots/vp_'+w+'.png'});await c2.close()}
+  await q.goto('file://'+path.resolve('lesson31.html')+'#s16');await q.waitForTimeout(1800);await q.screenshot({path:'shots/vp_'+w+'.png'});await c2.close()}
  console.log('errors:',errs.length?errs:'none');await b.close()})();

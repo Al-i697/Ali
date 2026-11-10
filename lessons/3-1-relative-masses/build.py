@@ -2,4 +2,4 @@
 import sys
 sys.path.insert(0, '../_core/tools')
 from u4build import build
-build('31', 'الكتل النسبية ٣-١', ['assets.js', 'art.js', 'deck_a.js', 'deck_b.js', 'slides_b.js', 'deck_c.js', 'lab_main.js', 'past.js', 'tail.js'], sys.argv, css_extra=['lesson.css'], skin='cards', shuffle=True)
+build('31', 'الكتل النسبية ٣-١', ['assets.js', 'art.js', 'deck_a.js', 'deck_b.js', 'slides_b.js', 'deck_c.js', 'lab_main.js', 'npk.js', 'past.js', 'tail.js'], sys.argv, css_extra=['lesson.css'], skin='cards', shuffle=True)
