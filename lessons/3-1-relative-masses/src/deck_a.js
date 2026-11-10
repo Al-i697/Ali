@@ -15,7 +15,25 @@ slide({id:'goals',ch:0,bare:true,title:'أهداف الدرس',
  init:function(el){ $$('.gi',el).forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('done')})}) },
  note:'<ul><li>الأهداف من عرضك كما هي. اضغط على هدف لتظليل علامته أثناء مراجعته في نهاية الدرس.</li><li>دليل المعلم ص٥٤ (الموضوع ٣-١): ١-٨ يستنتج صيغة مركب بسيط من نموذج أو تمثيل تخطيطي، ٢-٨ يعرّف Ar، ٣-٨ يعرّف Mr. أهداف عرضك أوسع (١٤ هدفاً) وكلها مغطاة في شرائح الدرس.</li></ul>'});
 
-/* 2 importance of quantities (match by dragging) */
+/* 2 NPK poll: the fertiliser bag opens the lesson, as in the student book (Figure 3-1), then the importance of quantities */
+slide({id:'npk',ch:1,title:'سماد على كيس... وأرقام',tag:'تصويت',
+ html:function(){return ''+
+  '<div class="frm brk" style="width:300px;flex:none;align-self:center;padding:14px">'+bagArt()+'</div>'+
+  '<div class="col grow" style="gap:12px">'+
+   '<p class="lead" style="font-size:28px"><b>ماذا تعني الأرقام ٥-١٠-٥ المطبوعة على الكيس؟</b></p>'+
+   pollHTML(['عدد ذرات كل عنصر داخل الكيس','النسبة المئوية (بالكتلة) للنيتروجين N والفوسفور P والبوتاسيوم K في السماد','رقم الدفعة وتاريخ الإنتاج'])+
+   '<div style="display:flex;gap:12px;align-items:center"><button class="btn acc sm" type="button" id="rv">اكشف الإجابة</button><span class="sm muted">اضغط + مقابل كل يد مرفوعة</span></div>'+
+   '<div class="panel hide" id="calc" style="display:none"><p class="big" style="font-size:27px">لو كيس السماد <b class="num">20 kg</b>: كم كيلوجراماً من النيتروجين (٥٪) فيه؟</p><div style="display:flex;align-items:center;gap:18px;margin-top:8px">'+ninHTML('n','kg','sm')+'<div class="fb" style="flex:1"></div></div></div>'+
+  '</div>';},
+ init:function(el){
+  var p=bindPoll($('.poll',el),1,function(){var c=$('#calc',el); c.style.display=''; c.classList.remove('hide'); c.classList.add('up')});
+  $('#rv',el).addEventListener('click',function(){p.reveal(); this.classList.add('hide')});
+  var fb=$('#calc .fb',el);
+  bindNum($('#calc .nin',el),1,0.01,function(ok){ if(ok) say(fb,'✓ ٥٪ من ٢٠ kg = ١ kg. النسب تتحول لكميات حقيقية!','ok'); else say(fb,'ركّز: ٥٪ من ٢٠ kg','bad') });
+ },
+ note:'<ul><li>الإجابة (ب): ٥٪ نيتروجين، ١٠٪ فوسفور، ٥٪ بوتاسيوم (كتاب الطالب، الصورة ٣-١).</li><li>ثم سؤال عرضك: <b>ما أهمية هذه النسب للمزارع؟</b></li></ul>'});
+
+/* 3 importance of quantities (match by dragging) */
 slide({id:'imp',ch:1,title:'أهمية تحديد كميات المواد في حياتنا',tag:'مطابقة بالسحب',
  html:function(){
   var C=[['agri','الزراعة','<img class="pic tile" src="'+IMG.agri+'" alt="" style="height:140px">'],['env','البيئة','<img class="pic tile" src="'+IMG.env+'" alt="" style="height:140px">'],['med','الغذاء والدواء','<img class="pic tile" src="'+IMG.med+'" alt="" style="height:140px">']];

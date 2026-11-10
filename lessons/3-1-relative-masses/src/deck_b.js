@@ -24,7 +24,7 @@ slide({id:'table',ch:2,title:'الجدول ٣-٢: الكتل الذرية الن
   var T=[['الهيدروجين','H',1],['الكربون','C',12],['النيتروجين','N',14],['الأكسجين','O',16],['الفلور','F',19],['الصوديوم','Na',23],['الماغنيسيوم','Mg',24],['الألومنيوم','Al',27],['الكبريت','S',32],['الكلور','Cl',35.5],['الحديد','Fe',56],['النحاس','Cu',63.5]];
   return '<div class="frm brk" style="width:700px;flex:none;padding:10px 14px"><table class="atab"><thead><tr><th>العنصر</th><th>الرمز</th><th>الكتلة الذرية النسبية Ar</th></tr></thead><tbody>'+
    T.map(function(t){return '<tr data-n="'+(t[2]%1?1:0)+'"><td>'+t[0]+'</td><td class="s">'+t[1]+'</td><td class="v">'+t[2]+'</td></tr>'}).join('')+'</tbody></table></div>'+
-   '<div class="col grow" style="gap:16px;justify-content:center"><p class="lead" style="font-size:28px"><b>اضغط على العناصر اللي كتلتها الذرية النسبية <span class="k">ليست عدداً صحيحاً</span>.</b></p><div class="fb" id="tf" style="min-height:60px;font-size:24px"></div><div class="frm gold hide" id="tn" style="padding:14px 18px"><p style="font-size:25px;line-height:1.6">لماذا؟ لأن لمعظم العناصر <b>نظائر</b>. هذا موضوع الشريحة التالية.</p></div></div>';
+   '<div class="col grow" style="gap:16px;justify-content:center"><p class="lead panel" style="font-size:28px;padding:14px 20px"><b>اضغط على العناصر اللي كتلتها الذرية النسبية <span class="k">ليست عدداً صحيحاً</span>.</b></p><div class="fb" id="tf" style="min-height:60px;font-size:24px"></div><div class="frm gold hide" id="tn" style="padding:14px 18px"><p style="font-size:25px;line-height:1.6">لماذا؟ لأن لمعظم العناصر <b>نظائر</b>. هذا موضوع الشريحة التالية.</p></div></div>';
  },
  init:function(el){
   var found=0, fb=$('#tf',el);
@@ -37,17 +37,14 @@ slide({id:'table',ch:2,title:'الجدول ٣-٢: الكتل الذرية الن
  note:'<ul><li>عرضك (شريحة ٨). الكلور ٣٥٫٥ والنحاس ٦٣٫٥ فقط ليسا عددين صحيحين، بسبب النظائر.</li><li>كتاب الطالب ص٥٥: الجدول ٣-٢ هو مرجع قيم Ar في كل حسابات الوحدة، وتتكرر القيم نفسها في أسئلة الكتاب وكتاب النشاط.</li></ul>'});
 
 /* 11 isotopes: definition and the formula */
-slide({id:'iso',ch:2,title:'النظائر: لماذا ليست الكتل أعداداً صحيحة؟',tag:'اضغط ◂ للكشف',
+slide({id:'iso',ch:2,title:'النظائر: لماذا ليست الكتل أعداداً صحيحة؟',tag:'نقطة نقطة',
  html:function(){return '<div style="display:flex;gap:18px;flex:1;align-items:center"><div class="col grow" style="gap:16px;justify-content:center">'+
   '<div class="frm brk" style="padding:24px 28px;gap:14px"><p style="font-size:31px;line-height:1.65"><b style="color:var(--gold)">النظائر:</b> ذرات للعنصر نفسه، تمتلك نفس العدد من البروتونات ولكنها تختلف في عدد النيوترونات.</p>'+
-   '<div id="a2" class="hide"><p style="font-size:30px;line-height:1.65;border-top:1.5px solid var(--panel-line);padding-top:14px">لأن معظم العناصر لها نظائر، بالتالي يتم أخذ <span class="k">متوسط الكتلة النسبية</span> لذرات النظائر.</p></div></div>'+
-  '<div class="frm brk gold hide" id="fm"><div class="fh">قانون حساب متوسط الكتلة الذرية النسبية</div><div style="padding:22px 20px;font-size:38px;line-height:1.7;text-align:center" class="mf">A<sub>r</sub> = (% × Am<sub>1</sub>X) + (% × Am<sub>2</sub>X) + …</div></div>'+
-  '<div style="text-align:center"><button class="btn acc" type="button" id="rv">اكشف السبب والقانون ◂</button></div></div>'+
+   '<div id="a2"><p style="font-size:30px;line-height:1.65;border-top:1.5px solid var(--panel-line);padding-top:14px">لأن معظم العناصر لها نظائر، بالتالي يتم أخذ <span class="k">متوسط الكتلة النسبية</span> لذرات النظائر.</p></div></div>'+
+  '<div class="frm brk gold" id="fm"><div class="fh">قانون حساب متوسط الكتلة الذرية النسبية</div><div style="padding:22px 20px;font-size:38px;line-height:1.7;text-align:center" class="mf">A<sub>r</sub> = (% × Am<sub>1</sub>X) + (% × Am<sub>2</sub>X) + …</div></div>'+
+  '</div>'+
   '<div style="width:300px;flex:none"><img class="pic fade" src="'+IMG.goals_navy+'" alt="" style="width:330px;max-width:none"></div></div>';},
- init:function(el){
-  $('#rv',el).addEventListener('click',function(){ ['#a2','#fm'].forEach(function(s){var e=$(s,el); e.classList.remove('hide'); e.classList.add('up')}); this.classList.add('hide') });
- },
- note:'<ul><li>عرضك (شريحة ٩): تعريف النظائر والقانون Ar = (% × كتلة النظير ١) + (% × كتلة النظير ٢) + …</li><li>اسأل الطلاب أولاً: لماذا ٣٥٫٥؟ ثم اكشف.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ٩): تعريف النظائر والقانون Ar = (% × كتلة النظير ١) + (% × كتلة النظير ٢) + …</li><li>العنوان هو السؤال التمهيدي (لماذا ٣٥٫٥؟). النقاط بالضغط على «التالي»: ١ التعريف ← ٢ السبب (المتوسط) ← ٣ القانون.</li></ul>'});
 
 /* 12 hydrogen isotopes (from the school summary) */
 slide({id:'isoH',ch:2,title:'نظائر الهيدروجين',tag:'احسب النيوترونات',
@@ -74,12 +71,12 @@ slide({id:'isoH',ch:2,title:'نظائر الهيدروجين',tag:'احسب ال
 /* 13 chlorine application: the slider drives the maths */
 slide({id:'cl',ch:2,title:'تطبيق عملي: متوسط الكتلة النسبية للكلور',tag:'حرّك المؤشر',
  html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start">'+
-  '<div class="frm brk" style="padding:10px 20px;gap:2px"><b style="font-size:23px;color:var(--gold)">المشكلة</b><p style="font-size:23px;line-height:1.55">تحتوي عينة نموذجية من غاز الكلور على 75% من الكلور-35 و 25% من الكلور-37. أوجد متوسط الكتلة النسبية لذرة الكلور؟</p></div>'+
+  '<div class="frm brk" data-pt="1" style="padding:10px 20px;gap:2px"><b style="font-size:23px;color:var(--gold)">المشكلة</b><p style="font-size:23px;line-height:1.55">تحتوي عينة نموذجية من غاز الكلور على 75% من الكلور-35 و 25% من الكلور-37. أوجد متوسط الكتلة النسبية لذرة الكلور؟</p></div>'+
   '<div style="display:flex;gap:16px;align-items:stretch">'+
-   '<div class="frm brk" style="flex:1"><div class="fh" style="font-size:21px">المعطيات (Given)</div><div style="padding:10px 16px;font-size:22px;line-height:1.9"><div>النظير الأول: الكتلة = 35، النسبة = <b class="num" id="p1">50</b>% (<span class="num" id="d1">0.50</span>)</div><div>النظير الثاني: الكتلة = 37، النسبة = <b class="num" id="p2">50</b>% (<span class="num" id="d2">0.50</span>)</div></div></div>'+
-   '<div class="arw" style="align-self:center">⟵</div>'+
-   '<div class="frm brk" style="flex:1"><div class="fh" style="font-size:21px">الحل (Calculation)</div><div class="mf" style="padding:10px 16px;font-size:26px;line-height:1.8;text-align:left;direction:ltr"><div>A<sub>r</sub> = (<span id="c1">0.50</span> × 35) + (<span id="c2">0.50</span> × 37)</div><div>A<sub>r</sub> = (<span id="e1">17.5</span>) + (<span id="e2">18.5</span>)</div></div></div></div>'+
-  '<div style="display:flex;gap:18px;align-items:center"><div style="flex:1"><div class="sm" style="font-size:21px;margin-bottom:2px">اضبط نسبة الكلور-35 لين يصير A<sub>r</sub> = 35.5</div><input class="rng" id="rg" type="range" min="0" max="100" step="1" value="50" aria-label="نسبة كلور-35"></div>'+
+   '<div class="frm brk" data-pt="2" style="flex:1;order:1"><div class="fh" style="font-size:21px">المعطيات (Given)</div><div style="padding:10px 16px;font-size:22px;line-height:1.9"><div>النظير الأول: الكتلة = 35، النسبة = <b class="num" id="p1">50</b>% (<span class="num" id="d1">0.50</span>)</div><div>النظير الثاني: الكتلة = 37، النسبة = <b class="num" id="p2">50</b>% (<span class="num" id="d2">0.50</span>)</div></div></div>'+
+   '<div class="frm brk" data-pt="3" style="flex:1;order:3"><div class="fh" style="font-size:21px">الحل (Calculation)</div><div class="mf" style="padding:10px 16px;font-size:26px;line-height:1.8;text-align:left;direction:ltr"><div>A<sub>r</sub> = (<span id="c1">0.50</span> × 35) + (<span id="c2">0.50</span> × 37)</div><div>A<sub>r</sub> = (<span id="e1">17.5</span>) + (<span id="e2">18.5</span>)</div></div></div>'+
+   '<div class="arw" style="align-self:center;order:2">⟵</div></div>'+
+  '<div data-pt="4" style="display:flex;gap:18px;align-items:center"><div style="flex:1"><div class="sm" style="font-size:21px;margin-bottom:2px">اضبط نسبة الكلور-35 لين يصير A<sub>r</sub> = 35.5</div><input class="rng" id="rg" type="range" min="0" max="100" step="1" value="50" aria-label="نسبة كلور-35"></div>'+
    '<div class="gbox" id="res" style="min-width:300px"><div style="font-size:19px;font-weight:600">النتيجة (Result)</div><div class="mf" style="font-size:40px" >A<sub>r</sub> = <span id="rv">36.0</span></div></div></div>'+
   '<div class="fb" id="cfb" style="min-height:34px;font-size:22px"></div></div>';},
  init:function(el){
@@ -112,11 +109,11 @@ slide({id:'cl',ch:2,title:'تطبيق عملي: متوسط الكتلة النس
 
 /* 15 from atoms to compounds: molecule and ionic (deck slide 11) */
 slide({id:'types',ch:3,title:'من الذرات إلى المركبات: Mr',
- html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div style="display:flex;gap:16px">'+
-  '<div class="frm brk" style="flex:1;overflow:hidden"><div class="fh">جزيء (Molecule)</div><div style="height:230px"><img class="pic fill" src="'+IMG.mol+'" alt="نموذج جزيء"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">من خلال عدد الكرات الملونة يمكن كتابة الصيغة الجزيئية.</p></div></div>'+
-  '<div class="frm brk" style="flex:1;overflow:hidden"><div class="fh">مركب أيوني (Ionic Compound)</div><div style="height:230px"><img class="pic fill" src="'+IMG.lattice+'" alt="شبكة أيونية"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">في الصيغة البنائية الضخمة نحصي عدد الذرات أو الأيونات المرتبطة بكل عنصر ونضعها في هيئة نسبة.</p></div></div></div>'+
-  '<div class="gbar">اكتب الصيغة النسبية Mr لـ: <span class="eq" style="font-size:32px">H<sub>2</sub> &nbsp;،&nbsp; H<sub>2</sub>O &nbsp;،&nbsp; NaCl</span></div></div>';},
- note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li></ul>'});
+ html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" data-pt="1" style="padding:10px 22px"><p style="font-size:25px;line-height:1.45"><b>هل تُكتب صيغة كل المواد بالطريقة نفسها؟</b> قارن بين النوعين:</p></div><div style="display:flex;gap:16px">'+
+  '<div class="frm brk" data-pt="2" style="flex:1;overflow:hidden"><div class="fh">جزيء (Molecule)</div><div style="height:230px"><img class="pic fill" src="'+IMG.mol+'" alt="نموذج جزيء"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">من خلال عدد الكرات الملونة يمكن كتابة الصيغة الجزيئية.</p></div></div>'+
+  '<div class="frm brk" data-pt="3" style="flex:1;overflow:hidden"><div class="fh">مركب أيوني (Ionic Compound)</div><div style="height:230px"><img class="pic fill" src="'+IMG.lattice+'" alt="شبكة أيونية"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">في الصيغة البنائية الضخمة نحصي عدد الذرات أو الأيونات المرتبطة بكل عنصر ونضعها في هيئة نسبة.</p></div></div></div>'+
+  '<div class="gbar" data-pt="4">اكتب الصيغة النسبية Mr لـ: <span class="eq" style="font-size:32px">H<sub>2</sub> &nbsp;،&nbsp; H<sub>2</sub>O &nbsp;،&nbsp; NaCl</span></div></div>';},
+ note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li><li>النقاط: ١ سؤال تمهيدي ← ٢ الجزيء ← ٣ المركب الأيوني ← ٤ السؤال الذهبي.</li><li><b>من عندي:</b> صياغة السؤال التمهيدي «هل تُكتب صيغة كل المواد بالطريقة نفسها؟» (ليست من الكتاب ولا من عرضك). غيّرها أو احذفها وقت التحضير.</li></ul>'});
 
 /* ---- Mr flow blocks (deck slides 12 and 13) ---- */
 function flowBlock(c,i,mode){
