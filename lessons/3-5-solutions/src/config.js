@@ -15,6 +15,7 @@ var LESSON={
         citric:'p_lab_equations',na2co3:'p_plain_b',past1:'p_e_blue_lab',past2:'p_plain_c',final:'p_lab_future',hw:'p_atom_bubbles'},
   palId:{mix:'violet',vocab:'gold',cg:'emerald',ex37:'emerald',q316:'navy',tk1:'ember',cm:'violet',ex38:'violet',ncv:'violet',q317:'navy',ex36:'emerald',tk2:'ember',what:'gold',tsteps:'navy',lab0:'navy',lab:'navy',labq:'violet',method:'gold',ex39:'ember',ex310:'ember',q318:'gold',q319:'gold',q320:'ember',ws35:'navy',citric:'violet',na2co3:'emerald',wsburette:'navy',wsorg:'gold',map:'violet',q5:'gold',race:'ember',past1:'gold',past2:'navy',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
   pts:{goals:'.gi',
        ex37:PT_T2,
        q316:PT_T2,

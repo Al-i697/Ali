@@ -16,6 +16,7 @@ var LESSON={
          ar:'emerald',ex31:'emerald',q35:'emerald',q36:'navy',q37:'violet',chain:'emerald',act31:'ember',tbl33a:'navy',tbl33b:'navy',race:'ember',tk2:'ember',
          past1:'gold',past2:'gold',final:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
   pts:{goals:'.gi',
        count:'.col.grow>.panel',
        graphite:'.col.grow>.panel',

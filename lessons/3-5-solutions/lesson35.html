@@ -1613,6 +1613,7 @@ var LESSON={
         citric:'p_lab_equations',na2co3:'p_plain_b',past1:'p_e_blue_lab',past2:'p_plain_c',final:'p_lab_future',hw:'p_atom_bubbles'},
   palId:{mix:'violet',vocab:'gold',cg:'emerald',ex37:'emerald',q316:'navy',tk1:'ember',cm:'violet',ex38:'violet',ncv:'violet',q317:'navy',ex36:'emerald',tk2:'ember',what:'gold',tsteps:'navy',lab0:'navy',lab:'navy',labq:'violet',method:'gold',ex39:'ember',ex310:'ember',q318:'gold',q319:'gold',q320:'ember',ws35:'navy',citric:'violet',na2co3:'emerald',wsburette:'navy',wsorg:'gold',map:'violet',q5:'gold',race:'ember',past1:'gold',past2:'navy',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
   pts:{goals:'.gi',
        ex37:PT_T2,
        q316:PT_T2,
@@ -1842,9 +1843,11 @@ function build(i){
   if(s.cls) el.classList.add(s.cls);
   if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
-  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; s.pts.forEach(function(e){e.classList.add('ptn')}) }
+  /* LESSON.ptsLate: mark the points only after the card skin has run, so loose text inside a point (a big equation, arrows) still gets the reading plate; the default marks them first (the skin then leaves points alone) */
+  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; if(!LESSON.ptsLate) s.pts.forEach(function(e){e.classList.add('ptn')}) }
   if(s.init) s.init(el,s);
   if(typeof SKIN!=='undefined') SKIN.slide(el);   /* after init, so text that init fills in is covered too */
+  if(LESSON.ptsLate&&s.pts) s.pts.forEach(function(e){e.classList.add('ptn')});
   return el;
 }
 /* ---- points that appear one click at a time, like a slide show: LESSON.pts={slideId:'css selector of the points'}.

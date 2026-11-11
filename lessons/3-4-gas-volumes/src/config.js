@@ -15,6 +15,7 @@ var LESSON={
         hw:'p_hands_globe'},
   palId:{who:'gold',predict:'navy',avog:'violet',rtp:'ember',tri:'emerald',ex1:'emerald',ex2:'emerald',q312:'navy',q313:'navy',tk1:'ember',gasonly:'gold',shrink:'violet',matrix:'emerald',q314:'gold',challenge:'ember',flow34:'violet',q315:'ember',zn:'ember',mgno3:'gold',lab0:'navy',lab:'navy',labq:'violet',ex34a:'gold',ex34b:'emerald',ex34c:'violet',race:'ember',past1:'gold',past2:'gold',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
   pts:{goals:'.gi',
        predict:PT_T2,
        avog:PT_T2,

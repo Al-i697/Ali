@@ -189,9 +189,11 @@ function build(i){
   if(s.cls) el.classList.add(s.cls);
   if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
-  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; s.pts.forEach(function(e){e.classList.add('ptn')}) }
+  /* LESSON.ptsLate: mark the points only after the card skin has run, so loose text inside a point (a big equation, arrows) still gets the reading plate; the default marks them first (the skin then leaves points alone) */
+  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; if(!LESSON.ptsLate) s.pts.forEach(function(e){e.classList.add('ptn')}) }
   if(s.init) s.init(el,s);
   if(typeof SKIN!=='undefined') SKIN.slide(el);   /* after init, so text that init fills in is covered too */
+  if(LESSON.ptsLate&&s.pts) s.pts.forEach(function(e){e.classList.add('ptn')});
   return el;
 }
 /* ---- points that appear one click at a time, like a slide show: LESSON.pts={slideId:'css selector of the points'}.

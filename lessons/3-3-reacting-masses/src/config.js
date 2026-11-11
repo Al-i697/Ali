@@ -15,6 +15,7 @@ var LESSON={
         race:'p_plain_a',past1:'p_e_blue_lab',past2:'p_plain_d',final:'p_atom_bubbles',hw:'p_bulb_tree'},
   palId:{eou3:'gold',bacl:'violet',conserve:'ember',prop:'emerald',goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
   pts:{goals:'.gi',
        sand1:PT_T2,
        sand2:PT_T2,
