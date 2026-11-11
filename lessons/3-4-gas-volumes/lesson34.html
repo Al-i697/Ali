@@ -1594,6 +1594,8 @@ document.documentElement.lang="ar";document.documentElement.dir="rtl";
 (function(){
 'use strict';
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: T2 = the blocks of a two-column slide (problem first, then the work area), without feedback lines, hidden reveals, reference chips or nested columns; T1 = the same for a one-column slide */
+var PT_T2='.body>div>.col>*:not(.fb):not(.hide):not(.gbar):not(.chips):not(.tkbar):not(.col)', PT_T1='.body>.col.grow>*:not(.fb):not(.hide):not(.chips):not(.arstrip)';
 var LESSON={
   short:'حجوم الغازات', brand:'الدرس ٣-٤ · حجوم الغازات', home:'index.html',
   chapters:['مدخل','أفوجادرو والحجم المولي','الحجم والمولات','تفاعلات الغازات فقط','كتلة وغاز في تفاعل','نشاط ٣-٣ (إثرائي)','أسئلة امتحانات','ختام'],
@@ -1608,6 +1610,27 @@ var LESSON={
         hw:'p_hands_globe'},
   palId:{who:'gold',predict:'navy',avog:'violet',rtp:'ember',tri:'emerald',ex1:'emerald',ex2:'emerald',q312:'navy',q313:'navy',tk1:'ember',gasonly:'gold',shrink:'violet',matrix:'emerald',q314:'gold',challenge:'ember',flow34:'violet',q315:'ember',zn:'ember',mgno3:'gold',lab0:'navy',lab:'navy',labq:'violet',ex34a:'gold',ex34b:'emerald',ex34c:'violet',race:'ember',past1:'gold',past2:'gold',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  pts:{goals:'.gi',
+       predict:PT_T2,
+       avog:PT_T2,
+       rtp:PT_T2,
+       ex1:PT_T2,
+       ex2:PT_T2,
+       q312:PT_T2,
+       q313:PT_T2,
+       gasonly:PT_T2,
+       matrix:'.sm.onpic, .mx',
+       q314:'.frm.brk',
+       challenge:PT_T2,
+       q315:PT_T2,
+       zn:PT_T2,
+       mgno3:'.frm.brk',
+       lab0:PT_T2,
+       ex34a:PT_T2,
+       ex34b:PT_T2,
+       past1:'.pq',
+       past2:'.pq',
+       hw:'.panel.dark li'},
   stk:{
     goals:[['m_flask',1130,556,96,5,1.0]], who:[['m_mole',1110,552,110,5,1.0]], predict:[['m_atom',40,556,100,-5,1.0]],
     avog:[['m_flask',40,556,100,-5,1.0]], rtp:[['m_flame',1130,556,100,6,1.0]], tri:[['m_bulb',1130,556,100,6,1.0]],

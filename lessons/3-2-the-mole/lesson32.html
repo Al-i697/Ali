@@ -1460,6 +1460,8 @@ document.documentElement.lang="ar";document.documentElement.dir="rtl";
 (function(){
 'use strict';
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: T2 = the blocks of a two-column slide (problem first, then the work area), without feedback lines, hidden reveals, reference chips or nested columns; T1 = the same for a one-column slide */
+var PT_T2='.body>div>.col>*:not(.fb):not(.hide):not(.gbar):not(.chips):not(.tkbar):not(.col)', PT_T1='.body>.col.grow>*:not(.fb):not(.hide):not(.chips):not(.arstrip)';
 var LESSON={
   short:'المول', brand:'الدرس ٣-٢ · المول', home:'index.html',
   chapters:['مدخل','تمهيد: كيف نعدّ الأشياء الكثيرة؟','المول وعدد أفوجادرو','الكتلة المولية','حسابات المول','تمارين وتدريب','أسئلة على نمط الامتحان','ختام'],
@@ -1475,7 +1477,27 @@ var LESSON={
          ar:'emerald',ex31:'emerald',q35:'emerald',q36:'navy',q37:'violet',chain:'emerald',act31:'ember',tbl33a:'navy',tbl33b:'navy',race:'ember',tk2:'ember',
          past1:'gold',past2:'gold',final:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', hw:'.panel.dark li'},
+  pts:{goals:'.gi',
+       count:'.col.grow>.panel',
+       graphite:'.col.grow>.panel',
+       mole:'.body>.col.grow>*',
+       single:PT_T2,
+       formula:PT_T2,
+       t34a:'table.mtab tbody tr',
+       t34b:'table.mtab tbody tr',
+       avo:'.body>.col.grow>*',
+       ar:PT_T1,
+       ex31:'.frm.brk',
+       q35:'.qr',
+       q36:'.qr',
+       q37:'.qr',
+       act31:PT_T2,
+       tbl33a:'table.mtab tbody tr',
+       tbl33b:'table.mtab tbody tr',
+       eou2:'.frm.brk',
+       past1:'.pq',
+       past2:'.pq',
+       hw:'.panel.dark li'},
   /* stickers placed under the content, where the slide has room: [sticker, x, y, width, tilt, entrance delay s] */
   stk:{
     goals:[['m_mole',40,505,190,-4,1.0],['m_flask',250,572,120,7,1.25],['m_star',372,612,86,-10,1.5]],

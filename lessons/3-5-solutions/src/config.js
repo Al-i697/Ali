@@ -1,4 +1,6 @@
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: T2 = the blocks of a two-column slide (problem first, then the work area), without feedback lines, hidden reveals, reference chips or nested columns; T1 = the same for a one-column slide */
+var PT_T2='.body>div>.col>*:not(.fb):not(.hide):not(.gbar):not(.chips):not(.tkbar):not(.col)', PT_T1='.body>.col.grow>*:not(.fb):not(.hide):not(.chips):not(.arstrip)';
 var LESSON={
   short:'محاليل ومعايرة', brand:'الدرس ٣-٥ · محاليل ومعايرة', home:'index.html',
   chapters:['مدخل','تركيز الكتلة','التركيز المولي','المعايرة','حسابات المعايرة','تطبيقات','الخريطة والامتحانات','ختام'],
@@ -13,6 +15,28 @@ var LESSON={
         citric:'p_lab_equations',na2co3:'p_plain_b',past1:'p_e_blue_lab',past2:'p_plain_c',final:'p_lab_future',hw:'p_atom_bubbles'},
   palId:{mix:'violet',vocab:'gold',cg:'emerald',ex37:'emerald',q316:'navy',tk1:'ember',cm:'violet',ex38:'violet',ncv:'violet',q317:'navy',ex36:'emerald',tk2:'ember',what:'gold',tsteps:'navy',lab0:'navy',lab:'navy',labq:'violet',method:'gold',ex39:'ember',ex310:'ember',q318:'gold',q319:'gold',q320:'ember',ws35:'navy',citric:'violet',na2co3:'emerald',wsburette:'navy',wsorg:'gold',map:'violet',q5:'gold',race:'ember',past1:'gold',past2:'navy',final:'navy',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  pts:{goals:'.gi',
+       ex37:PT_T2,
+       q316:PT_T2,
+       ex38:PT_T2,
+       ncv:PT_T2,
+       q317:PT_T2,
+       ex36:'.sm.onpic, table.mtab tbody tr',
+       what:PT_T2,
+       lab0:PT_T2,
+       ex39:PT_T2,
+       ex310:PT_T2,
+       q318:PT_T2,
+       q319:PT_T2,
+       q320:PT_T2,
+       citric:PT_T2,
+       na2co3:PT_T2,
+       wsburette:PT_T2,
+       wsorg:PT_T1,
+       q5:'.frm.brk',
+       past1:'.pq',
+       past2:'.pq',
+       hw:'.panel.dark li'},
   stk:{
     goals:[['m_flask',1130,556,96,5,1.0]], mix:[['m_tube',40,556,100,-5,1.0]], vocab:[['m_mole',1110,552,110,5,1.0]],
     cg:[['m_bulb',40,556,100,-5,1.0]], ex37:[['m_star',1130,556,90,6,1.0]], q316:[['m_atom',1130,556,100,6,1.0]],

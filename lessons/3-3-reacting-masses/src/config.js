@@ -1,4 +1,6 @@
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: T2 = the blocks of a two-column slide (problem first, then the work area), without feedback lines, hidden reveals, reference chips or nested columns; T1 = the same for a one-column slide */
+var PT_T2='.body>div>.col>*:not(.fb):not(.hide):not(.gbar):not(.chips):not(.tkbar):not(.col)', PT_T1='.body>.col.grow>*:not(.fb):not(.hide):not(.chips):not(.arstrip)';
 var LESSON={
   short:'كتل متفاعلة', brand:'الدرس ٣-٣ · كتل متفاعلة', home:'index.html',
   chapters:['مدخل','ماذا لو كان؟','استنباط الصيغة الكيميائية','المادة المحددة والفائضة','الكتلة من المعادلة','نشاط عملي (إثرائي)','تمارين وتدريب','أسئلة على نمط الامتحان','ختام'],
@@ -13,6 +15,30 @@ var LESSON={
         race:'p_plain_a',past1:'p_e_blue_lab',past2:'p_plain_d',final:'p_atom_bubbles',hw:'p_bulb_tree'},
   palId:{eou3:'gold',bacl:'violet',conserve:'ember',prop:'emerald',goals:'emerald',sand1:'gold',sand2:'ember',steps3:'navy',mgo:'navy',sio2:'violet',noo:'gold',tk1:'ember',si6:'ember',fes:'ember',rule:'gold',cuo:'violet',fe48:'ember',ag:'navy',parts:'emerald',cls:'gold',tk2:'ember',scaleup:'emerald',method:'violet',ex32:'violet',ex33:'violet',q38:'navy',q39:'navy',solv:'gold',lab:'navy',labcalc:'navy',race:'ember',past1:'gold',past2:'gold',final:'ember',hw:'emerald'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
+  pts:{goals:'.gi',
+       sand1:PT_T2,
+       sand2:PT_T2,
+       mgo:PT_T2,
+       sio2:PT_T1,
+       noo:PT_T1,
+       bacl:PT_T2,
+       si6:PT_T2,
+       conserve:PT_T2,
+       fes:PT_T2,
+       cuo:PT_T2,
+       fe48:PT_T2,
+       ag:PT_T2,
+       scaleup:PT_T2,
+       ex32:PT_T1,
+       ex33:PT_T1,
+       q38:'.frm.brk, .qr',
+       q39:PT_T2,
+       eou3:'.body>.col.grow>div:not(.chips)>.col',
+       solv:'.body>.col.grow>div:not(.chips)>.col',
+       labcalc:PT_T2,
+       past1:'.pq',
+       past2:'.pq',
+       hw:'.panel.dark li'},
   stk:{
     bacl:[['m_flask',1130,556,100,5,1.0]], conserve:[['m_flame',40,556,100,-5,1.0]], prop:[['m_tube',1130,556,100,6,1.0]],
     sand1:[['m_flask',1130,556,100,5,1.0]], sand2:[['m_star',1130,556,90,6,1.0]], steps3:[['m_tube',1130,556,100,6,1.0]],
