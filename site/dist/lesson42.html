@@ -1628,9 +1628,11 @@ function build(i){
   if(s.cls) el.classList.add(s.cls);
   if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
-  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; s.pts.forEach(function(e){e.classList.add('ptn')}) }
+  /* LESSON.ptsLate: mark the points only after the card skin has run, so loose text inside a point (a big equation, arrows) still gets the reading plate; the default marks them first (the skin then leaves points alone) */
+  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; if(!LESSON.ptsLate) s.pts.forEach(function(e){e.classList.add('ptn')}) }
   if(s.init) s.init(el,s);
   if(typeof SKIN!=='undefined') SKIN.slide(el);   /* after init, so text that init fills in is covered too */
+  if(LESSON.ptsLate&&s.pts) s.pts.forEach(function(e){e.classList.add('ptn')});
   return el;
 }
 /* ---- points that appear one click at a time, like a slide show: LESSON.pts={slideId:'css selector of the points'}.
@@ -3616,7 +3618,7 @@ slide({id:'burnE',ch:3,title:'احتراق الألكينات',tag:'زِن ال�
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
     <div style="display:flex;gap:8px;justify-content:center">${ENE.slice(0,3).map(function(a,i){return '<button type="button" class="btn tab" data-i="'+i+'">'+a.name+'</button>'}).join('')}</div>
-    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكين + أكسجين → ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
+    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكين + أكسجين ← ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
      <div style="display:flex;align-items:center;justify-content:center;gap:10px;direction:ltr;flex-wrap:nowrap" id="eq"></div></div>
     <div class="panel" style="padding:10px 16px;gap:2px"><div class="cnt3" id="ct" style="direction:ltr"></div></div>
     <div class="fb" style="min-height:26px;text-align:center;font-size:21px"></div></div>

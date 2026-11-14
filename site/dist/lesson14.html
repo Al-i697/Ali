@@ -1911,9 +1911,11 @@ function build(i){
   if(s.cls) el.classList.add(s.cls);
   if(typeof STK!=='undefined'&&LESSON.stk) STK.deco(el,LESSON.stk[s.id]);
   STAGE.appendChild(el); s.el=el;
-  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; s.pts.forEach(function(e){e.classList.add('ptn')}) }
+  /* LESSON.ptsLate: mark the points only after the card skin has run, so loose text inside a point (a big equation, arrows) still gets the reading plate; the default marks them first (the skin then leaves points alone) */
+  if(LESSON.pts&&LESSON.pts[s.id]){ s.pts=$$(LESSON.pts[s.id],el); s.pn=s.pts.length; if(!LESSON.ptsLate) s.pts.forEach(function(e){e.classList.add('ptn')}) }
   if(s.init) s.init(el,s);
   if(typeof SKIN!=='undefined') SKIN.slide(el);   /* after init, so text that init fills in is covered too */
+  if(LESSON.ptsLate&&s.pts) s.pts.forEach(function(e){e.classList.add('ptn')});
   return el;
 }
 /* ---- points that appear one click at a time, like a slide show: LESSON.pts={slideId:'css selector of the points'}.
@@ -4251,7 +4253,7 @@ slide({id:'cold',ch:2,title:'الفلزات في الماء البارد',tag:'�
   bindRack(el,'rk1',COLD,'#go',function(){ $('#q',el).classList.remove('hide'); say($('.fb',el),'رتّب الفلزات بحسب عدد الفقاعات: أيّها الأنشط؟','') });
   bindMcq($('#q',el),[{t:'',ok:true,why:eqn('Ca(s) + 2H2O(l) → Ca(OH)2(aq) + H2(g)')},{t:'',why:'مع الماء البارد يتكوّن هيدروكسيد لا أكسيد'},{t:'',why:'الغاز الناتج هيدروجين لا أكسجين'}],$('.fb2',el),function(){unhide(el)});
  },
- note:'<ul><li>كتاب الطالب ص٢٥: يتفاعل الكالسيوم مع الماء البارد بسرعة لإنتاج الهيدروجين: هيدروجين + هيدروكسيد الكالسيوم ← ماء + كالسيوم، «Ca(s) + 2H₂O(l) → Ca(OH)₂(aq) + H₂(g)». ويذوب الهيدروكسيد قليلاً في الماء (ماء الجير). «ورغم الشبه بين هذا التفاعل وتفاعل الفلزات القلوية مع الماء، إلا أنه ليس بذات الشدة». والماغنيسيوم يتفاعل «بشكل بطيء جداً عند وضعه في الماء البارد».</li><li>الرسم تخطيطي: عدد الفقاعات وسرعتها يدلّان على شدة التفاعل (K أشد ثم Na ثم Ca ثم Mg ثم لا شيء). لهب K البنفسجي من الكتاب ص٢١. <b>ملاحظة:</b> الخارصين والنحاس لا يظهر لهما تفاعل مع الماء البارد (الجدول ١-٤: الخارصين يتفاعل مع بخار الماء فقط).</li></ul>'});
+ note:'<ul><li>كتاب الطالب ص٢٥: يتفاعل الكالسيوم مع الماء البارد بسرعة لإنتاج الهيدروجين: كالسيوم + ماء ← هيدروكسيد الكالسيوم + هيدروجين، «Ca(s) + 2H₂O(l) → Ca(OH)₂(aq) + H₂(g)». ويذوب الهيدروكسيد قليلاً في الماء (ماء الجير). «ورغم الشبه بين هذا التفاعل وتفاعل الفلزات القلوية مع الماء، إلا أنه ليس بذات الشدة». والماغنيسيوم يتفاعل «بشكل بطيء جداً عند وضعه في الماء البارد».</li><li>الرسم تخطيطي: عدد الفقاعات وسرعتها يدلّان على شدة التفاعل (K أشد ثم Na ثم Ca ثم Mg ثم لا شيء). لهب K البنفسجي من الكتاب ص٢١. <b>ملاحظة:</b> الخارصين والنحاس لا يظهر لهما تفاعل مع الماء البارد (الجدول ١-٤: الخارصين يتفاعل مع بخار الماء فقط).</li></ul>'});
 
 /* 8 water or steam (student book p.25, questions 1-14 and 1-15) */
 slide({id:'steam',ch:2,title:'الماء البارد أم بخار الماء؟',tag:'الناتج يتغيّر',
