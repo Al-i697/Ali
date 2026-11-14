@@ -1,22 +1,34 @@
 /* ---------- deck B: practice, table, isotopes, chlorine, molecules vs ionic, Mr flows ---------- */
 
-/* 9 Question 3-2 and the phosphorus exercise */
+/* 9 Question 3-2 (the phosphorus exercise now has its own slide, next) */
 slide({id:'q32',ch:2,title:'كم مرة أثقل من الهيدروجين؟',tag:'تمرين',
  html:function(){
   var rows=[['ذرة الهيليوم He','6.68 × 10<sup>−24</sup> g'],['ذرة الكربون C','1.99 × 10<sup>−23</sup> g'],['ذرة الأكسجين O','2.66 × 10<sup>−23</sup> g'],['ذرة اليورانيوم U','3.97 × 10<sup>−22</sup> g']];
   return '<div class="col grow" style="gap:12px;justify-content:flex-start"><p class="sm muted" style="font-size:21px">متوسط كتلة ذرة H = <span class="num">1.67 × 10<sup>−24</sup></span> g. قرّب إجابتك لأقرب عدد صحيح (السؤال ٣-٢).</p>'+
-   rows.map(function(r,i){return '<div class="panel" style="display:flex;align-items:center;gap:18px;padding:12px 22px"><span style="font-size:26px;font-weight:700;width:200px">'+r[0]+'</span><span class="eq" style="font-size:28px;width:250px">'+r[1]+'</span>'+ninHTML('q'+i,'','sm')+'<div class="fb" style="flex:1;min-height:0;font-size:20px"></div></div>'}).join('')+'</div>'+
-   '<div class="col" style="width:340px;flex:none;gap:12px"><div class="panel dark" style="padding:20px 22px"><p style="font-size:25px;line-height:1.6">من عرضك:<br>الكتلة الذرية للفسفور <b>٣١</b> ذ.ك.ذ، وللكربون <b>١٢</b>. <b>كم مرة الفسفور أثقل من ذرة الكربون؟</b></p></div>'+ninHTML('p','','')+'<div class="fb" id="pfb"></div></div>';
+   rows.map(function(r,i){return '<div class="panel" style="display:flex;align-items:center;gap:18px;padding:12px 22px"><span style="font-size:26px;font-weight:700;width:200px">'+r[0]+'</span><span class="eq" style="font-size:28px;width:250px">'+r[1]+'</span>'+ninHTML('q'+i,'','sm')+'<div class="fb" style="flex:1;min-height:0;font-size:20px"></div></div>'}).join('')+'</div>';
  },
  init:function(el){
   var rows=[[4,0.5,'٦٫٦٨ ÷ ١٫٦٧ ≈ ٤'],[12,0.6,'١١٫٩ ≈ ١٢'],[16,0.6,'١٥٫٩ ≈ ١٦'],[238,1.5,'٢٣٧٫٧ ≈ ٢٣٨']];
   $$('.panel',el).slice(0,4).forEach(function(p,i){
     var fb=$('.fb',p); bindNum($('.nin',p),rows[i][0],rows[i][1],function(ok){ if(ok) say(fb,'✓ '+rows[i][2],'ok'); else say(fb,'قسّم على ١٫٦٧×١٠⁻٢٤','bad') });
   });
-  var fb=$('#pfb',el);
-  bindNum($('.nin[data-n="p"]',el),2.58,0.08,function(ok){ if(ok) say(fb,'✓ ٣١ ÷ ١٢ ≈ ٢٫٥٨ مرة','ok'); else say(fb,'قسّم ٣١ على ١٢','bad') });
  },
- note:'<ul><li>إجابات السؤال ٣-٢ في الدليل: He ٤، C ١٢، O ١٦، U ٢٣٨. الفسفور: ٣١ ÷ ١٢ = ٢٫٥٨.</li><li>كتاب الطالب ص٥٨ السؤال ٣-٢: اقسم كتلة كل ذرة على كتلة ذرة الهيدروجين (1.67×10⁻²⁴ g) وقرّب لأقرب عدد صحيح، فتطابق النتائج قيم Ar تقريباً.</li></ul>'});
+ note:'<ul><li>إجابات السؤال ٣-٢ في الدليل: He ٤، C ١٢، O ١٦، U ٢٣٨. تمرين الفسفور في الشريحة التالية.</li><li>كتاب الطالب ص٥٨ السؤال ٣-٢: اقسم كتلة كل ذرة على كتلة ذرة الهيدروجين (1.67×10⁻²⁴ g) وقرّب لأقرب عدد صحيح، فتطابق النتائج قيم Ar تقريباً.</li></ul>'});
+
+/* 9b the teacher's exercise (phosphorus relative to carbon): his wording, then the solution step by step */
+slide({id:'pc',ch:2,title:'تمرين: الفسفور بالنسبة للكربون',tag:'نقطة نقطة',
+ html:function(){return '<div class="col grow" style="gap:16px;justify-content:flex-start">'+
+  '<div class="frm brk" data-pt="1" style="padding:18px 28px"><p style="font-size:29px;line-height:1.75;text-align:center;margin:0"><b>الكتلة الذّريّة لذرّة الفسفور (31) وحدة كتلة ذرّيّة، ما كتلة ذرّة الفسفور بالنسبة لذرّة الكربون ؟</b></p></div>'+
+  '<div style="display:flex;gap:16px">'+
+   '<div class="cbox" data-pt="2" style="flex:1;font-size:27px">كتلة ذرة الفسفور = <b class="num" style="color:var(--gold)">31</b> وحدة كتلة ذرية</div>'+
+   '<div class="cbox" data-pt="3" style="flex:1;font-size:27px">كتلة ذرة الكربون = <b class="num" style="color:var(--gold)">12</b> وحدة كتلة ذرية</div></div>'+
+  '<div class="frm brk" data-pt="4" style="padding:10px 28px;align-items:center"><div style="font-size:27px;display:flex;align-items:center;justify-content:center;gap:14px">كتلة الفسفور بالنسبة للكربون =<span class="frac mf" style="font-size:34px"><span>31</span><span>12</span></span></div></div>'+
+  '<div class="gbox" data-pt="5" style="display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap"><span class="mf" style="direction:ltr">31 ÷ 12 =</span>'+ninHTML('p','','')+'<div class="fb" id="pfb" style="min-width:300px;font-size:21px"></div></div></div>';},
+ init:function(el){
+  var fb=$('#pfb',el);
+  bindNum($('.nin[data-n="p"]',el),2.58,0.08,function(ok){ if(ok) say(fb,'✓ ٣١ ÷ ١٢ ≈ ٢٫٥٨: كتلة ذرة الفسفور تساوي نحو ٢٫٥٨ مرة كتلة ذرة الكربون','ok'); else say(fb,'قسّم ٣١ على ١٢ (قرّب لمنزلتين)','bad') });
+ },
+ note:'<ul><li>التمرين من عرضك (صورتك)، بصياغة السؤال نفسها، والحل: كتلة P = ٣١، كتلة C = ١٢، ثم الكسر ٣١ ÷ ١٢.</li><li><b>من عندي:</b> الناتج ٢٫٥٨ (الصورة انتهت عند الكسر)، وجملة النتيجة. النقاط: السؤال ← كتلة P ← كتلة C ← الكسر ← الحساب.</li><li>كان هذا السؤال لوحة صغيرة في شريحة «كم مرة أثقل من الهيدروجين؟» وانتقل إلى شريحته.</li></ul>'});
 
 /* 10 Table 3-2: find the elements whose Ar is not a whole number */
 slide({id:'table',ch:2,title:'الجدول ٣-٢: الكتل الذرية النسبية (Ar)',tag:'اضغط على الصفوف',
@@ -41,10 +53,10 @@ slide({id:'iso',ch:2,title:'النظائر: لماذا ليست الكتل أع�
  html:function(){return '<div style="display:flex;gap:18px;flex:1;align-items:center"><div class="col grow" style="gap:16px;justify-content:center">'+
   '<div class="frm brk" style="padding:24px 28px;gap:14px"><p style="font-size:31px;line-height:1.65"><b style="color:var(--gold)">النظائر:</b> ذرات للعنصر نفسه، تمتلك نفس العدد من البروتونات ولكنها تختلف في عدد النيوترونات.</p>'+
    '<div id="a2"><p style="font-size:30px;line-height:1.65;border-top:1.5px solid var(--panel-line);padding-top:14px">لأن معظم العناصر لها نظائر، بالتالي يتم أخذ <span class="k">متوسط الكتلة النسبية</span> لذرات النظائر.</p></div></div>'+
-  '<div class="frm brk gold" id="fm"><div class="fh">قانون حساب متوسط الكتلة الذرية النسبية</div><div style="padding:22px 20px;font-size:38px;line-height:1.7;text-align:center" class="mf">A<sub>r</sub> = (% × Am<sub>1</sub>X) + (% × Am<sub>2</sub>X) + …</div></div>'+
+  '<div class="frm brk gold" id="fm"><div class="fh">قانون حساب متوسط الكتلة الذرية النسبية</div><div style="padding:14px 20px 2px;font-size:29px;line-height:1.75;text-align:center"><span class="mf" style="white-space:nowrap">A<sub>r</sub> =</span> <span style="white-space:nowrap">(كتلة النظير ١ × نسبته)</span> + <span style="white-space:nowrap">(كتلة النظير ٢ × نسبته)</span> + …</div><div style="padding:0 20px 2px;font-size:22px;line-height:1.6;text-align:center">نسبة النظير تُكتب عشرية: <span dir="ltr" style="display:inline-block">75% = 0.75</span></div><div style="padding:0 20px 12px;font-size:22px;line-height:1.6;text-align:center">مثال الكتاب (الكلور): <span class="mf" dir="ltr" style="display:inline-block">(35 × 0.75) + (37 × 0.25) = 35.5</span></div></div>'+
   '</div>'+
   '<div style="width:300px;flex:none"><img class="pic fade" src="'+IMG.goals_navy+'" alt="" style="width:330px;max-width:none"></div></div>';},
- note:'<ul><li>عرضك (شريحة ٩): تعريف النظائر والقانون Ar = (% × كتلة النظير ١) + (% × كتلة النظير ٢) + …</li><li>العنوان هو السؤال التمهيدي (لماذا ٣٥٫٥؟). النقاط بالضغط على «التالي»: ١ التعريف ← ٢ السبب (المتوسط) ← ٣ القانون.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ٩): تعريف النظائر والقانون Ar = (% × كتلة النظير ١) + (% × كتلة النظير ٢) + …</li><li>العنوان هو السؤال التمهيدي (لماذا ٣٥٫٥؟). النقاط بالضغط على «التالي»: ١ التعريف ← ٢ السبب (المتوسط) ← ٣ القانون.</li><li><b>من عندي:</b> صياغة القانون بالكلمات بدل الرمز <span dir="ltr">% × Am₁X</span> في العرض (كان غير مفهوم)، والمثال من كتاب الطالب ص٥٤ (الكلور: ٧٥٪ و٢٥٪ ⟵ ٣٥٫٥). الكتاب نفسه لا يعطي صيغة رمزية.</li></ul>'});
 
 /* 12 hydrogen isotopes (from the school summary) */
 slide({id:'isoH',ch:2,title:'نظائر الهيدروجين',tag:'احسب النيوترونات',

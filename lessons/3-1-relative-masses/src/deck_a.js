@@ -241,3 +241,15 @@ slide({id:'calc',ch:2,title:'المقارنة الرياضية ووحدة الك
   bindNum($('.nin[data-n="f"]',el),19,0.6,function(ok){ if(ok) say(fb,'✓ 18.9 ≈ 19. طريقة ثانية (كما في الامتحان): 3.16÷1.99 = 1.587، ثم 1.587 × 12 ≈ 19','ok'); else say(fb,'اقسم 3.16 على 1.67 ثم اضرب في 10','bad') });
  },
  note:'<ul><li>عرضك (شريحة ٧). قيمة كتلة الفلور في عرضك ٣٫١٧×١٠⁻²³، وفي كتاب الطالب <b>٣٫١٦×١٠⁻²³</b> (استخدمت قيمة الكتاب). النتيجة ١٩ في الحالتين.</li><li>في الامتحانات تأتي الطريقة الثانية: كتلة الذرة ÷ كتلة C-12 (١٫٩٩×١٠⁻²³) ثم × ١٢.</li></ul>'});
+
+/* 8b the teacher's second method for the fluorine mass: proportion (1 amu -> 1.67e-24 g, X -> 3.16e-23 g), shown point by point */
+slide({id:'calc2',ch:2,title:'طريقة أخرى: التناسب (الفلور)',tag:'نقطة نقطة',
+ html:function(){return '<div class="col grow" style="gap:16px;justify-content:flex-start">'+
+  '<div class="frm brk" style="padding:12px 24px"><p style="font-size:28px;line-height:1.6;text-align:center;margin:0">الكتلة الفعلية لذرة الفلور = <span class="mf" style="color:var(--cyan);direction:ltr;display:inline-block">3.16 × 10<sup>−23</sup> g</span> &nbsp;— كم تساوي بوحدة الكتل الذرية (amu)؟</p></div>'+
+  '<div style="display:flex;gap:16px;align-items:stretch">'+
+   '<div class="cbox" data-pt="1" style="flex:none;width:290px;display:flex;flex-direction:column;justify-content:center;gap:12px;font-size:26px"><b style="color:var(--gold);font-size:30px">للعلم:</b><span class="mf" style="direction:ltr;font-size:26px;white-space:nowrap">1 amu = 1.67 × 10<sup>−24</sup> g</span></div>'+
+   '<div class="frm brk" data-pt="2" style="flex:1.7;padding:20px 22px;justify-content:center;gap:14px"><div style="display:flex;align-items:center;gap:14px;direction:ltr;font-size:32px;white-space:nowrap" class="mf"><span style="color:var(--gold);width:112px">1 amu</span><span class="arw" style="font-size:44px">⟶</span><span>1.67 × 10<sup>−24</sup> g</span></div>'+
+    '<div style="display:flex;align-items:center;gap:14px;direction:ltr;font-size:32px;white-space:nowrap" class="mf"><span style="color:var(--gold);width:112px">X</span><span class="arw" style="font-size:44px">⟶</span><span>3.16 × 10<sup>−23</sup> g</span></div></div>'+
+   '<div class="frm brk" data-pt="3" style="flex:1.2;padding:20px 18px;justify-content:center;align-items:center"><div class="mf" style="font-size:30px;display:flex;align-items:center;justify-content:center;gap:6px;direction:ltr;white-space:nowrap">X =<span class="frac"><span>3.16 × 10<sup>−23</sup> g</span><span>1.67 × 10<sup>−24</sup> g</span></span></div></div></div>'+
+  '<div class="gbox" data-pt="4" style="align-self:center;min-width:400px;font-size:48px;direction:ltr">X = 19 amu</div></div>';},
+ note:'<ul><li><b>طريقة إضافية بطلب المعلم</b> (صورة من عرضك: «طريقة أخرى»): كل 1 amu يقابل 1.67×10⁻²⁴ g، فنسبة الكتلة الفعلية للفلور إلى هذه القيمة تعطي X = 19.</li><li>الحساب: ٣٫١٦×١٠⁻²³ ÷ ١٫٦٧×١٠⁻²⁴ = ١٨٫٩ ≈ ١٩. والقيمة ٣٫١٦×١٠⁻²³ من كتاب الطالب.</li><li>النقاط: ١ «للعلم» ← ٢ التناسب ← ٣ المعادلة ← ٤ الناتج. <b>من عندي:</b> ترتيب الظهور وتقريب الناتج إلى ١٩.</li></ul>'});
