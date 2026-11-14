@@ -16,7 +16,7 @@ var LESSON={
          ws22b:'navy',ws22c:'gold',q220:'ember',eou5:'emerald',
          ex1:'navy',ex2:'gold',ex3:'ember',ex4:'violet',ex5:'emerald',tk:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', act23:'.acts li', hw:'.panel.dark li'},
+  pts:{goals:'.gi', act23:'.acts li', rust:'.rcard', speed:'.rcard', galv:'.rcard', al2:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s] */
   stk:{
     goals:[['m_atom',1130,556,90,5,1.0]], terms:[['n_notes',40,540,120,-5,1.0]], rust:[['m_flask',1130,556,96,6,1.0]],

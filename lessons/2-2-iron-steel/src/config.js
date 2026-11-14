@@ -18,7 +18,7 @@ var LESSON={
          q29:'gold',q212:'violet',eou2:'emerald',eou3:'ember',
          ex1:'navy',ex2:'gold',ex3:'ember',ex4:'violet',tk:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', hw:'.panel.dark li'},
+  pts:{goals:'.gi', heat:'.rcard', steels:'.rcard', journey:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     goals:[['m_atom',1130,556,90,5,1.0]], lad:[['m_flask',1130,556,96,6,1.0]], alloy:[['m_star',1130,556,90,6,1.0]],

@@ -20,7 +20,7 @@ var LESSON={
          q215:'navy',eou4:'ember',
          ex1:'navy',ex2:'gold',ex3:'ember',tk:'violet',hw:'emerald'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', act22:'.acts li', hw:'.panel.dark li'},
+  pts:{goals:'.gi', act22:'.acts li', defn:'.rcard', why:'.rcard', ss:'.rcard', alst:'.rcard', brass:'.rcard', bronze:'.rcard', dur:'.rcard', solder:'.rcard', data21:'table tbody tr', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s] */
   stk:{
     goals:[['m_atom',1130,556,90,5,1.0]], defn:[['n_notes',40,540,120,-5,1.0]], why:[['m_bulb',1130,556,100,6,1.0]],

@@ -1,4 +1,6 @@
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: PT_P = the blocks of a two-column slide that carry information (panels and short notes), without the feedback lines, hidden reveals or reference chips */
+var PT_P='.body>div>.col>.panel,.body>div>.col>.sm';
 var LESSON={
   short:'الترابط وخصائص الفلزات', brand:'الدرس ١-١ · الترابط وخصائص الفلزات', home:'index.html',
   chapters:['الأهداف والتمهيد','التركيب والرابطة الفلزية','خصائص الفلزات','أنشطة','أسئلة الكتاب','امتحانات وتقويم'],
@@ -19,7 +21,8 @@ var LESSON={
          lab:'emerald',formula:'navy',q11:'violet',q12:'violet',eou1:'violet',
          ex1:'navy',ex2:'gold',ex3:'emerald',ex4:'navy',tk:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', struct:'.rcard', bond:'.bnote>div', sum:'.rcard', hw:'.panel.dark li'},
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
+  pts:{goals:'.gi', struct:'.rcard', bond:'.bnote>div', sum:'.rcard', dens:PT_P, mpbp:PT_P, eou1:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     goals:[['m_atom',1130,556,96,5,1.0]], pt:[['m_flask',40,556,96,-5,1.0]], samples:[['m_bulb',1130,556,96,5,1.0]], sort:[['m_star',40,556,90,-6,1.0]],
