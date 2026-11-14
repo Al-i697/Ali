@@ -1677,6 +1677,8 @@ document.documentElement.lang="ar";document.documentElement.dir="rtl";
 (function(){
 'use strict';
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: PT_P = the blocks of a two-column slide that carry information (panels and short notes), without the feedback lines, hidden reveals or reference chips */
+var PT_P='.body>div>.col>.panel,.body>div>.col>.sm';
 var LESSON={
   short:'الفلزات القلوية', brand:'الدرس ١-٣ · الفلزات القلوية', home:'index.html',
   chapters:['الأهداف والتمهيد','المجموعة I وخصائصها','التدرّج في الخصائص','التفاعل مع الماء','المعادلات','أنشطة وأسئلة الكتاب','امتحانات وتقويم'],
@@ -1696,7 +1698,8 @@ var LESSON={
          q79:'emerald',q1013:'violet',ex11:'gold',ws1:'violet',ws2:'ember',eou3:'navy',
          ex1:'navy',ex2:'gold',ex3:'emerald',ex4:'violet',tk:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', props:'.rcard', act:'.acts li', sum:'.rcard', hw:'.panel.dark li'},
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
+  pts:{goals:'.gi', props:'.rcard', act:'.acts li', sum:'.rcard', dens:PT_P, mp:PT_P, water:'.rcard', ex11:'.rcard', ws2:'.rcard', eou3:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     goals:[['m_atom',1130,556,96,5,1.0]], prior:[['m_star',40,556,90,-6,1.0]], lead:[['m_flask',40,556,96,-5,1.0]], atoms:[['m_star',1130,556,90,6,1.0]],
