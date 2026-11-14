@@ -1579,6 +1579,8 @@ document.documentElement.lang="ar";document.documentElement.dir="rtl";
 (function(){
 'use strict';
 /* ---------- lesson settings: chapters, a background scene and a colour palette for each chapter or slide ---------- */
+/* click-by-click points: PT_P = the blocks of a two-column slide that carry information (panels and short notes), without the feedback lines, hidden reveals or reference chips */
+var PT_P='.body>div>.col>.panel,.body>div>.col>.sm';
 var LESSON={
   short:'العناصر الانتقالية', brand:'الدرس ١-٢ · العناصر الانتقالية', home:'index.html',
   chapters:['الأهداف والتمهيد','الموقع والخصائص','المركّبات الملوّنة','الحفّازات والاستخدامات','أنشطة وأسئلة الكتاب','امتحانات وتقويم'],
@@ -1601,7 +1603,8 @@ var LESSON={
          ws:'ember',q13:'violet',eou4:'navy',
          ex1:'navy',ex2:'gold',ex3:'emerald',ex4:'navy',tk:'ember',hw:'violet'},
   /* points that appear one click at a time (slide id: selector) */
-  pts:{goals:'.gi', group:'.rcard', props:'.rcard', uses:'.rcard', sum:'.rcard', hw:'.panel.dark li'},
+  ptsLate:true,   /* points are marked after the card skin (see engine.js) */
+  pts:{goals:'.gi', group:'.rcard', props:'.rcard', uses:'.rcard', sum:'.rcard', mp:PT_P, ws:'.rcard', eou4:'.rcard', hw:'.panel.dark li'},
   /* stickers: preferred spot [sticker, x, y, width, tilt, delay s]; the player moves them to free space and never onto text */
   stk:{
     goals:[['m_atom',1130,556,96,5,1.0]], prior:[['m_star',40,556,90,-6,1.0]], where:[['m_flask',40,556,96,-5,1.0]], group:[['m_mole',1130,556,100,5,1.0]],
