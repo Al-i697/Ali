@@ -15,3 +15,11 @@
 
 /* click-by-click points: the arrow between the given and the solution (cl) follows the solution, so it stays hidden while the solution is hidden */
 .app .pt-h+.arw{opacity:0!important; visibility:hidden!important}
+
+/* bigger type on the counting slides (teacher's request) */
+.slide[data-id=lattice] .tally span, .slide[data-id=models] .tally span{font-size:29px; height:54px; padding:0 18px 0 12px}
+.slide[data-id=lattice] .tally span i, .slide[data-id=models] .tally span i{width:30px; height:30px}
+.slide[data-id=lattice] .mod h3{font-size:30px!important}
+.slide[data-id=lattice] .mod .fb{font-size:24px!important}
+.slide[data-id=q31] .qd .sel button{font-size:25px; min-height:46px; padding:0 10px}
+.slide[data-id=q31] .qd svg{height:150px}

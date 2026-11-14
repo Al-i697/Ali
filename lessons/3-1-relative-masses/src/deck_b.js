@@ -121,11 +121,11 @@ slide({id:'cl',ch:2,title:'تطبيق عملي: متوسط الكتلة النس
 
 /* 15 from atoms to compounds: molecule and ionic (deck slide 11) */
 slide({id:'types',ch:3,title:'من الذرات إلى المركبات: Mr',
- html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" data-pt="1" style="padding:10px 22px"><p style="font-size:25px;line-height:1.45"><b>هل تُكتب صيغة كل المواد بالطريقة نفسها؟</b> قارن بين النوعين:</p></div><div style="display:flex;gap:16px">'+
+ html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" data-pt="1" style="padding:10px 22px"><p style="font-size:25px;line-height:1.45"><b>كيف نكتب صيغة المادة من نموذجها؟</b> لنقارن بين نوعين من المواد:</p></div><div style="display:flex;gap:16px">'+
   '<div class="frm brk" data-pt="2" style="flex:1;overflow:hidden"><div class="fh">جزيء (Molecule)</div><div style="height:230px"><img class="pic fill" src="'+IMG.mol+'" alt="نموذج جزيء"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">من خلال عدد الكرات الملونة يمكن كتابة الصيغة الجزيئية.</p></div></div>'+
   '<div class="frm brk" data-pt="3" style="flex:1;overflow:hidden"><div class="fh">مركب أيوني (Ionic Compound)</div><div style="height:230px"><img class="pic fill" src="'+IMG.lattice+'" alt="شبكة أيونية"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">في الصيغة البنائية الضخمة نحصي عدد الذرات أو الأيونات المرتبطة بكل عنصر ونضعها في هيئة نسبة.</p></div></div></div>'+
   '<div class="gbar" data-pt="4">اكتب الصيغة النسبية Mr لـ: <span class="eq" style="font-size:32px">H<sub>2</sub> &nbsp;،&nbsp; H<sub>2</sub>O &nbsp;،&nbsp; NaCl</span></div></div>';},
- note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li><li>النقاط: ١ سؤال تمهيدي ← ٢ الجزيء ← ٣ المركب الأيوني ← ٤ السؤال الذهبي.</li><li><b>من عندي:</b> صياغة السؤال التمهيدي «هل تُكتب صيغة كل المواد بالطريقة نفسها؟» (ليست من الكتاب ولا من عرضك). غيّرها أو احذفها وقت التحضير.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li><li>النقاط: ١ سؤال تمهيدي ← ٢ الجزيء ← ٣ المركب الأيوني ← ٤ السؤال الذهبي.</li><li><b>من عندي:</b> صياغة السؤال التمهيدي «كيف نكتب صيغة المادة من نموذجها؟» (ليست من الكتاب ولا من عرضك؛ أُعيدت صياغتها بعد ملاحظتك أنها غير مفهومة). غيّرها أو احذفها وقت التحضير.</li></ul>'});
 
 /* ---- Mr flow blocks (deck slides 12 and 13) ---- */
 function flowBlock(c,i,mode){
@@ -135,7 +135,7 @@ function flowBlock(c,i,mode){
     var right=mode==='count'?'<span class="res"></span>':'<input class="cin pw" inputmode="decimal" autocomplete="off" aria-label="الناتج" style="margin-inline-start:auto;width:88px">';
     return '<div class="fr" data-j="'+j+'">'+left+'<span class="arv">×</span><b>'+p[0]+'</b>'+tag+'<span class="arv num">('+AR_T[p[0]]+')</span><span class="arv">=</span>'+right+'</div>';
   }).join('');
-  return '<div class="fblk" data-i="'+i+'"><div class="fsum gbox"><span class="mf" style="font-size:25px">M<sub>r</sub> =</span>'+ninHTML('m'+i,'','sm')+'<div class="fb" style="min-height:0;font-size:15px;line-height:1.2"></div></div><span class="arw">◀</span><div class="frows">'+rows+'</div><span class="arw">◀</span>'+
+  return '<div class="fblk" data-i="'+i+'"><div class="fsum gbox"><span class="mf" style="font-size:25px">M<sub>r</sub> =</span>'+ninHTML('m'+i,'','sm')+'<div class="fb" style="min-height:0;font-size:21px;line-height:1.25"></div></div><span class="arw">◀</span><div class="frows">'+rows+'</div><span class="arw">◀</span>'+
     '<div class="fcmp frm brk"><div class="ff">'+c.f+'</div><small>'+c.name+'</small>'+(c.note?'<small style="color:var(--cyan)">'+c.note+'</small>':'')+'</div></div>';
 }
 function bindFlow(el,C,mode){

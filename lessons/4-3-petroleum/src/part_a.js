@@ -91,7 +91,7 @@ slide({id:'burn',ch:1,title:'احتراق الوقود الأحفوري',tag:'ز
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
     <div style="display:flex;gap:8px;justify-content:center"><button type="button" class="btn tab" data-i="0">الميثان (غاز طبيعي)</button><button type="button" class="btn tab" data-i="1">البروبان</button><button type="button" class="btn tab" data-i="2">البيوتان</button></div>
-    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">هيدروكربون + أكسجين → ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
+    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">هيدروكربون + أكسجين ← ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
      <div style="display:flex;align-items:center;justify-content:center;gap:10px;direction:ltr;flex-wrap:nowrap" id="eq"></div></div>
     <div class="panel" style="padding:10px 16px;gap:2px"><div class="cnt3" id="ct" style="direction:ltr"></div></div>
     <div class="fb" style="min-height:26px;text-align:center;font-size:21px"></div></div>

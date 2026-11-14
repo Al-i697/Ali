@@ -1411,6 +1411,14 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 /* click-by-click points: the arrow between the given and the solution (cl) follows the solution, so it stays hidden while the solution is hidden */
 .app .pt-h+.arw{opacity:0!important; visibility:hidden!important}
 
+/* bigger type on the counting slides (teacher's request) */
+.slide[data-id=lattice] .tally span, .slide[data-id=models] .tally span{font-size:29px; height:54px; padding:0 18px 0 12px}
+.slide[data-id=lattice] .tally span i, .slide[data-id=models] .tally span i{width:30px; height:30px}
+.slide[data-id=lattice] .mod h3{font-size:30px!important}
+.slide[data-id=lattice] .mod .fb{font-size:24px!important}
+.slide[data-id=q31] .qd .sel button{font-size:25px; min-height:46px; padding:0 10px}
+.slide[data-id=q31] .qd svg{height:150px}
+
 
 </style>
 <script>
@@ -1424,7 +1432,7 @@ var LESSON={
   /* Backgrounds (new look, as in the later lessons): the teacher's photographs mixed freely, each used once in this lesson, with plain palette backgrounds between them because he dislikes repeated pictures. */
   bgMap:['p_plain_a','p_plain_b','p_plain_c','p_plain_d','p_plain_a','p_plain_b','p_plain_c','p_plain_d'],
   palCh:['navy','emerald','navy','emerald','navy','ember','gold','violet'],
-  bgId:{goals:'p_atom_formulas',imp:'p_plain_a',npk:'p_plain_c',shop:'p_plain_b',parts:'p_plain_a',c12:'p_plain_c',
+  bgId:{goals:'p_atom_formulas',imp:'p_plain_a',npk:'p_plain_c',shop:'p_plain_b',parts:'p_plain_a',c12:'p_plain_c',why12:'p_plain_b',
         balance:'p_plain_d',calc:'p_blue_lab',calc2:'p_plain_c',pc:'p_plain_b',q32:'p_plain_a',table:'p_periodic_purple',iso:'p_plain_b',isoH:'p_plain_c',
         cl:'p_plain_d',tk1:'p_glass_lab',types:'p_plain_b',mr:'p_plain_a',mr2:'p_plain_c',mr3:'p_plain_b',
         ex31b:'p_plain_d',race:'p_plain_a',tk2:'p_molecules_circuit',models:'p_plain_b',lattice:'p_plain_c',q31:'p_crystal_flask',
@@ -1435,6 +1443,7 @@ var LESSON={
   pts:{goals:'.gi',
        imp:'.icard, #tray',
        balance:'.frm.brk.gold',
+       why12:'[data-pt]',
        calc:'.col.grow>.frm.brk',
        calc2:'[data-pt]',
        pc:'[data-pt]',
@@ -3643,6 +3652,16 @@ slide({id:'c12',ch:2,title:'الذرة المقياس: لماذا الكربون
  },
  note:'<ul><li>عرضك (شريحة ٥): ٦ بروتونات + ٦ نيوترونات = عدد كتلي ١٢. هنا الطالب يبني النواة بنفسه.</li><li>ملاحظة: شريحتك تقول «لأنها الأكثر استقراراً». هذي الجملة ليست في كتاب الطالب، فاستبدلتها بسبب الكتاب (العدد الكتلي ١٢). قل لي إذا تبي ترجعها.</li></ul>'});
 
+/* 6b the reasons for choosing carbon-12: the teacher's slide (statement, question mark, his answer), point by point */
+slide({id:'why12',ch:2,title:'أسباب اختيار ذرة الكربون',tag:'نقطة نقطة',
+ html:function(){return '<div class="col grow" style="gap:16px;justify-content:flex-start">'+
+  '<div class="frm brk" data-pt="1" style="padding:20px 30px"><p style="font-size:30px;line-height:1.8;text-align:center;margin:0"><b>اقترح العلماء كتلة ذرّة الكربون ككتلة ذرّيّة ثابتة، تُقاس بها كتل الذّرّات الأخرى نسبةً له</b></p></div>'+
+  '<div class="gbar" data-pt="2" style="display:flex;align-items:center;justify-content:center;gap:18px;font-size:32px"><span style="font-size:64px;line-height:1;color:#ff6b5e;font-weight:800">؟</span><b>لماذا اختار العلماء ذرة الكربون؟</b></div>'+
+  '<div style="display:flex;gap:16px;align-items:stretch">'+
+   '<div class="frm brk gold" data-pt="3" style="flex:1;padding:22px 26px;justify-content:center;align-items:center"><p style="font-size:34px;line-height:1.6;text-align:center;margin:0"><b>لأنه مستقر</b></p></div>'+
+   '<div class="frm brk gold" data-pt="4" style="flex:1.6;padding:22px 26px;justify-content:center;align-items:center"><p style="font-size:32px;line-height:1.6;text-align:center;margin:0"><b>ويحمل أعداداً صحيحة متساوية من البروتونات والنيوترونات</b><br><span style="font-size:26px" class="mf">6 p = 6 n</span></p></div></div></div>';},
+ note:'<ul><li>من عرضك (صورتك): «اقترح العلماء كتلة ذرّة الكربون ككتلة ذرّيّة ثابتة، تُقاس بها كتل الذّرّات الأخرى نسبةً له» ثم «؟» ثم الجواب: «لأنه مستقر ويحمل أعداداً صحيحة متساوية من البروتونات والنيوترونات».</li><li>الكتاب (ص٥٤) لا يعلّل اختيار الكربون؛ يكتفي بأن كتلة ذرة الكربون-١٢ تساوي ١٢ تماماً. السبب هنا من عرضك كما هو.</li><li><b>من عندي:</b> تقسيم الجواب إلى بطاقتين، وإضافة «6 p = 6 n» (من بناء النواة في الشريحة السابقة)، وسؤال «لماذا اختار العلماء ذرة الكربون؟». النقاط: ١ العبارة ← ٢ السؤال ← ٣ مستقر ← ٤ أعداد صحيحة متساوية.</li></ul>'});
+
 /* 7 relative atomic mass: the atom balance */
 (function(){
   var M={C:12,H:1,He:4,Mg:24}, R={C:30,H:15,He:22,Mg:33};
@@ -3891,11 +3910,11 @@ slide({id:'cl',ch:2,title:'تطبيق عملي: متوسط الكتلة النس
 
 /* 15 from atoms to compounds: molecule and ionic (deck slide 11) */
 slide({id:'types',ch:3,title:'من الذرات إلى المركبات: Mr',
- html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" data-pt="1" style="padding:10px 22px"><p style="font-size:25px;line-height:1.45"><b>هل تُكتب صيغة كل المواد بالطريقة نفسها؟</b> قارن بين النوعين:</p></div><div style="display:flex;gap:16px">'+
+ html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" data-pt="1" style="padding:10px 22px"><p style="font-size:25px;line-height:1.45"><b>كيف نكتب صيغة المادة من نموذجها؟</b> لنقارن بين نوعين من المواد:</p></div><div style="display:flex;gap:16px">'+
   '<div class="frm brk" data-pt="2" style="flex:1;overflow:hidden"><div class="fh">جزيء (Molecule)</div><div style="height:230px"><img class="pic fill" src="'+IMG.mol+'" alt="نموذج جزيء"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">من خلال عدد الكرات الملونة يمكن كتابة الصيغة الجزيئية.</p></div></div>'+
   '<div class="frm brk" data-pt="3" style="flex:1;overflow:hidden"><div class="fh">مركب أيوني (Ionic Compound)</div><div style="height:230px"><img class="pic fill" src="'+IMG.lattice+'" alt="شبكة أيونية"></div><div class="panel" style="margin:12px;padding:12px 16px"><p style="font-size:23px;line-height:1.5">في الصيغة البنائية الضخمة نحصي عدد الذرات أو الأيونات المرتبطة بكل عنصر ونضعها في هيئة نسبة.</p></div></div></div>'+
   '<div class="gbar" data-pt="4">اكتب الصيغة النسبية Mr لـ: <span class="eq" style="font-size:32px">H<sub>2</sub> &nbsp;،&nbsp; H<sub>2</sub>O &nbsp;،&nbsp; NaCl</span></div></div>';},
- note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li><li>النقاط: ١ سؤال تمهيدي ← ٢ الجزيء ← ٣ المركب الأيوني ← ٤ السؤال الذهبي.</li><li><b>من عندي:</b> صياغة السؤال التمهيدي «هل تُكتب صيغة كل المواد بالطريقة نفسها؟» (ليست من الكتاب ولا من عرضك). غيّرها أو احذفها وقت التحضير.</li></ul>'});
+ note:'<ul><li>عرضك (شريحة ١١): الجزيء يُعدّ بالكرات الملونة، والتركيب الأيوني الضخم نحصي ذراته أو أيوناته ونكتب النسبة. العدّ التفاعلي في الشرائح التالية.</li><li>النقاط: ١ سؤال تمهيدي ← ٢ الجزيء ← ٣ المركب الأيوني ← ٤ السؤال الذهبي.</li><li><b>من عندي:</b> صياغة السؤال التمهيدي «كيف نكتب صيغة المادة من نموذجها؟» (ليست من الكتاب ولا من عرضك؛ أُعيدت صياغتها بعد ملاحظتك أنها غير مفهومة). غيّرها أو احذفها وقت التحضير.</li></ul>'});
 
 /* ---- Mr flow blocks (deck slides 12 and 13) ---- */
 function flowBlock(c,i,mode){
@@ -3905,7 +3924,7 @@ function flowBlock(c,i,mode){
     var right=mode==='count'?'<span class="res"></span>':'<input class="cin pw" inputmode="decimal" autocomplete="off" aria-label="الناتج" style="margin-inline-start:auto;width:88px">';
     return '<div class="fr" data-j="'+j+'">'+left+'<span class="arv">×</span><b>'+p[0]+'</b>'+tag+'<span class="arv num">('+AR_T[p[0]]+')</span><span class="arv">=</span>'+right+'</div>';
   }).join('');
-  return '<div class="fblk" data-i="'+i+'"><div class="fsum gbox"><span class="mf" style="font-size:25px">M<sub>r</sub> =</span>'+ninHTML('m'+i,'','sm')+'<div class="fb" style="min-height:0;font-size:15px;line-height:1.2"></div></div><span class="arw">◀</span><div class="frows">'+rows+'</div><span class="arw">◀</span>'+
+  return '<div class="fblk" data-i="'+i+'"><div class="fsum gbox"><span class="mf" style="font-size:25px">M<sub>r</sub> =</span>'+ninHTML('m'+i,'','sm')+'<div class="fb" style="min-height:0;font-size:21px;line-height:1.25"></div></div><span class="arw">◀</span><div class="frows">'+rows+'</div><span class="arw">◀</span>'+
     '<div class="fcmp frm brk"><div class="ff">'+c.f+'</div><small>'+c.name+'</small>'+(c.note?'<small style="color:var(--cyan)">'+c.note+'</small>':'')+'</div></div>';
 }
 function bindFlow(el,C,mode){
@@ -4020,7 +4039,7 @@ function mrCardHTML(c,i,compact){
   }).join('');
   return '<div class="mrc" data-i="'+i+'"><h4><b class="eq">'+c.f+'</b><span>'+c.name+'</span></h4>'+
     (compact?'':'<div class="sm muted" style="font-size:18px">عدد الذرات في الصيغة × Ar</div>')+rows+
-    '<div class="tot">M<sub>r</sub> = '+ninHTML('m'+i,'','sm')+'</div><div class="fb" style="min-height:24px;font-size:18px;text-align:center"></div></div>';
+    '<div class="tot">M<sub>r</sub> = '+ninHTML('m'+i,'','sm')+'</div><div class="fb" style="min-height:34px;font-size:25px;text-align:center"></div></div>';
 }
 function bindMrCard(card,c){
   var rows=$$('.mrr',card), got=0;
@@ -4116,14 +4135,14 @@ function bindMrCard(card,c){
   var P=[{id:'a',name:'كلوريد الصوديوم',svg:nacl(),vb:'0 0 340 240',opts:[['٦ : ٦ ⇒ Na<sub>6</sub>Cl<sub>6</sub>',0],['١ : ١ ⇒ NaCl',1],['١ : ٢ ⇒ NaCl<sub>2</sub>',0]],why:'٦ : ٦ تتبسّط إلى ١ : ١ فالصيغة NaCl'},
          {id:'b',name:'ثاني أكسيد السيليكون (مخطط مبسّط)',svg:sio2(),vb:'0 0 370 270',opts:[['٤ : ٨ ⇒ Si<sub>4</sub>O<sub>8</sub>',0],['٢ : ١ ⇒ Si<sub>2</sub>O',0],['١ : ٢ ⇒ SiO<sub>2</sub>',1]],why:'٤ : ٨ تتبسّط إلى ١ : ٢ فالصيغة SiO₂'}];
   slide({id:'lattice',ch:4,title:'التراكيب الضخمة: نحصي ثم نبسّط النسبة',tag:'عدّ وبسّط',
-   html:function(){return '<div style="display:flex;gap:20px;flex:1">'+P.map(function(p){return '<div class="mod" data-p="'+p.id+'"><h3 style="margin:0;font-family:var(--font-display);font-size:26px">'+p.name+'</h3><svg viewBox="'+p.vb+'" style="max-height:230px"><g>'+p.svg+'</g></svg><div class="tally"></div><div class="sel"></div><div class="fb" style="min-height:34px;font-size:20px;text-align:center"></div></div>'}).join('')+'</div>'+
+   html:function(){return '<div style="display:flex;gap:20px;flex:1">'+P.map(function(p){return '<div class="mod" data-p="'+p.id+'"><h3 style="margin:0;font-family:var(--font-display);font-size:26px">'+p.name+'</h3><svg viewBox="'+p.vb+'" style="max-height:300px"><g>'+p.svg+'</g></svg><div class="tally"></div><div class="sel"></div><div class="fb" style="min-height:34px;font-size:20px;text-align:center"></div></div>'}).join('')+'</div>'+
     '';},
    init:function(el){
     P.forEach(function(p){
       var box=$('.mod[data-p="'+p.id+'"]',el), counted=[];
       function tally(){var t={}; counted.forEach(function(g){var e=g.getAttribute('data-el'); t[e]=(t[e]||0)+1}); $('.tally',box).innerHTML=Object.keys(t).map(function(e){return '<span>'+e+' × '+t[e]+'</span>'}).join('')||'<span class="sm muted" style="background:none;font-family:var(--font-body);font-size:18px">اضغط الجسيمات للعدّ</span>'}
       $$('.sph',box).forEach(function(g){g.addEventListener('click',function(){var on=g.classList.toggle('cnt'); if(on) counted.push(g); else counted.splice(counted.indexOf(g),1); tally()})});
-      $('.sel',box).innerHTML=p.opts.map(function(o,j){return '<button type="button" data-j="'+j+'" style="font-size:22px;min-height:48px;padding:0 14px">'+o[0]+'</button>'}).join('');
+      $('.sel',box).innerHTML=p.opts.map(function(o,j){return '<button type="button" data-j="'+j+'" style="font-size:30px;min-height:60px;padding:0 16px">'+o[0]+'</button>'}).join('');
       var fb=$('.fb',box);
       $$('.sel button',box).forEach(function(b){b.addEventListener('click',function(){
         var o=p.opts[+b.getAttribute('data-j')];
@@ -4141,7 +4160,7 @@ function bindMrCard(card,c){
   var T='direction="ltr" font-family="Baloo Bhaijaan 2,Tajawal,sans-serif" font-weight="800" fill="#f4fbf8" text-anchor="middle" dominant-baseline="central"';
   function t(x,y,s,fs){return '<text x="'+x+'" y="'+y+'" '+T+' font-size="'+(fs||20)+'">'+s+'</text>'}
   function ln(x1,y1,x2,y2){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#f4fbf8" stroke-width="2"/>'}
-  function ci(x,y,r,s,f){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||'rgba(255,255,255,.12)')+'" stroke="#f4fbf8" stroke-width="1.6"/>'+t(x,y,s,r*.7)}
+  function ci(x,y,r,s,f){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||'rgba(255,255,255,.12)')+'" stroke="#f4fbf8" stroke-width="1.6"/>'+t(x,y,s,r*.86)}
   function lat(rows,fn){var s=''; for(var r=0;r<rows.length;r++)for(var c=0;c<rows[r].length;c++) s+=fn(rows[r][c],c,r); return s}
   var D=[
    {id:'A',svg:t(80,70,'H',24)+ln(98,70,128,70)+t(150,70,'Br',24),ans:'HBr',opts:['HBr','H<sub>2</sub>Br','HBr<sub>2</sub>'],type:'جزيء'},
@@ -4149,14 +4168,7 @@ function bindMrCard(card,c){
    {id:'C',svg:lat(['AA','OOO','AA','OOO'],function(k,c,r){var x=(k==='A'?(c?160:80):(c*70+50)), y=22+r*34; return k==='A'?ci(x,y,17,'Al³⁺','rgba(20,150,118,.92)'):ci(x,y,17,'O²⁻','rgba(196,112,72,.92)')}),ans:'Al₂O₃',opts:['Al<sub>2</sub>O<sub>3</sub>','Al<sub>4</sub>O<sub>6</sub>','AlO'],type:'أيوني ضخم'},
    {id:'D',svg:t(120,56,'I',24)+ln(104,48,76,36)+ln(136,48,164,36)+ln(120,70,120,104)+t(62,32,'Cl')+t(178,32,'Cl')+t(120,118,'Cl'),ans:'ICl₃',opts:['I<sub>3</sub>Cl','ICl<sub>3</sub>','ICl'],type:'جزيء'},
    {id:'E',svg:t(120,75,'Br',24)+ln(120,40,120,62)+ln(120,88,120,110)+ln(86,60,106,68)+ln(86,92,106,82)+ln(136,75,160,75)+t(120,26,'F')+t(120,124,'F')+t(72,54,'F')+t(72,98,'F')+t(172,75,'F'),ans:'BrF₅',opts:['BrF<sub>4</sub>','Br<sub>5</sub>F','BrF<sub>5</sub>'],type:'جزيء'},
-   {id:'F',svg:(function(){
-      var s='',P=[],i;
-      for(i=-1;i<=5;i++) P.push([40+i*40,(i%2===0)?70:92]);
-      function sh(p,q,d){var dx=q[0]-p[0],dy=q[1]-p[1],l=Math.sqrt(dx*dx+dy*dy); return [p[0]+dx/l*d,p[1]+dy/l*d]}
-      for(i=0;i<P.length-1;i++){var p=P[i],q=P[i+1], a=(i===0)?p:sh(p,q,13), b=(i===P.length-2)?q:sh(q,p,13); s+=ln(a[0],a[1],b[0],b[1])}
-      for(i=1;i<=5;i++){var c=P[i]; s+=t(c[0],c[1],'C',20)+ln(c[0],c[1]-12,c[0],c[1]-26)+t(c[0],c[1]-36,'H',17)+ln(c[0],c[1]+12,c[0],c[1]+26)+t(c[0],c[1]+36,'H',17)}
-      return s})(),ans:'CH₂',opts:['C<sub>5</sub>H<sub>10</sub>','CH<sub>2</sub>','C<sub>2</sub>H'],type:'جزيء'},
-   {id:'G',svg:lat(['0101','1010','0101'],function(k,c,r){var x=36+c*56, y=26+r*49; return +k?ci(x,y,22,'Na⁺','rgba(120,96,196,.92)'):ci(x,y,22,'I⁻','rgba(206,150,52,.92)')}).replace(/font-size="[\d.]+"/g,function(){return 'font-size="14"'}),ans:'NaI',opts:['NaI<sub>2</sub>','Na<sub>6</sub>I<sub>6</sub>','NaI'],type:'أيوني ضخم'},
+   {id:'G',svg:lat(['0101','1010','0101'],function(k,c,r){var x=36+c*56, y=26+r*49; return +k?ci(x,y,22,'Na⁺','rgba(120,96,196,.92)'):ci(x,y,22,'I⁻','rgba(206,150,52,.92)')}).replace(/font-size="[\d.]+"/g,function(){return 'font-size="18"'}),ans:'NaI',opts:['NaI<sub>2</sub>','Na<sub>6</sub>I<sub>6</sub>','NaI'],type:'أيوني ضخم'},
    {id:'H',svg:(function(){
       var s='',cx=120,cy=76,R=34,p=[],i; for(i=0;i<6;i++){var a=(-30+60*i)*Math.PI/180; p.push([cx+R*Math.cos(a),cy+R*Math.sin(a),a])}
       for(i=0;i<6;i++){var q=p[(i+1)%6]; s+=ln(p[i][0],p[i][1],q[0],q[1])}
@@ -4164,7 +4176,7 @@ function bindMrCard(card,c){
       for(i=0;i<6;i++){s+='<circle cx="'+p[i][0]+'" cy="'+p[i][1]+'" r="12" fill="#0a3f33"/>'+t(p[i][0],p[i][1],i%2===0?'B':'O',18)}
       return s})(),ans:'BO₂',opts:['B<sub>3</sub>O<sub>3</sub>','BO<sub>2</sub>','B<sub>3</sub>O<sub>6</sub>'],type:'جزيء'}
   ];
-  var ORDER=[[0,1,2],[1,2,0],[2,0,1],[1,0,2],[0,2,1],[2,1,0],[1,2,0],[2,0,1]];
+  var ORDER=[[0,1,2],[1,2,0],[2,0,1],[1,0,2],[0,2,1],[1,2,0],[2,0,1]];   /* the teacher removed card F (a C5 chain), so G and H keep the book's letters */
   slide({id:'q31',ch:4,title:'السؤال ٣-١: اكتب صيغة كل مخطط',tag:'اختر الصيغة',
    html:function(){return '<div class="col grow" style="gap:10px"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'+D.map(function(d,i){
       var order=ORDER[i], opts=order.map(function(k){return d.opts[k]});
@@ -4177,7 +4189,7 @@ function bindMrCard(card,c){
       $$('.sel button',card).forEach(function(b){
         var plain=b.innerHTML.replace(/<\/?sub>/g,''); var ans=d.ans.replace(/[₀-₉]/g,function(c){return '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)});
         b.addEventListener('click',function(){
-          if(plain===ans){b.classList.add('ok-b'); $$('.sel button',card).forEach(function(x){x.classList.add('locked')}); card.classList.add('ok'); done++; if(done===8) say($('.fb',el),'✓ ممتاز! حلّيت الثمانية','ok')}
+          if(plain===ans){b.classList.add('ok-b'); $$('.sel button',card).forEach(function(x){x.classList.add('locked')}); card.classList.add('ok'); done++; if(done===D.length) say($('.fb',el),'✓ ممتاز! حلّيت كل المخططات','ok')}
           else{b.classList.add('bad-b','shake','locked'); later(function(){b.classList.remove('shake')},340)}
         });
       });
@@ -4187,7 +4199,7 @@ function bindMrCard(card,c){
       say($('.fb',el),'C و G تراكيب أيونية ضخمة، والباقي جزيئات.','ok'); this.classList.add('hide');
     });
    },
-   note:'<ul><li>إجابات الدليل: A = HBr، B = CH₄، C = Al₂O₃، D = ICl₃، E = BrF₅، F = CH₂، G = NaI، H = BO₂.</li><li>(أ) C و G أيوني ضخم. (ب) الباقي جزيئات.</li><li>في C: ٤ Al و٦ O → ٢:٣. في H: ٣ B و٦ O → ١:٢.</li></ul>'});
+   note:'<ul><li>إجابات الدليل: A = HBr، B = CH₄، C = Al₂O₃، D = ICl₃، E = BrF₅، G = NaI، H = BO₂. <b>حُذف المخطط F</b> (سلسلة كربون، الجواب CH₂) بطلب المعلم؛ وبقي ترقيم G وH كما في الكتاب.</li><li>(أ) C و G أيوني ضخم. (ب) الباقي جزيئات.</li><li>في C: ٤ Al و٦ O → ٢:٣. في H: ٣ B و٦ O → ١:٢.</li></ul>'});
 })();
 
 /* ---------- deck C: exercise 3-1 (a), the concept map (deck slides 14 and 15) ---------- */
@@ -4533,13 +4545,15 @@ slide({id:'ex31a',ch:4,title:'تمرين ٣-١ (أ): العلاقات النسب
   function grid(P,extra){return '<div class="col grow" style="gap:8px;justify-content:flex-start"><div class="pgrid">'+P.map(cardHTML).join('')+'</div>'+(extra||'')+'</div>'}
 
   /* end-of-unit question 1 (student book p.78): the ammonium sulfate fertiliser */
+  /* a verbal equation always starts from the RIGHT: reactants on the right, the arrow pointing left, products on the left (forced right-to-left, so no browser can flip it) */
+  function veq(a,b){ return '<span dir="rtl" style="unicode-bidi:isolate"><bdi dir="rtl">'+a+'</bdi> ← <bdi dir="rtl">'+b+'</bdi></span>' }
   slide({id:'eou1',ch:6,title:'سؤال نهاية الوحدة ١',tag:'كتاب الطالب ص٧٨',
    html:function(){
     function row(lab,id,unit){return '<div class="frm brk" style="padding:8px 14px;gap:4px"><div style="font-size:21px;line-height:1.35">'+lab+'</div><div style="display:flex;align-items:center;gap:10px">'+ninHTML(id,unit,'sm')+'<div class="fb" style="flex:1;min-height:22px;font-size:18px"></div></div></div>'}
     return '<div class="col grow" style="gap:8px;justify-content:flex-start">'+
      '<div class="frm brk" style="padding:8px 18px;gap:2px;align-items:center"><p class="lead" style="margin:0;font-size:21px">تبيّن المعادلة كيف يُصنع سماد كبريتات الأمونيوم:</p><div class="bigeq" style="font-size:30px;color:var(--gold)">2NH<sub>3</sub>(aq) + H<sub>2</sub>SO<sub>4</sub>(aq) → (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>(aq)</div></div>'+
      '<div style="display:flex;gap:12px;flex:1;align-items:flex-start">'+
-      '<div class="frm brk" id="eoa" style="flex:1;padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أ. اكتب المعادلة اللفظية لهذا التفاعل</div>'+optsHTML([{t:'الأمونيا + حمض الكبريتيك ← كبريتات الأمونيوم'},{t:'كبريتات الأمونيوم + حمض الكبريتيك ← الأمونيا'},{t:'الأمونيا + كبريتات الأمونيوم ← حمض الكبريتيك'}])+'<div class="fb fa" style="min-height:22px;font-size:18px"></div></div>'+
+      '<div class="frm brk" id="eoa" style="flex:1;padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أ. اكتب المعادلة اللفظية لهذا التفاعل</div>'+optsHTML([{t:veq('الأمونيا + حمض الكبريتيك','كبريتات الأمونيوم')},{t:veq('كبريتات الأمونيوم + حمض الكبريتيك','الأمونيا')},{t:veq('الأمونيا + كبريتات الأمونيوم','حمض الكبريتيك')}])+'<div class="fb fa" style="min-height:22px;font-size:18px"></div></div>'+
       '<div class="col" style="flex:1;gap:6px">'+
        row('ب. كم عدد ذرات الهيدروجين في صيغة كبريتات الأمونيوم <span class="num">(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></span>؟','b','ذرة')+
        row('ج. احسب M<sub>r</sub> لحمض الكبريتيك <span class="num">H<sub>2</sub>SO<sub>4</sub></span> <span class="num">(H = 1, S = 32, O = 16)</span>','c','g/mol')+
@@ -4594,6 +4608,27 @@ slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
  note:'<ul><li>الواجب حسب دليل المعلم للدرس ٣-١. اضغط على البند لتظليله عند الإعلان عنه.</li><li>الدرس التالي: ٣-٢ المول (عدد أفوجادرو ٦٫٠٢×١٠²³).</li><li>دليل المعلم ص٥٤: ورقة العمل ٣-١ (النسب الكيميائية) غير متوفرة في الملفات المرسلة (كتاب النشاط ينتهي عند ص٥٠)، وسؤال نهاية الوحدة ١ (كبريتات الأمونيوم، كتاب الطالب ص٧٨) له شريحة في الدرس (eou1) قبل الأسئلة السابقة.</li></ul>'});
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+
+/* one numeral style on the slides: Western digits (as in the answer boxes, the formulas and the student book). The slide sources and the
+   feedback lines still contain Arabic-Indic digits in many places, so every text node that appears inside the stage is converted as it arrives;
+   the player's own bar and the teacher notes (outside the stage) keep their style. Teacher's request: "الأرقام لازم متماثلة". */
+(function(){
+  var RE=/[٠-٩]/;
+  function conv(s){return s.replace(/[٠-٩]/g,function(c){return c.charCodeAt(0)-1632})}
+  function fix(n){
+    if(n.nodeType===3){ if(RE.test(n.nodeValue)) n.nodeValue=conv(n.nodeValue); return }
+    if(n.nodeType!==1) return;
+    var w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT), t;
+    while((t=w.nextNode())){ if(RE.test(t.nodeValue)) t.nodeValue=conv(t.nodeValue) }
+  }
+  function start(){
+    var st=document.getElementById('stage'); if(!st){ setTimeout(start,50); return }
+    fix(st);
+    new MutationObserver(function(ms){ ms.forEach(function(m){ if(m.type==='characterData') fix(m.target); else Array.prototype.forEach.call(m.addedNodes,fix) }) })
+      .observe(st,{childList:true,characterData:true,subtree:true});
+  }
+  start();
+})();
 
 
 })();

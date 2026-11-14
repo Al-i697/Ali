@@ -5,7 +5,7 @@ var LESSON={
   /* Backgrounds (new look, as in the later lessons): the teacher's photographs mixed freely, each used once in this lesson, with plain palette backgrounds between them because he dislikes repeated pictures. */
   bgMap:['p_plain_a','p_plain_b','p_plain_c','p_plain_d','p_plain_a','p_plain_b','p_plain_c','p_plain_d'],
   palCh:['navy','emerald','navy','emerald','navy','ember','gold','violet'],
-  bgId:{goals:'p_atom_formulas',imp:'p_plain_a',npk:'p_plain_c',shop:'p_plain_b',parts:'p_plain_a',c12:'p_plain_c',
+  bgId:{goals:'p_atom_formulas',imp:'p_plain_a',npk:'p_plain_c',shop:'p_plain_b',parts:'p_plain_a',c12:'p_plain_c',why12:'p_plain_b',
         balance:'p_plain_d',calc:'p_blue_lab',calc2:'p_plain_c',pc:'p_plain_b',q32:'p_plain_a',table:'p_periodic_purple',iso:'p_plain_b',isoH:'p_plain_c',
         cl:'p_plain_d',tk1:'p_glass_lab',types:'p_plain_b',mr:'p_plain_a',mr2:'p_plain_c',mr3:'p_plain_b',
         ex31b:'p_plain_d',race:'p_plain_a',tk2:'p_molecules_circuit',models:'p_plain_b',lattice:'p_plain_c',q31:'p_crystal_flask',
@@ -16,6 +16,7 @@ var LESSON={
   pts:{goals:'.gi',
        imp:'.icard, #tray',
        balance:'.frm.brk.gold',
+       why12:'[data-pt]',
        calc:'.col.grow>.frm.brk',
        calc2:'[data-pt]',
        pc:'[data-pt]',

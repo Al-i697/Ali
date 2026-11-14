@@ -130,7 +130,7 @@ slide({id:'burn',ch:4,title:'احتراق الألكانات',tag:'زِن الم
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
     <div style="display:flex;gap:8px;justify-content:center">${RX.map(function(r,i){return '<button type="button" class="btn tab" data-i="'+i+'">'+ALK[i].name+'</button>'}).join('')}</div>
-    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكان + أكسجين → ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
+    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكان + أكسجين ← ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
      <div style="display:flex;align-items:center;justify-content:center;gap:10px;direction:ltr;flex-wrap:nowrap" id="eq"></div></div>
     <div class="panel" style="padding:10px 16px;gap:2px"><div class="cnt3" id="ct" style="direction:ltr"></div></div>
     <div class="fb" style="min-height:26px;text-align:center;font-size:21px"></div></div>
@@ -160,7 +160,7 @@ slide({id:'burn',ch:4,title:'احتراق الألكانات',tag:'زِن الم
   $$('.tab',el).forEach(function(t){t.addEventListener('click',function(){load(+t.getAttribute('data-i'))})});
   load(0);
  },
- note:'<ul><li>الاحتراق الكامل (كتاب الطالب ص٨٣–٨٤): ألكان + أكسجين → ثاني أكسيد الكربون + ماء. أمثلة الكتاب: <span class="num">CH₄ + 2O₂ → CO₂ + 2H₂O</span> و <span class="num">2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O</span>.</li><li>جرّب أن تفتح الإيثان وتضع المعامل ٧/٢: سيطلب الإيثان بأبسط نسبة صحيحة (٢ : ٧ : ٤ : ٦). في كتاب النشاط جاء الحل بالمعامل ٧/٢ للأكسجين، وهو مقبول رياضياً.</li><li>حالة الماء (g) لأنه بخار عند حرارة الاحتراق، وهذا ما يظهر في نموذج إجابة امتحان ٢٠٢٢/٢٠٢٣ (سؤال ١٧): C₃H₈(g) + 5O₂(g) → 3CO₂(g) + 4H₂O(g). وفي إجابة سؤال ٤-٩ في دليل المعلم كتبت (l)، فاقبلها.</li></ul>'});
+ note:'<ul><li>الاحتراق الكامل (كتاب الطالب ص٨٣–٨٤): ألكان + أكسجين ← ثاني أكسيد الكربون + ماء. أمثلة الكتاب: <span class="num">CH₄ + 2O₂ → CO₂ + 2H₂O</span> و <span class="num">2C₂H₆ + 7O₂ → 4CO₂ + 6H₂O</span>.</li><li>جرّب أن تفتح الإيثان وتضع المعامل ٧/٢: سيطلب الإيثان بأبسط نسبة صحيحة (٢ : ٧ : ٤ : ٦). في كتاب النشاط جاء الحل بالمعامل ٧/٢ للأكسجين، وهو مقبول رياضياً.</li><li>حالة الماء (g) لأنه بخار عند حرارة الاحتراق، وهذا ما يظهر في نموذج إجابة امتحان ٢٠٢٢/٢٠٢٣ (سؤال ١٧): C₃H₈(g) + 5O₂(g) → 3CO₂(g) + 4H₂O(g). وفي إجابة سؤال ٤-٩ في دليل المعلم كتبت (l)، فاقبلها.</li></ul>'});
 
 /* 18 uses of alkanes */
 slide({id:'uses2',ch:4,title:'استخدامات الألكانات',tag:'اكتشف',
@@ -184,7 +184,7 @@ slide({id:'uses2',ch:4,title:'استخدامات الألكانات',tag:'اكت
 (function(){
   var items=[
    {q:'<b>٤-٨</b> ما المصدر الطبيعي الرئيسي للميثان؟',opts:[{t:'الغاز الطبيعي',ok:true,why:'الميثان هو المكوّن الرئيسي للغاز الطبيعي'},{t:'الفحم الحجري',why:'الفحم وقود صلب ومحتواه عالٍ بالكربون'},{t:'الأسفلت',why:'الأسفلت من مشتقات النفط الثقيلة'}]},
-   {q:'<b>٤-٩ (أ)</b> المعادلة اللفظية لاحتراق البروبان في فائض من الأكسجين:',opts:[{t:'بروبان + أكسجين → ثاني أكسيد الكربون + ماء',ok:true,why:'ألكان + أكسجين ← ثاني أكسيد الكربون + ماء'},{t:'بروبان + هيدروجين → ماء',why:'لا يتفاعل البروبان مع الهيدروجين، والاحتراق يحتاج الأكسجين'},{t:'بروبان + أكسجين → كربون + هيدروجين',why:'الاحتراق الكامل ينتج ثاني أكسيد الكربون والماء'}]},
+   {q:'<b>٤-٩ (أ)</b> المعادلة اللفظية لاحتراق البروبان في فائض من الأكسجين:',opts:[{t:'بروبان + أكسجين ← ثاني أكسيد الكربون + ماء',ok:true,why:'ألكان + أكسجين ← ثاني أكسيد الكربون + ماء'},{t:'بروبان + هيدروجين ← ماء',why:'لا يتفاعل البروبان مع الهيدروجين، والاحتراق يحتاج الأكسجين'},{t:'بروبان + أكسجين ← كربون + هيدروجين',why:'الاحتراق الكامل ينتج ثاني أكسيد الكربون والماء'}]},
    {q:'<b>٤-٩ (ب)</b> المعادلة الرمزية الموزونة:',opts:[{t:'<span class="num lbl">C<sub>3</sub>H<sub>8</sub>(g) + 3O<sub>2</sub>(g) → 3CO<sub>2</sub>(g) + 4H<sub>2</sub>O(g)</span>',why:'غير موزونة: الأكسجين 6 ← 10 (3 + 3 + 4)'},{t:'<span class="num lbl">C<sub>3</sub>H<sub>8</sub>(g) + 5O<sub>2</sub>(g) → 3CO<sub>2</sub>(g) + 4H<sub>2</sub>O(g)</span>',ok:true,why:'موزونة: C = 3، H = 8، O = 10 على الطرفين'},{t:'<span class="num lbl">C<sub>3</sub>H<sub>8</sub>(g) + O<sub>2</sub>(g) → CO<sub>2</sub>(g) + H<sub>2</sub>O(g)</span>',why:'غير موزونة'}]}
   ];
   slide({id:'q89',ch:4,title:'أسئلة ٤-٨ و٤-٩',tag:'تذكرة',

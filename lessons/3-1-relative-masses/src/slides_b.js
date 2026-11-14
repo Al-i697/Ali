@@ -12,7 +12,7 @@ function mrCardHTML(c,i,compact){
   }).join('');
   return '<div class="mrc" data-i="'+i+'"><h4><b class="eq">'+c.f+'</b><span>'+c.name+'</span></h4>'+
     (compact?'':'<div class="sm muted" style="font-size:18px">عدد الذرات في الصيغة × Ar</div>')+rows+
-    '<div class="tot">M<sub>r</sub> = '+ninHTML('m'+i,'','sm')+'</div><div class="fb" style="min-height:24px;font-size:18px;text-align:center"></div></div>';
+    '<div class="tot">M<sub>r</sub> = '+ninHTML('m'+i,'','sm')+'</div><div class="fb" style="min-height:34px;font-size:25px;text-align:center"></div></div>';
 }
 function bindMrCard(card,c){
   var rows=$$('.mrr',card), got=0;
@@ -108,14 +108,14 @@ function bindMrCard(card,c){
   var P=[{id:'a',name:'كلوريد الصوديوم',svg:nacl(),vb:'0 0 340 240',opts:[['٦ : ٦ ⇒ Na<sub>6</sub>Cl<sub>6</sub>',0],['١ : ١ ⇒ NaCl',1],['١ : ٢ ⇒ NaCl<sub>2</sub>',0]],why:'٦ : ٦ تتبسّط إلى ١ : ١ فالصيغة NaCl'},
          {id:'b',name:'ثاني أكسيد السيليكون (مخطط مبسّط)',svg:sio2(),vb:'0 0 370 270',opts:[['٤ : ٨ ⇒ Si<sub>4</sub>O<sub>8</sub>',0],['٢ : ١ ⇒ Si<sub>2</sub>O',0],['١ : ٢ ⇒ SiO<sub>2</sub>',1]],why:'٤ : ٨ تتبسّط إلى ١ : ٢ فالصيغة SiO₂'}];
   slide({id:'lattice',ch:4,title:'التراكيب الضخمة: نحصي ثم نبسّط النسبة',tag:'عدّ وبسّط',
-   html:function(){return '<div style="display:flex;gap:20px;flex:1">'+P.map(function(p){return '<div class="mod" data-p="'+p.id+'"><h3 style="margin:0;font-family:var(--font-display);font-size:26px">'+p.name+'</h3><svg viewBox="'+p.vb+'" style="max-height:230px"><g>'+p.svg+'</g></svg><div class="tally"></div><div class="sel"></div><div class="fb" style="min-height:34px;font-size:20px;text-align:center"></div></div>'}).join('')+'</div>'+
+   html:function(){return '<div style="display:flex;gap:20px;flex:1">'+P.map(function(p){return '<div class="mod" data-p="'+p.id+'"><h3 style="margin:0;font-family:var(--font-display);font-size:26px">'+p.name+'</h3><svg viewBox="'+p.vb+'" style="max-height:300px"><g>'+p.svg+'</g></svg><div class="tally"></div><div class="sel"></div><div class="fb" style="min-height:34px;font-size:20px;text-align:center"></div></div>'}).join('')+'</div>'+
     '';},
    init:function(el){
     P.forEach(function(p){
       var box=$('.mod[data-p="'+p.id+'"]',el), counted=[];
       function tally(){var t={}; counted.forEach(function(g){var e=g.getAttribute('data-el'); t[e]=(t[e]||0)+1}); $('.tally',box).innerHTML=Object.keys(t).map(function(e){return '<span>'+e+' × '+t[e]+'</span>'}).join('')||'<span class="sm muted" style="background:none;font-family:var(--font-body);font-size:18px">اضغط الجسيمات للعدّ</span>'}
       $$('.sph',box).forEach(function(g){g.addEventListener('click',function(){var on=g.classList.toggle('cnt'); if(on) counted.push(g); else counted.splice(counted.indexOf(g),1); tally()})});
-      $('.sel',box).innerHTML=p.opts.map(function(o,j){return '<button type="button" data-j="'+j+'" style="font-size:22px;min-height:48px;padding:0 14px">'+o[0]+'</button>'}).join('');
+      $('.sel',box).innerHTML=p.opts.map(function(o,j){return '<button type="button" data-j="'+j+'" style="font-size:30px;min-height:60px;padding:0 16px">'+o[0]+'</button>'}).join('');
       var fb=$('.fb',box);
       $$('.sel button',box).forEach(function(b){b.addEventListener('click',function(){
         var o=p.opts[+b.getAttribute('data-j')];
@@ -133,7 +133,7 @@ function bindMrCard(card,c){
   var T='direction="ltr" font-family="Baloo Bhaijaan 2,Tajawal,sans-serif" font-weight="800" fill="#f4fbf8" text-anchor="middle" dominant-baseline="central"';
   function t(x,y,s,fs){return '<text x="'+x+'" y="'+y+'" '+T+' font-size="'+(fs||20)+'">'+s+'</text>'}
   function ln(x1,y1,x2,y2){return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" stroke="#f4fbf8" stroke-width="2"/>'}
-  function ci(x,y,r,s,f){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||'rgba(255,255,255,.12)')+'" stroke="#f4fbf8" stroke-width="1.6"/>'+t(x,y,s,r*.7)}
+  function ci(x,y,r,s,f){return '<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(f||'rgba(255,255,255,.12)')+'" stroke="#f4fbf8" stroke-width="1.6"/>'+t(x,y,s,r*.86)}
   function lat(rows,fn){var s=''; for(var r=0;r<rows.length;r++)for(var c=0;c<rows[r].length;c++) s+=fn(rows[r][c],c,r); return s}
   var D=[
    {id:'A',svg:t(80,70,'H',24)+ln(98,70,128,70)+t(150,70,'Br',24),ans:'HBr',opts:['HBr','H<sub>2</sub>Br','HBr<sub>2</sub>'],type:'جزيء'},
@@ -141,14 +141,7 @@ function bindMrCard(card,c){
    {id:'C',svg:lat(['AA','OOO','AA','OOO'],function(k,c,r){var x=(k==='A'?(c?160:80):(c*70+50)), y=22+r*34; return k==='A'?ci(x,y,17,'Al³⁺','rgba(20,150,118,.92)'):ci(x,y,17,'O²⁻','rgba(196,112,72,.92)')}),ans:'Al₂O₃',opts:['Al<sub>2</sub>O<sub>3</sub>','Al<sub>4</sub>O<sub>6</sub>','AlO'],type:'أيوني ضخم'},
    {id:'D',svg:t(120,56,'I',24)+ln(104,48,76,36)+ln(136,48,164,36)+ln(120,70,120,104)+t(62,32,'Cl')+t(178,32,'Cl')+t(120,118,'Cl'),ans:'ICl₃',opts:['I<sub>3</sub>Cl','ICl<sub>3</sub>','ICl'],type:'جزيء'},
    {id:'E',svg:t(120,75,'Br',24)+ln(120,40,120,62)+ln(120,88,120,110)+ln(86,60,106,68)+ln(86,92,106,82)+ln(136,75,160,75)+t(120,26,'F')+t(120,124,'F')+t(72,54,'F')+t(72,98,'F')+t(172,75,'F'),ans:'BrF₅',opts:['BrF<sub>4</sub>','Br<sub>5</sub>F','BrF<sub>5</sub>'],type:'جزيء'},
-   {id:'F',svg:(function(){
-      var s='',P=[],i;
-      for(i=-1;i<=5;i++) P.push([40+i*40,(i%2===0)?70:92]);
-      function sh(p,q,d){var dx=q[0]-p[0],dy=q[1]-p[1],l=Math.sqrt(dx*dx+dy*dy); return [p[0]+dx/l*d,p[1]+dy/l*d]}
-      for(i=0;i<P.length-1;i++){var p=P[i],q=P[i+1], a=(i===0)?p:sh(p,q,13), b=(i===P.length-2)?q:sh(q,p,13); s+=ln(a[0],a[1],b[0],b[1])}
-      for(i=1;i<=5;i++){var c=P[i]; s+=t(c[0],c[1],'C',20)+ln(c[0],c[1]-12,c[0],c[1]-26)+t(c[0],c[1]-36,'H',17)+ln(c[0],c[1]+12,c[0],c[1]+26)+t(c[0],c[1]+36,'H',17)}
-      return s})(),ans:'CH₂',opts:['C<sub>5</sub>H<sub>10</sub>','CH<sub>2</sub>','C<sub>2</sub>H'],type:'جزيء'},
-   {id:'G',svg:lat(['0101','1010','0101'],function(k,c,r){var x=36+c*56, y=26+r*49; return +k?ci(x,y,22,'Na⁺','rgba(120,96,196,.92)'):ci(x,y,22,'I⁻','rgba(206,150,52,.92)')}).replace(/font-size="[\d.]+"/g,function(){return 'font-size="14"'}),ans:'NaI',opts:['NaI<sub>2</sub>','Na<sub>6</sub>I<sub>6</sub>','NaI'],type:'أيوني ضخم'},
+   {id:'G',svg:lat(['0101','1010','0101'],function(k,c,r){var x=36+c*56, y=26+r*49; return +k?ci(x,y,22,'Na⁺','rgba(120,96,196,.92)'):ci(x,y,22,'I⁻','rgba(206,150,52,.92)')}).replace(/font-size="[\d.]+"/g,function(){return 'font-size="18"'}),ans:'NaI',opts:['NaI<sub>2</sub>','Na<sub>6</sub>I<sub>6</sub>','NaI'],type:'أيوني ضخم'},
    {id:'H',svg:(function(){
       var s='',cx=120,cy=76,R=34,p=[],i; for(i=0;i<6;i++){var a=(-30+60*i)*Math.PI/180; p.push([cx+R*Math.cos(a),cy+R*Math.sin(a),a])}
       for(i=0;i<6;i++){var q=p[(i+1)%6]; s+=ln(p[i][0],p[i][1],q[0],q[1])}
@@ -156,7 +149,7 @@ function bindMrCard(card,c){
       for(i=0;i<6;i++){s+='<circle cx="'+p[i][0]+'" cy="'+p[i][1]+'" r="12" fill="#0a3f33"/>'+t(p[i][0],p[i][1],i%2===0?'B':'O',18)}
       return s})(),ans:'BO₂',opts:['B<sub>3</sub>O<sub>3</sub>','BO<sub>2</sub>','B<sub>3</sub>O<sub>6</sub>'],type:'جزيء'}
   ];
-  var ORDER=[[0,1,2],[1,2,0],[2,0,1],[1,0,2],[0,2,1],[2,1,0],[1,2,0],[2,0,1]];
+  var ORDER=[[0,1,2],[1,2,0],[2,0,1],[1,0,2],[0,2,1],[1,2,0],[2,0,1]];   /* the teacher removed card F (a C5 chain), so G and H keep the book's letters */
   slide({id:'q31',ch:4,title:'السؤال ٣-١: اكتب صيغة كل مخطط',tag:'اختر الصيغة',
    html:function(){return '<div class="col grow" style="gap:10px"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'+D.map(function(d,i){
       var order=ORDER[i], opts=order.map(function(k){return d.opts[k]});
@@ -169,7 +162,7 @@ function bindMrCard(card,c){
       $$('.sel button',card).forEach(function(b){
         var plain=b.innerHTML.replace(/<\/?sub>/g,''); var ans=d.ans.replace(/[₀-₉]/g,function(c){return '₀₁₂₃₄₅₆₇₈₉'.indexOf(c)});
         b.addEventListener('click',function(){
-          if(plain===ans){b.classList.add('ok-b'); $$('.sel button',card).forEach(function(x){x.classList.add('locked')}); card.classList.add('ok'); done++; if(done===8) say($('.fb',el),'✓ ممتاز! حلّيت الثمانية','ok')}
+          if(plain===ans){b.classList.add('ok-b'); $$('.sel button',card).forEach(function(x){x.classList.add('locked')}); card.classList.add('ok'); done++; if(done===D.length) say($('.fb',el),'✓ ممتاز! حلّيت كل المخططات','ok')}
           else{b.classList.add('bad-b','shake','locked'); later(function(){b.classList.remove('shake')},340)}
         });
       });
@@ -179,5 +172,5 @@ function bindMrCard(card,c){
       say($('.fb',el),'C و G تراكيب أيونية ضخمة، والباقي جزيئات.','ok'); this.classList.add('hide');
     });
    },
-   note:'<ul><li>إجابات الدليل: A = HBr، B = CH₄، C = Al₂O₃، D = ICl₃، E = BrF₅، F = CH₂، G = NaI، H = BO₂.</li><li>(أ) C و G أيوني ضخم. (ب) الباقي جزيئات.</li><li>في C: ٤ Al و٦ O → ٢:٣. في H: ٣ B و٦ O → ١:٢.</li></ul>'});
+   note:'<ul><li>إجابات الدليل: A = HBr، B = CH₄، C = Al₂O₃، D = ICl₃، E = BrF₅، G = NaI، H = BO₂. <b>حُذف المخطط F</b> (سلسلة كربون، الجواب CH₂) بطلب المعلم؛ وبقي ترقيم G وH كما في الكتاب.</li><li>(أ) C و G أيوني ضخم. (ب) الباقي جزيئات.</li><li>في C: ٤ Al و٦ O → ٢:٣. في H: ٣ B و٦ O → ١:٢.</li></ul>'});
 })();

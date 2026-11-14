@@ -111,7 +111,7 @@ slide({id:'burnE',ch:3,title:'احتراق الألكينات',tag:'زِن ال�
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
     <div style="display:flex;gap:8px;justify-content:center">${ENE.slice(0,3).map(function(a,i){return '<button type="button" class="btn tab" data-i="'+i+'">'+a.name+'</button>'}).join('')}</div>
-    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكين + أكسجين → ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
+    <div class="frm brk" style="padding:12px 16px;gap:8px;align-items:center"><div class="sm" style="font-size:20px;text-align:center">ألكين + أكسجين ← ثاني أكسيد الكربون + ماء (بخار) + طاقة</div>
      <div style="display:flex;align-items:center;justify-content:center;gap:10px;direction:ltr;flex-wrap:nowrap" id="eq"></div></div>
     <div class="panel" style="padding:10px 16px;gap:2px"><div class="cnt3" id="ct" style="direction:ltr"></div></div>
     <div class="fb" style="min-height:26px;text-align:center;font-size:21px"></div></div>

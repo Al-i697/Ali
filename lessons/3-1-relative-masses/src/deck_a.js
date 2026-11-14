@@ -129,6 +129,16 @@ slide({id:'c12',ch:2,title:'الذرة المقياس: لماذا الكربون
  },
  note:'<ul><li>عرضك (شريحة ٥): ٦ بروتونات + ٦ نيوترونات = عدد كتلي ١٢. هنا الطالب يبني النواة بنفسه.</li><li>ملاحظة: شريحتك تقول «لأنها الأكثر استقراراً». هذي الجملة ليست في كتاب الطالب، فاستبدلتها بسبب الكتاب (العدد الكتلي ١٢). قل لي إذا تبي ترجعها.</li></ul>'});
 
+/* 6b the reasons for choosing carbon-12: the teacher's slide (statement, question mark, his answer), point by point */
+slide({id:'why12',ch:2,title:'أسباب اختيار ذرة الكربون',tag:'نقطة نقطة',
+ html:function(){return '<div class="col grow" style="gap:16px;justify-content:flex-start">'+
+  '<div class="frm brk" data-pt="1" style="padding:20px 30px"><p style="font-size:30px;line-height:1.8;text-align:center;margin:0"><b>اقترح العلماء كتلة ذرّة الكربون ككتلة ذرّيّة ثابتة، تُقاس بها كتل الذّرّات الأخرى نسبةً له</b></p></div>'+
+  '<div class="gbar" data-pt="2" style="display:flex;align-items:center;justify-content:center;gap:18px;font-size:32px"><span style="font-size:64px;line-height:1;color:#ff6b5e;font-weight:800">؟</span><b>لماذا اختار العلماء ذرة الكربون؟</b></div>'+
+  '<div style="display:flex;gap:16px;align-items:stretch">'+
+   '<div class="frm brk gold" data-pt="3" style="flex:1;padding:22px 26px;justify-content:center;align-items:center"><p style="font-size:34px;line-height:1.6;text-align:center;margin:0"><b>لأنه مستقر</b></p></div>'+
+   '<div class="frm brk gold" data-pt="4" style="flex:1.6;padding:22px 26px;justify-content:center;align-items:center"><p style="font-size:32px;line-height:1.6;text-align:center;margin:0"><b>ويحمل أعداداً صحيحة متساوية من البروتونات والنيوترونات</b><br><span style="font-size:26px" class="mf">6 p = 6 n</span></p></div></div></div>';},
+ note:'<ul><li>من عرضك (صورتك): «اقترح العلماء كتلة ذرّة الكربون ككتلة ذرّيّة ثابتة، تُقاس بها كتل الذّرّات الأخرى نسبةً له» ثم «؟» ثم الجواب: «لأنه مستقر ويحمل أعداداً صحيحة متساوية من البروتونات والنيوترونات».</li><li>الكتاب (ص٥٤) لا يعلّل اختيار الكربون؛ يكتفي بأن كتلة ذرة الكربون-١٢ تساوي ١٢ تماماً. السبب هنا من عرضك كما هو.</li><li><b>من عندي:</b> تقسيم الجواب إلى بطاقتين، وإضافة «6 p = 6 n» (من بناء النواة في الشريحة السابقة)، وسؤال «لماذا اختار العلماء ذرة الكربون؟». النقاط: ١ العبارة ← ٢ السؤال ← ٣ مستقر ← ٤ أعداد صحيحة متساوية.</li></ul>'});
+
 /* 7 relative atomic mass: the atom balance */
 (function(){
   var M={C:12,H:1,He:4,Mg:24}, R={C:30,H:15,He:22,Mg:33};

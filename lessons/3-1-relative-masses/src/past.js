@@ -61,13 +61,15 @@
   function grid(P,extra){return '<div class="col grow" style="gap:8px;justify-content:flex-start"><div class="pgrid">'+P.map(cardHTML).join('')+'</div>'+(extra||'')+'</div>'}
 
   /* end-of-unit question 1 (student book p.78): the ammonium sulfate fertiliser */
+  /* a verbal equation always starts from the RIGHT: reactants on the right, the arrow pointing left, products on the left (forced right-to-left, so no browser can flip it) */
+  function veq(a,b){ return '<span dir="rtl" style="unicode-bidi:isolate"><bdi dir="rtl">'+a+'</bdi> ← <bdi dir="rtl">'+b+'</bdi></span>' }
   slide({id:'eou1',ch:6,title:'سؤال نهاية الوحدة ١',tag:'كتاب الطالب ص٧٨',
    html:function(){
     function row(lab,id,unit){return '<div class="frm brk" style="padding:8px 14px;gap:4px"><div style="font-size:21px;line-height:1.35">'+lab+'</div><div style="display:flex;align-items:center;gap:10px">'+ninHTML(id,unit,'sm')+'<div class="fb" style="flex:1;min-height:22px;font-size:18px"></div></div></div>'}
     return '<div class="col grow" style="gap:8px;justify-content:flex-start">'+
      '<div class="frm brk" style="padding:8px 18px;gap:2px;align-items:center"><p class="lead" style="margin:0;font-size:21px">تبيّن المعادلة كيف يُصنع سماد كبريتات الأمونيوم:</p><div class="bigeq" style="font-size:30px;color:var(--gold)">2NH<sub>3</sub>(aq) + H<sub>2</sub>SO<sub>4</sub>(aq) → (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub>(aq)</div></div>'+
      '<div style="display:flex;gap:12px;flex:1;align-items:flex-start">'+
-      '<div class="frm brk" id="eoa" style="flex:1;padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أ. اكتب المعادلة اللفظية لهذا التفاعل</div>'+optsHTML([{t:'الأمونيا + حمض الكبريتيك ← كبريتات الأمونيوم'},{t:'كبريتات الأمونيوم + حمض الكبريتيك ← الأمونيا'},{t:'الأمونيا + كبريتات الأمونيوم ← حمض الكبريتيك'}])+'<div class="fb fa" style="min-height:22px;font-size:18px"></div></div>'+
+      '<div class="frm brk" id="eoa" style="flex:1;padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أ. اكتب المعادلة اللفظية لهذا التفاعل</div>'+optsHTML([{t:veq('الأمونيا + حمض الكبريتيك','كبريتات الأمونيوم')},{t:veq('كبريتات الأمونيوم + حمض الكبريتيك','الأمونيا')},{t:veq('الأمونيا + كبريتات الأمونيوم','حمض الكبريتيك')}])+'<div class="fb fa" style="min-height:22px;font-size:18px"></div></div>'+
       '<div class="col" style="flex:1;gap:6px">'+
        row('ب. كم عدد ذرات الهيدروجين في صيغة كبريتات الأمونيوم <span class="num">(NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></span>؟','b','ذرة')+
        row('ج. احسب M<sub>r</sub> لحمض الكبريتيك <span class="num">H<sub>2</sub>SO<sub>4</sub></span> <span class="num">(H = 1, S = 32, O = 16)</span>','c','g/mol')+
