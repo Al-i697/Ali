@@ -39,7 +39,7 @@ const results=[]; const errs=[];
     const t0=await sl.locator('.sandtxt').first().textContent();
     await sl.locator('.ctr button[data-t="c"][data-d="1"]').first().click(); const t1=await sl.locator('.sandtxt').first().textContent();
     await sl.locator('.opt[data-i="1"]').click(); await p.waitForTimeout(300);
-    return t0!==t1 && await vis(sl.locator('#gb')) && t0.includes('٢')});
+    return t0!==t1 && await vis(sl.locator('#gb')) && /[2٢]/.test(t0)});   /* numerals are Western on the slides (digits.js); the old Arabic digit is still accepted */
   await T('sand2',async(p,sl)=>{
     const d=await sl.locator('.sanddiv').first().textContent();
     await sl.locator('.opt[data-i="1"]').click(); await p.waitForTimeout(300);

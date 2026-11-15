@@ -12,11 +12,12 @@ def used_photos(config, parts_src, scenes):
             bgs.update(re.findall(r"bg:'(\w+)'", m.group(2)))
     return bgs
 
-def build(num, title, parts, args, css_extra=(), skin=None, eqlab=False, shuffle=False):
+def build(num, title, parts, args, css_extra=(), skin=None, eqlab=False, shuffle=False, digits=False):
     """skin='photo': still photographs (u4/photobg.js instead of bg.js, no 3D scenes) behind solid coloured cards (u4/skin_photo.css).
     skin='cards': the living background engine (bg.js, 3D molecules, photos that zoom, drift and cross-fade) behind the same solid cards and click-by-click points.
     eqlab=True: adds the formulas-and-equations workshop (u4/eqlab.js + eqlab.css) used by the unit-1 lessons.
-    shuffle=True: adds u4/shuffle.js, which shuffles every group of choices so the right answer is not always the first (unit-1 lessons)."""
+    shuffle=True: adds u4/shuffle.js, which shuffles every group of choices so the right answer is not always the first (unit-1 lessons).
+    digits=True: adds u4/digits.js, which shows one numeral style (Western digits, with . , % to match) on every slide."""
     d = 'src/'
     css = ''.join(open(CORE + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css', 'u4/lesson.css'] + (['u4/skin_photo.css'] if skin else []) + (['u4/eqlab.css'] if eqlab else [])) \
         + ''.join(open(d + f).read() + '\n' for f in css_extra)
@@ -35,7 +36,7 @@ def build(num, title, parts, args, css_extra=(), skin=None, eqlab=False, shuffle
     core_a = ['engine.js', 'art_core.js'] + ([] if skinned else ['bg.js'])
     core_b = (['u4/photobg.js'] if skinned else ['mol3d.js']) + ['motion.js', 'stickers_assets.js', 'stickers.js', 'u4/helpers.js'] + ([] if skinned else ['u4/scenes.js']) + (['u4/eqlab.js'] if eqlab else []) + (['u4/shuffle.js'] if shuffle else []) + (['u4/skin.js'] if skin else [])
     rd = lambda fs: ''.join(open(CORE + f).read() + '\n' for f in fs)
-    js = config + '\n' + rd(core_a) + bgimg + rd(core_b) + '\n'.join(lesson_js) + '\n'
+    js = config + '\n' + rd(core_a) + bgimg + rd(core_b) + '\n'.join(lesson_js) + '\n' + (rd(['u4/digits.js']) if digits else '')
     if '--standalone' in args: js = js.replace("home:'index.html'", "home:''")
     shared = '--shared' in args   # site build: the sticker pictures (about 780 KB, the same in every lesson) load once from shared/stickers_assets.js
     if shared:
