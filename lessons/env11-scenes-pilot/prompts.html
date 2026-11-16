@@ -55,6 +55,18 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
   <h3>الأسلوب</h3><pre id="shT"></pre>
  </section>
 
+ <section class="card">
+  <h2>طريقة العمل: صورة صورة</h2>
+  <ol>
+   <li>افتح محادثة ChatGPT واحدة لكل صورة من الـ14، وأرفق فيها صورتك الأصلية.</li>
+   <li>انسخ «الوصف مع المرجع» للملف الأول (مثل 3a) والصقه وأرسل.</li>
+   <li>إذا كان للصورة ملف ثانٍ (مثل 3b) فأكمل في نفس المحادثة بوصفه، لتبقى الألوان والأسلوب متطابقة.</li>
+   <li>إذا خرج خطأ، استخدم رسالة متابعة من الأسفل بدل البدء من جديد.</li>
+  </ol>
+  <h3>رسائل المتابعة الجاهزة</h3>
+  <div id="fus" style="display:flex;flex-direction:column;gap:10px"></div>
+ </section>
+
  <div id="slides" style="display:contents"></div>
  <p class="tip">الأوصاف بالإنجليزية لأن أدوات الصور تفهمها أدق. لا تكتب أي نص عربي في الأداة.</p>
 </main>
@@ -136,6 +148,21 @@ D.forEach(function(s,i){
   h+='<div class="asset"><div class="kind">'+a.id+' · '+a.k+'</div><ul class="chk">'+a.c.map(function(c){return '<li>'+c+'</li>'}).join('')+'</ul><pre id="p'+a.id+'">'+esc(a.x)+'</pre><div class="btns"><button type="button" class="main" data-id="'+a.id+'" data-m="ref">نسخ الوصف مع المرجع</button><button type="button" data-id="'+a.id+'" data-m="no">نسخ بدون مرجع</button><button type="button" data-id="'+a.id+'" data-m="one">الوصف وحده</button></div></div>';
  });
  host.insertAdjacentHTML('beforeend',h+'</section>');
+});
+var FU=[
+ ['ظهر نص أو أرقام في الصورة','Regenerate this exact image but remove every letter, number, label and watermark. Keep everything else identical.'],
+ ['أريد الأيقونات بخلفية شفافة','Same icons and same layout, but on a fully transparent background (PNG with alpha channel), with no shadow or ground under the icons.'],
+ ['ظهر إطار أو حواف أو بطاقة','Redraw the same image so the artwork fills the whole frame edge to edge, with no border, margin, frame, panel or title bar.'],
+ ['أيقونة واحدة ضعيفة أو خاطئة','Redraw only icon number N (counting from the top-left, row by row) larger, alone and centred on a transparent background, in exactly the same style as the sheet.'],
+ ['اختلف الأسلوب عن الصورة السابقة','Match the style of the image you generated before in this chat: same colours, outline weight, shading and lighting.']
+];
+var fh='';FU.forEach(function(f,i){fh+='<div class="asset" style="border:0;padding:0"><div class="kind">'+f[0]+'</div><pre id="fu'+i+'">'+esc(f[1])+'</pre><div class="btns"><button type="button" data-fu="'+i+'">نسخ</button></div></div>'});
+document.getElementById('fus').innerHTML=fh;
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button[data-fu]');if(!b)return;
+ var i=+b.dataset.fu,old=b.textContent,el=document.getElementById('fu'+i);
+ function ok(){b.textContent='تم النسخ';setTimeout(function(){b.textContent=old},1600)}
+ try{navigator.clipboard.writeText(FU[i][1]).then(ok,function(){pick(el);b.textContent='حدّد النص وانسخه'})}catch(_){pick(el);b.textContent='حدّد النص وانسخه'}
 });
 function pick(el){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
 document.addEventListener('click',function(e){
