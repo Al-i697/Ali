@@ -45,7 +45,7 @@ const results=[]; const errs=[];
   const okc=async(sl,sel)=>(await sl.locator(sel).textContent()).includes('✓');
 
   await T('goals',async(p,sl)=>{await sl.locator('.gi').first().click(); return await sl.locator('.gi.done').count()===1});
-  for(const id of ['lead1','tab32','resp','ten','howp','quin'])
+  for(const id of ['lead1','tab32','ten','howp','quin'])
     await T(id,async(p,sl)=>{ await mcqAll(p,sl); return await gb(sl) });
   await T('lead2',async(p,sl)=>{ await matchAll(p,sl); return (await gb(sl)) && (await cnt(sl.locator('.mslot .mchip')))===5 });
   for(const id of ['cls32','manatee','cmp','pcmp']) await T(id,async(p,sl)=>{ await clsAll(p,sl); return await gb(sl) });
@@ -72,7 +72,7 @@ const results=[]; const errs=[];
 
 
   /* the infographic-style scene slides: question first (step 0), then every click must change something, the last click shows the whole scene, Previous walks back; nothing may leave the 1280x720 scene */
-  const SCENES=['auto','hetero','zoo','pred','prod','factors','chemo','net','abloom','sun','sec','pnum','pbio','pene','bloom'];
+  const SCENES=['auto','hetero','zoo','pred','prod','factors','chemo','net','abloom','sun','resp','sec','pnum','pbio','pene','bloom'];
   async function openStep(id){ const n=IDS.indexOf(id)+1; const p=await b.newPage({viewport:{width:1600,height:900}}); p.on('console',m=>{if(m.type()==='error'&&!/ERR_FAILED/.test(m.text()))errs.push('['+id+'] '+m.text())}); p.on('pageerror',e=>errs.push('['+id+'] PAGEERR '+e.message)); await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort()); await p.goto(URL+'#s'+n); await p.waitForTimeout(1500); return p }
   const sig=(p)=>p.evaluate(()=>{ const r=document.querySelector('.slide.on').shadowRoot; return Array.from(r.querySelectorAll('[data-s].on')).length+'|'+(r.querySelector('.cap')?r.querySelector('.cap').getAttribute('data-t')||'':'')+'|'+(r.querySelector('.zw')?r.querySelector('.zw').style.transform:'')+'|'+(r.querySelector('.lead.gone')?'g':'') });
   for(const id of SCENES){
