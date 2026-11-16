@@ -41,7 +41,7 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
    <li>بلا أي نص ولا أرقام ولا تسميات ولا علامة مائية.</li>
    <li>الرسمة وحدها: بلا إطارات ولا بطاقات ولا أشرطة عناوين، والأسهم بلا كلام.</li>
    <li>نفس أسلوب الشريحة الأصلية وألوانها.</li>
-   <li>أعلى دقة PNG. المشاهد 16:9 أو مربعة. الأيقونات في لوحة بخلفية بيضاء نقية (ليست شفافة)، وكل أيقونة معزولة بلا خلفية ولا هالة.</li>
+   <li>أعلى دقة PNG. المشاهد 16:9 أو مربعة. الأيقونات في لوحة بخلفية شفافة (كما سوّيتها)، وكل أيقونة معزولة بلا مشهد حولها.</li>
    <li>محتوى بحري علمي دقيق، وتُستبدل الحيوانات البرية بحرية.</li>
    <li>سمِّ كل ملف برقمه (مثل 3a.png) وأرسلها لي. إذا أعطاك ChatGPT صورة واحدة والأمر فيه صورتان، اكتب له: next</li>
   </ol>
@@ -51,10 +51,10 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 <script>
 (function(){
-var RULES='1. No text of any kind: no letters, numbers, words, labels, captions, logos or watermark.\n2. Artwork only: no frames, borders, panels, cards, ribbons, title bars or interface elements. Arrows only where I ask for them, and never with text.\n3. Keep the visual style, colour palette, character design and lighting of the attached slide.\n4. Highest resolution available, PNG. Scenes: 16:9 landscape (3:2 if 16:9 is not available) unless a square is requested. Icon sheets: plain pure white (#FFFFFF) background, not transparent, with no halo, glow, shadow or scenery; every icon isolated, fully visible, evenly spaced, with no overlap.\n5. Scientifically accurate marine content exactly as described; replace any land animals with the marine ones listed.';
+var RULES='1. No text of any kind: no letters, numbers, words, labels, captions, logos or watermark.\n2. Artwork only: no frames, borders, panels, cards, ribbons, title bars or interface elements. Arrows only where I ask for them, and never with text.\n3. Keep the visual style, colour palette, character design and lighting of the attached slide.\n4. Highest resolution available, PNG. Scenes: 16:9 landscape (3:2 if 16:9 is not available) unless a square is requested. Icon sheets: transparent background (PNG with alpha), with no scenery or halo; every icon isolated, fully visible, evenly spaced, with no overlap.\n5. Scientifically accurate marine content exactly as described; replace any land animals with the marine ones listed.';
 var WIDE='Wide 16:9 landscape image (use 3:2 if 16:9 is not available). ';
 var SQ='Square 1:1 image. ';
-function sheet(n,grid,list){return 'An icon sheet of '+n+' separate isolated icons, arranged in a '+grid+' grid with generous equal spacing, each icon centred in its own cell, fully visible, no overlap, all in the same style, outline weight and lighting, on a plain pure white (#FFFFFF) background, not transparent, with no gradient, glow, halo, shadow, ground, water, bubbles or scenery around the icons. The icons, in order: '+list+'. No text.'}
+function sheet(n,grid,list){return 'An icon sheet of '+n+' separate isolated icons, arranged in a '+grid+' grid with generous equal spacing, each icon centred in its own cell, fully visible, no overlap, all in the same style, outline weight and lighting, on a transparent background (PNG with alpha channel), with no scenery, ground, water patch or halo around the icons. The icons, in order: '+list+'. No text.'}
 
 var D=[
 {t:'العلاقات الغذائية: التركيز على ذاتية التغذية',m:'شريحة بعمودين: التمثيل الضوئي (مشهد مضيء) والتمثيل الكيميائي (الفوهة). أحتاج هنا المشهد المضيء، ومشهد الفوهة من الصورة 7.',
