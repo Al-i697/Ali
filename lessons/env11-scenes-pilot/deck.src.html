@@ -13,7 +13,7 @@ body{margin:0;box-sizing:border-box;background:var(--page);color:var(--ink);font
 #st{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;direction:rtl;overflow:hidden;border-radius:18px;background:#06142e;user-select:none;-webkit-user-select:none;color:#fff;font-weight:600}
 .sl{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s}
 .sl.cur{opacity:1;pointer-events:auto}
-.sl>img.bg{position:absolute;left:0;top:0;width:1280px;height:720px;display:block}
+.sl img.bg{position:absolute;left:0;top:0;width:1280px;max-width:none;height:720px;display:block}
 [data-s]{opacity:0;transition:opacity .6s ease,transform .6s ease;pointer-events:none}
 [data-s].on{opacity:1}
 @keyframes march{to{stroke-dashoffset:-36}}
@@ -90,6 +90,29 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 #note.open{display:block}
 #note b{color:#ffd66b}
 #note ul{margin:6px 0 0;padding-inline-start:20px}
+
+.zw{position:absolute;inset:0;transform-origin:0 0;transition:transform .9s ease}
+.rw{position:absolute;left:40px;right:40px;bottom:86px;padding:10px 16px 12px;border-radius:18px;background:rgba(5,19,44,.93);border:1px solid rgba(255,255,255,.22);z-index:4}
+.rw h4{margin:0 0 6px;font-size:21px;font-weight:800;color:#ffd66b}
+.tiles{display:flex;gap:10px;justify-content:center;direction:rtl}
+.tile{width:152px;text-align:center;font-size:16px;font-weight:700;line-height:1.3}
+.tile img{width:152px;height:101px;object-fit:cover;border-radius:12px;display:block;margin-bottom:4px;box-shadow:0 0 0 1px rgba(255,255,255,.18)}
+.eq{background:linear-gradient(160deg,#1a2244,#0d1633)}
+.eq .t3{position:absolute;right:44px;top:16px}
+.eq .t3 h1{margin:0;font-size:34px;line-height:1.25;font-weight:800}
+.eqt{position:absolute;left:0;right:0;top:84px;text-align:center;direction:ltr;font-size:52px;font-weight:800;letter-spacing:2px}
+.eqt i{font-style:normal;display:inline-block;padding:0 12px;border-radius:12px;transition:background .4s,color .4s}
+.eqt i.act{background:#ffd66b;color:#2a1c00}
+.eqc{position:absolute;left:36px;right:36px;top:170px;display:flex;gap:12px;direction:ltr}
+.ec{flex:1;min-width:0;border-radius:18px;background:#262449;border:1.5px solid rgba(255,255,255,.16);overflow:hidden;transform:translateY(14px);direction:rtl}
+.ec.on{transform:none}
+.ec .l{display:flex;align-items:center;gap:10px;padding:5px 14px;font-size:20px;font-weight:800}
+.ec .l b{font-size:30px;direction:ltr}
+.ec img{width:100%;height:140px;object-fit:contain;display:block;background:rgba(255,255,255,.06)}
+.ec p{margin:0;padding:8px 12px 12px;font-size:18px;line-height:1.45;font-weight:600;color:#eef0fb}
+.eqs{position:absolute;left:36px;right:36px;bottom:50px;padding:10px 16px 12px;border-radius:18px;background:#1f2a55;border:1.5px solid rgba(255,255,255,.2)}
+.eqs h4{margin:0 0 6px;font-size:21px;font-weight:800;color:#ffd66b}
+.eqn{position:absolute;left:36px;right:36px;bottom:12px;text-align:center;font-size:20px;font-weight:700;color:#ffe9a6}
 </style>
 
 <div id="box"><div id="st"><div id="slides"></div>
@@ -98,7 +121,8 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 </div></div>
 
 <script>
-var IMG={a6:'{{IMG_6a}}',a7:'{{IMG_7a}}',a8:'{{IMG_8a}}',a9:'{{IMG_9a}}'};
+var IMG={a6:'{{IMG_6a}}',a7:'{{IMG_7a}}',a8:'{{IMG_8a}}',a9:'{{IMG_9a}}',b8:'{{IMG_8b}}',a4:'{{IMG_4a}}'};
+var TL={{TILES}};
 (function(){
 var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
 var st=$('#st'),box=$('#box');
@@ -172,18 +196,74 @@ var SL=[
   {s:3,x:372,y:390,w:312,h:mk('#8ef27c')+'الأخضر ينعكس بعيداً',tx:1130,ty:230,c:'#8ef27c'},
   {s:4,x:372,y:212,w:312,h:mk('#ffa24a')+'جزء يضيع حرارة',tx:975,ty:285,c:'#ffa24a'}],
  note:['المصدر: كتاب الطالب ص95 والشكل 3-2 (الانعكاس والتشتت والامتصاص، امتصاص الكلوروفيل للأحمر والأزرق وانعكاس الأخضر، الحرارة، 0.06٪ وقد تصل إلى 1٪).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم. التسميات والتسلسل من عندي.']}
+,
+/* ---------- 5: algal bloom, four panels (art 8b) ---------- */
+{k:'scene',img:'b8',title:'ازدهار الطحالب والإثراء الغذائي',zoom:[null,[0,0,2],[-1280,0,2],[0,-720,2],[-1280,-720,2],null],
+ lead:{q:'ماذا يحدث للأكسجين المذاب في الماء بعد ازدهار الطحالب وموتها؟',o:[['يزداد لأن الطحالب تنتج الأكسجين',0,'بعد موت الطحالب يستهلك تحللها الأكسجين.'],['ينقص لأن البكتيريا المحلّلة تستهلكه في التنفّس',1,'صح: فتموت الكائنات غير ذاتية التغذية لنقص الأكسجين.'],['لا يتغير',0,'التحلل البكتيري يستهلك الأكسجين.']]},
+ caps:['',
+  'إذا زاد مستوى المغذّيات كثيراً أو بسرعة تتكاثر الطحالب بسرعة كبيرة جداً: ازدهار الطحالب. وكثافتها العالية قد تسدّ خياشيم السمكة فلا تحصل على كفايتها من الأكسجين.',
+  'وبمجرد موت الطحالب تتحلل بواسطة المحلّلات البكتيرية، فتزداد أعداد البكتيريا.',
+  'تستخدم البكتيريا الأكسجين المذاب في الماء للتنفّس، فينقص الأكسجين المذاب، ويموت غير ذاتي التغذية وتنخفض أعداده.',
+  'وإذا كانت أنواع الطحالب منتجة للسموم، فقد تتسبب بموت جماعي لكائنات مائية كالدلافين وخراف البحر، إضافة إلى التسمم الغذائي لمن يأكل المحاريات الملوّثة.',
+  'ازدهار الطحالب ← موتها وتحللها ← نقص الأكسجين ← السموم وموت الكائنات.'],
+ chips:[
+  {s:1,e:1,x:560,y:20,w:330,hot:1,one:1,h:'1 · ازدهار الطحالب'},
+  {s:1,e:1,x:700,y:140,w:360,h:mk('#ff9c8a')+'تسدّ الطحالب خياشيم السمك',tx:643,ty:560,c:'#ff9c8a'},
+  {s:2,e:2,x:560,y:22,w:300,hot:1,one:1,h:'2 · الموت والتحلل'},
+  {s:2,e:2,x:60,y:560,w:360,h:mk('#c9a0ff')+'بكتيريا وفطريات تفكّك الطحالب الميتة',tx:965,ty:390,c:'#c9a0ff'},
+  {s:3,e:3,x:560,y:22,w:300,hot:1,one:1,h:'3 · نقص الأكسجين'},
+  {s:3,e:3,x:660,y:300,w:360,h:mk('#7fd4ff')+'الأكسجين المذاب ينقص',tx:1010,ty:150,c:'#7fd4ff'},
+  {s:3,e:3,x:60,y:300,w:330,h:mk('#ff9c8a')+'موت السمك والمحار',tx:582,ty:470,c:'#ff9c8a'},
+  {s:4,e:4,x:560,y:22,w:300,hot:1,one:1,h:'4 · السموم'},
+  {s:4,e:4,x:60,y:300,w:340,h:mk('#b6f56a')+'طحالب منتجة للسموم',tx:230,ty:160,c:'#b6f56a'}],
+ note:['المصدر: كتاب الطالب ص94–95 (ازدهار الطحالب، خياشيم السمك، التحلل البكتيري، نقص الأكسجين المذاب، السموم والتسمم الغذائي).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم، وهي أربع لوحات تكبّرها الشريحة لوحة لوحة. المصنع في اللوحة الأولى مصدر محتمل للمغذّيات للتوضيح فقط. التسميات من عندي.']},
+
+/* ---------- 6: predation (art 4a split + 4b icon sheet) ---------- */
+{k:'scene',img:'a4',title:'الافتراس والتوازن البيئي',
+ lead:{q:'ماذا يحدث لجماعة بلح البحر لو اختفى نجم البحر (مفترسها) من المنطقة؟',o:[['تقل أعدادها',0,'اختفاء المفترس يزيد الفريسة.'],['تتكاثر بشكل كبير لأنه لا مفترس يضبط أعدادها',1,'صح: وقد تدمّر غابة طحلب الكِلْب فتتأثر الأنواع التي تتغذى عليه.'],['لا يتغير شيء',0,'العلاقة بين المفترس والفريسة تضبط التوازن.']]},
+ caps:['',
+  'المفترس حيوان يصطاد ويقتل ويأكل حيوانات أخرى. وبوجود المفترس الطبيعي (نجم البحر) تبقى أعداد بلح البحر وقنافذ البحر متوازنة.',
+  'بدون المفترسات الطبيعية تتكاثر جماعات بلح البحر وقنافذ البحر بشكل كبير.',
+  'وقد تدمّر غابة طحلب الكِلْب، فيتأثر سلباً كل ما يتغذى عليه أو يعيش فيه.',
+  'يتكيّف المفترس للصيد: أسنان كبيرة أو سم، وسرعة ورشاقة، وتمويه.',
+  'وتتكيّف الفريسة بالأشواك الدفاعية، والاختباء في أماكن آمنة، والتمويه، أو الهروب.'],
+ chips:[
+  {e:3,s:1,x:60,y:150,w:330,h:mk('#ffa24a')+'نجم البحر مفترس يأكل بلح البحر',tx:237,ty:498,c:'#ffa24a'},
+  {e:3,s:2,x:850,y:560,w:300,h:mk('#c9a0ff')+'بلح بحر وقنافذ بأعداد كبيرة',tx:910,ty:470,c:'#c9a0ff'},
+  {e:3,s:3,x:760,y:110,w:300,h:mk('#e6c75a')+'غابة الكِلْب مأكولة: جذوع فقط',tx:820,ty:246,c:'#e6c75a'}],
+ rows:[
+  {s:4,e:4,h:'تكيّفات المفترس',items:[{set:'t4b',i:0,t:'أسنان كبيرة'},{set:'t4b',i:1,t:'سرعة ورشاقة'},{set:'t4b',i:2,t:'تمويه'},{set:'t4b',i:3,t:'سم'}]},
+  {s:5,h:'تكيّفات الفريسة',items:[{set:'t4b',i:5,t:'أشواك دفاعية'},{set:'t4b',i:4,t:'أشواك وانتفاخ'},{set:'t4b',i:6,t:'الهروب في مجموعة'},{set:'t4b',i:7,t:'الاختباء'},{set:'t4b',i:8,t:'التمويه'}]}],
+ note:['المصدر: كتاب الطالب ص92 (المفترس والفريسة، التكيّفات، الصورة 3-4: نجم البحر يأكل بلح البحر، الأثر في غابة طحلب الكِلْب).','الرسمتان واللوحة مولّدة بالذكاء الاصطناعي بطلب المعلم. ربط كل أيقونة بتكيّف من عندي ومن نص الكتاب (السرعة، التمويه، الأسنان أو السم، الأشواك الدفاعية، الاختباء، الهروب).']},
+
+/* ---------- 7: where does the energy of food go (icon sheet 10a) ---------- */
+{k:'eq',title:'ماذا يحدث لطاقة الغذاء الذي يأكله الحيوان؟',n:6,
+ lead:{q:'ماذا يحدث لطاقة الطعام الذي يأكله حيوان؟',o:[['تتحول كلها إلى كتلة حيوية جديدة',0,'جزء كبير يُفقد.'],['يُفقد بعضها في التنفس والبراز والبول، ويبقى جزء لبناء كتلة حيوية جديدة',1,'صح: C = P + R + F + U'],['تُفقد كلها في الحرارة',0,'يبقى جزء P متاحاً للمستوى التالي.']]},
+ cards:[
+  {c:'#4b5fa0',l:'C',n:'الغذاء المستهلك',set:'t10a',i:0,d:'إجمالي الطاقة التي يستهلكها الكائن في طعامه.'},
+  {c:'#2f9a5e',l:'P',n:'الإنتاج',set:'t10a',i:1,d:'الطاقة المتبقية لإنتاج كتلة حيوية جديدة.'},
+  {c:'#1f8f93',l:'R',n:'التنفس',set:'t10a',i:2,d:'الطاقة المستخدمة في التنفس.'},
+  {c:'#a0693a',l:'F',n:'البراز',set:'t10a',i:3,d:'الطاقة الموجودة في الطعام غير المهضوم.'},
+  {c:'#a08a2a',l:'U',n:'البول',set:'t10a',i:4,d:'الطاقة في البول وفضلات الأيض الأخرى.'}],
+ strip:{h:'ما يؤثر في كفاءة انتقال الطاقة (نحو 10٪)',items:[{set:'t10a',i:6,t:'سهولة هضم الغذاء والتمثيل الغذائي له'},{set:'t10a',i:7,t:'الطاقة المستخدمة للحركة'},{set:'t10a',i:8,t:'نوع الغذاء: الحيوان أسهل هضماً من النبات'}]},
+ note0:'بذلك تكون طاقة الإنتاج P هي المتاحة للانتقال إلى المستوى الغذائي التالي.',
+ note:['المصدر: كتاب الطالب ص96–97 (الإنتاجية الثانوية، المعادلة C = P + R + F + U، وعوامل كفاءة الانتقال).','الأيقونات مولّدة بالذكاء الاصطناعي بطلب المعلم، والترتيب والتعريفات القصيرة من نص الكتاب.']}
 ];
 
 /* ---------- build the slides ---------- */
 var host=$('#slides'),LD=[];
 SL.forEach(function(s,i){
- var d=document.createElement('div');d.className='sl '+(s.k==='side'?'side':'scene');
+ var d=document.createElement('div');d.className='sl '+(s.k==='side'?'side':s.k==='eq'?'eq':'scene');
  var h='';
  if(s.k==='scene'){
-  h+='<img class="bg" alt="" src="'+IMG[s.img]+'"><svg class="ld" viewBox="0 0 1280 720"></svg><div class="ttl" style="'+(s.tl?'left:'+s.tl.x+'px;top:'+s.tl.y+'px':'')+'">'+s.title+'</div>';
+  h+='<div class="zw"><img class="bg" alt="" src="'+IMG[s.img]+'"></div><svg class="ld" viewBox="0 0 1280 720"></svg><div class="ttl" style="'+(s.tl?'left:'+s.tl.x+'px;top:'+s.tl.y+'px':'')+'">'+s.title+'</div>';
   if(s.col)h+='<div class="col" style="left:'+s.col.x+'px;top:'+s.col.y+'px;width:'+s.col.w+'px"></div>';
   s.n=s.n||s.caps.length-1;
   h+='<div class="cap" style="opacity:0"></div>';
+ }else if(s.k==='eq'){
+  h+='<div class="t3"><h1>'+s.title+'</h1></div><div class="eqt"><i data-k="1">C</i> = <i data-k="2">P</i> + <i data-k="3">R</i> + <i data-k="4">F</i> + <i data-k="5">U</i></div>';
+  h+='<div class="eqc">'+s.cards.map(function(c,i){return '<div class="ec" data-s="'+(i+1)+'"><div class="l" style="background:'+c.c+'"><b>'+c.l+'</b>'+c.n+'</div><img alt="" src="'+TL[c.set][c.i]+'"><p>'+c.d+'</p></div>'}).join('')+'</div>';
+  h+='<div class="eqs" data-s="6"><h4>'+s.strip.h+'</h4><div class="tiles">'+s.strip.items.map(function(t){return '<div class="tile" style="width:210px"><img style="width:210px;height:104px;object-fit:contain;background:rgba(255,255,255,.06)" src="'+TL[t.set][t.i]+'" alt="">'+t.t+'</div>'}).join('')+'</div></div><div class="eqn" data-s="6">'+s.note0+'</div>';
  }else{
   h+='<div class="t2"><h1>'+s.h1+'</h1><p>'+s.sub+'</p></div><div class="artw"><img alt="" src="'+IMG[s.img]+'"></div><div class="cards"></div><div class="endbar" data-s="5">'+s.end+'</div>';
  }
@@ -192,15 +272,16 @@ SL.forEach(function(s,i){
  if(s.k==='scene'){
   var colEl=$('.col',d);
   (s.chips||[]).forEach(function(c){
-   var e=document.createElement('div');e.className='chip'+(c.one?' one':'')+(c.hot?' hot':'');e.setAttribute('data-s',c.s);e.innerHTML=c.h;
+   var e=document.createElement('div');e.className='chip'+(c.one?' one':'')+(c.hot?' hot':'');e.setAttribute('data-s',c.s);if(c.e!=null)e.setAttribute('data-e',c.e);e.innerHTML=c.h;
    if(c.x!=null){e.style.left=c.x+'px';e.style.top=c.y+'px';if(c.w)e.style.width=c.w+'px';d.appendChild(e)}else if(colEl){colEl.appendChild(e)}
    c.el=e;
   });
   var svg=$('.ld',d),g='';
   (s.hl||[]).forEach(function(l){g+='<g data-s="'+l.s+'" data-e="'+l.e+'"><ellipse cx="'+l.cx+'" cy="'+l.cy+'" rx="'+l.rx+'" ry="'+l.ry+'" fill="#ffd66b" style="animation:glow 2.6s ease-in-out infinite"/><ellipse cx="'+l.cx+'" cy="'+l.cy+'" rx="'+l.rx+'" ry="'+l.ry+'" fill="none" stroke="#ffe27a" stroke-width="3.5" stroke-dasharray="12 10" class="march"/></g>'});
   svg.innerHTML=g;
+  (s.rows||[]).forEach(function(r){var e=document.createElement('div');e.className='rw';e.setAttribute('data-s',r.s);if(r.e!=null)e.setAttribute('data-e',r.e);e.innerHTML='<h4>'+r.h+'</h4><div class="tiles">'+r.items.map(function(t){return '<div class="tile"><img alt="" src="'+TL[t.set][t.i]+'">'+t.t+'</div>'}).join('')+'</div>';d.appendChild(e)});
   (s.hl||[]).forEach(function(l){var e=document.createElement('div');e.className='chip hot one';e.setAttribute('data-s',l.s);e.setAttribute('data-e',l.e);e.style.left=l.lx+'px';e.style.top=(l.ly-20)+'px';e.textContent=l.label;d.appendChild(e)});
- }else{
+ }else if(s.k==='side'){
   var cw=$('.cards',d);
   s.cards.forEach(function(c){var e=document.createElement('div');e.className='c';e.setAttribute('data-s',c.s);e.innerHTML='<div class="h '+c.c+'">'+c.ic+c.h+'</div><div class="b">'+c.b+'</div>';cw.appendChild(e)});
  }
@@ -217,7 +298,7 @@ function leaders(){
   (s.chips||[]).forEach(function(c){
    if(c.tx==null)return;var p=pos(c.el),cx=p.x+p.w/2,cy=p.y+p.h/2,dx=c.tx-cx,dy=c.ty-cy,t=Math.min((p.w/2)/(Math.abs(dx)||1e-9),(p.h/2)/(Math.abs(dy)||1e-9));
    var sx=cx+dx*t,sy=cy+dy*t;
-   g+='<g data-s="'+c.s+'"><line x1="'+sx.toFixed(0)+'" y1="'+sy.toFixed(0)+'" x2="'+c.tx+'" y2="'+c.ty+'" stroke="rgba(255,255,255,.85)" stroke-width="2.2"/><circle cx="'+c.tx+'" cy="'+c.ty+'" r="6" fill="'+c.c+'" stroke="#fff" stroke-width="2"/></g>'});
+   g+='<g data-s="'+c.s+'"'+(c.e!=null?' data-e="'+c.e+'"':'')+'><line x1="'+sx.toFixed(0)+'" y1="'+sy.toFixed(0)+'" x2="'+c.tx+'" y2="'+c.ty+'" stroke="rgba(255,255,255,.85)" stroke-width="2.2"/><circle cx="'+c.tx+'" cy="'+c.ty+'" r="6" fill="'+c.c+'" stroke="#fff" stroke-width="2"/></g>'});
   svg.innerHTML=keep+'<!--L-->'+g;
   s.el.classList.remove('cur');s.el.style.visibility='';s.el.style.opacity='';
  });
@@ -231,11 +312,13 @@ function show(){
  $$('[data-s]',s.el).forEach(function(e){var a=+e.getAttribute('data-s'),b=e.getAttribute('data-e');e.classList.toggle('on',s.step>=a&&(b==null||s.step<=+b))});
  var lead=$('.lead',s.el);if(lead)lead.classList.toggle('gone',s.step>0);
  if(s.k==='scene'){var cp=$('.cap',s.el);var t=s.caps[Math.min(s.step,s.caps.length-1)];cp.style.opacity=s.step?1:0;if(cp.dataset.t!==t){cp.dataset.t=t;cp.textContent=t}}
+ if(s.zoom){var zq=s.zoom[Math.min(s.step,s.zoom.length-1)];$('.zw',s.el).style.transform=zq?('translate('+zq[0]+'px,'+zq[1]+'px) scale('+zq[2]+')'):'none'}
+ if(s.k==='eq'){$$('.eqt i',s.el).forEach(function(i){i.classList.toggle('act',+i.dataset.k===s.step)})}
  $('#pv').disabled=cur===0&&s.step===0;
  $('#nx').textContent=(cur===0&&s.step===0)?'ابدأ الشرح':(cur===SL.length-1&&s.step===s.n)?'من البداية':'التالي';
  $('#cnt').textContent=(cur+1)+' / '+SL.length;
  $('#note').innerHTML='<b>ملاحظة المعلم</b><ul>'+s.note.map(function(n){return '<li>'+n+'</li>'}).join('')+'</ul>';
- var bar=$('#bar');bar.style.top=(s.k==='side'?22:(s.bl?s.bl.y:78))+'px';bar.style.left=(s.bl?s.bl.x:36)+'px';
+ var bar=$('#bar');bar.style.top=(s.k==='side'||s.k==='eq'?22:(s.bl?s.bl.y:78))+'px';bar.style.left=(s.bl?s.bl.x:36)+'px';
 }
 function next(){var s=SL[cur];if(s.step<s.n){s.step++}else if(cur<SL.length-1){cur++;SL[cur].step=0}else{cur=0;SL.forEach(function(x){x.step=0})}show()}
 function prev(){var s=SL[cur];if(s.step>0){s.step--}else if(cur>0){cur--;SL[cur].step=SL[cur].n}show()}
