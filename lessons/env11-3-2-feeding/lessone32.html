@@ -1449,6 +1449,14 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 .rcards.qa.tn .rx{font-size:16px;line-height:1.38}
 .rcards.qa.tn .rn{width:30px;height:30px;font-size:16px}
 
+/* contrast: English forms, bold terms and table heads stay white (gold and cyan failed on the orange and gold cards) */
+.en{color:#fff!important;font-weight:600}
+.pb b{color:#fff}
+.tbl32 th{color:#fff}
+.tbl32 td:first-child{color:#fff!important}
+.tks .tq h4 span{font-size:23px}
+.tks .tq .opt{font-size:20px;min-height:50px}
+
 
 </style>
 <script>
@@ -3559,7 +3567,7 @@ explain({id:'lead1',ch:0,title:'تمهيد: العوالق النباتية',tag
 /* 3 lead-in: order a marine food chain (student book p. 92 example; "before you start", p. 87) */
 slide({id:'lead2',ch:0,title:'تمهيد: رتّب السلسلة الغذائية',tag:'رتّب',
  html:function(){
-  var slots=[1,2,3,4,5].map(function(i){return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1"><div class="mslot slot" data-k="'+i+'" style="width:100%;min-height:74px;justify-content:center"><span class="ph" style="font-size:21px">'+ar(i)+'</span></div><div class="sm lvl" style="font-size:19px;color:var(--cyan);font-weight:800;min-height:26px"></div></div>'+(i<5?'<div style="font-size:30px;color:var(--gold);align-self:flex-start;margin-top:18px">←</div>':'')}).join('');
+  var slots=[1,2,3,4,5].map(function(i){return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1"><div class="mslot slot" data-k="'+i+'" style="width:100%;min-height:74px;justify-content:center"><span class="ph" style="font-size:21px">'+ar(i)+'</span></div><div class="sm lvl" style="font-size:19px;color:var(--cyan);font-weight:800;min-height:26px"></div></div>'+(i<5?'<div style="font-size:30px;color:#fff3c4;align-self:flex-start;margin-top:18px">←</div>':'')}).join('');
   return `<div class="col grow" style="gap:12px;justify-content:center">
    <div class="panel" style="padding:12px 20px"><p class="lead" style="font-size:25px;margin:0 0 4px">ناقش مع زميلك ما تعرفه عن السلاسل الغذائية، ثم رتّب هذه الكائنات في سلسلة غذائية بحرية: من الكائن الذي يُؤكل أولاً إلى المفترس الأخير.</p><div class="sm" style="font-size:19px">اسحب كل كائن إلى مكانه، أو اضغط عليه ثم اضغط على المكان.</div></div>
    <div style="display:flex;gap:8px;direction:rtl;align-items:flex-start">${slots}</div>
@@ -3589,7 +3597,7 @@ explain({id:'auto',ch:1,title:'ذاتية التغذية: من يصنع الغذ
 (function(){
   function levels(){
     var L=[['منتج','سوطيات دوارة'],['مستهلك أولي','جمبري'],['مستهلك ثانوي','سمك التونة'],['مستهلك ثالثي','سمك المارلين'],['مستهلك رابعي','سمك القرش']];
-    return '<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+L.map(function(l,i){return '<div style="flex:1;text-align:center;border-radius:12px;padding:8px 4px;background:rgba(var(--t1),.12)"><div style="font-size:16px;color:var(--cyan);font-weight:800">'+l[0]+'</div><div style="font-size:19px;font-weight:700;line-height:1.3">'+l[1]+'</div><div style="font-size:15px;color:var(--muted)">المستوى '+ar(i+1)+'</div></div>'+(i<4?'<div style="align-self:center;font-size:22px;color:var(--gold)">←</div>':'')}).join('')+'</div></div>';
+    return '<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+L.map(function(l,i){return '<div style="flex:1;text-align:center;border-radius:12px;padding:8px 4px;background:rgba(var(--t1),.12)"><div style="font-size:16px;color:var(--cyan);font-weight:800">'+l[0]+'</div><div style="font-size:19px;font-weight:700;line-height:1.3">'+l[1]+'</div><div style="font-size:15px;color:var(--muted)">المستوى '+ar(i+1)+'</div></div>'+(i<4?'<div style="align-self:center;font-size:22px;color:#fff3c4">←</div>':'')}).join('')+'</div></div>';
   }
   explain({id:'hetero',ch:1,title:'غير ذاتية التغذية: المستهلكات',tag:'اكتشف',
    lead:{q:'لماذا يندر وجود مستهلكات بعد المستوى الرابعي؟',
@@ -3742,7 +3750,7 @@ explain({id:'quin',ch:1,title:'مستهلك خماسي: ثعلب البحر',tag
   opts:[{t:'المستوى الخامس',why:'المنتج هو المستوى الأول، فالمستهلك الأولي في الثاني... تابع العدّ'},{t:'المستوى السادس',ok:true,why:'صح: منتج 1، أولي 2، ثانوي 3، ثالثي 4، رابعي 5، خماسي 6'},{t:'المستوى الرابع',why:'هذا المستهلك الثالثي'}],
   gbar:'المستهلك الخماسي هو المستوى الغذائي السادس.'},
  pts:['العوالق الحيوانية والأسماك آكلة الأعشاب والحيوانات اللافقارية <b>مستهلكات أولية</b> (المستوى الغذائي 2).',
-  {html:'<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+[['عوالق نباتية','1'],['عوالق حيوانية','2'],['أسماك صغيرة','3'],['سرطان البحر الكِلبي','4'],['سمكة كبيرة','5'],['ثعلب البحر','6']].map(function(l,i){return '<div style="flex:1;min-width:0;text-align:center;border-radius:10px;padding:6px 2px;background:rgba(var(--t1),.12)"><div style="font-size:15px;font-weight:700;line-height:1.25">'+l[0]+'</div><div style="font-size:14px;color:var(--cyan);font-weight:800">م '+l[1]+'</div></div>'+(i<5?'<div style="align-self:center;font-size:17px;color:var(--gold)">←</div>':'')}).join('')+'</div></div>'},
+  {html:'<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+[['عوالق نباتية','1'],['عوالق حيوانية','2'],['أسماك صغيرة','3'],['سرطان البحر الكِلبي','4'],['سمكة كبيرة','5'],['ثعلب البحر','6']].map(function(l,i){return '<div style="flex:1;min-width:0;text-align:center;border-radius:10px;padding:6px 2px;background:rgba(var(--t1),.12)"><div style="font-size:15px;font-weight:700;line-height:1.25">'+l[0]+'</div><div style="font-size:14px;color:var(--cyan);font-weight:800">م '+l[1]+'</div></div>'+(i<5?'<div style="align-self:center;font-size:17px;color:#fff3c4">←</div>':'')}).join('')+'</div></div>'},
   'في هذه السلسلة من الشكل 3-2 يكون ثعلب البحر مستهلكاً <b>خماسياً</b> (المستوى 6)، وقد يكون في مستوى أدنى في سلاسل أقصر، كأن يأكل القنفذ مباشرة.'],
  fs:22,
  note:'<ul><li>كتاب الأنشطة ص١١٠: نشاط ٣-٢ س٣(ج). الجواب: المستوى السادس، وسلسلة من الشكل ٣-٢: عوالق نباتية ← عوالق حيوانية ← أسماك صغيرة ← سرطان البحر الكِلبي ← سمكة كبيرة ← ثعلب البحر (من عندي، بحسب أسهم الشكل).</li></ul>'});
@@ -3846,7 +3854,7 @@ explain({id:'factors',ch:2,title:'ما الذي يحدد الإنتاجية ال
 /* 20-21 the word equations of photosynthesis and respiration (activity book Activity 3-1, question 2 a, c, d) */
 function eqGroup(title,sym,extra,names){
   return '<div class="panel eg" style="padding:12px 18px;gap:8px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">'+title+'</div>'+
-   '<div class="eqw"><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span>+</span><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span style="color:var(--gold)">←</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div><span>+</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div>'+(extra?'<span>+</span><span style="color:var(--gold)">'+extra+'</span>':'')+'</div>'+
+   '<div class="eqw"><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span>+</span><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span style="color:#fff3c4">←</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div><span>+</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div>'+(extra?'<span>+</span><span style="color:var(--gold)">'+extra+'</span>':'')+'</div>'+
    '<div class="eqs">'+sym+'</div><div id="tray" class="tray" style="min-height:62px;padding:6px 10px"></div><div class="fb" style="min-height:26px;text-align:center"></div></div>';
 }
 slide({id:'eq1',ch:2,title:'معادلة التمثيل الضوئي',tag:'ركّب المعادلة',
@@ -3914,7 +3922,7 @@ explain({id:'net',ch:2,title:'تأثيرات تغيّر الإنتاجية عل�
   'كلما زاد صافي الإنتاجية الأولية زادت قدرة النظام البيئي على دعم عدد أكبر من الجماعات الأحيائية للمستهلكات وسلاسل غذائية أطول.',
   'مناطق المحيطات التي تشهد ارتفاعاً في التيارات الصاعدة (التي تحمل مغذيات من الأعماق) غنية بالحياة البحرية؛ بعكس المناطق الاستوائية التي تعاني، رغم وفرة الضوء، من ارتفاع حرارة الماء الذي يوفر منحدراً حرارياً يقلل بشكل كبير من اختلاط المياه العميقة الغنية بالمغذيات مع المياه السطحية.',
   'في المناطق القطبية بالمقابل: بُرودة المياه تؤدي إلى خلط أكبر للماء فتتوفر مغذيات كثيرة وتنمو العوالق، وتصل السلسلة الغذائية إلى خمسة أو ستة مستويات خلال الصيف حين يكون الضوء كافياً.'],
- fs:20,gap:7,
+ fs:19,gap:6,
  note:'<ul><li>كتاب الطالب ص٩٤. المصطلحات: صافي الإنتاجية الأولية، الإنتاجية الثانوية. الهدف ٣-٦ (تأثير الإنتاجية الأولية العالية على السلاسل الغذائية).</li></ul>'});
 
 /* 24b algal bloom (student book pp. 94-95) */
@@ -3953,7 +3961,7 @@ slide({id:'hab',ch:2,title:'نشاط 3-1: إنتاجية المواطن البي
 
 /* 26 Activity 3-1, question 1 (c): nursery habitats, table 3-2 of the activity book */
 explain({id:'nursery',ch:2,title:'نشاط 3-1: مواطن الحضانة البيئية',tag:'احسب المتوسط',
- lead:{q:'ما مواطن الحضانة البيئية؟',
+ lead:{q:'ما مواطن الحضانة البيئية <span class="en">Nursery habitats</span>؟',
   opts:[{t:'مواطن تتغذى فيها صغار الحيوانات حتى تصبح كبيرة بما يكفي للعيش في المحيط المفتوح',ok:true,why:'صح: Nursery habitats'},{t:'مواطن تعيش فيها الحيوانات البالغة فقط',why:'هي للصغار'},{t:'مواطن في قاع المحيط المظلم',why:'ليس بالضرورة؛ مثل مروج الحشائش ومصبات الأنهار'}],
   gbar:'مواطن الحضانة تُخرّج كائنات بالغة للمحيط المفتوح.'},
  pts:[{html:(function(){
@@ -4015,7 +4023,7 @@ explain({id:'sec',ch:3,title:'الإنتاجية الثانوية: ما الذي
   'تفقد معظم أسماك المياه المالحة كمّيات صغيرة فقط من البول، وتفرز معظم فضلاتها النيتروجينية على شكل أمونيا عبر الخياشيم. ويتم إخراج الطعام غير المهضوم على شكل براز.',
   {html:'<div class="panel pb" data-pt style="text-align:center"><div class="eqs" style="font-size:34px">C = P + R + F + U</div><div style="font-size:19px;margin-top:4px">C الطاقة المستهلكة · R الطاقة في التنفس · F الطاقة في البراز · U الطاقة في البول وفضلات الأيض · P الطاقة المتبقية لإنتاج كتلة حيوية جديدة</div></div>'},
   'بذلك تكون طاقة الإنتاج <b>P</b> متاحة للانتقال إلى المستوى الغذائي التالي.'],
- fs:20,gap:7,
+ fs:18.5,gap:6,
  note:'<ul><li>كتاب الطالب ص٩٦: الإنتاجية الثانوية والصيغة C = P + R + F + U والشكل ٣-٣ (نقل الطاقة إلى المستهلك ومنه: السمكة). الهدف ٣-٧.</li></ul>'});
 
 /* 30 match the symbols of the energy equation (figure 3-3) */
@@ -4078,7 +4086,7 @@ explain({id:'pbio',ch:4,title:'أهرامات الكتلة الحيوية',tag:'
   'وللقيام بذلك يجب قتل الكائنات، وهو إجراء ليس ملائماً أو غير مرغوب فيه؛ وبدلاً من ذلك توجد جداول تحويلات تحوّل كتلة المادة الحية إلى كتلة جافة، أو تُؤخذ الكتلة الجافة لعينة ثم تُضرب في العدد الإجمالي للكائنات للحصول على متوسط الكتلة الجافة الكلية.',
   'تسمّى الكتلة الحيوية المقاسة في لحظة معيّنة من الزمن '+tm('المحصول القائم','Standing crop')+' (الشكل 3-5).',
   'قد يكون هرم الكتلة الحيوية <b>مقلوباً</b> في بعض الأوقات، لأن كتلة العوالق النباتية صغيرة لأنها تُؤكل بسرعة كبيرة، لكن معدل تكاثرها سريع جداً يوفّر كتلة كافية للمحافظة على جماعة المستهلكات. أي أن الكتلة الحيوية صغيرة لكن معدل الإنتاج مرتفع (الشكل 3-5 ب).'],
- lw:330,fs:19,gap:6,
+ lw:330,fs:17.5,gap:5,
  note:'<ul><li>كتاب الطالب ص٩٨ وشكل ٣-٥ (أ: هرم الكتلة الحيوية بانخفاضها عبر السلسلة، ب: الهرم المقلوب لمشكلات المحصول القائم). مصطلح: هرم الكتلة الحيوية. أسئلة الكتاب ٧ و٨.</li><li><b>تصحيح:</b> في ص٩٨ كُتب «قد يكون هرم الكتلة الحيوية مقلوباً في كل الأوقات»، ومعنى الجملة ومضمون الشكل ٣-٥ يوضّحان أن الهرم يكون مقلوباً في <b>بعض</b> الأوقات (هذا غالباً خطأ ترجمة).</li></ul>'});
 
 /* 34 pyramids of energy (student book p. 99, figure 3-6) */
@@ -4214,13 +4222,13 @@ slide({id:'prac2',ch:5,title:'تدريب 2: ارسم هرم الطاقة',tag:'�
 /* 42 Activity 3-3, question 1: trophic level transfer efficiency (activity book p. 114) */
 slide({id:'tlte',ch:5,title:'نشاط 3-3: كفاءة نقل المستوى الغذائي',tag:'احسب TLTE',
  html:function(){
-  return `<div style="display:flex;gap:16px;flex:1;align-items:stretch"><div class="col" style="flex:1.1;min-width:0;gap:9px;justify-content:center">
-   <div class="panel pb" data-pt style="font-size:20px">${tm('كفاءة نقل المستوى الغذائي','Trophic level transfer efficiency (TLTE)')}: قياس كمّية الطاقة التي تنقل بين المستويات الغذائية.</div>
+  return `<div style="display:flex;gap:16px;flex:1;align-items:stretch"><div class="col" style="flex:1.1;min-width:0;gap:7px;justify-content:center">
+   <div class="panel pb" data-pt style="font-size:18px">${tm('كفاءة نقل المستوى الغذائي','Trophic level transfer efficiency (TLTE)')}: قياس كمّية الطاقة التي تنقل بين المستويات الغذائية.</div>
    <div class="panel pb" data-pt style="text-align:center"><div class="eqs" style="font-size:27px;line-height:1.6">TLTE = <span style="color:#fff">طاقة المستوى n+1</span> ÷ <span style="color:#fff">طاقة المستوى n</span> × 100%</div></div>
-   <div class="panel pb" data-pt style="font-size:21px"><b>أ.</b> احسب كفاءة نقل المستوى الغذائي إذا كان لدى المستهلك الثاني 500 kcal وكان لدى المستهلك الأولي 4500 kcal: 500 ÷ 4500 × 100 = ${nin('a','%')}<div class="fb" id="af" style="min-height:22px;font-size:18px"></div></div>
-   <div class="panel pb" data-pt style="font-size:21px"><b>ب.</b> الشكل 3-5: هرم الطاقة لنظام بيئي بحري (وحدات تقديرية): العوالق النباتية 10000 ← العوالق الحيوانية 2000 ← سمك الرنجة 200 ← سمكة الماكريل 20 ← التونة 1. احسب كفاءة النقل:
+   <div class="panel pb" data-pt style="font-size:18px"><b>أ.</b> احسب كفاءة نقل المستوى الغذائي إذا كان لدى المستهلك الثاني 500 kcal وكان لدى المستهلك الأولي 4500 kcal: 500 ÷ 4500 × 100 = ${nin('a','%')}<div class="fb" id="af" style="min-height:22px;font-size:18px"></div></div>
+   <div class="panel pb" data-pt style="font-size:18px"><b>ب.</b> الشكل 3-5: هرم الطاقة لنظام بيئي بحري (وحدات تقديرية): العوالق النباتية 10000 ← العوالق الحيوانية 2000 ← سمك الرنجة 200 ← سمكة الماكريل 20 ← التونة 1. احسب كفاءة النقل:
     <div style="display:grid;grid-template-columns:auto auto;gap:6px 10px;margin-top:6px;align-items:center"><span>العوالق النباتية ← العوالق الحيوانية:</span>${nin('b1','%')}<span>العوالق الحيوانية ← سمك الرنجة:</span>${nin('b2','%')}<span>سمكة الماكريل ← سمكة التونة:</span>${nin('b3','%')}</div><div class="fb" id="bf" style="min-height:22px;font-size:18px"></div></div></div>
-   <div class="col" style="width:380px;flex:none;gap:9px;justify-content:center"><div class="panel" style="padding:8px 12px"><div class="sm" style="font-size:15px;text-align:center;color:var(--cyan)">الشكل 3-5: هرم الطاقة (وحدات تقديرية)</div>${pyrSVG([['عوالق نباتية 10000',10000],['عوالق حيوانية 2000',3800],['سمك الرنجة 200',1500],['سمكة الماكريل 20',700],['التونة 1',300]],{w:340,h:30,fs:13,cols:['#5fbf72','#f08fb0','#ef7b5a','#f1b24a','#9d8be0']})}</div>
+   <div class="col" style="width:380px;flex:none;gap:7px;justify-content:center"><div class="panel" style="padding:8px 12px"><div class="sm" style="font-size:15px;text-align:center;color:var(--cyan)">الشكل 3-5: هرم الطاقة (وحدات تقديرية)</div>${pyrSVG([['عوالق نباتية 10000',10000],['عوالق حيوانية 2000',3800],['سمك الرنجة 200',1500],['سمكة الماكريل 20',700],['التونة 1',300]],{w:340,h:30,fs:13,cols:['#5fbf72','#f08fb0','#ef7b5a','#f1b24a','#9d8be0']})}</div>
     <div data-pt>${qaHTML([['(ج) باستخدام الأمثلة البحرية صف سبب اختلاف كفاءة النقل بين المستويات.','المقدار المأكول وسهولة الهضم: العوالق النباتية تؤكل كاملة فتبلغ الكفاءة 20%؛ وتنفق الأسماك الكبيرة (الماكريل ثم التونة) طاقة كبيرة في الحركة والصيد وتفلت منها فرائس كثيرة فتقل الكفاءة إلى 5%. وفي كل مستوى تُفقد طاقة في التنفس والفضلات.']])}</div></div></div>`;},
  init:function(el){
   bindNum($('.nin[data-n="a"]',el),11.1,.15,function(ok){ say($('#af',el),ok?'✓ 500 ÷ 4500 × 100 ≈ 11.1%':'قسّم 500 على 4500 ثم اضرب في 100',ok?'ok':'bad') });
@@ -4433,7 +4441,7 @@ slide({id:'eou4',ch:6,title:'أسئلة نهاية الوحدة: 9 (الكتلة
 slide({id:'eou5',ch:6,title:'أسئلة نهاية الوحدة: 10 (سلسلة غذائية بحرية)',tag:'ص115',
  html:function(){
   return `<div style="display:flex;gap:14px;flex:1;align-items:stretch"><div class="col" style="flex:1.1;min-width:0;gap:8px;justify-content:center">
-   <div class="panel pb" data-pt style="font-size:20px">الشكل 3-16: سلسلة غذائية من نظام بيئي بحري. الأرقام مقدار الطاقة في كل مستوى غذائي في الشتاء بوحدات تقديرية.<div style="display:flex;gap:6px;direction:rtl;align-items:center;margin-top:8px">${[['عوالق نباتية','5000'],['عوالق حيوانية','589'],['سردين','61'],['أسماك التونة','4']].map(function(x,i){return '<div style="flex:1;text-align:center;border-radius:10px;padding:6px 3px;background:rgba(var(--t1),.12)"><div style="font-size:17px;font-weight:700">'+x[0]+'</div><div style="font-size:19px;color:var(--gold);font-weight:800;direction:ltr">'+x[1]+'</div></div>'+(i<3?'<div style="color:var(--gold);font-size:22px">←</div>':'')}).join('')}</div></div>
+   <div class="panel pb" data-pt style="font-size:20px">الشكل 3-16: سلسلة غذائية من نظام بيئي بحري. الأرقام مقدار الطاقة في كل مستوى غذائي في الشتاء بوحدات تقديرية.<div style="display:flex;gap:6px;direction:rtl;align-items:center;margin-top:8px">${[['عوالق نباتية','5000'],['عوالق حيوانية','589'],['سردين','61'],['أسماك التونة','4']].map(function(x,i){return '<div style="flex:1;text-align:center;border-radius:10px;padding:6px 3px;background:rgba(var(--t1),.12)"><div style="font-size:17px;font-weight:700">'+x[0]+'</div><div style="font-size:19px;color:var(--gold);font-weight:800;direction:ltr">'+x[1]+'</div></div>'+(i<3?'<div style="color:#fff3c4;font-size:22px">←</div>':'')}).join('')}</div></div>
    <div class="panel pb" data-pt style="font-size:21px"><b>أ.</b> احسب النسبة المئوية للطاقة المنتقلة بين العوالق النباتية والحيوانية، ووضّح خطوات حلّك: 589 ÷ 5000 × 100 = ${nin('e','%')}<div class="fb" id="ef" style="min-height:22px;font-size:18px"></div></div>
    <div class="panel pb" data-pt style="font-size:21px"><b>ب.</b> اشرح سبب وجود مقدار طاقة أقل في المستهلكات منها في المنتجات.</div></div>
    <div class="col" style="width:440px;flex:none;gap:8px;justify-content:center"><div data-pt>${qaHTML([['ب. (الإجابة) لماذا طاقة أقل في المستهلكات؟','لأنها تفقد طاقة في التنفس والحركة والبراز والبول والأجزاء التي لا تُؤكل، فلا تنتقل إلا نحو 10% إلى المستوى التالي.'],['ج.1 اقترح ما سيحدث للطاقة في كل مستوى غذائي خلال الصيف.','يزيد ضوء الشمس والحرارة فتزيد الطاقة في العوالق النباتية، وبالتالي في العوالق الحيوانية والسردين والتونة (يتبعها ارتفاع تدريجي).'],['ج.2 اقترح ما قد يحدث للسلسلة الغذائية إذا صُرفت الأسمدة من الأراضي الزراعية الساحلية إلى المياه.','المغذيات الزائدة تسبب ازدهار الطحالب، ثم ينقص الأكسجين بتحللها فتموت الحيوانات (العوالق الحيوانية والأسماك) وتختل السلسلة.']])}</div></div></div>`;},
@@ -4476,7 +4484,7 @@ slide({id:'abq3',ch:6,title:'أسئلة نهاية الوحدة (كتاب الأ
  note:'<ul><li>كتاب الأنشطة ص١٣٦: أسئلة نهاية الوحدة، السؤال 3 (12 درجة) والشكل ٣-١٠. بند (أ) تعريف المغذّي للدرس ٣-٣ أيضاً. الشكل ٣-١٠ فيه ستة أهرامات (أعداد، كتلة، طاقة) لكل سلسلة؛ إجابة (د) عامة لأن تفاصيل الأشرطة تُقارن بالشكل نفسه.</li><li>السؤال 4 (دورة الكربون) للدرس ٣-٣.</li></ul>'});
 
 /* 57-59 exams: the training exam 2024/2025 (first semester) and the enrichment bulletin (November 2024); answers from their answer keys */
-slide({id:'exam1',ch:6,title:'امتحان تدريبي 2024/2025: اختر الإجابة',tag:'أسئلة اختيار',
+slide({id:'exam1',ch:6,cls:'tks',title:'امتحان تدريبي 2024/2025: اختر الإجابة',tag:'أسئلة اختيار',
  html:function(){ return ticketHTML(EX1) },
  init:function(el){ bindTicket(el,EX1,'exam1') },
  note:'<ul><li>امتحان تدريبي للفصل الأول 2024/2025 (أسئلة 4 و10 و9): س4(ج) مستوى الفقمة الرمادية في الشبكة (مستهلك ثالث)، س10(أ) النسبة المئوية للطاقة بين المنتجات والمستهلك الثاني.</li><li><b>تصحيح:</b> نموذج الإجابة يذكر 1.11% للسؤال 10(أ) وهو خطأ حسابي: 1732 ÷ 148396 × 100 = 1.17%. اعتمدتُ 1.17%.</li><li>نشرة أسئلة إثرائية (نوفمبر 2024): س14(أ) قاعدة هرم الطاقة، س13(أ) المستوى الغذائي الثاني.</li></ul>'});

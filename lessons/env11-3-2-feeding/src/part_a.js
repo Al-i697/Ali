@@ -49,7 +49,7 @@ explain({id:'lead1',ch:0,title:'تمهيد: العوالق النباتية',tag
 /* 3 lead-in: order a marine food chain (student book p. 92 example; "before you start", p. 87) */
 slide({id:'lead2',ch:0,title:'تمهيد: رتّب السلسلة الغذائية',tag:'رتّب',
  html:function(){
-  var slots=[1,2,3,4,5].map(function(i){return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1"><div class="mslot slot" data-k="'+i+'" style="width:100%;min-height:74px;justify-content:center"><span class="ph" style="font-size:21px">'+ar(i)+'</span></div><div class="sm lvl" style="font-size:19px;color:var(--cyan);font-weight:800;min-height:26px"></div></div>'+(i<5?'<div style="font-size:30px;color:var(--gold);align-self:flex-start;margin-top:18px">←</div>':'')}).join('');
+  var slots=[1,2,3,4,5].map(function(i){return '<div style="display:flex;flex-direction:column;align-items:center;gap:6px;flex:1"><div class="mslot slot" data-k="'+i+'" style="width:100%;min-height:74px;justify-content:center"><span class="ph" style="font-size:21px">'+ar(i)+'</span></div><div class="sm lvl" style="font-size:19px;color:var(--cyan);font-weight:800;min-height:26px"></div></div>'+(i<5?'<div style="font-size:30px;color:#fff3c4;align-self:flex-start;margin-top:18px">←</div>':'')}).join('');
   return `<div class="col grow" style="gap:12px;justify-content:center">
    <div class="panel" style="padding:12px 20px"><p class="lead" style="font-size:25px;margin:0 0 4px">ناقش مع زميلك ما تعرفه عن السلاسل الغذائية، ثم رتّب هذه الكائنات في سلسلة غذائية بحرية: من الكائن الذي يُؤكل أولاً إلى المفترس الأخير.</p><div class="sm" style="font-size:19px">اسحب كل كائن إلى مكانه، أو اضغط عليه ثم اضغط على المكان.</div></div>
    <div style="display:flex;gap:8px;direction:rtl;align-items:flex-start">${slots}</div>
@@ -79,7 +79,7 @@ explain({id:'auto',ch:1,title:'ذاتية التغذية: من يصنع الغذ
 (function(){
   function levels(){
     var L=[['منتج','سوطيات دوارة'],['مستهلك أولي','جمبري'],['مستهلك ثانوي','سمك التونة'],['مستهلك ثالثي','سمك المارلين'],['مستهلك رابعي','سمك القرش']];
-    return '<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+L.map(function(l,i){return '<div style="flex:1;text-align:center;border-radius:12px;padding:8px 4px;background:rgba(var(--t1),.12)"><div style="font-size:16px;color:var(--cyan);font-weight:800">'+l[0]+'</div><div style="font-size:19px;font-weight:700;line-height:1.3">'+l[1]+'</div><div style="font-size:15px;color:var(--muted)">المستوى '+ar(i+1)+'</div></div>'+(i<4?'<div style="align-self:center;font-size:22px;color:var(--gold)">←</div>':'')}).join('')+'</div></div>';
+    return '<div class="panel pb" data-pt style="padding:10px 12px"><div style="display:flex;align-items:stretch;gap:5px;direction:rtl">'+L.map(function(l,i){return '<div style="flex:1;text-align:center;border-radius:12px;padding:8px 4px;background:rgba(var(--t1),.12)"><div style="font-size:16px;color:var(--cyan);font-weight:800">'+l[0]+'</div><div style="font-size:19px;font-weight:700;line-height:1.3">'+l[1]+'</div><div style="font-size:15px;color:var(--muted)">المستوى '+ar(i+1)+'</div></div>'+(i<4?'<div style="align-self:center;font-size:22px;color:#fff3c4">←</div>':'')}).join('')+'</div></div>';
   }
   explain({id:'hetero',ch:1,title:'غير ذاتية التغذية: المستهلكات',tag:'اكتشف',
    lead:{q:'لماذا يندر وجود مستهلكات بعد المستوى الرابعي؟',

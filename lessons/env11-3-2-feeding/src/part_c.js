@@ -59,7 +59,7 @@ explain({id:'factors',ch:2,title:'ما الذي يحدد الإنتاجية ال
 /* 20-21 the word equations of photosynthesis and respiration (activity book Activity 3-1, question 2 a, c, d) */
 function eqGroup(title,sym,extra,names){
   return '<div class="panel eg" style="padding:12px 18px;gap:8px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">'+title+'</div>'+
-   '<div class="eqw"><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span>+</span><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span style="color:var(--gold)">←</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div><span>+</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div>'+(extra?'<span>+</span><span style="color:var(--gold)">'+extra+'</span>':'')+'</div>'+
+   '<div class="eqw"><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span>+</span><div class="mslot slot" data-k="R"><span class="ph">متفاعل</span></div><span style="color:#fff3c4">←</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div><span>+</span><div class="mslot slot" data-k="P"><span class="ph">ناتج</span></div>'+(extra?'<span>+</span><span style="color:var(--gold)">'+extra+'</span>':'')+'</div>'+
    '<div class="eqs">'+sym+'</div><div id="tray" class="tray" style="min-height:62px;padding:6px 10px"></div><div class="fb" style="min-height:26px;text-align:center"></div></div>';
 }
 slide({id:'eq1',ch:2,title:'معادلة التمثيل الضوئي',tag:'ركّب المعادلة',
@@ -127,7 +127,7 @@ explain({id:'net',ch:2,title:'تأثيرات تغيّر الإنتاجية عل�
   'كلما زاد صافي الإنتاجية الأولية زادت قدرة النظام البيئي على دعم عدد أكبر من الجماعات الأحيائية للمستهلكات وسلاسل غذائية أطول.',
   'مناطق المحيطات التي تشهد ارتفاعاً في التيارات الصاعدة (التي تحمل مغذيات من الأعماق) غنية بالحياة البحرية؛ بعكس المناطق الاستوائية التي تعاني، رغم وفرة الضوء، من ارتفاع حرارة الماء الذي يوفر منحدراً حرارياً يقلل بشكل كبير من اختلاط المياه العميقة الغنية بالمغذيات مع المياه السطحية.',
   'في المناطق القطبية بالمقابل: بُرودة المياه تؤدي إلى خلط أكبر للماء فتتوفر مغذيات كثيرة وتنمو العوالق، وتصل السلسلة الغذائية إلى خمسة أو ستة مستويات خلال الصيف حين يكون الضوء كافياً.'],
- fs:20,gap:7,
+ fs:19,gap:6,
  note:'<ul><li>كتاب الطالب ص٩٤. المصطلحات: صافي الإنتاجية الأولية، الإنتاجية الثانوية. الهدف ٣-٦ (تأثير الإنتاجية الأولية العالية على السلاسل الغذائية).</li></ul>'});
 
 /* 24b algal bloom (student book pp. 94-95) */
