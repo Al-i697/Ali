@@ -250,6 +250,8 @@ var SL=[
  note:['المصدر: كتاب الطالب ص96–97 (الإنتاجية الثانوية، المعادلة C = P + R + F + U، وعوامل كفاءة الانتقال).','الأيقونات مولّدة بالذكاء الاصطناعي بطلب المعلم، والترتيب والتعريفات القصيرة من نص الكتاب.']}
 ];
 
+/* the right answer must not always be the middle one: move it to the place set in lead.at (0 first, 1 middle, 2 last) */
+[2,0,1,0,2,1,1].forEach(function(at,i){var o=SL[i].lead.o.slice(),k=-1;o.forEach(function(x,j){if(x[1])k=j});var c=o.splice(k,1)[0];o.splice(at,0,c);SL[i].lead.o=o});
 /* ---------- build the slides ---------- */
 var host=$('#slides'),LD=[];
 SL.forEach(function(s,i){
