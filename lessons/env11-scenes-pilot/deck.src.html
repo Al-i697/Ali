@@ -1,0 +1,258 @@
+<title>شرائح المشاهد</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: a small deck of 1280x720 lesson slides. A slide is either a full-bleed illustration with labels that appear click by click, or an illustration beside ribbon cards. Scaled to fit; turned on its side on a portrait phone. */
+:root{--page:#dbe7f1;--ink:#0a1f3d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#050d1c;--ink:#e8f1fb;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#050d1c;--ink:#e8f1fb;color-scheme:dark}
+html,body{height:100%}
+body{margin:0;box-sizing:border-box;background:var(--page);color:var(--ink);font-family:Cairo,"Segoe UI",Tahoma,"DejaVu Sans",sans-serif;display:grid;place-items:center;overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));touch-action:manipulation}
+#box{position:relative;flex:none}
+#st{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;direction:rtl;overflow:hidden;border-radius:18px;background:#06142e;user-select:none;-webkit-user-select:none;color:#fff;font-weight:600}
+.sl{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .5s}
+.sl.cur{opacity:1;pointer-events:auto}
+.sl>img.bg{position:absolute;left:0;top:0;width:1280px;height:720px;display:block}
+[data-s]{opacity:0;transition:opacity .6s ease,transform .6s ease;pointer-events:none}
+[data-s].on{opacity:1}
+@keyframes march{to{stroke-dashoffset:-36}}
+@keyframes glow{0%,100%{opacity:.18}50%{opacity:.4}}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-6px)}}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.march{animation:march 1.4s linear infinite}
+
+/* labels */
+.ttl{position:absolute;left:36px;top:22px;font-size:30px;font-weight:800;line-height:1.3;background:rgba(5,19,44,.78);border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:6px 20px 8px;z-index:3}
+.chip{position:absolute;box-sizing:border-box;padding:8px 14px 10px;border-radius:14px;background:rgba(5,19,44,.9);border:1px solid rgba(255,255,255,.2);font-size:21px;line-height:1.35;font-weight:800;transform:translateX(20px);z-index:3}
+.chip.on{transform:none}
+.chip small{display:block;font-weight:600;font-size:16px;line-height:1.4;color:#c6e6f6;margin-top:1px}
+.chip.one{padding:7px 14px 8px}
+.chip.hot{background:#ffd66b;color:#2a1c00;border-color:#fff}
+.col{position:absolute;display:flex;flex-direction:column;gap:7px;z-index:3}
+.col .chip{position:relative}
+.en{direction:ltr;unicode-bidi:isolate;display:inline-block;color:#7fe6f5;font-weight:700;font-size:17px;margin-inline-start:5px}
+.mk{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:8px;vertical-align:1px}
+.ld{position:absolute;inset:0;width:1280px;height:720px;pointer-events:none;z-index:2}
+.cap{position:absolute;left:40px;right:40px;bottom:14px;min-height:60px;box-sizing:border-box;border-radius:18px;background:rgba(4,14,36,.88);border:1px solid rgba(255,255,255,.2);padding:10px 22px;font-size:22px;line-height:1.45;font-weight:700;display:flex;align-items:center;z-index:3;transition:opacity .35s}
+
+/* illustration beside cards */
+.side .artw{position:absolute;left:36px;top:112px;width:487px;height:533px;border-radius:20px;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.45)}
+.side .artw img{width:100%;height:100%;object-fit:cover;display:block}
+.side{background:#1c1a2f}
+.side .t2{position:absolute;right:44px;top:14px;width:760px}
+.side .t2 h1{margin:0;font-size:38px;line-height:1.25;font-weight:800}
+.side .t2 p{margin:0;font-size:22px;color:#b7bcd9}
+.side .t2 .en{font-size:29px}
+.cards{position:absolute;left:556px;top:98px;width:688px;display:flex;flex-direction:column;gap:8px}
+.c{border-radius:16px;background:#262449;border:1.5px solid rgba(255,255,255,.16);overflow:hidden;transform:translateY(14px)}
+.c.on{transform:none}
+.c .h{display:flex;align-items:center;gap:10px;padding:4px 16px 5px;font-size:20px;font-weight:800;line-height:1.3}
+.c .b{padding:7px 16px 9px;font-size:19px;line-height:1.5;font-weight:600;color:#eef0fb}
+.c .b b{color:#fff}
+.h1{background:#4b5fa0}.h2{background:#c9822a}.h3{background:#1f8f93}.h4{background:#b94d46}
+.hi{width:26px;height:26px;flex:none}
+.flow{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px}
+.fi{flex:1;text-align:center;font-size:15px;line-height:1.3;color:#d4d8f2;font-weight:600}
+.fi svg{display:block;margin:0 auto 2px;height:46px;width:auto;max-width:100%}
+.fa{font-size:30px;color:#ffd66b;font-weight:800;animation:nudge 1.6s ease-in-out infinite}
+.stats{display:flex;gap:8px}
+.stats div{flex:1;background:rgba(255,255,255,.08);border-radius:10px;padding:5px 8px;text-align:center;font-size:16px;line-height:1.35}
+.stats div b{display:block;font-size:15px;color:#ffb8ae}
+.stats div span{font-size:19px;font-weight:800}
+.ex{margin-top:6px;font-size:18.5px}
+.endbar{position:absolute;left:40px;bottom:30px;width:470px;text-align:center;font-size:21px;font-weight:800;line-height:1.4;color:#2a1c00;background:#ffd66b;border-radius:14px;padding:8px 14px;box-shadow:0 4px 14px rgba(0,0,0,.4);z-index:3}
+
+/* lead-in question */
+.lead{position:absolute;left:250px;top:150px;width:780px;box-sizing:border-box;padding:24px 30px 22px;border-radius:24px;background:rgba(10,24,54,.94);border:1.5px solid rgba(255,255,255,.22);transition:opacity .6s,transform .6s;z-index:6}
+.lead.gone{opacity:0;transform:scale(.96);pointer-events:none}
+.lead .tag{display:inline-block;font-size:17px;font-weight:800;color:#2a1c00;background:#ffd66b;border-radius:999px;padding:2px 14px}
+.lead .q{font-size:31px;font-weight:800;line-height:1.4;margin:10px 0 14px}
+.lead .o{display:block;width:100%;text-align:right;font:inherit;font-size:24px;font-weight:700;color:#fff;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.22);border-radius:14px;padding:11px 16px;margin-bottom:10px;cursor:pointer}
+.lead .o:hover{background:rgba(255,255,255,.18)}
+.lead .o.ok{background:#1f8f5a;border-color:#6fe0a3}
+.lead .o.bad{background:#a8463a;border-color:#ff9c8a}
+.lead .fb{min-height:36px;font-size:22px;font-weight:700;line-height:1.4;color:#d6ecf7}
+.lead .fb.ok{color:#8ff0bd}.lead .fb.bad{color:#ffb4a6}
+
+/* deck controls */
+#bar{position:absolute;left:36px;top:78px;display:flex;align-items:center;gap:10px;z-index:9}
+.side~#bar{top:22px}
+#bar button{font:inherit;font-size:18px;font-weight:800;border:0;border-radius:12px;height:42px;padding:0 16px;cursor:pointer;white-space:nowrap}
+#pv{background:rgba(5,19,44,.78);color:#fff}
+#nx{background:#ffd66b;color:#2a1c00}
+#nb{background:rgba(5,19,44,.7);color:#d3e6f5;border:2px solid rgba(255,255,255,.3)!important;font-size:15px!important;padding:0 12px!important}
+#cnt{font-size:16px;font-weight:700;background:rgba(5,19,44,.7);border-radius:999px;padding:4px 12px;color:#d3e6f5;direction:ltr}
+#bar button:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+#note{position:absolute;left:36px;top:130px;width:760px;box-sizing:border-box;padding:16px 22px;border-radius:18px;background:rgba(8,12,30,.97);border:1px solid rgba(255,255,255,.25);font-size:18px;line-height:1.55;font-weight:600;display:none;z-index:10}
+#note.open{display:block}
+#note b{color:#ffd66b}
+#note ul{margin:6px 0 0;padding-inline-start:20px}
+</style>
+
+<div id="box"><div id="st"><div id="slides"></div>
+ <div id="bar"><button type="button" id="pv">السابق</button><button type="button" id="nx">ابدأ</button><button type="button" id="nb">ملاحظة المعلم</button><span id="cnt"></span></div>
+ <div id="note"></div>
+</div></div>
+
+<script>
+var IMG={a6:'{{IMG_6a}}',a7:'{{IMG_7a}}',a8:'{{IMG_8a}}',a9:'{{IMG_9a}}'};
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var st=$('#st'),box=$('#box');
+function mk(c){return '<i class="mk" style="background:'+c+'"></i>'}
+function en(t){return '<span class="en">'+t+'</span>'}
+function num(t){return '<bdi dir="ltr">'+t+'</bdi>'}
+
+var SL=[
+/* ---------- 1: factors that set primary productivity (art 6a) ---------- */
+{k:'scene',img:'a6',title:'العوامل المؤثرة على الإنتاجية الأولية',
+ lead:{q:'أين تكون الإنتاجية الأولية أعلى عادةً في المحيط؟',o:[['في قاع المحيط المظلم',0,'لا: لا يصل الضوء إلى القاع فلا يحدث تمثيل ضوئي.'],['قرب المنحدر الحراري حيث يتوازن الضوء والحرارة والمغذّيات',1,'صح: سنرى كيف في المشهد.'],['في الطبقة العميقة الباردة',0,'لا: غنية بالمغذّيات لكنها مظلمة.']]},
+ caps:['',
+  'ضوء الشمس ينفذ إلى الطبقة العليا (المنطقة الضوئية)، وفيها يحدث التمثيل الضوئي وتوجد غالبية الكتلة الحيوية.',
+  'الشمس تسخّن السطح فيتكوّن ماء دافئ أقل كثافة، يفصله عن الماء البارد الأكثر كثافة المنحدر الحراري.',
+  'معظم المياه الغنية بالمغذّيات تحت المنحدر الحراري، وهو يقلّل اختلاط الطبقتين فلا تصعد المغذّيات إلى الضوء.',
+  'الضوء في الأعلى والمغذّيات في الأسفل، فتكون الإنتاجية الأعلى عادةً قرب المنحدر الحراري حيث التوازن الأمثل بين الضوء والحرارة والمغذّيات.'],
+ col:{x:925,y:150,w:325},
+ chips:[
+  {s:1,h:mk('#8ef27c')+'المنطقة الضوئية '+en('Photic zone')+'<small>حتى نحو '+num('200 m')+': التمثيل الضوئي وغالبية الكتلة الحيوية</small>',tx:610,ty:196,c:'#8ef27c'},
+  {s:2,one:1,h:mk('#ffb867')+'ماء دافئ<small class="in" style="display:inline;margin-inline-start:10px">· أقل كثافة</small>',tx:840,ty:262,c:'#ffb867'},
+  {s:2,h:mk('#ffa24a')+'المنحدر الحراري '+en('Thermocline')+'<small>تدرّج الكثافة '+en('Pycnocline')+': يفصل الماء الدافئ عن البارد</small>',tx:760,ty:322,c:'#ffa24a'},
+  {s:2,one:1,h:mk('#4d86ee')+'ماء بارد<small class="in" style="display:inline;margin-inline-start:10px">· أكثر كثافة</small>',tx:850,ty:404,c:'#4d86ee'},
+  {s:3,h:mk('#ffc94d')+'المياه العميقة<small>باردة ومظلمة وغنية بالمغذّيات</small>',tx:800,ty:480,c:'#ffc94d'}],
+ hl:[{s:4,e:4,cx:620,cy:300,rx:640,ry:56,label:'أعلى إنتاجية',lx:150,ly:300}],
+ note:['المصدر: كتاب الطالب ص93 و94 (الإنتاجية الأولية تتحدد بدرجة الحرارة وتوافر المغذّيات وشدة الضوء؛ المنحدر الحراري وتدرّج الكثافة). الأعماق من الشكل 3-1: المنطقة الضوئية حتى نحو 200 m.','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم، وهي تخطيطية غير مقيّسة. التسميات والتظليل والتسلسل من عندي.']},
+
+/* ---------- 2: chemosynthesis (art 7a) ---------- */
+{k:'side',img:'a7',h1:'التمثيل الكيميائي '+en('Chemosynthesis'),sub:'الحياة في غياب الضوء',
+ lead:{q:'لماذا لا يحدث التمثيل الضوئي في قاع المحيط العميق؟',o:[['لأن الماء هناك ساخن جداً دائماً',0,'لا: السبب هو انعدام الضوء، لا درجة الحرارة.'],['لأن الضوء لا يصل إلى هناك',1,'صح: لكن مياه القاع الغنية بالمغذّيات فيها طاقة كيميائية.'],['لأن المنتجات لا تحتاج إلى طاقة',0,'لا: كل منتج يحتاج إلى مصدر طاقة.']]},
+ end:'ذاتية التغذية الكيميائية هي بداية السلسلة الغذائية للفوهات',
+ cards:[
+  {s:1,c:'h1',ic:'<svg class="hi" viewBox="0 0 26 26"><circle cx="13" cy="13" r="12" fill="none" stroke="#fff" stroke-width="2"/><path d="M13 6v8M13 17.5v1.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>',h:'مفهوم التمثيل الكيميائي',b:'الضوء لا يصل إلى قاع المحيط، لكن مياهه الغنية بالمغذّيات فيها <b>طاقة كيميائية</b> مثل كبريتيد الهيدروجين '+num('H<sub>2</sub>S')+'.'},
+  {s:2,c:'h2',ic:'<svg class="hi" viewBox="0 0 26 26"><path d="M4 13a9 9 0 0 1 15-6.7M22 13a9 9 0 0 1-15 6.7" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M19.5 2.5v5h-5M6.5 23.5v-5h5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>',h:'الآلية',
+   b:'<b>ذاتية التغذية الكيميائية</b> '+en('Chemoautotroph')+': بكتيريا تستخدم هذه الطاقة لتحويل الغازات الكربونية الذائبة إلى جزيئات عضوية.<div class="flow"><div class="fi"><svg viewBox="0 0 130 60"><g stroke="#cfd3ee" stroke-width="3"><path d="M30 32L16 16M30 32L46 16"/><path d="M86 32H104M86 32H68"/></g><circle cx="30" cy="34" r="14" fill="#ffd24d"/><circle cx="15" cy="15" r="7" fill="#fff"/><circle cx="46" cy="15" r="7" fill="#fff"/><circle cx="86" cy="32" r="9" fill="#8b90a8"/><circle cx="67" cy="32" r="8" fill="#ee5a4f"/><circle cx="105" cy="32" r="8" fill="#ee5a4f"/></svg>طاقة كيميائية + غازات كربونية ذائبة</div><div class="fa">←</div><div class="fi"><svg viewBox="0 0 120 60"><g fill="none" stroke="#7be0b4" stroke-width="2" stroke-linecap="round"><path d="M16 30q-8-6-14 0M104 30q8 6 14 0"/></g><rect x="14" y="14" width="92" height="32" rx="16" fill="#47c28f"/><circle cx="36" cy="30" r="4.5" fill="#1b7a55"/><circle cx="58" cy="26" r="3.5" fill="#1b7a55"/><circle cx="78" cy="33" r="4.5" fill="#1b7a55"/></svg>بكتيريا ذاتية التغذية الكيميائية</div><div class="fa">←</div><div class="fi"><svg viewBox="0 0 130 60"><g stroke="#cfd3ee" stroke-width="3"><path d="M20 40L46 22L72 40L98 22"/></g><circle cx="20" cy="40" r="10" fill="#ee5a4f"/><circle cx="46" cy="22" r="10" fill="#5fcf6e"/><circle cx="72" cy="40" r="10" fill="#fff"/><circle cx="98" cy="22" r="10" fill="#f0b968"/></svg>جزيئات عضوية</div></div>'},
+  {s:3,c:'h3',ic:'<svg class="hi" viewBox="0 0 26 26"><circle cx="11" cy="11" r="7.5" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M17 17l6.5 6.5" stroke="#fff" stroke-width="2.8" stroke-linecap="round"/></svg>',h:'الاكتشاف',b:'اكتُشفت عام <b>1977</b> في الفوهات المائية الحرارية '+en('Hydrothermal vents')+'؛ وكان يُظن أن الطاقة تصل للأعماق بسقوط البقايا فقط.'},
+  {s:4,c:'h4',ic:'<svg class="hi" viewBox="0 0 26 26"><path d="M13 2c3 5 7 8 7 13a7 7 0 0 1-14 0c0-5 4-8 7-13z" fill="#fff"/></svg>',h:'الظروف القاسية',b:'<div class="stats"><div><b>العمق</b><span>من '+num('2000')+' إلى '+num('7700 m')+'</span></div><div><b>الضغط</b>عالٍ جداً</div><div><b>الحرارة</b><span>من '+num('2')+' إلى '+num('400 °C')+'</span></div></div><div class="ex">كائنات <b>محبة للظروف القاسية</b> '+en('Extremophiles')+'</div>'}],
+ n:5,
+ note:['المصدر: كتاب الطالب ص93–94 (كبريتيد الهيدروجين، ذاتية التغذية الكيميائية، اكتشافها عام 1977 في الفوهات المائية الحرارية، العمق نحو 2000 m و7700 m، الحرارة بين 2 و400 °C، الكائنات المحبة للظروف القاسية).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم، للتوضيح فقط، ولم أسمِّ الكائنات لأن الكتاب لا يسمّيها. البطاقات ومخطط الآلية والرسوم الصغيرة من عندي.']},
+
+/* ---------- 3: tropical vs upwelling (art 8a) ---------- */
+{k:'scene',img:'a8',title:'الإنتاجية في النظم البيئية المائية',
+ lead:{q:'أي مناطق المحيط تدعم سلاسل غذائية أطول وأعداداً أكبر من المستهلكات؟',o:[['المناطق الاستوائية ذات الماء الدافئ دائماً',0,'لا: المنحدر الحراري فيها يقلل خلط المياه الغنية بالمغذّيات.'],['المناطق التي تشهد ارتفاعاً في التيارات الصاعدة الحاملة للمغذّيات',1,'صح: تزيد صافي الإنتاجية الأولية فتدعم مستهلكات أكثر.'],['أعماق المحيط المظلمة',0,'لا: لا ضوء هناك للتمثيل الضوئي.']]},
+ caps:['',
+  'قارن بين نصفي الصورة: ماء ساكن في المنطقة الاستوائية، وماء مختلط عند التيارات الصاعدة.',
+  'في المناطق الاستوائية يوفّر ارتفاع حرارة الماء منحدراً حرارياً يقلّل كثيراً اختلاط المياه العميقة الغنية بالمغذّيات مع المياه السطحية.',
+  'فتبقى المغذّيات في الأعماق، ويقلّ صافي الإنتاجية الأولية رغم وفرة الضوء.',
+  'التيارات الصاعدة (وكذلك المناطق القطبية صيفاً) تحمل المغذّيات من الأعماق إلى المنطقة الضوئية فتزدهر العوالق.',
+  'كلما زاد صافي الإنتاجية الأولية دعم النظام البيئي مستهلكات أكثر وسلاسل غذائية أطول.'],
+ chips:[
+  {s:1,x:40,y:140,pill:1,h:mk('#ff9c8a')+'ماء ساكن: منطقة استوائية'},
+  {s:1,x:655,y:128,pill:1,h:mk('#8ff0bd')+'ماء مختلط: تيار صاعد أو قطبية صيفاً'},
+  {s:2,x:36,y:396,w:340,h:mk('#ffa24a')+'المنحدر الحراري حاجز بين الدفء والبرودة',tx:300,ty:318,c:'#ffa24a'},
+  {s:3,x:36,y:482,w:340,h:mk('#ffc94d')+'مغذّيات محبوسة في الأعماق وعوالق قليلة',tx:260,ty:470,c:'#ffc94d'},
+  {s:4,x:1030,y:452,w:218,h:mk('#7fd4ff')+'التيار الصاعد يحمل المغذّيات إلى الضوء',tx:985,ty:478,c:'#7fd4ff'},
+  {s:5,x:1030,y:318,w:218,h:mk('#8ef27c')+'عوالق كثيرة وكريل وسمك وفقمة: سلسلة غذائية أطول',tx:1000,ty:290,c:'#8ef27c'}],
+ note:['المصدر: كتاب الطالب ص94 (صافي الإنتاجية الأولية، التيارات الصاعدة، المناطق الاستوائية: المنحدر الحراري يقلّل اختلاط المياه العميقة الغنية بالمغذّيات، المناطق القطبية).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم وهي تخطيطية. التسميات والتسلسل من عندي.']},
+
+/* ---------- 4: the fate of sunlight (art 9a) ---------- */
+{k:'scene',img:'a9',title:'إلى أين تذهب طاقة الشمس؟',tl:{x:740,y:22},bl:{x:740,y:76},
+ lead:{q:'كم نسبة طاقة الشمس المتاحة في المحيط التي تثبّتها المنتجات؟',o:[['نحو 50٪',0,'أقل من ذلك بكثير.'],['نحو 0.06٪ (قد تصل إلى 1٪)',1,'صح: معظم الطاقة ينعكس أو يتشتت أو لا يناسب الصبغات أو يضيع حرارة.'],['نحو 100٪',0,'لا تستطيع أي عملية استخدام كل الطاقة.']]},
+ caps:['',
+  'بعض الإشعاع لا يصل أصلاً إلى المنتجات لأنه ينعكس عن السطح إلى الفضاء.',
+  'وبعض الضوء الذي يدخل الماء يتشتت أو يمتصه الماء، وما تبقى منه يكون متاحاً للمنتجات.',
+  'ضوء بأطوال موجية لا تناسب الصبغات: يمتص الكلوروفيل الأحمر والأزرق ويعكس الأخضر، ولذلك يبدو أخضر.',
+  'والتمثيل الضوئي نفسه ليس فعالاً بشكل كامل، إذ تُفقد الطاقة حرارة خلال التفاعلات الكيميائية.',
+  'تقدّر الدراسات أن المنتجات تثبّت 0.06٪ فقط من الطاقة الشمسية المتاحة في النظم المائية، وقد يصل الرقم إلى 1٪.'],
+ chips:[
+  {s:1,x:380,y:30,w:330,h:mk('#ffe27a')+'ينعكس جزء من الضوء عن السطح',tx:513,ty:124,c:'#ffe27a'},
+  {s:2,x:36,y:470,w:340,h:mk('#7fd4ff')+'يتشتت جزء ويمتصه الماء',tx:330,ty:384,c:'#7fd4ff'},
+  {s:3,x:372,y:290,w:312,h:mk('#ff7a6b')+'الأحمر والأزرق يمتصهما الكلوروفيل',tx:893,ty:310,c:'#ff7a6b'},
+  {s:3,x:372,y:390,w:312,h:mk('#8ef27c')+'الأخضر ينعكس بعيداً',tx:1130,ty:230,c:'#8ef27c'},
+  {s:4,x:372,y:212,w:312,h:mk('#ffa24a')+'جزء يضيع حرارة',tx:975,ty:285,c:'#ffa24a'}],
+ note:['المصدر: كتاب الطالب ص95 والشكل 3-2 (الانعكاس والتشتت والامتصاص، امتصاص الكلوروفيل للأحمر والأزرق وانعكاس الأخضر، الحرارة، 0.06٪ وقد تصل إلى 1٪).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم. التسميات والتسلسل من عندي.']}
+];
+
+/* ---------- build the slides ---------- */
+var host=$('#slides'),LD=[];
+SL.forEach(function(s,i){
+ var d=document.createElement('div');d.className='sl '+(s.k==='side'?'side':'scene');
+ var h='';
+ if(s.k==='scene'){
+  h+='<img class="bg" alt="" src="'+IMG[s.img]+'"><svg class="ld" viewBox="0 0 1280 720"></svg><div class="ttl" style="'+(s.tl?'left:'+s.tl.x+'px;top:'+s.tl.y+'px':'')+'">'+s.title+'</div>';
+  if(s.col)h+='<div class="col" style="left:'+s.col.x+'px;top:'+s.col.y+'px;width:'+s.col.w+'px"></div>';
+  s.n=s.n||s.caps.length-1;
+  h+='<div class="cap" style="opacity:0"></div>';
+ }else{
+  h+='<div class="t2"><h1>'+s.h1+'</h1><p>'+s.sub+'</p></div><div class="artw"><img alt="" src="'+IMG[s.img]+'"></div><div class="cards"></div><div class="endbar" data-s="5">'+s.end+'</div>';
+ }
+ if(s.lead){h+='<div class="lead"><span class="tag">اكتشف</span><div class="q">'+s.lead.q+'</div>'+s.lead.o.map(function(o){return '<button type="button" class="o" data-ok="'+o[1]+'" data-w="'+o[2]+'">'+o[0]+'</button>'}).join('')+'<div class="fb">اختر إجابتك.</div></div>'}
+ d.innerHTML=h;host.appendChild(d);s.el=d;s.step=0;
+ if(s.k==='scene'){
+  var colEl=$('.col',d);
+  (s.chips||[]).forEach(function(c){
+   var e=document.createElement('div');e.className='chip'+(c.one?' one':'')+(c.hot?' hot':'');e.setAttribute('data-s',c.s);e.innerHTML=c.h;
+   if(c.x!=null){e.style.left=c.x+'px';e.style.top=c.y+'px';if(c.w)e.style.width=c.w+'px';d.appendChild(e)}else if(colEl){colEl.appendChild(e)}
+   c.el=e;
+  });
+  var svg=$('.ld',d),g='';
+  (s.hl||[]).forEach(function(l){g+='<g data-s="'+l.s+'" data-e="'+l.e+'"><ellipse cx="'+l.cx+'" cy="'+l.cy+'" rx="'+l.rx+'" ry="'+l.ry+'" fill="#ffd66b" style="animation:glow 2.6s ease-in-out infinite"/><ellipse cx="'+l.cx+'" cy="'+l.cy+'" rx="'+l.rx+'" ry="'+l.ry+'" fill="none" stroke="#ffe27a" stroke-width="3.5" stroke-dasharray="12 10" class="march"/></g>'});
+  svg.innerHTML=g;
+  (s.hl||[]).forEach(function(l){var e=document.createElement('div');e.className='chip hot one';e.setAttribute('data-s',l.s);e.setAttribute('data-e',l.e);e.style.left=l.lx+'px';e.style.top=(l.ly-20)+'px';e.textContent=l.label;d.appendChild(e)});
+ }else{
+  var cw=$('.cards',d);
+  s.cards.forEach(function(c){var e=document.createElement('div');e.className='c';e.setAttribute('data-s',c.s);e.innerHTML='<div class="h '+c.c+'">'+c.ic+c.h+'</div><div class="b">'+c.b+'</div>';cw.appendChild(e)});
+ }
+ if(s.lead){$$('.lead .o',d).forEach(function(b){b.onclick=function(ev){ev.stopPropagation();var ok=b.dataset.ok==='1',f=$('.lead .fb',d);b.classList.add(ok?'ok':'bad');f.textContent=b.dataset.w;f.className='fb '+(ok?'ok':'bad')}})}
+});
+
+/* leader lines, placed from the real label positions */
+function pos(el){var x=0,y=0,w=el.offsetWidth,h=el.offsetHeight;while(el&&el!==st){x+=el.offsetLeft;y+=el.offsetTop;el=el.offsetParent}return{x:x,y:y,w:w,h:h}}
+function leaders(){
+ SL.forEach(function(s){
+  if(s.k!=='scene')return;
+  var svg=$('.ld',s.el),keep=svg.innerHTML.split('<!--L-->')[0],g='';
+  s.el.style.visibility='hidden';s.el.style.opacity=1;s.el.classList.add('cur');
+  (s.chips||[]).forEach(function(c){
+   if(c.tx==null)return;var p=pos(c.el),cx=p.x+p.w/2,cy=p.y+p.h/2,dx=c.tx-cx,dy=c.ty-cy,t=Math.min((p.w/2)/(Math.abs(dx)||1e-9),(p.h/2)/(Math.abs(dy)||1e-9));
+   var sx=cx+dx*t,sy=cy+dy*t;
+   g+='<g data-s="'+c.s+'"><line x1="'+sx.toFixed(0)+'" y1="'+sy.toFixed(0)+'" x2="'+c.tx+'" y2="'+c.ty+'" stroke="rgba(255,255,255,.85)" stroke-width="2.2"/><circle cx="'+c.tx+'" cy="'+c.ty+'" r="6" fill="'+c.c+'" stroke="#fff" stroke-width="2"/></g>'});
+  svg.innerHTML=keep+'<!--L-->'+g;
+  s.el.classList.remove('cur');s.el.style.visibility='';s.el.style.opacity='';
+ });
+}
+
+/* ---------- navigation ---------- */
+var cur=0;
+function show(){
+ SL.forEach(function(s,i){s.el.classList.toggle('cur',i===cur)});
+ var s=SL[cur];
+ $$('[data-s]',s.el).forEach(function(e){var a=+e.getAttribute('data-s'),b=e.getAttribute('data-e');e.classList.toggle('on',s.step>=a&&(b==null||s.step<=+b))});
+ var lead=$('.lead',s.el);if(lead)lead.classList.toggle('gone',s.step>0);
+ if(s.k==='scene'){var cp=$('.cap',s.el);var t=s.caps[Math.min(s.step,s.caps.length-1)];cp.style.opacity=s.step?1:0;if(cp.dataset.t!==t){cp.dataset.t=t;cp.textContent=t}}
+ $('#pv').disabled=cur===0&&s.step===0;
+ $('#nx').textContent=(cur===0&&s.step===0)?'ابدأ الشرح':(cur===SL.length-1&&s.step===s.n)?'من البداية':'التالي';
+ $('#cnt').textContent=(cur+1)+' / '+SL.length;
+ $('#note').innerHTML='<b>ملاحظة المعلم</b><ul>'+s.note.map(function(n){return '<li>'+n+'</li>'}).join('')+'</ul>';
+ var bar=$('#bar');bar.style.top=(s.k==='side'?22:(s.bl?s.bl.y:78))+'px';bar.style.left=(s.bl?s.bl.x:36)+'px';
+}
+function next(){var s=SL[cur];if(s.step<s.n){s.step++}else if(cur<SL.length-1){cur++;SL[cur].step=0}else{cur=0;SL.forEach(function(x){x.step=0})}show()}
+function prev(){var s=SL[cur];if(s.step>0){s.step--}else if(cur>0){cur--;SL[cur].step=SL[cur].n}show()}
+$('#nx').onclick=function(e){e.stopPropagation();next()};
+$('#pv').onclick=function(e){e.stopPropagation();prev()};
+$('#nb').onclick=function(e){e.stopPropagation();$('#note').classList.toggle('open')};
+$('#note').onclick=function(e){e.stopPropagation();this.classList.remove('open')};
+st.addEventListener('click',function(e){if(e.target.closest('button,#note,.lead'))return;next()});
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'||e.key===' '||(e.key==='Enter'&&e.target.tagName!=='BUTTON')){e.preventDefault();next()}else if(e.key==='ArrowRight'){prev()}});
+
+function fit(){
+ var cs=getComputedStyle(document.body),aw=document.body.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=document.body.clientHeight,port=ah>aw*1.1,s;
+ if(port){s=Math.min(ah/1280,aw/720);box.style.width=(720*s)+'px';box.style.height=(1280*s)+'px';st.style.transform='translate('+(720*s)+'px,0) rotate(90deg) scale('+s+')'}
+ else{s=Math.min(aw/1280,ah/720);box.style.width=(1280*s)+'px';box.style.height=(720*s)+'px';st.style.transform='scale('+s+')'}
+}
+addEventListener('resize',fit);fit();leaders();show();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){leaders();show()});
+var m=location.hash.match(/^#(\d)-(\d)$/);if(m){cur=Math.min(+m[1],SL.length-1);SL[cur].step=Math.min(+m[2],SL[cur].n);show()}
+})();
+</script>
