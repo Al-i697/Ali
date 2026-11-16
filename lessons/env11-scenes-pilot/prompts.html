@@ -32,49 +32,26 @@ button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
 <main>
  <header style="display:flex;flex-direction:column;gap:10px">
-  <h1>ما الذي أريده من كل صورة؟</h1>
-  <p class="lead">لكل صورة من الصور الـ14 التي أرسلتها: ما أحتاجه منها بالضبط، وقائمة تحقق، ووصف جاهز تعطيه لـChatGPT مع الصورة الأصلية.</p>
+  <h1>أوامر الصور الـ14</h1>
+  <p class="lead">لكل صورة أرسلتها لي أمر واحد كامل. أرفق الصورة في ChatGPT، والصق الأمر، وأرسل. القواعد داخل كل أمر، ولا تحتاج تضيف شيئاً.</p>
  </header>
-
  <section class="card">
-  <h2>القواعد الخمس لكل الصور</h2>
+  <h2>القواعد الثابتة (موجودة داخل كل أمر)</h2>
   <ol>
-   <li><b>بلا أي نص:</b> لا حروف ولا أرقام ولا تسميات ولا علامة مائية. النص العربي الصحيح من الكتاب أضيفه أنا فوق الرسمة.</li>
-   <li><b>الرسمة وحدها:</b> بلا إطارات ولا بطاقات ولا أشرطة عناوين ولا أسهم عليها كلام. التصميم والبطاقات أبنيها أنا.</li>
-   <li><b>نفس أسلوب شريحتك الأصلية:</b> الألوان والشخصيات والإضاءة. أرفق الصورة الأصلية مع الوصف.</li>
-   <li><b>أعلى دقة تسمح بها الأداة، PNG.</b> المشاهد 16:9 (أو 3:2 إن لم تدعم) أو مربعة كما هو مكتوب. الأيقونات في لوحة، كل أيقونة معزولة بخلفية شفافة إن أمكن وإلا بيضاء نقية، وأنا أقصّها بأداتي.</li>
-   <li><b>سياق بحري علمي دقيق كما في الكتاب:</b> الحيوانات البرية في بعض شرائحك (أسد، غزال، نسر) تُستبدل بحيوانات بحرية كما في الوصف.</li>
+   <li>بلا أي نص ولا أرقام ولا تسميات ولا علامة مائية.</li>
+   <li>الرسمة وحدها: بلا إطارات ولا بطاقات ولا أشرطة عناوين، والأسهم بلا كلام.</li>
+   <li>نفس أسلوب الشريحة الأصلية وألوانها.</li>
+   <li>أعلى دقة PNG. المشاهد 16:9 أو مربعة. الأيقونات في لوحة بخلفية شفافة أو بيضاء، وكل أيقونة معزولة.</li>
+   <li>محتوى بحري علمي دقيق، وتُستبدل الحيوانات البرية بحرية.</li>
+   <li>سمِّ كل ملف برقمه (مثل 3a.png) وأرسلها لي. إذا أعطاك ChatGPT صورة واحدة والأمر فيه صورتان، اكتب له: next</li>
   </ol>
-  <p class="mine">سمِّ كل ملف برقمه (مثل 1a.png أو 7a.png) وأرسلها لي مجمّعة. إذا طلعت الصورة بنص رغم الطلب فأعد التوليد، أو أرسلها كما هي وأنا أمسح النص.</p>
  </section>
-
- <section class="card">
-  <h2>الجملتان المشتركتان</h2>
-  <p class="mine">الأزرار تضيفهما تلقائياً. «المرجع» تستخدمه عند إرفاق الصورة الأصلية.</p>
-  <h3>المرجع</h3><pre id="refT"></pre>
-  <h3>الأسلوب</h3><pre id="shT"></pre>
- </section>
-
- <section class="card">
-  <h2>طريقة العمل: صورة صورة</h2>
-  <ol>
-   <li>افتح محادثة ChatGPT واحدة لكل صورة من الـ14، وأرفق فيها صورتك الأصلية.</li>
-   <li>انسخ «الوصف مع المرجع» للملف الأول (مثل 3a) والصقه وأرسل.</li>
-   <li>إذا كان للصورة ملف ثانٍ (مثل 3b) فأكمل في نفس المحادثة بوصفه، لتبقى الألوان والأسلوب متطابقة.</li>
-   <li>إذا خرج خطأ، استخدم رسالة متابعة من الأسفل بدل البدء من جديد.</li>
-  </ol>
-  <h3>رسائل المتابعة الجاهزة</h3>
-  <div id="fus" style="display:flex;flex-direction:column;gap:10px"></div>
- </section>
-
  <div id="slides" style="display:contents"></div>
- <p class="tip">الأوصاف بالإنجليزية لأن أدوات الصور تفهمها أدق. لا تكتب أي نص عربي في الأداة.</p>
 </main>
 
 <script>
 (function(){
-var REF='I am attaching the original reference slide. Keep its exact visual style, colour palette, character design and lighting, but redraw ONLY the illustration described below, with all text, numbers, labels, watermark, frames, panels, title bars and interface elements removed. Correct anything inaccurate as described.';
-var SH='Educational science artwork for a high-school classroom, high resolution PNG at the highest quality the tool allows. Clean semi-flat vector look with soft gradients and gentle depth, harmonious colours. ABSOLUTELY NO TEXT of any kind: no letters, no numbers, no words, no labels, no captions, no logos, no watermark. No frames, borders, panels, ribbons, title bars or cards: full-bleed artwork only. Arrows only where requested, and they must contain no text.';
+var RULES='1. No text of any kind: no letters, numbers, words, labels, captions, logos or watermark.\n2. Artwork only: no frames, borders, panels, cards, ribbons, title bars or interface elements. Arrows only where I ask for them, and never with text.\n3. Keep the visual style, colour palette, character design and lighting of the attached slide.\n4. Highest resolution available, PNG. Scenes: 16:9 landscape (3:2 if 16:9 is not available) unless a square is requested. Icon sheets: transparent background if possible, otherwise plain pure white; every icon isolated, fully visible, evenly spaced, with no overlap.\n5. Scientifically accurate marine content exactly as described; replace any land animals with the marine ones listed.';
 var WIDE='Wide 16:9 landscape image (use 3:2 if 16:9 is not available). ';
 var SQ='Square 1:1 image. ';
 function sheet(n,grid,list){return 'An icon sheet of '+n+' separate isolated icons, arranged in a '+grid+' grid with generous equal spacing, each icon centred in its own cell, fully visible, no overlap, all in the same style, outline weight and lighting, on a transparent background (or plain pure white if transparency is not possible). The icons, in order: '+list+'. No text.'}
@@ -138,40 +115,25 @@ var D=[
   x:sheet(9,'3 by 3','a stylised sun; a wall calendar page with a blank grid and no numerals (one year); wavy heat lines; air bubbles of respiration; small faecal pellets; blue-green cyanobacteria filaments; a zooplankton; a fish; a lake fish')}]}
 ];
 
-document.getElementById('refT').textContent=REF;document.getElementById('shT').textContent=SH;
-var host=document.getElementById('slides'),map={};
-function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function esc(t){return t.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+function cmd(s){
+ var n=s.a.length,L=['Redraw the illustration of the attached slide image as clean, text-free artwork in the same visual style.','','FIXED RULES (follow all of them):',RULES,'','WHAT TO CREATE ('+n+(n>1?' images':' image')+'):'];
+ s.a.forEach(function(a,i){L.push((n>1?'Image '+'AB'.charAt(i)+': ':'')+a.x)});
+ if(n>1)L.push('','Create them one image per message. Start with Image A now; I will write "next" for each following image.');
+ return L.join('\n');
+}
+var host=document.getElementById('slides'),CM=[];
 D.forEach(function(s,i){
- var h='<section class="card"><div class="head"><span class="num">الصورة '+(i+1)+'</span><h2>'+s.t+'</h2></div><div class="mine">'+s.m+'</div>';
- s.a.forEach(function(a){
-  map[a.id]=a;
-  h+='<div class="asset"><div class="kind">'+a.id+' · '+a.k+'</div><ul class="chk">'+a.c.map(function(c){return '<li>'+c+'</li>'}).join('')+'</ul><pre id="p'+a.id+'">'+esc(a.x)+'</pre><div class="btns"><button type="button" class="main" data-id="'+a.id+'" data-m="ref">نسخ الوصف مع المرجع</button><button type="button" data-id="'+a.id+'" data-m="no">نسخ بدون مرجع</button><button type="button" data-id="'+a.id+'" data-m="one">الوصف وحده</button></div></div>';
- });
- host.insertAdjacentHTML('beforeend',h+'</section>');
+ CM[i]=cmd(s);
+ var out=s.a.map(function(a){return a.id+' · '+a.k}).join('  +  ');
+ host.insertAdjacentHTML('beforeend','<section class="card"><div class="head"><span class="num">الصورة '+(i+1)+'</span><h2>'+s.t+'</h2></div><div class="mine">ما سيطلع لك: <b>'+out+'</b></div><div class="mine">ما أفعله بها: '+s.m+'</div><pre id="c'+i+'">'+esc(CM[i])+'</pre><div class="btns"><button type="button" class="main" data-c="'+i+'">نسخ الأمر</button></div></section>');
 });
-var FU=[
- ['ظهر نص أو أرقام في الصورة','Regenerate this exact image but remove every letter, number, label and watermark. Keep everything else identical.'],
- ['أريد الأيقونات بخلفية شفافة','Same icons and same layout, but on a fully transparent background (PNG with alpha channel), with no shadow or ground under the icons.'],
- ['ظهر إطار أو حواف أو بطاقة','Redraw the same image so the artwork fills the whole frame edge to edge, with no border, margin, frame, panel or title bar.'],
- ['أيقونة واحدة ضعيفة أو خاطئة','Redraw only icon number N (counting from the top-left, row by row) larger, alone and centred on a transparent background, in exactly the same style as the sheet.'],
- ['اختلف الأسلوب عن الصورة السابقة','Match the style of the image you generated before in this chat: same colours, outline weight, shading and lighting.']
-];
-var fh='';FU.forEach(function(f,i){fh+='<div class="asset" style="border:0;padding:0"><div class="kind">'+f[0]+'</div><pre id="fu'+i+'">'+esc(f[1])+'</pre><div class="btns"><button type="button" data-fu="'+i+'">نسخ</button></div></div>'});
-document.getElementById('fus').innerHTML=fh;
+function pick(el){var r=document.createRange();r.selectNodeContents(el);var g=getSelection();g.removeAllRanges();g.addRange(r)}
 document.addEventListener('click',function(e){
- var b=e.target.closest('button[data-fu]');if(!b)return;
- var i=+b.dataset.fu,old=b.textContent,el=document.getElementById('fu'+i);
+ var b=e.target.closest('button[data-c]');if(!b)return;
+ var i=+b.dataset.c,old=b.textContent,el=document.getElementById('c'+i);
  function ok(){b.textContent='تم النسخ';setTimeout(function(){b.textContent=old},1600)}
- try{navigator.clipboard.writeText(FU[i][1]).then(ok,function(){pick(el);b.textContent='حدّد النص وانسخه'})}catch(_){pick(el);b.textContent='حدّد النص وانسخه'}
-});
-function pick(el){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
-document.addEventListener('click',function(e){
- var b=e.target.closest('button[data-id]');if(!b)return;
- var a=map[b.dataset.id],m=b.dataset.m,text=a.x;
- if(m==='ref')text=REF+'\n\n'+SH+'\n\n'+a.x;else if(m==='no')text=SH+'\n\n'+a.x;
- var old=b.textContent,el=document.getElementById('p'+a.id);
- function ok(){b.textContent='تم النسخ';setTimeout(function(){b.textContent=old},1600)}
- try{navigator.clipboard.writeText(text).then(ok,function(){pick(el);b.textContent='حدّد النص وانسخه'})}catch(_){pick(el);b.textContent='حدّد النص وانسخه'}
+ try{navigator.clipboard.writeText(CM[i]).then(ok,function(){pick(el);b.textContent='حدّد النص وانسخه'})}catch(_){pick(el);b.textContent='حدّد النص وانسخه'}
 });
 })();
 </script>
