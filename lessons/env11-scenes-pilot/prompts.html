@@ -1,0 +1,111 @@
+<title>قائمة أوصاف المشاهد</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: a single readable column of cards, one per scene; each card holds a checklist and a prompt that copies in one tap. */
+:root{--bg:#f3f7f9;--card:#ffffff;--ink:#0e2230;--mute:#4c6577;--line:#d5e2ea;--accent:#0b7f86;--accent-ink:#ffffff;--code:#eaf3f7;--gold:#b86e00;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a1620;--card:#102431;--ink:#e6f1f7;--mute:#93b0c2;--line:#244154;--accent:#43c4cb;--accent-ink:#06222a;--code:#0a1b26;--gold:#f0b04a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a1620;--card:#102431;--ink:#e6f1f7;--mute:#93b0c2;--line:#244154;--accent:#43c4cb;--accent-ink:#06222a;--code:#0a1b26;--gold:#f0b04a;color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Cairo,"Segoe UI",Tahoma,sans-serif;line-height:1.65;font-size:17px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:860px;margin:0 auto;padding-block:28px 56px;display:flex;flex-direction:column;gap:18px}
+h1{font-size:30px;line-height:1.3;margin:0;text-wrap:balance}
+h2{font-size:21px;line-height:1.4;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--mute);font-size:18px}
+.steps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.num{font-weight:800;color:var(--accent);font-size:15px;border:1.5px solid var(--accent);border-radius:999px;padding:0 10px;white-space:nowrap}
+.serve{color:var(--mute);font-size:15px}
+.serve b{color:var(--gold);font-weight:700}
+ul.chk{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:2px;font-size:16px}
+.pr{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pl{font-size:15px;font-weight:700;color:var(--mute)}
+pre{margin:0;direction:ltr;text-align:left;white-space:pre-wrap;word-break:break-word;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink)}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;font-size:15px;font-weight:700;border-radius:10px;padding:8px 16px;cursor:pointer;border:1.5px solid var(--accent);background:transparent;color:var(--accent)}
+button.main{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.tip{font-size:16px;color:var(--mute);border-top:1px solid var(--line);padding-top:12px}
+.tip b{color:var(--ink)}
+@media (max-width:520px){h1{font-size:25px}.card{padding:14px}}
+</style>
+
+<main id="app">
+ <header style="display:flex;flex-direction:column;gap:10px">
+  <h1>أوصاف توليد مشاهد الدرس 3-2</h1>
+  <p class="lead">لكل مفهوم وصف جاهز تلصقه في أداة توليد الصور. الرسمة تطلع بلا أي نص، وأنا أضيف النص العربي الصحيح من الكتاب فوقها، ويظهر نقطة نقطة.</p>
+  <ol class="steps">
+   <li>انسخ «الوصف الكامل» (الأسلوب المشترك + وصف المشهد) والصقه في الأداة.</li>
+   <li>ولّد 2 إلى 3 نسخ واختر الأوضح. بعد أول مشهد، أرفقه كمرجع للأسلوب مع بقية الأوصاف ليتطابق الشكل.</li>
+   <li>راجع قائمة «تأكد من» تحت كل مشهد، ثم أرسل الصور لي مرقّمة (مشهد 1، مشهد 2…) بصيغة PNG.</li>
+   <li>إذا ظهر نص أو أرقام داخل الصورة فأعد التوليد، أو أرسلها كما هي وأنا أمسح النص.</li>
+  </ol>
+ </header>
+ <section class="card" id="shared">
+  <div class="head"><h2>الأسلوب المشترك</h2><span class="serve">يُلصق قبل وصف كل مشهد (الأزرار تضيفه تلقائياً)</span></div>
+  <pre id="sharedText"></pre>
+  <div class="btns"><button type="button" class="main" data-copy="shared">نسخ الأسلوب</button></div>
+ </section>
+ <div id="scenes" style="display:contents"></div>
+ <p class="tip"><b>مهم:</b> أوصاف المشاهد مكتوبة بالإنجليزية لأن أدوات الصور تفهمها أدق. التسميات والشرح بالعربي تبقى عندي في الدرس، ولا تحتاج تكتب أي نص في الأداة.</p>
+</main>
+
+<script>
+(function(){
+var SHARED='Educational science illustration for a high-school classroom, wide 16:9 landscape, high resolution (2560x1440). Clean semi-flat vector look with soft gradients and gentle depth, harmonious palette of turquoise, deep blue, warm orange and gold accents, and fresh green for plants and plankton. Smooth rounded shapes, minimal outlines, soft glowing light. Uncluttered composition with large, clear, easily recognisable subjects. ABSOLUTELY NO TEXT of any kind: no letters, no numbers, no words, no labels, no captions, no logos, no watermark. Arrows only where requested, and arrows must contain no text.';
+
+var S=[
+{t:'المنحدر الحراري والتوازن',s:'factors و photic',
+ chk:['ثلاث طبقات واضحة: سطح مضيء، طبقة انتقال رقيقة، مياه عميقة مظلمة','عوالق خضراء في الطبقة العليا فقط','نقاط ذهبية ووردية (مغذّيات) في الأسفل فقط، تحت طبقة الانتقال','لا أسهم ولا موازين ولا حيوانات كبيرة (الميزان أرسمه أنا)'],
+ p:[{l:'وصف المشهد',x:'Side cross-section of the open ocean from the sunlit surface down to the seabed. A bright sun in the upper-right corner with soft light rays slanting into the water; the sky takes only the top fifth of the image. The water column has three clearly different bands. (1) A bright turquoise, warm, sunlit surface layer full of tiny glowing green phytoplankton cells. (2) A thin shimmering transition layer in the middle (the thermocline), drawn as smooth horizontal bands that blend from warm amber at the top to cold blue at the bottom, slightly translucent like an invisible barrier. (3) Deep, cold, very dark navy-blue water with many small glowing golden and pink nutrient particles drifting, above a dark seabed with a few rocks. Nutrient particles must stay below the transition layer, and plankton must stay above it. No animals larger than plankton. Keep the right 25 percent of the image calm and low-detail so labels can be added later.'}]},
+{t:'التمثيل الكيميائي: الفوهات المائية الحرارية',s:'chemo و cmp',
+ chk:['ظلام تام بلا أشعة شمس ولا نباتات','مدخنة صخرية بتوهج برتقالي ودخان معادن داكن','ديدان أنبوبية وسرطانات وأسماك شاحبة حول القاعدة','لقطة مكبّرة دائرية لبكتيريا عصوية صغيرة'],
+ p:[{l:'وصف المشهد',x:'A deep-ocean hydrothermal vent in total darkness. A dark rocky chimney on the seafloor releases a glowing orange-red shimmer of hot water and a dark mineral plume rising upward. Around its base live pale white tube worms with red tips, pale crabs, mussels and a few ghost-white fish. A thin, softly glowing yellow-green film of bacteria covers the rocks closest to the vent. The background is deep black-blue with no sunlight at all and only a dim warm glow from the vent. In the bottom-left corner add a small circular magnified inset showing a few rod-shaped bacteria. Keep the left 25 percent of the frame calm and low-detail for labels.'}]},
+{t:'ازدهار الطحالب والإثراء الغذائي',s:'abloom',
+ chk:['أربع لوحات منفصلة متساوية، كل واحدة مشهد كامل بذاتها','1: طحالب خضراء كثيفة على السطح وسمكة بخياشيم مسدودة بخيوط خضراء','2: طحالب بنية تغرق وبكتيريا في دائرة مكبّرة','3: قاع معتم وأسماك ومحار ميتة (نقص الأكسجين)','4: دلفين وبقرة بحر ساكنان قرب طحالب سامة'],
+ p:[{l:'وصف المشهد',x:'A set of four separate image panels of equal size in a 2 by 2 grid, with thin empty gaps between them, all in the same coastal-sea style. Each panel must look good and make sense on its own because it will be cropped separately. Panel 1: the sunlit sea surface covered by a dense bright-green algal bloom, with a fish near the surface whose gills are clogged by green strands. Panel 2: dying algae turning brown and sinking, with a circular magnified inset of rod-shaped bacteria feeding on them. Panel 3: a dim dark seabed with dead fish and clams lying still, a murky low-oxygen feeling. Panel 4: a dolphin and a sea cow (dugong) floating motionless near a dark red-green toxic bloom, shown gently and without blood. No text and no arrows inside the panels.'}]},
+{t:'أين تذهب طاقة الشمس؟',s:'sun',
+ chk:['أشعة تنعكس عن السطح إلى السماء','أشعة تتشتت وأخرى يمتصها الماء','خلية عوالق مكبّرة تمتص الأزرق والأحمر وتعكس الأخضر','خطوط حرارة متموجة تصعد من الخلية'],
+ p:[{l:'وصف المشهد',x:'Sunlight reaching the sea, shown in two halves. Left half: the sun at the top and its rays hitting the ocean surface, where some rays bounce off the surface back into the sky, some scatter into many small rays inside the water, and some fade as the water absorbs them. Right half: a large circular magnified view of one green phytoplankton cell with visible chloroplasts, where red and blue light beams enter and are absorbed, while green light bounces away. Small wavy heat lines rise from the cell. Light beams are soft coloured glows, not arrows. Keep a calm band at the top for a title and labels.'}]},
+{t:'أين تذهب طاقة الغذاء؟ (C = P + R + F + U)',s:'sec و cpruf',
+ chk:['سمكة مستهلكة في الوسط تأكل سمكة أصغر','نمو الجسم (P): السمكة أكبر قليلاً وعضلاتها تلمع','تنفس (R): فقاعات من الخياشيم وموجات حرارة','براز (F): كرات صغيرة بنية تهبط','بول وفضلات (U): سحابة رقيقة شاحبة قرب الخياشيم'],
+ p:[{l:'وصف المشهد',x:'A clear diagram-like scene about what happens to the food an animal eats. In the centre, a fish eating a smaller fish. Around it, four small separate vignettes of equal size with empty space between them: growth, shown as the fish with a slightly larger body and softly glowing muscle; respiration, shown as air bubbles from the gills and faint heat waves; faeces, shown as small brown pellets sinking from the tail; and urine, shown as a faint pale-yellow dissolved cloud released near the gills. Calm blue water background, no seabed detail, space between the vignettes where arrows and labels can be added later.'}]},
+{t:'الافتراس: نجم البحر وغابة الكِلْب',s:'pred',
+ chk:['نصفان بنفس الموقع وزاوية الكاميرا','يسار: نجم بحر يأكل بلح البحر وغابة كِلْب كثيفة وأسماك','يمين: بلح بحر وقنافذ بحر بأعداد كبيرة وغابة كِلْب مأكولة وقاع عارٍ','فاصل رأسي ناعم بين النصفين'],
+ p:[{l:'وصف المشهد',x:'A split composition, left and right halves with the same location and the same camera angle, separated by a soft vertical divider. Left half, with the predator present: a rocky shore with a sea star feeding on a few mussels, a small balanced number of mussels and sea urchins, a lush tall brown kelp forest with several fish swimming through it. Right half, with the predator missing: no sea stars, the rocks covered by huge crowds of mussels and many spiky sea urchins, the kelp forest mostly eaten down to short stumps, a bare dull seabed and very few fish. Bright sunlit water on both sides.'}]},
+{t:'المحلّلات وإعادة التدوير',s:'zoo',
+ chk:['سمكة ميتة على القاع','دائرتان مكبّرتان: بكتيريا عصوية وفطريات خيطية تفكّك الجسم','جسيمات ذهبية ووردية تصعد نحو حشائش البحر والعوالق','تكوين دائري يوحي بحلقة مغلقة'],
+ p:[{l:'وصف المشهد',x:'A circular nutrient-recycling scene on a shallow seabed. In the lower right, a dead fish lies on the sand. Next to it, two round magnified insets: one shows rod-shaped bacteria and the other shows thread-like fungi, both breaking the fish down. From the remains, small glowing golden and pink nutrient particles rise toward seagrass and green phytoplankton in the sunlit water above, and a small live fish feeds on the plants at the right edge, so the composition reads as a closed loop going around: dead fish, decomposers, nutrients, producers, consumer. Sunlight comes from the top left. Leave calm space inside the loop for labels.'}]},
+{t:'الأهرام الثلاثة: خلفية وأيقونات',s:'pnum و pbio و pene و bloom',
+ chk:['الخلفية هادئة منخفضة التباين ولا تحتوي حيوانات واضحة','لوحة الأيقونات: كل أيقونة معزولة على خلفية بيضاء نقية بلا تداخل','الأيقونات بنفس الأسلوب واتجاه الإضاءة'],
+ p:[{l:'الخلفية',x:'A wide soft background of a sunlit shallow sea with a few kelp fronds and distant blurred fish silhouettes, low contrast and gently out of focus, with a calm lighter area in the middle where charts will be placed. No clear animals in the foreground.'},
+    {l:'لوحة أيقونات 1',x:'An icon sheet of marine organisms, each drawn as a separate isolated icon on a plain pure-white background, neatly spaced in a 5 by 4 grid with generous margins, no overlap, every icon fully visible and in the same style and lighting: diatom, dinoflagellate cluster, copepod, krill, sardine-like small fish, tuna, large marlin, shark, seal, penguin, sea otter, sea urchin, sea star, mussel, crab, kelp frond, seagrass, sea cow (dugong), jellyfish, squid. No text.'}]},
+{t:'شبكة القارة المتجمدة الجنوبية',s:'antarctic',
+ chk:['خلفية: جليد عائم ومياه زرقاء داكنة بمقطع نصفه فوق الماء ونصفه تحته','لوحة أيقونات: 15 كائناً بالضبط من الشبكة، كلٌّ معزول على الأبيض'],
+ p:[{l:'الخلفية',x:'A low-contrast cross-section of the Antarctic sea: pack ice and a pale sky in the upper half, deep dark-blue open water below, with the underside of the ice glowing faintly turquoise. No animals. Keep the whole image calm so a diagram can be placed on top.'},
+    {l:'لوحة أيقونات 2',x:'An icon sheet of Antarctic marine organisms, each drawn as a separate isolated icon on a plain pure-white background, neatly spaced in a 5 by 3 grid with generous margins, no overlap, same style and lighting: leopard seal, killer whale (orca), seabirds, Adelie penguin, seal, minke whale, colossal squid, lanternfish, squid, krill, barrel-shaped salps, a seabed animal group (sea star and sea cucumber), ice algae on the underside of ice, phytoplankton cells, and a clump of organic debris with bacteria. No text.'}]}
+];
+
+var host=document.getElementById('scenes'),sh=document.getElementById('sharedText');
+sh.textContent=SHARED;
+function esc(s){return s.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})}
+S.forEach(function(sc,i){
+ var h='<section class="card"><div class="head"><span class="num">مشهد '+(i+1)+'</span><h2>'+sc.t+'</h2></div><div class="serve">يخدم شريحة: <b>'+sc.s+'</b></div><div class="pl">تأكد من:</div><ul class="chk">'+sc.chk.map(function(c){return '<li>'+c+'</li>'}).join('')+'</ul>';
+ sc.p.forEach(function(p,j){
+  h+='<div class="pr"><div class="pl">'+p.l+'</div><pre id="p'+i+'_'+j+'">'+esc(p.x)+'</pre><div class="btns"><button type="button" class="main" data-copy="full" data-i="'+i+'" data-j="'+j+'">نسخ الوصف الكامل</button><button type="button" data-copy="one" data-i="'+i+'" data-j="'+j+'">نسخ الوصف وحده</button></div></div>';
+ });
+ host.insertAdjacentHTML('beforeend',h+'</section>');
+});
+function pick(el){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button[data-copy]');if(!b)return;
+ var k=b.dataset.copy,text,el;
+ if(k==='shared'){text=SHARED;el=sh}
+ else{var p=S[+b.dataset.i].p[+b.dataset.j];text=p.x;el=document.getElementById('p'+b.dataset.i+'_'+b.dataset.j);if(k==='full')text=SHARED+'\n\n'+p.x}
+ var old=b.textContent;
+ function ok(){b.textContent='تم النسخ';setTimeout(function(){b.textContent=old},1600)}
+ try{navigator.clipboard.writeText(text).then(ok,function(){pick(el);b.textContent='حدّد النص وانسخه'})}catch(_){pick(el);b.textContent='حدّد النص وانسخه'}
+});
+})();
+</script>

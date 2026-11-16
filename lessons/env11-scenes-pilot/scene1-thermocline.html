@@ -1,0 +1,352 @@
+<title>مشهد المنحدر الحراري</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one 1280x720 lesson stage, scaled to fit (turned on its side on a portrait phone). The scene is drawn in SVG; every label is real text that appears click by click. */
+:root{--page:#dbe7f1;--ink:#0a1f3d;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--page:#050d1c;--ink:#e8f1fb;color-scheme:dark}}
+:root[data-theme="dark"]{--page:#050d1c;--ink:#e8f1fb;color-scheme:dark}
+html,body{height:100%}
+body{margin:0;box-sizing:border-box;background:var(--page);color:var(--ink);font-family:Cairo,"Segoe UI",Tahoma,"DejaVu Sans",sans-serif;display:grid;place-items:center;overflow:hidden;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));touch-action:manipulation}
+#box{position:relative;flex:none}
+#st{position:absolute;left:0;top:0;width:1280px;height:720px;transform-origin:0 0;direction:rtl;overflow:hidden;border-radius:18px;background:#06142e;user-select:none;-webkit-user-select:none;color:#fff;font-weight:600}
+#sc{position:absolute;left:0;top:0;width:1280px;height:720px;display:block}
+#sc text{font-family:Cairo,"Segoe UI","DejaVu Sans",sans-serif}
+[data-s]{opacity:0;transition:opacity .7s ease,transform .7s ease;pointer-events:none}
+[data-s].on{opacity:1}
+
+/* motion of the scene */
+@keyframes bob{0%,100%{transform:translate(0,0)}50%{transform:translate(5px,-7px)}}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(-4px,5px)}}
+@keyframes rise{0%{opacity:0;transform:translateY(0)}14%{opacity:1}80%{opacity:1;transform:translateY(var(--r))}100%{opacity:0;transform:translateY(var(--r))}}
+@keyframes waveA{to{transform:translateX(-80px)}}
+@keyframes waveB{from{transform:translateX(-80px)}to{transform:translateX(0)}}
+@keyframes march{to{stroke-dashoffset:-36}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes ray{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes swimL{0%{opacity:0;transform:translateX(90px)}8%{opacity:1}92%{opacity:1}100%{opacity:0;transform:translateX(-420px)}}
+@keyframes pulse{0%,100%{opacity:.22}50%{opacity:.42}}
+@keyframes swing{0%{transform:rotate(-11deg)}22%{transform:rotate(7deg)}42%{transform:rotate(-4deg)}62%{transform:rotate(2deg)}80%{transform:rotate(-.8deg)}100%{transform:rotate(0)}}
+@keyframes unswing{0%{transform:rotate(11deg)}22%{transform:rotate(-7deg)}42%{transform:rotate(4deg)}62%{transform:rotate(-2deg)}80%{transform:rotate(.8deg)}100%{transform:rotate(0)}}
+.bob{animation:bob 7s ease-in-out infinite}
+.drift{animation:drift 8s ease-in-out infinite}
+.rise{--r:var(--rb);animation:rise 6.5s cubic-bezier(.25,.6,.35,1) infinite}
+#st.mixed .rise{--r:var(--rm)}
+.wa{animation:waveA 4s linear infinite}
+.wb{animation:waveB 6s linear infinite}
+.march{animation:march 1.4s linear infinite}
+.spin{animation:spin 90s linear infinite}
+.rays .r{animation:ray 6s ease-in-out infinite}
+.sway{animation:sway 6s ease-in-out infinite}
+.fish{animation:swimL 26s linear infinite}
+.glow{animation:pulse 2.6s ease-in-out infinite}
+#scale.go .beam{animation:swing 2.8s ease-out both}
+#scale.go .pl{animation:unswing 2.8s ease-out both}
+#st .mixonly{opacity:0;transition:opacity 1.2s ease}
+#st.mixed .mixonly{opacity:1}
+#st .stillonly{transition:opacity .8s}
+#st.mixed .stillonly{opacity:0}
+#st.mixed #therm{opacity:.3}
+@media (prefers-reduced-motion:reduce){.bob,.drift,.rise,.wa,.wb,.march,.spin,.rays .r,.sway,.fish,.glow{animation:none}}
+
+/* labels on the scene */
+#chips{position:absolute;left:920px;top:156px;width:330px;display:flex;flex-direction:column;gap:7px}
+.chip{position:relative;box-sizing:border-box;padding:9px 15px 11px;border-radius:14px;background:rgba(5,19,44,.88);border:1px solid rgba(255,255,255,.18);font-size:22px;line-height:1.35;font-weight:800;transform:translateX(22px)}
+.chip.on{transform:none}
+.chip.one{padding:8px 15px 9px}
+.chip small.in{display:inline;margin:0 10px 0 0;font-size:17px}
+.chip small{display:block;font-weight:600;font-size:16.5px;line-height:1.4;color:#c6e6f6;margin-top:1px}
+.en{direction:ltr;unicode-bidi:isolate;display:inline-block;color:#7fe6f5;font-weight:700;font-size:17px;margin-inline-start:6px}
+.mk{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:8px;vertical-align:1px}
+
+/* lead-in question */
+#lead{position:absolute;left:250px;top:170px;width:780px;box-sizing:border-box;padding:24px 30px 22px;border-radius:24px;background:rgba(6,22,50,.92);border:1px solid rgba(255,255,255,.22);transition:opacity .6s,transform .6s}
+#lead.gone{opacity:0;transform:scale(.96);pointer-events:none}
+#lead .tag{display:inline-block;font-size:17px;font-weight:800;color:#2a1c00;background:#ffd66b;border-radius:999px;padding:2px 14px}
+#lead .q{font-size:31px;font-weight:800;line-height:1.4;margin:10px 0 14px}
+#lead .o{display:block;width:100%;text-align:right;font:inherit;font-size:24px;font-weight:700;color:#fff;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.22);border-radius:14px;padding:11px 16px;margin-bottom:10px;cursor:pointer}
+#lead .o:hover{background:rgba(255,255,255,.18)}
+#lead .o.ok{background:#1f8f5a;border-color:#6fe0a3}
+#lead .o.bad{background:#a8463a;border-color:#ff9c8a}
+#fb{min-height:36px;font-size:22px;font-weight:700;line-height:1.4;color:#d6ecf7}
+#fb.ok{color:#8ff0bd}#fb.bad{color:#ffb4a6}
+
+/* caption bar and controls */
+#bar{position:absolute;left:40px;right:40px;bottom:14px;height:80px;box-sizing:border-box;border-radius:20px;background:rgba(4,14,36,.88);border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;gap:18px;padding:0 22px}
+#cap{flex:1;font-size:22px;line-height:1.45;font-weight:700;transition:opacity .35s}
+#cap.sw{opacity:0}
+#dots{display:flex;gap:7px;direction:ltr}
+#dots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.26);transition:background .3s,transform .3s}
+#dots i.on{background:#ffd66b;transform:scale(1.25)}
+.nav{display:flex;gap:10px}
+.nav button,#nb{font:inherit;font-size:19px;font-weight:800;border:0;border-radius:14px;height:50px;padding:0 18px;cursor:pointer}
+#pv{background:rgba(255,255,255,.14);color:#fff}
+#nx{background:#ffd66b;color:#2a1c00}
+#nb{background:transparent;color:#b9d9ec;border:2px solid rgba(255,255,255,.25);font-size:17px;padding:0 14px;height:44px}
+.nav button:disabled{opacity:.35;cursor:default}
+button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+/* the comparison of the last step */
+#tg{position:absolute;left:150px;top:16px;display:flex;gap:10px;transition:opacity .6s}
+#tg button{font:inherit;font-size:20px;font-weight:800;border:0;border-radius:999px;padding:9px 22px;cursor:pointer;background:rgba(255,255,255,.88);color:#10304f;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#tg button.on{background:#ffd66b;color:#2a1c00;box-shadow:0 0 0 3px rgba(255,255,255,.9)}
+#ind{position:absolute;left:150px;top:72px;font-size:19px;font-weight:800;background:rgba(5,19,44,.82);border-radius:999px;padding:6px 18px 7px;transition:opacity .6s}
+#ind i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-inline-end:8px;vertical-align:-1px;background:#ff9c8a}
+#st.mixed #ind i{background:#8ff0bd}
+
+/* teacher's note */
+#note{position:absolute;left:40px;bottom:106px;width:760px;box-sizing:border-box;padding:16px 22px;border-radius:18px;background:rgba(4,14,36,.95);border:1px solid rgba(255,255,255,.25);font-size:18px;line-height:1.55;font-weight:600;display:none}
+#note.open{display:block}
+#note b{color:#ffd66b}
+#note ul{margin:6px 0 0;padding-inline-start:20px}
+</style>
+
+<div id="box"><div id="st" class="s0 still">
+<svg id="sc" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="مقطع في المحيط: المنطقة الضوئية والمنحدر الحراري والمياه العميقة">
+<defs>
+ <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0f2"/><stop offset=".7" stop-color="#d6efff"/><stop offset="1" stop-color="#fff0c4"/></linearGradient>
+ <radialGradient id="gSun"><stop offset="0" stop-color="#fffde6"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#ffb23e"/></radialGradient>
+ <radialGradient id="gGlow" cx="1130" cy="66" r="300" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff0a8" stop-opacity=".85"/><stop offset="1" stop-color="#fff0a8" stop-opacity="0"/></radialGradient>
+ <linearGradient id="gWater" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="620">
+  <stop offset="0" stop-color="#7aeaf0"/><stop offset=".33" stop-color="#2fb1d3"/><stop offset=".38" stop-color="#2399c5"/><stop offset=".5" stop-color="#1b7ab5"/><stop offset=".6" stop-color="#164c92"/><stop offset=".76" stop-color="#0b2d68"/><stop offset="1" stop-color="#040e2b"/></linearGradient>
+ <linearGradient id="gTherm" gradientUnits="userSpaceOnUse" x1="0" y1="290" x2="0" y2="446"><stop offset="0" stop-color="#ffc76a" stop-opacity="0"/><stop offset=".2" stop-color="#ffc76a" stop-opacity=".34"/><stop offset=".48" stop-color="#6fd9c0" stop-opacity=".24"/><stop offset=".82" stop-color="#3a6fe0" stop-opacity=".4"/><stop offset="1" stop-color="#3a6fe0" stop-opacity="0"/></linearGradient>
+ <linearGradient id="gTemp" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="620"><stop offset="0" stop-color="#ff8a4c"/><stop offset=".3" stop-color="#ffc15a"/><stop offset=".5" stop-color="#58c9c6"/><stop offset=".72" stop-color="#2b7fd1"/><stop offset="1" stop-color="#2a3fa6"/></linearGradient>
+ <linearGradient id="gRay" gradientUnits="userSpaceOnUse" x1="0" y1="150" x2="0" y2="330"><stop offset="0" stop-color="#fff" stop-opacity=".66"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+ <linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe27a"/><stop offset="1" stop-color="#ffb23e"/></linearGradient>
+ <linearGradient id="gSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#26325f"/><stop offset="1" stop-color="#0a1230"/></linearGradient>
+ <filter id="fb2" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3"/></filter>
+ <filter id="fb5" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="5"/></filter>
+ <clipPath id="cPh"><rect x="120" y="150" width="1160" height="172"/></clipPath>
+ <clipPath id="cWat"><rect x="0" y="150" width="1280" height="480"/></clipPath>
+ <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#fff"/></marker>
+</defs>
+
+<!-- sky and sun -->
+<rect width="1280" height="152" fill="url(#gSky)"/>
+<circle cx="1130" cy="66" r="300" fill="url(#gGlow)"/>
+<g fill="#fff" opacity=".85" filter="url(#fb2)"><ellipse cx="560" cy="64" rx="74" ry="15"/><ellipse cx="612" cy="52" rx="46" ry="15"/><ellipse cx="520" cy="56" rx="38" ry="11"/><ellipse cx="860" cy="92" rx="62" ry="12"/><ellipse cx="900" cy="82" rx="38" ry="12"/></g>
+<g transform="translate(1130 66)"><g class="spin" id="sunrays"></g><circle r="34" fill="url(#gSun)"/></g>
+
+<!-- water -->
+<rect y="150" width="1280" height="480" fill="url(#gWater)"/>
+<g clip-path="url(#cPh)"><g class="rays" id="rays"></g></g>
+
+<!-- thermocline band -->
+<g id="therm" data-s="2" style="transition:opacity 1.2s">
+ <rect x="0" y="290" width="1280" height="156" fill="url(#gTherm)"/>
+ <g id="shimmer" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="2" stroke-dasharray="18 18"></g>
+</g>
+
+<!-- life of the photic zone, nutrients of the deep, fauna of the mixed water -->
+<g id="planktonG" data-s="1"></g>
+<g id="mixedPl" class="mixonly"></g>
+<g id="nutG" data-s="3"></g>
+<g id="riseG" data-s="3"></g>
+<g class="fauna mixonly" id="fauna"></g>
+
+<!-- the highest productivity zone (step 4) -->
+<g id="opt" data-s="4" data-e="4">
+ <rect x="146" y="282" width="764" height="74" rx="37" fill="url(#gGold)" class="glow"/>
+ <rect x="146" y="282" width="764" height="74" rx="37" fill="none" stroke="#ffe27a" stroke-width="3.5" stroke-dasharray="12 10" class="march"/>
+ <g transform="translate(180 319)"><rect x="-8" y="-18" width="168" height="36" rx="18" fill="#ffd66b"/><text x="76" y="1" fill="#2a1c00" font-size="22" font-weight="800" text-anchor="middle" dominant-baseline="central">أعلى إنتاجية</text></g>
+</g>
+
+<!-- the barrier -->
+<g id="barrier" data-s="3" class="stillonly">
+ <line x1="150" y1="434" x2="905" y2="434" stroke="#ff7a6b" stroke-width="3.5" stroke-dasharray="14 10" class="march"/>
+ <g transform="translate(700 434)"><circle r="19" fill="#ff5f55" stroke="#fff" stroke-width="3"/><path d="M0 8V-9M-7 -2L0 -10L7 -2" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M-13 13L13 -13" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/></g>
+ <g transform="translate(700 468)"><rect x="-44" y="-15" width="88" height="30" rx="15" fill="#ff5f55"/><text y="1" fill="#fff" font-size="19" font-weight="800" text-anchor="middle" dominant-baseline="central">حاجز</text></g>
+</g>
+
+<!-- surface waves -->
+<g clip-path="url(#cWat)">
+ <g class="wb"><path id="wvB" fill="none" stroke="rgba(255,255,255,.38)" stroke-width="2.5"/></g>
+ <g class="wa"><path id="wvA" fill="none" stroke="rgba(255,255,255,.78)" stroke-width="3"/></g>
+</g>
+
+<!-- seabed -->
+<path d="M0 640 C120 612 220 632 330 620 S560 634 700 618 S940 630 1100 614 S1230 628 1280 620 L1280 720 L0 720Z" fill="url(#gSea)"/>
+<path d="M0 668 C140 646 260 664 400 652 S700 668 860 650 S1160 664 1280 654 L1280 720 L0 720Z" fill="#070c25" opacity=".8"/>
+<g fill="#10193d"><path d="M205 626 q22 -26 52 -6 q18 10 14 22 h-70z"/><path d="M1010 622 q30 -30 66 -4 q16 12 8 26 h-84z"/><path d="M600 632 q18 -18 40 -4 q12 8 8 18 h-52z"/></g>
+<g transform="translate(168 640)"><g class="sway"><path d="M0 0 q-10 -34 4 -60 q10 -22 -2 -48" stroke="#1f6f78" stroke-width="9" fill="none" stroke-linecap="round" opacity=".8"/><path d="M12 2 q10 -30 -2 -52" stroke="#2a8a84" stroke-width="7" fill="none" stroke-linecap="round" opacity=".7"/></g></g>
+<g transform="translate(1062 640)"><g class="sway" style="animation-delay:-2s"><path d="M0 0 q10 -30 -4 -56 q-9 -20 3 -44" stroke="#1f6f78" stroke-width="9" fill="none" stroke-linecap="round" opacity=".8"/></g></g>
+
+<!-- depth and temperature scales -->
+<g id="depth" data-s="1">
+ <text x="84" y="124" fill="#0d3b66" font-size="16" font-weight="700" text-anchor="end" direction="rtl">العمق</text>
+ <g stroke="rgba(255,255,255,.75)" stroke-width="2"><line x1="88" y1="150" x2="120" y2="150"/><line x1="88" y1="320" x2="120" y2="320"/><line x1="88" y1="430" x2="120" y2="430"/><line x1="88" y1="620" x2="120" y2="620"/></g>
+ <g fill="#fff" font-size="17" font-weight="700" text-anchor="end" style="direction:ltr"><text x="82" y="156">0</text><text x="82" y="326">200 m</text><text x="82" y="436">1000 m</text><text x="82" y="602">5000 m</text></g>
+ <text x="140" y="560" fill="rgba(255,255,255,.7)" font-size="14" font-weight="600" text-anchor="start" style="display:none">غير مقيّس</text>
+</g>
+<g id="tempS" data-s="2">
+ <rect x="124" y="150" width="12" height="470" rx="6" fill="url(#gTemp)" stroke="rgba(255,255,255,.55)" stroke-width="1.5"/>
+ <text x="162" y="176" fill="#fff" font-size="19" font-weight="800" text-anchor="middle">دافئ</text>
+ <text x="162" y="606" fill="#cfe3ff" font-size="19" font-weight="800" text-anchor="middle">بارد</text>
+</g>
+
+<!-- leader lines of the labels -->
+<g id="leaders" stroke="rgba(255,255,255,.8)" stroke-width="2" fill="none"></g>
+
+<!-- the balance (step 4) -->
+<g id="scale" data-s="4" data-e="4" transform="translate(185 446)">
+ <rect width="350" height="172" rx="20" fill="rgba(4,14,36,.74)" stroke="rgba(255,255,255,.22)"/>
+ <text x="175" y="28" fill="#fff" font-size="21" font-weight="800" text-anchor="middle">التوازن من أجل الحياة</text>
+ <g transform="translate(175 150)">
+  <path d="M-30 0L0 -44L30 0Z" fill="#d3dcea"/>
+  <rect x="-4.5" y="-96" width="9" height="56" rx="3" fill="#d3dcea"/>
+  <g transform="translate(0 -96)"><g class="beam">
+   <rect x="-112" y="-5" width="224" height="10" rx="5" fill="#eef3fa"/>
+   <g transform="translate(-112 0)"><g class="pl">
+    <path d="M0 0L-36 44M0 0L36 44" stroke="#b9c7dc" stroke-width="2"/>
+    <path d="M-44 44H44Q40 62 0 62Q-40 62 -44 44Z" fill="#a9bdd8"/>
+    <circle cx="0" cy="28" r="9" fill="#ffd35a"/>
+    <g stroke="#ffd35a" stroke-width="2.6" stroke-linecap="round"><path d="M0 13V9M0 43V47M-15 28H-19M15 28H19M-10 18L-13 15M10 18L13 15M-10 38L-13 41M10 38L13 41"/></g>
+   </g></g>
+   <g transform="translate(112 0)"><g class="pl">
+    <path d="M0 0L-36 44M0 0L36 44" stroke="#b9c7dc" stroke-width="2"/>
+    <path d="M-44 44H44Q40 62 0 62Q-40 62 -44 44Z" fill="#a9bdd8"/>
+    <circle cx="-14" cy="35" r="5.5" fill="#ffc94d"/><circle cx="2" cy="31" r="5" fill="#ff8db1"/><circle cx="15" cy="36" r="5.5" fill="#ffc94d"/><circle cx="-3" cy="40" r="4" fill="#ff8db1"/>
+   </g></g>
+  </g></g>
+  <text x="-112" y="-8" fill="#fff" font-size="19" font-weight="800" text-anchor="middle">الضوء</text>
+  <text x="112" y="-8" fill="#fff" font-size="19" font-weight="800" text-anchor="middle">المغذّيات</text>
+ </g>
+</g>
+</svg>
+
+<!-- labels -->
+<div id="chips">
+<div class="chip" data-s="1" data-tx="868" data-ty="214" data-c="#8ef27c"><i class="mk" style="background:#8ef27c"></i>المنطقة الضوئية <span class="en">Photic zone</span><small>حتى نحو <bdi dir="ltr">200 m</bdi>: التمثيل الضوئي وغالبية الكتلة الحيوية</small></div>
+<div class="chip one" data-s="2" data-tx="860" data-ty="302" data-c="#ffb867"><i class="mk" style="background:#ffb867"></i>ماء دافئ<small class="in">· أقل كثافة</small></div>
+<div class="chip" data-s="2" data-tx="850" data-ty="378" data-c="#74d8c0"><i class="mk" style="background:#74d8c0"></i>المنحدر الحراري <span class="en">Thermocline</span><small>تدرّج الكثافة <bdi dir="ltr" class="en" style="font-size:15px;margin:0">Pycnocline</bdi>: يفصل الماء الدافئ عن البارد</small></div>
+<div class="chip one" data-s="2" data-tx="850" data-ty="478" data-c="#4d86ee"><i class="mk" style="background:#4d86ee"></i>ماء بارد<small class="in">· أكثر كثافة</small></div>
+<div class="chip" data-s="3" data-tx="856" data-ty="552" data-c="#ffc94d"><i class="mk" style="background:#ffc94d"></i>المياه العميقة<small>باردة ومظلمة وغنية بالمغذّيات</small></div>
+</div>
+
+<!-- last step: compare -->
+<div id="tg" data-s="5"><button type="button" data-m="still" class="on">ماء ساكن: منطقة استوائية</button><button type="button" data-m="mixed">ماء مختلط: تيار صاعد أو قطبية صيفاً</button></div>
+<div id="ind" data-s="5"><i></i><span id="indt">الإنتاجية الأولية: منخفضة</span></div>
+
+<!-- lead-in question -->
+<div id="lead">
+ <span class="tag">اكتشف</span>
+ <div class="q">أين تكون الإنتاجية الأولية أعلى عادةً في المحيط؟</div>
+ <button type="button" class="o" data-ok="0" data-w="لا: لا يصل الضوء إلى القاع فلا يحدث تمثيل ضوئي.">في قاع المحيط المظلم</button>
+ <button type="button" class="o" data-ok="1" data-w="صح: هناك يتوازن الضوء والحرارة والمغذّيات. سنرى كيف في المشهد.">قرب المنحدر الحراري حيث يتوازن الضوء والحرارة والمغذّيات</button>
+ <button type="button" class="o" data-ok="0" data-w="لا: غنية بالمغذّيات لكنها مظلمة.">في الطبقة العميقة الباردة</button>
+ <div id="fb">اختر إجابتك.</div>
+</div>
+
+<!-- caption, steps and controls -->
+<div id="bar">
+ <div id="cap"></div>
+ <div id="dots"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+ <button type="button" id="nb">ملاحظة المعلم</button>
+ <div class="nav"><button type="button" id="pv">السابق</button><button type="button" id="nx">ابدأ الشرح</button></div>
+</div>
+<div id="note"><b>ملاحظة المعلم</b>
+ <ul>
+  <li>المصدر: كتاب الطالب ص93 و94 (الإنتاجية الأولية تتحدد بدرجة الحرارة وتوافر المغذّيات وشدة الضوء؛ المنحدر الحراري وتدرّج الكثافة؛ المناطق القطبية والاستوائية). الأعماق من الشكل 3-1: المنطقة الضوئية حتى نحو 200 m والمنحدر الحراري حتى نحو 1000 m والمياه العميقة حتى نحو 5000 m. الرسم تخطيطي غير مقيّس.</li>
+  <li>المشهد مرسوم بالكود (من عندي). العوالق والمغذّيات والأسماك والعوالق الحيوانية للتوضيح فقط وأحجامها غير حقيقية.</li>
+  <li>ميزان «التوازن من أجل الحياة» وخطوة المقارنة بين ماء ساكن وماء مختلط من عندي، ومضمونهما من نص الكتاب (المناطق الاستوائية والقطبية والتيارات الصاعدة).</li>
+  <li>أسئلة للمناقشة: لماذا لا تعني الحرارة العالية إنتاجية عالية؟ وما الذي يجعل المياه القطبية غنية صيفاً؟</li>
+ </ul></div>
+</div></div>
+
+<script>
+(function(){
+var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
+var st=$('#st'),box=$('#box'),NS='http://www.w3.org/2000/svg';
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+var R=rng(11);function rnd(a,b){return a+R()*(b-a)}
+
+/* ---- drawing, all from code ---- */
+(function(){
+ var s='';for(var i=0;i<18;i++){var a=i*20*Math.PI/180;s+='<line x1="'+(Math.cos(a)*47).toFixed(1)+'" y1="'+(Math.sin(a)*47).toFixed(1)+'" x2="'+(Math.cos(a)*(i%2?62:70)).toFixed(1)+'" y2="'+(Math.sin(a)*(i%2?62:70)).toFixed(1)+'" stroke="#ffd35a" stroke-width="5" stroke-linecap="round" opacity=".9"/>'}
+ $('#sunrays').innerHTML=s;
+ var r='';for(i=0;i<12;i++){var x=240+i*98+rnd(-20,20),w=rnd(26,50);r+='<polygon class="r" style="animation-delay:-'+rnd(0,6).toFixed(1)+'s" fill="url(#gRay)" points="'+x+',150 '+(x+w)+',150 '+(x+w-165)+',332 '+(x-165-w*.4)+',332" filter="url(#fb5)"/>'}
+ $('#rays').innerHTML=r;
+ function wave(y,amp,seg){var d='M-80 '+y,u=40;for(var k=0;k<(1440/u);k++){d+=(k===0?' q'+u/2+' '+(-amp)+' '+u+' 0':' t'+u+' 0')}return d}
+ $('#wvA').setAttribute('d',wave(151,6)); $('#wvB').setAttribute('d',wave(158,5));
+ var sh='';[[346,7],[372,9],[398,7],[420,6]].forEach(function(p,j){sh+='<path class="march" style="animation-duration:'+(1.6+j*.5)+'s" d="'+wave(p[0],p[1]).replace('M-80','M0')+'"/>'});
+ $('#shimmer').innerHTML=sh;
+ var cols=['#8ef27c','#5fe08a','#c4f56a','#46c97a'];
+ function plank(n,x0,x1,y0,y1){var o='';for(var i=0;i<n;i++){var x=rnd(x0,x1),y=rnd(y0,y1),c=cols[i%4],k=R(),sc=rnd(1.2,2.2),b;
+  if(k<.45)b='<circle r="7" fill="'+c+'" opacity=".28"/><circle r="4.4" fill="'+c+'"/><circle cx="-1.2" cy="-1.2" r="1.5" fill="#f2ffe0"/>';
+  else if(k<.75)b='<ellipse rx="10" ry="4.4" fill="'+c+'"/><path d="M-6 0H6" stroke="rgba(0,80,40,.5)" stroke-width="1"/><circle cx="-3" r="1.3" fill="rgba(0,80,40,.55)"/><circle cx="3" r="1.3" fill="rgba(0,80,40,.55)"/>';
+  else b='<circle cx="-8" r="3.6" fill="'+c+'"/><circle r="4.2" fill="'+c+'"/><circle cx="8" r="3.6" fill="'+c+'"/>';
+  o+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+') scale('+sc.toFixed(2)+') rotate('+((rnd(-30,30))|0)+')"><g class="bob" style="animation-duration:'+rnd(5,9).toFixed(1)+'s;animation-delay:-'+rnd(0,8).toFixed(1)+'s">'+b+'</g></g>'}return o}
+ $('#planktonG').innerHTML=plank(30,172,885,184,312);
+ $('#mixedPl').innerHTML=plank(62,172,885,174,316);
+ var n='';for(i=0;i<44;i++){var x=rnd(172,885),y=rnd(456,606),pk=R()<.45,c=pk?'#ff8db1':'#ffc94d',rr=rnd(2.6,4.4);
+  n+='<g transform="translate('+x.toFixed(0)+' '+y.toFixed(0)+')"><g class="drift" style="animation-duration:'+rnd(6,11).toFixed(1)+'s;animation-delay:-'+rnd(0,9).toFixed(1)+'s"><circle r="'+(rr*2.4).toFixed(1)+'" fill="'+c+'" opacity=".22"/><circle r="'+rr.toFixed(1)+'" fill="'+c+'"/></g></g>'}
+ $('#nutG').innerHTML=n;
+ var q='';for(i=0;i<20;i++){var x2=rnd(175,880),y2=rnd(536,606),pk2=R()<.45,c2=pk2?'#ff8db1':'#ffc94d';
+  q+='<g transform="translate('+x2.toFixed(0)+' '+y2.toFixed(0)+')"><g class="rise" style="--rb:-'+(y2-438).toFixed(0)+'px;--rm:-'+(y2-250).toFixed(0)+'px;animation-duration:'+rnd(5.5,8).toFixed(1)+'s;animation-delay:-'+rnd(0,8).toFixed(1)+'s"><circle r="9" fill="'+c2+'" opacity=".25"/><circle r="4.2" fill="'+c2+'"/></g></g>'}
+ $('#riseG').innerHTML=q;
+ /* the animals that a rich surface can support: copepods, small fish, a larger fish */
+ function fish(x,y,k,body,tail){return '<g transform="translate('+x+' '+y+') scale('+k+')"><g class="fish" style="animation-duration:'+rnd(24,34).toFixed(0)+'s;animation-delay:-'+rnd(0,26).toFixed(0)+'s"><path d="M0 0C10 -9 26 -9 36 0C26 9 10 9 0 0Z" fill="'+body+'"/><path d="M36 0L49 -9L49 9Z" fill="'+tail+'"/><circle cx="8" cy="-1.6" r="1.9" fill="#0d2a44"/></g></g>'}
+ function cope(x,y){return '<g transform="translate('+x+' '+y+')"><g class="fish" style="animation-duration:'+rnd(30,40).toFixed(0)+'s;animation-delay:-'+rnd(0,30).toFixed(0)+'s"><ellipse rx="6" ry="3" fill="#ffdcae"/><path d="M-6 0L-15 -5M-6 0L-15 4M2 3L0 8M-2 3L-4 8" stroke="#ffdcae" stroke-width="1.2" fill="none"/></g></g>'}
+ var f='';[[300,232],[520,196],[700,268],[430,300],[820,214]].forEach(function(p){f+=cope(p[0]+260,p[1])});
+ [[250,205],[560,245],[760,190],[420,285],[880,262]].forEach(function(p){f+=fish(p[0]+260,p[1],1.2,'#d4ecf8','#a4cfe3')});
+ f+=fish(720,336,2.6,'#f2a65e','#d9823c');f+=fish(1010,296,2.1,'#8fb4d8','#6f97c0');
+ $('#fauna').innerHTML=f;
+})();
+
+/* leader lines from each label to the thing it names (placed from the real label positions) */
+function leaders(){
+ var g=$('#leaders'),s='';
+ $$('#chips .chip').forEach(function(c){var y=156+c.offsetTop+c.offsetHeight/2,x=920,tx=+c.dataset.tx,ty=+c.dataset.ty;
+  s+='<g data-s="'+c.getAttribute('data-s')+'"><line x1="'+x+'" y1="'+y.toFixed(0)+'" x2="'+tx+'" y2="'+ty+'"/><circle cx="'+tx+'" cy="'+ty+'" r="5.5" fill="'+c.dataset.c+'" stroke="#fff"/></g>'});
+ g.innerHTML=s;
+}
+
+/* ---- text of the steps ---- */
+var CAP=['',
+ 'ضوء الشمس ينفذ إلى الطبقة العليا (المنطقة الضوئية)، وفيها يحدث التمثيل الضوئي وتوجد غالبية الكتلة الحيوية.',
+ 'الشمس تسخّن السطح فيتكوّن ماء دافئ أقل كثافة، يفصله عن الماء البارد الأكثر كثافة المنحدر الحراري.',
+ 'معظم المياه الغنية بالمغذّيات تحت المنحدر الحراري، وهو يقلّل اختلاط الطبقتين فلا تصعد المغذّيات إلى الضوء.',
+ 'الضوء في الأعلى والمغذّيات في الأسفل، فتكون الإنتاجية الأعلى عادةً قرب المنحدر الحراري حيث التوازن الأمثل بين الضوء والحرارة والمغذّيات.',
+ {still:'منطقة استوائية: المنحدر الحراري يقلّل الاختلاط فلا تصل المغذّيات إلى الضوء، فتقلّ الإنتاجية رغم وفرة الضوء.',
+  mixed:'تيار صاعد أو منطقة قطبية صيفاً: يختلط الماء فتصل المغذّيات إلى الضوء فتزدهر العوالق وتطول السلسلة الغذائية.'}];
+var N=5,step=0,mode='still';
+
+function cap(){var c=CAP[step];if(step===5)c=c[mode];var e=$('#cap');
+ if(e.dataset.t===c)return;e.classList.add('sw');setTimeout(function(){e.textContent=c;e.dataset.t=c;e.classList.remove('sw')},step?180:0)}
+function render(){
+ st.className='s'+step+' '+mode;
+ $$('[data-s]',st).forEach(function(e){var s=+e.getAttribute('data-s'),en=e.getAttribute('data-e');e.classList.toggle('on',step>=s&&(en==null||step<=+en))});
+ $('#lead').classList.toggle('gone',step>0);
+ $$('#dots i').forEach(function(d,i){d.classList.toggle('on',i===step)});
+ $('#pv').disabled=step===0;
+ $('#nx').textContent=step===0?'ابدأ الشرح':step===N?'من البداية':'التالي';
+ $('#cap').style.display=step===0?'none':'';
+ $$('#tg button').forEach(function(b){b.classList.toggle('on',b.dataset.m===mode)});
+ $('#indt').textContent='الإنتاجية الأولية: '+(mode==='mixed'?'مرتفعة':'منخفضة');
+ $('#tg').style.pointerEvents=step===N?'auto':'none';$('#ind').style.pointerEvents='none';
+ cap();
+ var sc=$('#scale');sc.classList.remove('go');if(step===4){void sc.getBoundingClientRect();sc.classList.add('go')}
+}
+function go(n){n=Math.max(0,Math.min(N,n));if(n<N)mode='still';step=n;render()}
+$('#nx').onclick=function(e){e.stopPropagation();go(step===N?0:step+1)};
+$('#pv').onclick=function(e){e.stopPropagation();go(step-1)};
+$('#nb').onclick=function(e){e.stopPropagation();$('#note').classList.toggle('open')};
+$('#note').onclick=function(e){e.stopPropagation();this.classList.remove('open')};
+$$('#tg button').forEach(function(b){b.onclick=function(e){e.stopPropagation();mode=b.dataset.m;render()}});
+$$('#lead .o').forEach(function(b){b.onclick=function(e){e.stopPropagation();var ok=b.dataset.ok==='1',f=$('#fb');b.classList.add(ok?'ok':'bad');f.textContent=b.dataset.w;f.className=ok?'ok':'bad'}});
+st.addEventListener('click',function(e){if(e.target.closest('button,#note,#lead,#tg'))return;go(step+1)});
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft'||e.key===' '||e.key==='Enter'&&e.target.tagName!=='BUTTON'){e.preventDefault();go(step+1)}else if(e.key==='ArrowRight'){go(step-1)}});
+
+/* ---- fit the stage to the window; on a portrait phone turn it on its side so the text stays readable ---- */
+function fit(){
+ var cs=getComputedStyle(document.body),aw=document.body.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight),ah=document.body.clientHeight,port=ah>aw*1.1,s;
+ if(port){s=Math.min(ah/1280,aw/720);box.style.width=(720*s)+'px';box.style.height=(1280*s)+'px';st.style.transform='translate('+(720*s)+'px,0) rotate(90deg) scale('+s+')'}
+ else{s=Math.min(aw/1280,ah/720);box.style.width=(1280*s)+'px';box.style.height=(720*s)+'px';st.style.transform='scale('+s+')'}
+}
+addEventListener('resize',fit);fit();leaders();render();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){leaders();render()});
+if(location.hash.match(/^#s([0-5])(m?)$/)){var m=location.hash.match(/^#s([0-5])(m?)$/);step=+m[1];mode=m[2]?'mixed':'still';render()}
+})();
+</script>
