@@ -34,7 +34,7 @@ function scnMarkup(d){
     h+='<div class="t2"><h1>'+d.h1+'</h1><p>'+d.sub+'</p></div><div class="artw"><img alt="" src="'+SCN_IMG[d.img]+'"></div><div class="cards"></div><div class="endbar" data-s="'+d.n+'">'+d.end+'</div>';
   }
   if(d.lead){
-    h+='<div class="lead"><span class="tag">اكتشف</span><div class="q">'+d.lead.q+'</div>'+scnPlace(d.lead.o,d.lead.at).map(function(o){return '<button type="button" class="o" data-ok="'+(o[1]?1:0)+'" data-w="'+o[2]+'">'+o[0]+'</button>'}).join('')+'<div class="fb">اختر إجابتك.</div></div>';
+    h+='<div class="lead"><span class="tag">'+(d.tag||'اكتشف')+'</span><div class="q">'+d.lead.q+'</div>'+scnPlace(d.lead.o,d.lead.at).map(function(o){return '<button type="button" class="o" data-ok="'+(o[1]?1:0)+'" data-w="'+o[2]+'">'+o[0]+'</button>'}).join('')+'<div class="fb">اختر إجابتك.</div></div>';
   }
   return '<div class="r '+(d.k==='side'?'side':d.k==='eq'?'eq':d.k==='board'?'board':'scene')+(d.big?' big':'')+'">'+h+'</div>';
 }
@@ -84,6 +84,8 @@ function scnBuildParts(d){
           return '<div class="pb" data-s="'+lv.s+'"'+(lv.e!=null?' data-e="'+lv.e+'"':'')+' style="width:'+Math.round(t.w*lv.f)+'px;height:'+(t.bh||44)+'px;background:'+lv.c+(lv.dl?';transition-delay:'+lv.dl+'ms':'')+'">'+(lv.ic?'<img alt="" src="'+scnTile(lv.ic[0],lv.ic[1])+'">':'')+'<span>'+lv.t+(lv.sm?'<small> '+lv.sm+'</small>':'')+'</span></div>';
         }).join('');
         r.appendChild(e); return;
+      }else if(t.t==='bar'){
+        e.className='br'; e.style.cssText='left:'+t.x+'px;top:'+t.y+'px;width:'+t.w+'px;height:'+(t.hh||64)+'px;background:'+t.c+(t.col?';color:'+t.col:''); e.innerHTML=t.h;
       }else if(t.t==='txt'){
         e.className='pt'; e.style.cssText='left:'+t.x+'px;top:'+t.y+'px'+(t.w?';width:'+t.w+'px':'')+(t.fs?';font-size:'+t.fs+'px':'')+(t.col?';color:'+t.col:''); e.innerHTML=t.h;
       }
@@ -136,7 +138,7 @@ function scn(id,ch){
   var d=SCN_DEF[id]; if(!d) throw new Error('no scene data for '+id);
   d.id=id; var n=d.n||(d.caps?d.caps.length-1:1); d.n=n;
   if(!LESSON.pts) LESSON.pts={}; LESSON.pts[id]='.scp';
-  slide({id:id,ch:ch,title:(d.stitle||d.title||d.h1).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(),tag:'اكتشف',bare:true,cls:'scn',
+  slide({id:id,ch:ch,title:(d.stitle||d.title||d.h1).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(),tag:d.tag||'اكتشف',bare:true,cls:'scn',
     html:function(){ var h=''; for(var i=0;i<n;i++) h+='<i class="scp" aria-hidden="true"></i>'; return h },
     init:function(el,s){
       d.sl=s; s.onpt=function(){ scnApply(d) };

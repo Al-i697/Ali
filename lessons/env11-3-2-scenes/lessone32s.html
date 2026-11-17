@@ -3675,6 +3675,8 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .pb img{height:66px;width:auto;flex:none;margin:-5px 0}
 .pb small{font-size:15px;font-weight:700;opacity:.95}
 .pt{position:absolute;font-size:19px;font-weight:800;color:#ffd66b;z-index:3}
+.br{position:absolute;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 10px;font-size:25px;font-weight:800;line-height:1.3;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.4);transform:scaleX(.94);transform-origin:right center}
+.br.on{transform:none}
 `;
 
 /* ---------- scene kit: the infographic-style explanation slides, inside the lesson player.
@@ -3713,7 +3715,7 @@ function scnMarkup(d){
     h+='<div class="t2"><h1>'+d.h1+'</h1><p>'+d.sub+'</p></div><div class="artw"><img alt="" src="'+SCN_IMG[d.img]+'"></div><div class="cards"></div><div class="endbar" data-s="'+d.n+'">'+d.end+'</div>';
   }
   if(d.lead){
-    h+='<div class="lead"><span class="tag">اكتشف</span><div class="q">'+d.lead.q+'</div>'+scnPlace(d.lead.o,d.lead.at).map(function(o){return '<button type="button" class="o" data-ok="'+(o[1]?1:0)+'" data-w="'+o[2]+'">'+o[0]+'</button>'}).join('')+'<div class="fb">اختر إجابتك.</div></div>';
+    h+='<div class="lead"><span class="tag">'+(d.tag||'اكتشف')+'</span><div class="q">'+d.lead.q+'</div>'+scnPlace(d.lead.o,d.lead.at).map(function(o){return '<button type="button" class="o" data-ok="'+(o[1]?1:0)+'" data-w="'+o[2]+'">'+o[0]+'</button>'}).join('')+'<div class="fb">اختر إجابتك.</div></div>';
   }
   return '<div class="r '+(d.k==='side'?'side':d.k==='eq'?'eq':d.k==='board'?'board':'scene')+(d.big?' big':'')+'">'+h+'</div>';
 }
@@ -3763,6 +3765,8 @@ function scnBuildParts(d){
           return '<div class="pb" data-s="'+lv.s+'"'+(lv.e!=null?' data-e="'+lv.e+'"':'')+' style="width:'+Math.round(t.w*lv.f)+'px;height:'+(t.bh||44)+'px;background:'+lv.c+(lv.dl?';transition-delay:'+lv.dl+'ms':'')+'">'+(lv.ic?'<img alt="" src="'+scnTile(lv.ic[0],lv.ic[1])+'">':'')+'<span>'+lv.t+(lv.sm?'<small> '+lv.sm+'</small>':'')+'</span></div>';
         }).join('');
         r.appendChild(e); return;
+      }else if(t.t==='bar'){
+        e.className='br'; e.style.cssText='left:'+t.x+'px;top:'+t.y+'px;width:'+t.w+'px;height:'+(t.hh||64)+'px;background:'+t.c+(t.col?';color:'+t.col:''); e.innerHTML=t.h;
       }else if(t.t==='txt'){
         e.className='pt'; e.style.cssText='left:'+t.x+'px;top:'+t.y+'px'+(t.w?';width:'+t.w+'px':'')+(t.fs?';font-size:'+t.fs+'px':'')+(t.col?';color:'+t.col:''); e.innerHTML=t.h;
       }
@@ -3815,7 +3819,7 @@ function scn(id,ch){
   var d=SCN_DEF[id]; if(!d) throw new Error('no scene data for '+id);
   d.id=id; var n=d.n||(d.caps?d.caps.length-1:1); d.n=n;
   if(!LESSON.pts) LESSON.pts={}; LESSON.pts[id]='.scp';
-  slide({id:id,ch:ch,title:(d.stitle||d.title||d.h1).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(),tag:'اكتشف',bare:true,cls:'scn',
+  slide({id:id,ch:ch,title:(d.stitle||d.title||d.h1).replace(/<[^>]*>/g,'').replace(/\s+/g,' ').trim(),tag:d.tag||'اكتشف',bare:true,cls:'scn',
     html:function(){ var h=''; for(var i=0;i<n;i++) h+='<i class="scp" aria-hidden="true"></i>'; return h },
     init:function(el,s){
       d.sl=s; s.onpt=function(){ scnApply(d) };
@@ -4200,6 +4204,40 @@ SCN_DEF.decomp={k:'scene',img:'a3b',title:'دورة التفكيك: من الك�
   {s:4,x:640,y:140,w:300,h:mk('#8ef27c')+'المنتجات: العوالق النباتية',tx:560,ty:108,c:'#8ef27c'},
   {s:5,x:700,y:225,w:240,h:mk('#7fd4ff')+'سمك صغير يتغذى على العوالق',tx:955,ty:175,c:'#7fd4ff'}],
  note:['المصدر: كتاب الطالب ص91 (المحلّلات: البكتيريا والفطريات تفكّك المغذّيات العضوية في أجسام الكائنات الميتة، وهي المرحلة الأخيرة في أي علاقة غذائية، وتعود المغذّيات إلى البيئة لتمتصها المنتجات).','الرسمة مولّدة بالذكاء الاصطناعي بطلب المعلم. الأسهم في الرسمة تدل على اتجاه الدورة: المغذّيات إلى العوالق النباتية، ثم السمك الصغير، ثم موت الكائنات. ترتيب الخطوات والتسميات من عندي.']};
+
+/* ---------- why only about 10% moves up (icons 10a: where the energy goes) ---------- */
+(function(){
+  function tl(i,x,lab,s,e,c){ return {t:'tile',set:'t10a',i:i,x:x,y:248,w:190,h:204,lab:lab,s:s,e:e,c:c} }
+  var C=['#4cc36a','#ffa24a','#59b7ff','#c9a0ff','#ff7a6b'], N=['منتج','مستهلك أولي','مستهلك ثانوي','مستهلك ثالثي','مستهلك رابعي'], V=['10000','1000','100','10','1'], HH=[290,236,188,150,120], X=[1035,790,545,300,55], chain=[], arrows=[];
+  X.forEach(function(x,i){
+    chain.push({t:'box',x:x,y:566-HH[i],w:205,hh:HH[i],hd:N[i],c:C[i],b:'<div style="font-size:'+(i<2?40:34)+'px;font-weight:800;line-height:1.1;text-align:center">'+nm(V[i])+'</div><div style="text-align:center;font-size:17px;color:#cfd5f0">وحدة طاقة</div>',s:6});
+    if(i<4) arrows.push({x1:x-4,y1:530,x2:x-36,y2:530,s:6,c:'#ffd66b'});
+  });
+  var items=[
+    {t:'txt',x:40,y:100,w:1200,h:'طاقة المستوى الغذائي: '+nm('10000')+' وحدة',fs:22,col:'#cfe6ff',s:1},
+    {t:'txt',x:40,y:330,w:1200,h:'<div style="text-align:center;direction:ltr;line-height:1.3">'+'10000 × 10% = <span style="color:#ffd66b">1000</span>'+'</div>',fs:68,col:'#ffffff',s:1,e:1},
+    {t:'bar',x:1120,y:136,w:120,hh:70,c:'#d9a22a',col:'#2a1c00',h:nm('1000'),s:1},
+    {t:'bar',x:40,y:136,w:1074,hh:70,c:'#c0504a',h:'<span>'+nm('9000')+' وحدة تُفقد ('+nm('90%')+')</span>',s:1},
+    {t:'txt',x:940,y:212,w:300,h:'تنتقل إلى المستوى التالي (<span dir="ltr" style="display:inline-block">'+nm('10%')+'</span>)',fs:20,col:'#ffd66b',s:1},
+    tl(0,1050,'كمية الطعام المؤكل',2,5,'#59b7ff'),
+    tl(6,848,'سهولة الهضم والتمثيل الغذائي',2,5,'#59b7ff'),
+    tl(1,646,'طاقة الحركة',3,5,'#ffa24a'),
+    tl(3,444,'فضلات الأيض',3,5,'#ffa24a'),
+    tl(8,242,'أكل المنتجات',4,5,'#8ef27c'),
+    tl(7,40,'تفلت من الافتراس',5,5,'#ff7a6b'),
+    {t:'box',x:40,y:474,w:1200,cls:'gold',b:'الاستفادة من الطاقة في <b>الحيوانات الأخرى أسهل</b> من الاستفادة من الطاقة في المنتجات ← ينتقل مزيد من الطاقة إلى المستهلك التالي.',s:4,e:5},
+    {t:'box',x:40,y:270,w:470,cls:'gold',b:'الطاقة المتاحة تقل في كل مستوى ← <b>السلاسل الغذائية قصيرة: '+nm('4')+' إلى '+nm('6')+' مستويات</b>',s:6}].concat(chain);
+  SCN_DEF.ten={k:'board',tag:'فسّر',title:'لماذا تنتقل نحو '+nm('10%')+' فقط؟',n:6,items:items,arrows:arrows,
+   lead:{at:1,q:'إذا كان في المستوى الغذائي 10000 وحدة طاقة وكانت الكفاءة 10%، فكم وحدة تنتقل إلى المستوى التالي؟',o:[['100 وحدة',0,'هذه 1% فقط.'],['1000 وحدة',1,'صح: 10000 × 10% = 1000، ونحو 90% تُفقد (تنفس، فضلات، أجزاء لا تؤكل، افتراس غير ناجح).'],['9000 وحدة',0,'هذا ما يُفقد.']]},
+   caps:['',
+    'بشكل عام تبلغ كفاءة الانتقال بين المستويات الغذائية نحو <b>'+nm('10%')+'</b> تقريباً: من كل '+nm('10000')+' وحدة تنتقل نحو '+nm('1000')+' فقط، لكنها تختلف بحسب:',
+    '<b>مقدار الطعام الذي يُؤكل</b>، و<b>مدى سهولة هضم</b> المستهلك للمغذيات والتمثيل الغذائي لها (أي تحويلها إلى طاقة).',
+    '<b>مقدار الطاقة المستخدمة للحركة</b>، و<b>مقدار الفاقد في فضلات الأيض</b>.',
+    'بعض الكائنات الحية أسهل في الهضم والتمثيل الغذائي من غيرها؛ ومن الأسهل للمستهلكات الاستفادة من الطاقة في حيوانات أخرى عوضاً عن المنتجات، فينتقل مزيد من الطاقة إلى المستهلك التالي.',
+    'بعض الكائنات في كل مستوى غذائي <b>تفلت من الافتراس</b>، لذا لا تنتقل الطاقة المخزنة في كتلتها الحيوية إلى المستوى التالي مطلقاً.',
+    'فقدان الطاقة عند كل مستوى هو السبب في أن السلاسل الغذائية قصيرة ('+nm('4')+' إلى '+nm('6')+' مستويات).'],
+   note:['المصدر: كتاب الطالب ص97 (أول فقرتين: كفاءة الانتقال نحو 10% وما تختلف بحسبه: مقدار الطعام المؤكل وسهولة الهضم والتمثيل الغذائي والطاقة المستخدمة للحركة والفاقد في فضلات الأيض والإفلات من الافتراس). الجملة الأخيرة (قصر السلاسل الغذائية: 4 إلى 6 مستويات) من ص91 وص93. الهدف 3-7.','الرسمات (الأيقونات) مولّدة بالذكاء الاصطناعي بطلب المعلم. الأرقام 10000 ← 1000 ← 100 ← 10 ← 1 ومثال الشريط (1000 تنتقل و9000 تُفقد) تطبيق حسابي لقاعدة 10% من عندي، وأحجام الصناديق تخطيطية غير مقيّسة؛ ربط كل أيقونة بالعامل من عندي.']};
+})();
 
 /* ---------- part A: goals, lead-in activities, producers and consumers (student book 3-2, pp. 87 and 90-92; activity book pp. 105-106) ---------- */
 
@@ -4594,19 +4632,8 @@ slide({id:'cpruf',ch:3,title:'ماذا يمثل كل رمز في C = P + R + F +
  },
  note:'<ul><li>كتاب الطالب ص٩٦: الصيغة C = P + R + F + U وتفسير الرموز. نشاط المطابقة من عندي.</li></ul>'});
 
-/* 31 why only about 10% (student book p. 97) */
-explain({id:'ten',ch:3,title:'لماذا تنتقل نحو 10% فقط؟',tag:'فسّر',
- lead:{q:'إذا كان في المستوى الغذائي 10000 وحدة طاقة وكانت الكفاءة 10%، فكم وحدة تنتقل إلى المستوى التالي؟',
-  opts:[{t:'1000 وحدة',ok:true,why:'صح: 10000 × 10% = 1000'},{t:'100 وحدة',why:'هذه 1%'},{t:'9000 وحدة',why:'هذا ما يُفقد'}],
-  gbar:'نحو 10% تنتقل ونحو 90% تُفقد (تنفس، فضلات، أجزاء لا تؤكل، افتراس غير ناجح).'},
- pts:['بشكل عام تبلغ كفاءة الانتقال بين المستويات الغذائية نحو <b class="num">10%</b> تقريباً، لكنها تختلف بحسب:',
-  '<b>مقدار الطعام الذي يُؤكل</b>، و<b>مدى سهولة هضم</b> المستهلك للمغذيات والتمثيل الغذائي لها (أي تحويلها إلى طاقة).',
-  '<b>مقدار الطاقة المستخدمة للحركة</b>، و<b>مقدار الفاقد في فضلات الأيض</b>.',
-  'بعض الكائنات الحية أسهل في الهضم والتمثيل الغذائي من غيرها؛ ومن الأسهل للمستهلكات الاستفادة من الطاقة الموجودة في حيوانات أخرى عوضاً عن الاستفادة من الطاقة في المنتجات، لأن ذلك يوفّر انتقال المزيد من الطاقة إلى المستهلك التالي.',
-  'بالإضافة إلى ذلك، بعض الكائنات الحية في كل مستوى غذائي <b>تفلت من الافتراس</b>، لذا لا تنتقل الطاقة المخزنة في كتلتها الحيوية إلى المستوى التالي مطلقاً.',
-  'فقدان الطاقة عند كل مستوى هو السبب في أن السلاسل الغذائية قصيرة (4 إلى 6 مستويات).'],
- fs:20,gap:7,
- note:'<ul><li>كتاب الطالب ص٩٧ (أول فقرتين). الهدف ٣-٧. الجملة الأخيرة (قصر السلاسل الغذائية) من ص٩١ وص٩٣ في الكتاب.</li></ul>'});
+/* 31 why only about 10% (student book p. 97): scene with the loss routes (icons 10a) */
+scn('ten',3);
 
 /* 32 pyramids of numbers (student book p. 97, figure 3-4) */
 scn('pnum',4);

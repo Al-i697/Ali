@@ -124,4 +124,6 @@ button:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .pb img{height:66px;width:auto;flex:none;margin:-5px 0}
 .pb small{font-size:15px;font-weight:700;opacity:.95}
 .pt{position:absolute;font-size:19px;font-weight:800;color:#ffd66b;z-index:3}
+.br{position:absolute;border-radius:14px;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 10px;font-size:25px;font-weight:800;line-height:1.3;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.4);transform:scaleX(.94);transform-origin:right center}
+.br.on{transform:none}
 `;
