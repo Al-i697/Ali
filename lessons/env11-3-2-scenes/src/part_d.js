@@ -51,6 +51,7 @@ scn('pbio',4);
 scn('pene',4);
 
 /* 35 pyramids during an algal bloom (student book p. 99) */
+scn('bloom0',4);
 scn('bloom',4);
 
 /* 36 compare the three pyramids (made from the text of pp. 97-99) */

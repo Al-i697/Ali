@@ -1,7 +1,7 @@
 /* Interaction tests for the environmental-science lesson 3-2 (feeding relationships): every slide is driven the way a student would use it. Run from the lesson folder: node tools/test.js */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lessone32s.html';
-const IDS=["goals", "lead1", "lead2", "auto", "hetero", "tab32", "cls32", "zoo", "terms", "manatee", "pred", "antarctic", "kelp", "quin", "otter1", "otter2", "prod", "photic", "factors", "eq1", "eq2", "chemo", "cmp", "net", "abloom", "hab", "nursery", "sun", "resp", "sec", "cpruf", "ten", "pnum", "pbio", "pene", "bloom", "pcmp", "exx", "exp", "howp", "prac1", "prac2", "tlte", "act33a", "act33b", "act33c", "inv1a", "inv1b", "inv1c", "inv2a", "inv2b", "inv2c", "q48", "eou1", "eou2", "eou3", "eou4", "eou5", "abq1", "abq2", "abq3", "exam1", "exam2", "exam3", "tk", "hw"];
+const IDS=["goals", "lead1", "lead2", "auto", "hetero", "tab32", "cls32", "zoo", "terms", "manatee", "pred", "antarctic", "kelp", "quin", "otter1", "otter2", "prod", "photic", "factors", "eq1", "eq2", "chemo", "cmp", "net", "abloom", "hab", "nursery", "sun", "resp", "sec", "cpruf", "ten", "pnum", "pbio", "pene", "bloom0", "bloom", "pcmp", "exx", "exp", "howp", "prac1", "prac2", "tlte", "act33a", "act33b", "act33c", "inv1a", "inv1b", "inv1c", "inv2a", "inv2b", "inv2c", "q48", "eou1", "eou2", "eou3", "eou4", "eou5", "abq1", "abq2", "abq3", "exam1", "exam2", "exam3", "tk", "hw"];
 const results=[]; const errs=[];
 (async()=>{
   const b=await chromium.launch();
@@ -72,7 +72,7 @@ const results=[]; const errs=[];
 
 
   /* the infographic-style scene slides: question first (step 0), then every click must change something, the last click shows the whole scene, Previous walks back; nothing may leave the 1280x720 scene */
-  const SCENES=['auto','hetero','zoo','pred','prod','factors','chemo','net','abloom','sun','resp','sec','pnum','pbio','pene','bloom'];
+  const SCENES=['auto','hetero','zoo','pred','prod','factors','chemo','net','abloom','sun','resp','sec','pnum','pbio','pene','bloom0','bloom'];
   async function openStep(id){ const n=IDS.indexOf(id)+1; const p=await b.newPage({viewport:{width:1600,height:900}}); p.on('console',m=>{if(m.type()==='error'&&!/ERR_FAILED/.test(m.text()))errs.push('['+id+'] '+m.text())}); p.on('pageerror',e=>errs.push('['+id+'] PAGEERR '+e.message)); await p.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort()); await p.goto(URL+'#s'+n); await p.waitForTimeout(1500); return p }
   const sig=(p)=>p.evaluate(()=>{ const r=document.querySelector('.slide.on').shadowRoot; return Array.from(r.querySelectorAll('[data-s].on')).length+'|'+(r.querySelector('.cap')?r.querySelector('.cap').getAttribute('data-t')||'':'')+'|'+(r.querySelector('.zw')?r.querySelector('.zw').style.transform:'')+'|'+(r.querySelector('.lead.gone')?'g':'') });
   for(const id of SCENES){
