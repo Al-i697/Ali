@@ -3,7 +3,7 @@ const {chromium}=require('playwright'), http=require('http'), fs=require('fs'), 
 const PL=require('../src/logic.js'), DIST=path.resolve(__dirname,'../../dist');
 const TYPES={'.html':'text/html; charset=utf-8','.js':'text/javascript','.json':'application/json'};
 const srv=http.createServer((q,r)=>{ const f=path.join(DIST,decodeURIComponent(q.url.split('?')[0]).replace(/^\/+$/,'/index.html')); if(!f.startsWith(DIST)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){r.writeHead(404);r.end();return} r.writeHead(200,{'content-type':TYPES[path.extname(f)]||'text/plain'}); r.end(fs.readFileSync(f)) });
-let n=0, bad=0; const T=async(name,fn)=>{try{await fn(); n++; console.log('ok  ',name)}catch(e){bad++; console.log('FAIL',name,'\n    ',(e.message||e).split('\n')[0])}};
+let n=0, bad=0; const T=async(name,fn)=>{try{await fn(); n++; console.log('ok  ',name)}catch(e){bad++; console.log('FAIL',name,'\n    ',(e.message||e).split('\n').slice(0,6).join(' / '))}};
 const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school week
 (async()=>{
   await new Promise(r=>srv.listen(0,r)); const URL=process.env.OFFLINE?'file://'+path.resolve(__dirname,'../../offline/platform-offline.html'):'http://127.0.0.1:'+srv.address().port+'/index.html';   // OFFLINE=1: the single-file copy opened straight from disk
@@ -147,7 +147,16 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('lesson hash survives a reload: opening #l-chem10-3-4 directly shows lesson 3-4 with the drawer',async()=>{
     const st=seed(), p=await page({state:st,hash:'#l-chem10-3-4'}); await p.waitForTimeout(1500); assert.ok((await p.innerText('#dLs')).includes('٣-٤')); assert.strictEqual(await p.locator('#slist .stu').count(),6); await p.context().close();
   });
-  await T('offline copy: the home page offers a download that builds ONE file with all 16 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
+  await T('environmental science 11, unit 3: lesson 3-2 (scene edition) is listed in the first semester, opens in the frame with the class button and its scene slides, and its home button returns to the semester page',async()=>{
+    const p=await page({hash:'#grade-11-env-1'}); assert.strictEqual(await p.locator('#v-course .unit').count(),3,'three units in the first semester'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),1); assert.ok((await p.innerText('#v-course')).includes('علاقات التغذية'));
+    await p.click('#v-course .lc.built'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
+    assert.strictEqual(await p.evaluate(()=>location.hash),'#l-env11-3-2'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0);
+    assert.ok((await fr.locator('header.top .brand').innerText()).includes('علوم بيئية'),'the top bar names the subject');
+    let sc=0; for(let i=2;i<12&&!sc;i++){ await fr.locator('#prog .seg').nth(i).evaluate(e=>e.click()); await p.waitForTimeout(500); sc=await fr.locator('.slide.on.scn').count() } assert.ok(sc>0,'a scene slide opens from the progress bar'); await fr.locator('#bNext').click(); await p.waitForTimeout(400);
+    assert.ok(await fr.locator('.slide.on.scn').evaluate(e=>!!e.shadowRoot&&e.shadowRoot.querySelectorAll('img').length>0),'the scene draws its picture inside its shadow root');
+    await fr.locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-11-env-1'); await p.context().close();
+  });
+  await T('offline copy: the home page offers a download that builds ONE file with all 17 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
     const p=await page();
     if(process.env.OFFLINE){ assert.strictEqual(await p.locator('[data-act=offline]').count(),0,'no download button inside the offline copy itself'); await p.context().close(); return }
     assert.strictEqual(await p.locator('#v-home .bcard').count(),4); assert.ok(await p.isVisible('#v-home .dlbar [data-act=offline]'));
@@ -160,7 +169,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
     const ctx=await b.newContext({viewport:{width:1280,height:720}}), q=await ctx.newPage(); const e2=[]; q.on('pageerror',e=>e2.push(e.message)); await q.route(/^https?:\/\//,r=>r.abort());
     await q.goto('file://'+out+'#l-chem10-3-3'); await q.waitForTimeout(2500);
     const info=await q.evaluate(()=>({n:Object.keys(window.OFFLINE_LESSONS).length,ok:Object.values(window.OFFLINE_LESSONS).every(t=>t.startsWith('<!doctype html>')&&!t.includes('shared/stickers_assets.js')),stk:typeof STK_IMG}));
-    assert.deepStrictEqual(info,{n:16,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
+    assert.deepStrictEqual(info,{n:17,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
     assert.strictEqual(e2.length,0,e2.join('|')); await ctx.close(); fs.unlinkSync(out);
   });
   await b.close(); srv.close();
