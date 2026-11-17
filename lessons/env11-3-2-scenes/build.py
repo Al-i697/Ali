@@ -31,8 +31,9 @@ def comp_tiles(sheet, cols, rows, w, q):
     """Icon sheet with real transparency: find each icon as a connected shape (shapes closer than a few pixels count as one icon; the gap is tried from wide to narrow until every row has the right number of icons), crop it tightly and clear every pixel that belongs to a neighbouring icon, so nothing is cut and nothing from the next icon shows."""
     import numpy as np
     from scipy import ndimage as ndi
-    A = np.array(sheet.getchannel('A')); mask = A > 24
-    for gap in (14, 10, 7, 5, 3, 2, 1):
+    A = np.array(sheet.getchannel('A'))
+    for thr, gap in [(t, g) for t in (24, 90, 170, 230) for g in (14, 10, 7, 5, 3, 2, 1)]:
+        mask = A > thr
         lab, n = ndi.label(ndi.binary_dilation(mask, iterations=gap))
         if n < cols * rows: continue
         sizes = ndi.sum(mask, lab, index=range(1, n + 1))
@@ -50,7 +51,7 @@ def comp_tiles(sheet, cols, rows, w, q):
                 t = sheet.crop(box); al = np.array(t.getchannel('A')); own = (lab[box[1]:box[3], box[0]:box[2]] == k)
                 al = np.where(own | ~mask[box[1]:box[3], box[0]:box[2]], al, 0).astype('uint8'); t.putalpha(Image.fromarray(al))
                 t = t.resize((w, max(1, round(w * t.height / t.width))), Image.LANCZOS); out.append(_enc(t, 'WEBP', q))
-        print('  icons cut one by one (gap %d): %s' % (gap, sheet.size))
+        print('  icons cut one by one (alpha>%d, gap %d): %s' % (thr, gap, sheet.size))
         return out
     return None
 
@@ -95,12 +96,11 @@ B9 = [(0, 0, 1/3, 1/3), (1/3, 0, 2/3, 1/3), (2/3, 0, 1, 1/3), (0, 1/3, 1/3, 2/3)
       (0, 2/3, .25, 1), (.25, 2/3, .5, 1), (.5, 2/3, .75, 1), (.75, 2/3, 1, 1)]
 
 IMG = {'a1': ('1a.webp', 1000), 'a4': ('4a.webp', 1600), 'a5': ('5a.webp', 1672), 'a6': ('6a.webp', 1600), 'a7': ('7a.webp', 1000),
-       'a8': ('8a.webp', 1600), 'a14': ('14a.webp', 1672), 'a9': ('9a.webp', 1600), 'b8': ('8b.webp', 1672)}
-SETS = {'t4b': ('4b.webp', 3, 3, 300), 't10a': ('10a.png', 3, 3, 260), 't2a': ('2a.png', 3, 3, 340), 't3a': ('3a.png', 3, 3, 340),
-        't5b': ('5b.webp', 3, 3, 300), 't11a': ('11a.png', 5, 2, 230), 't11b': ('11b.png', 5, 2, 230),
+       'a8': ('8a.webp', 1600), 'a14': ('14a.webp', 1672), 'a3b': ('3b_v2.png', 1672), 'a9': ('9a.webp', 1600), 'b8': ('8b.webp', 1672)}
+SETS = {'t4b': ('4b_v2.png', 3, 3, 300), 't10a': ('10a.png', 3, 3, 260), 't2a': ('2a.png', 3, 3, 340), 't3a': ('3a_v2.png', 3, 3, 340),
+        't5b': ('5b_v2.png', 3, 3, 300), 't9b': ('9b_v2.png', 3, 3, 300), 't11a': ('11a.png', 5, 2, 230), 't11b': ('11b_v2.png', 5, 2, 230),
         }
 SCN_TILES = {k: tiles(f, c, r, w) for k, (f, c, r, w) in SETS.items()}
-SCN_TILES['t9b'] = cuts('9b.webp', B9, 300)
 # 12a, 13a, 14b: an icon crosses its grid line (the shark and the plankton chain in the bottom-left cell, the tilapia in the last cell)
 SCN_TILES['t12a'] = cuts('12a.png', grid_boxes(3, 3, {5: (.667, 1, .335, .658), 6: (0, .404), 7: (.404, .667)}), 300)
 SCN_TILES['t13a'] = cuts('13a.png', grid_boxes(3, 3, {6: (0, .404), 7: (.404, .667)}), 300)

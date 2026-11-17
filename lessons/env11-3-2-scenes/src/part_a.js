@@ -99,6 +99,7 @@ slide({id:'cls32',ch:1,title:'صنّف المستهلكات',tag:'صنّف',
 
 /* 8 zooplankton and decomposers (student book p. 91) */
 scn('zoo',1);
+scn('decomp',1);
 
 /* 9 vocabulary of feeding relationships (activity book, Activity 3-2, pp. 105 and 125) */
 slide({id:'terms',ch:1,title:'مفردات علاقات التغذية',tag:'اضغط وتعرّف',
