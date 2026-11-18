@@ -1,0 +1,24 @@
+/* ===== page-of-the-book badge (u4/bookpg.js) ===== */
+/* a small badge in the top margin above the slide's header, so it never moves the slide's content */
+.hd .pgb{position:absolute; left:0; top:-30px; height:27px; padding:0 13px 0 11px; border-radius:999px; display:inline-flex; align-items:center; gap:7px; font-size:17px; font-weight:800; line-height:1; white-space:nowrap; background:rgba(6,12,26,.78); border:1.5px solid var(--cyan); color:#fff; z-index:3}
+.hd .pgb svg{width:16px; height:16px; fill:var(--cyan); flex:none}
+
+/* ===== definition card and how-to strip (u4/defn.js) ===== */
+.dfc{position:relative; display:flex; flex-direction:column; gap:8px; padding:12px 24px 14px; border-radius:16px; border:2px solid var(--gold); border-inline-start-width:9px; background:linear-gradient(135deg,rgba(228,188,75,.28),rgba(228,188,75,.10)),linear-gradient(rgba(12,10,22,.86),rgba(12,10,22,.86)); box-shadow:0 0 26px rgba(228,188,75,.22)}
+.dfc .dh{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.dfc .dt{display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 14px 0 12px; border-radius:999px; background:var(--gold); color:#171100; font-weight:800; font-size:18px}
+.dfc .dt svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round}
+.dfc .dn{font-family:var(--font-display); font-size:36px; font-weight:800; color:var(--gold); line-height:1.1}
+.dfc .de{font-family:var(--font-math); font-style:italic; font-size:24px; color:var(--muted); font-weight:600}
+.dfc .dx{margin:0; font-size:29px; line-height:1.55; font-weight:600; color:var(--ink)}
+.dfc .dx b{color:var(--gold); font-weight:800}
+.dfc.sm{gap:5px; padding:8px 20px 10px}
+.dfc.sm .dt{height:28px; font-size:16px}
+.dfc.sm .dn{font-size:30px}
+.dfc.sm .de{font-size:21px}
+.dfc.sm .dx{font-size:24px; line-height:1.45}
+.how{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.how .hl{font-weight:800; font-size:20px; color:var(--cyan)}
+.how .hs{display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:4px 16px 4px 8px; border-radius:999px; background:rgba(var(--d2),.7); border:1.5px solid rgba(var(--t2),.5); font-size:23px; font-weight:700}
+.how .hs i{flex:none; width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#06121c; font-style:normal; font-weight:800; font-size:18px; display:inline-flex; align-items:center; justify-content:center}
+.how .ha{color:var(--muted); font-size:14px}

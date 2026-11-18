@@ -1,0 +1,47 @@
+/* ===== teacher tools (u4/tools.js): dock, drawing layer, laser pointer, timer, blank screen ===== */
+.view{position:relative}
+.tcv{position:absolute; left:0; top:0; width:1280px; height:720px; z-index:50; pointer-events:none; touch-action:none}
+.tcv.on{pointer-events:auto}
+.tcv[data-tool=pen]{cursor:crosshair}
+.tcv[data-tool=hl]{cursor:cell}
+.tcv[data-tool=er]{cursor:not-allowed}
+body.tl-laser .view, body.tl-laser .view *{cursor:none!important}
+.tlaser{position:absolute; left:-14px; top:-14px; width:28px; height:28px; border-radius:50%; pointer-events:none; z-index:90; opacity:0; transition:opacity 120ms; background:radial-gradient(circle,#fff 0 18%,#ff3b30 34%,rgba(255,59,48,.55) 62%,rgba(255,59,48,0) 100%); box-shadow:0 0 22px 8px rgba(255,59,48,.55)}
+.tlaser.on{opacity:1}
+
+.tdock{position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:70; width:62px; padding:8px 5px; display:flex; flex-direction:column; align-items:center; gap:5px; border-radius:18px; background:rgba(6,12,26,.86); border:1.5px solid rgba(255,255,255,.22); box-shadow:0 10px 30px rgba(0,0,0,.45); backdrop-filter:blur(6px)}
+.tdock[hidden],.ttmr[hidden],.tblank[hidden]{display:none}
+.tdock hr{width:80%; margin:2px 0; border:0; border-top:1.5px solid rgba(255,255,255,.2)}
+.tdock .tb{width:52px; min-height:50px; padding:5px 0 3px; border:0; border-radius:12px; background:transparent; color:#fff; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-family:inherit}
+.tdock .tb svg{width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+.tdock .tb span{font-size:13px; font-weight:700; line-height:1}
+.tdock .tb:hover{background:rgba(255,255,255,.12)}
+.tdock .tb.act{background:var(--accent); color:var(--accent-ink)}
+.tdock .tb:disabled{opacity:.35; cursor:default}
+.tdock .sws{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; padding:4px 2px; width:100%}
+.tdock .sw{width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,.55); background:var(--c); cursor:pointer; padding:0}
+.tdock .sw.act{box-shadow:0 0 0 3px #fff; transform:scale(1.12)}
+.tdock button:focus-visible,.ttmr button:focus-visible{outline:3px solid var(--accent); outline-offset:1px}
+
+.ttoast{position:absolute; left:50%; bottom:16px; transform:translate(-50%,10px); z-index:95; max-width:80%; padding:8px 20px; border-radius:999px; background:rgba(6,12,26,.9); border:1.5px solid var(--accent); color:#fff; font-size:20px; font-weight:700; opacity:0; pointer-events:none; transition:opacity 200ms, transform 200ms; text-align:center}
+.ttoast.on{opacity:1; transform:translate(-50%,0)}
+
+.ttmr{position:absolute; left:84px; bottom:14px; z-index:70; padding:8px 14px 9px; border-radius:18px; background:rgba(6,12,26,.9); border:1.5px solid rgba(255,255,255,.28); box-shadow:0 10px 30px rgba(0,0,0,.45); color:#fff; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:grab; user-select:none; touch-action:none}
+.ttmr .tl{font-size:15px; font-weight:700; color:var(--cyan)}
+.ttmr .tt{font-family:var(--font-display); font-weight:800; font-size:54px; line-height:1; font-variant-numeric:tabular-nums; direction:ltr}
+.ttmr.low .tt{color:#ffb347}
+.ttmr.over{border-color:#ff5a4e; animation:tmrFlash 700ms steps(2,jump-none) 8}
+.ttmr.over .tt,.ttmr.over .tl{color:#ff5a4e}
+@keyframes tmrFlash{50%{background:rgba(120,20,16,.95)}}
+.ttmr .tr,.ttmr .tp{display:flex; align-items:center; gap:6px}
+.ttmr button{min-width:38px; height:36px; border:0; border-radius:10px; background:rgba(255,255,255,.14); color:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; padding:0 8px}
+.ttmr button:hover{background:rgba(255,255,255,.26)}
+.ttmr .go{background:var(--accent); color:var(--accent-ink); min-width:48px}
+.ttmr .go svg{width:20px; height:20px; fill:currentColor; stroke:currentColor; stroke-width:2.4; stroke-linejoin:round; stroke-linecap:round}
+.ttmr .tp button{min-width:34px; height:30px; font-size:17px}
+.ttmr .tp small{font-size:14px; color:rgba(255,255,255,.7)}
+
+.tblank{position:absolute; inset:0; z-index:100; background:#000; display:flex; align-items:flex-end; justify-content:center; cursor:pointer}
+.tblank span{margin-bottom:22px; font-size:20px; color:rgba(255,255,255,.28); font-weight:700}
+@media (max-width:760px){.tdock{width:56px}.tdock .tb{width:46px}.ttmr{left:70px}}
+@media print{.tdock,.ttmr,.tlaser,.ttoast,.tblank,.tcv{display:none!important}}

@@ -42,7 +42,7 @@ slide({id:'ex31',ch:4,title:'مثال ٣-١',tag:'خطوة بخطوة',
   bindRows(cols[0],[{a:[40,1.5],w:['✓ M = 40 g/mol','✓ n = 60 ÷ 40 = 1.5 mol'],h:['23 + 16 + 1','اقسم 60 على كتلة المول']}]);
   bindRows(cols[1],[{a:[249.5,124.75],w:['✓ M = 249.5 g/mol','✓ m = 0.5 × 249.5 = 124.75 g'],h:['اجمع كل ما في الصيغة بما فيها الماء','اضرب 0.5 في كتلة المول']}]);
  },
- note:'<ul><li>مثال ٣-١ في كتاب الطالب (ص٦٠). الإجابات: 40 ثم 1.5 mol؛ 249.5 ثم 124.75 g.</li><li>كل خطوة تفتح التي بعدها.</li><li>خطأ متوقع: نسيان ماء التبلور في CuSO₄·5H₂O (5 × 18 = 90). الصيغة المتبعة في الحل: M ثم n = m ÷ M أو m = n × M.</li></ul>'});
+ note:'<ul><li>مثال ٣-١ في كتاب الطالب (ص٦١، وأسئلة ٣-٥ إلى ٣-٧ في الصفحة نفسها). الإجابات: 40 ثم 1.5 mol؛ 249.5 ثم 124.75 g.</li><li>كل خطوة تفتح التي بعدها.</li><li>خطأ متوقع: نسيان ماء التبلور في CuSO₄·5H₂O (5 × 18 = 90). الصيغة المتبعة في الحل: M ثم n = m ÷ M أو m = n × M.</li></ul>'});
 
 /* 16 question 3-5: mass from moles */
 slide({id:'q35',ch:4,title:'السؤال ٣-٥: احسب الكتلة بالجرامات',tag:'أجب',
@@ -186,7 +186,7 @@ slide({id:'race',ch:5,title:'سباق الفصل: حسابات المول',tag:'
 })();
 
 /* end-of-unit question 2 (student book p.78): carbon-12 as the standard, then moles and particles in CO2 */
-slide({id:'eou2',ch:6,title:'سؤال نهاية الوحدة ٢',tag:'كتاب الطالب ص٧٨',
+slide({id:'eou2',ch:6,title:'سؤال نهاية الوحدة ٢',tag:'أجب',
  html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
   <div class="frm brk" style="flex:1;padding:14px 18px;gap:10px"><p class="lead" style="margin:0;font-size:25px"><b>٢ (أ). يُستخدم الكربون ذرة قياسية لمقياس الكتلة الذرية النسبية. أي نظائر الكربون هو المقياس؟</b></p>
    ${optsHTML([{t:'الكربون-6'},{t:'الكربون-12'},{t:'الكربون-13'},{t:'الكربون-14'}])}<div class="fb fa" style="min-height:24px"></div></div>

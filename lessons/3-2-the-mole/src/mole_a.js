@@ -133,7 +133,7 @@ slide({id:'units',ch:1,title:'وحدات للعدّ',tag:'مطابقة بالس�
 /* 6 the mole */
 slide({id:'mole',ch:2,title:'المُول',tag:'اكشف العدد',
  html:function(){return `<div class="col grow" style="gap:14px;justify-content:center">
-  <div class="frm brk" style="padding:14px 26px;align-items:center"><p class="lead" style="margin:0;font-size:31px;text-align:center"><b style="color:var(--gold)">المُول:</b> كمية من مادة تحتوي على <b class="num">6.02×10<sup>23</sup></b> ذرة أو جزيء أو وحدة صيغة.</p></div>
+  ${dfcHTML({sm:true,t:'المُول',en:'Mole',h:'كمية من مادة تحتوي على <b class="num">6.02×10<sup>23</sup></b> ذرّة أو جُزيء أو وحدة صيغة (وفقاً لطبيعتها).'})}
   <div class="bigeq" style="font-size:76px;text-align:center;line-height:1.05;text-shadow:0 0 28px rgba(228,188,75,.45)">1 mol = <b>6.02×10<sup style="font-size:.55em">23</sup></b></div>
   <div style="display:flex;gap:16px;align-items:stretch">
    <div class="panel" style="flex:1;padding:12px 20px;gap:8px"><button class="btn acc" type="button" id="rv" style="align-self:flex-start">اكتب العدد كاملاً</button>
@@ -202,6 +202,7 @@ slide({id:'formula',ch:3,title:'المُول = الكتلة ÷ الكتلة ال
    <div style="display:flex;gap:8px;width:100%"><button type="button" class="btn sm cv" data-c="m" style="flex:1">غطِّ m</button><button type="button" class="btn sm cv" data-c="n" style="flex:1">غطِّ n</button><button type="button" class="btn sm cv" data-c="M" style="flex:1">غطِّ M</button></div>
   </div>
   <div class="col" style="flex:1;gap:12px;justify-content:center">
+   ${dfcHTML({sm:true,t:'الكتلة المولية',en:'Molar mass',h:'كتلة مول واحد من مادة ما؛ بوحدة قياس <b class="num">g/mol</b>.'})}
    <div class="panel" style="padding:12px 20px;align-items:center;gap:4px"><div class="sm" style="font-size:21px">المُول</div><div class="bigeq" id="eq" style="font-size:60px;line-height:1.1;color:var(--gold)">n = m ÷ M</div><div class="sm num" id="eqs" style="font-size:21px">mol = g ÷ (g/mol)</div></div>
    <div class="panel" style="padding:12px 20px;gap:10px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">جرّب</div>
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:24px;font-weight:700">كتلة <span class="num">2 mol</span> من مادة كتلتها المولية <span class="num">18 g/mol</span> =</span>${nin('a','g')}</div>
@@ -256,7 +257,7 @@ slide({id:'avo',ch:3,title:'عدد أفوجادرو ثابت',tag:'اختر ما
  html:function(){
   var S=[['C','كربون','12'],['Fe','حديد','56'],['H2O','ماء','18'],['MgO','أكسيد الماغنيسيوم','40']];
   return `<div class="col grow" style="gap:10px;justify-content:flex-start">
-   <div class="gbar" style="font-size:22px;padding:8px 20px">اختلاف الكتلة المولية واختلاف الصيغة يؤدي إلى أن عدد أفوجادرو يبقى ثابتاً رغم اختلاف الصيغة وكتلة المول الواحد</div>
+   ${dfcHTML({sm:true,cls:'tight',t:'ثابت أفوجادرو',en:'Avogadro constant',h:'عدد الجُسيمات في مول واحد ويُساوي <b class="num">6.02×10<sup>23</sup></b> <span class="num">(1 mol)</span>.'})}
    <div style="display:flex;gap:18px;flex:1;min-height:0;align-items:stretch">
     <div class="frm brk" style="flex:1;align-items:center;justify-content:center;padding:8px">
      <svg viewBox="0 0 640 300" style="width:100%;height:100%" aria-hidden="true">
