@@ -51,8 +51,8 @@ slide({id:'table',ch:2,title:'الجدول ٣-٢: الكتل الذرية الن
 /* 11 isotopes: definition and the formula */
 slide({id:'iso',ch:2,title:'النظائر: لماذا ليست الكتل أعداداً صحيحة؟',tag:'نقطة نقطة',
  html:function(){return '<div style="display:flex;gap:18px;flex:1;align-items:center"><div class="col grow" style="gap:16px;justify-content:center">'+
-  '<div class="frm brk" style="padding:24px 28px;gap:14px"><p style="font-size:31px;line-height:1.65"><b style="color:var(--gold)">النظائر:</b> ذرات للعنصر نفسه، تمتلك نفس العدد من البروتونات ولكنها تختلف في عدد النيوترونات.</p>'+
-   '<div id="a2"><p style="font-size:30px;line-height:1.65;border-top:1.5px solid var(--panel-line);padding-top:14px">لأن معظم العناصر لها نظائر، بالتالي يتم أخذ <span class="k">متوسط الكتلة النسبية</span> لذرات النظائر.</p></div></div>'+
+  dfcHTML({t:'النظائر',en:'Isotopes',h:'ذرّات للعنصر نفسه، تمتلك نفس عدد البروتونات، لكنّها تختلف في عدد النيوترونات.'})+
+  '<div class="frm brk" id="a2" style="padding:16px 28px"><p style="font-size:30px;line-height:1.6;margin:0">لأن معظم العناصر لها نظائر، بالتالي يتم أخذ <span class="k">متوسط الكتلة النسبية</span> لذرات النظائر.</p></div>'+
   '<div class="frm brk gold" id="fm"><div class="fh">قانون حساب متوسط الكتلة الذرية النسبية</div><div style="padding:14px 20px 2px;font-size:29px;line-height:1.75;text-align:center"><span class="mf" style="white-space:nowrap">A<sub>r</sub> =</span> <span style="white-space:nowrap">(كتلة النظير ١ × نسبته)</span> + <span style="white-space:nowrap">(كتلة النظير ٢ × نسبته)</span> + …</div><div style="padding:0 20px 2px;font-size:22px;line-height:1.6;text-align:center">نسبة النظير تُكتب عشرية: <span dir="ltr" style="display:inline-block">75% = 0.75</span></div><div style="padding:0 20px 12px;font-size:22px;line-height:1.6;text-align:center">مثال الكتاب (الكلور): <span class="mf" dir="ltr" style="display:inline-block">(35 × 0.75) + (37 × 0.25) = 35.5</span></div></div>'+
   '</div>'+
   '<div style="width:300px;flex:none"><img class="pic fade" src="'+IMG.goals_navy+'" alt="" style="width:330px;max-width:none"></div></div>';},
@@ -155,7 +155,7 @@ function bindFlow(el,C,mode){
 (function(){
   var C=[{f:'H<sub>2</sub>',name:'هيدروجين',parts:[['H',2]],mr:2,sum:'٢ × ١ = ٢'},{f:'H<sub>2</sub>O',name:'ماء',parts:[['H',2],['O',1]],mr:18,sum:'٢ + ١٦ = ١٨'},{f:'NaCl',name:'كلوريد الصوديوم',parts:[['Na',1],['Cl',1]],mr:58.5,sum:'٢٣ + ٣٥٫٥ = ٥٨٫٥'}];
   slide({id:'mr',ch:3,title:'كتلة الصيغة النسبية Mr: ورشة حساب',tag:'ورشة حساب',
-   html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="panel flat" style="padding:12px 20px"><p style="font-size:24px;line-height:1.5"><b>M<sub>r</sub></b> = مجموع الكتل الذرية النسبية Ar لكل الذرات في الصيغة. اعدّ الذرات أولاً، ثم اضرب في Ar واجمع.</p></div><div style="display:flex;gap:14px;flex:1">'+C.map(function(c,i){return mrCardHTML(c,i,true)}).join('')+'</div></div>'+arSide(['H','O','Na','Cl','C','N','Mg','Ca']);},
+   html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start">'+dfcHTML({sm:true,t:'كتلة الصيغة النسبية',en:'Relative formula mass (<span class="ar">M<sub>r</sub></span>)',h:'حاصل جمع الكتل الذرّية النسبية للعناصر الموجودة في الصيغة الكيميائية للمادة. وللجُزيء تُسمّى «الكتلة الجُزيئية النسبية»، ولها الرمز نفسه <b class="num">M<sub>r</sub></b>.'})+howHTML('طريقة الحساب',['اعدّ الذرات','اضرب في <span class="num">A<sub>r</sub></span>','اجمع النواتج'])+'<div style="display:flex;gap:14px;flex:1">'+C.map(function(c,i){return mrCardHTML(c,i,true)}).join('')+'</div></div>'+arSide(['H','O','Na','Cl','C','N','Mg','Ca']);},
    init:function(el){ $$('.mrc',el).forEach(function(c,i){bindMrCard(c,C[i])}) },
    note:'<ul><li>عرضك (شريحة ١١، الشريط الذهبي): H₂ ، H₂O ، NaCl. الطالب يكتب عدد كل ذرة ثم المجموع.</li><li>الجزيء → «الكتلة الجزيئية النسبية»، والمركب الأيوني (NaCl) → «كتلة الصيغة النسبية»، وكلاهما M<sub>r</sub>.</li></ul>'});
 })();

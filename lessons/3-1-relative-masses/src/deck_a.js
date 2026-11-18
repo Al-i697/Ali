@@ -160,7 +160,7 @@ slide({id:'why12',ch:2,title:'أسباب اختيار ذرة الكربون',tag
     return s;
   }
   slide({id:'balance',ch:2,title:'الكتلة الذرية النسبية (Ar)',tag:'سحب وإفلات',
-   html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start"><div class="frm brk gold" style="padding:12px 24px"><p style="font-size:23px;line-height:1.55;text-align:center"><b>الكتلة الذرية النسبية (A<sub>r</sub>):</b> متوسط كتل ذرات العنصر التي توجد في الطبيعة وفقاً لمقياس تكون فيه كتلة ذرة الكربون-12 مساوية لـ 12 وحدة كتلة ذرية (ذ.ك.ذ).</p></div>'+
+   html:function(){return '<div class="col grow" style="gap:12px;justify-content:flex-start">'+dfcHTML({sm:true,t:'الكتلة الذرية النسبية',en:'Relative atomic mass (<span class="ar">A<sub>r</sub></span>)',h:'مُتوسّط كتل ذرّات العنصر التي توجد في الطبيعة وفقاً لمقياس تكون فيه كتلة ذرّة الكربون-12 مساوية تماماً لـ 12 وحدة كتلة ذرّية (و.ك.ذ).'})+''+
     '<div style="display:flex;gap:16px;flex:1;min-height:0">'+
     '<div class="frm brk" style="width:340px;flex:none;padding:10px 14px;gap:6px"><div class="rounds" id="rds">'+ROUNDS.map(function(r,i){return '<span class="rd" data-i="'+i+'">'+ar(i+1)+'</span>'}).join('')+'</div>'+
      '<p id="rq" style="font-size:22px;line-height:1.4"></p><div class="tray" id="tr"></div><div class="fb" id="bfb" style="font-size:18px;line-height:1.35"></div><button class="btn acc sm hide" type="button" id="nx">الجولة التالية</button></div>'+

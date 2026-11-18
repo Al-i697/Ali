@@ -9,5 +9,5 @@ function dfcHTML(o){
     '<b class="dn">'+o.t+'</b>'+(o.en?'<i class="de" dir="ltr">'+o.en+'</i>':'')+'</div><p class="dx">'+o.h+'</p></div>';
 }
 function howHTML(label,steps,cls){
-  return '<div class="how'+(cls?' '+cls:'')+'"><span class="hl">'+label+'</span>'+steps.map(function(s,i){return '<span class="hs"><i class="num">'+(i+1)+'</i>'+s+'</span>'+(i<steps.length-1?'<span class="ha" aria-hidden="true">◀</span>':'')}).join('')+'</div>';
+  return '<div class="how'+(cls?' '+cls:'')+'"><span class="hl">'+label+'</span>'+steps.map(function(s,i){return '<span class="hs"><i class="num">'+(i+1)+'</i><span class="ht">'+s+'</span></span>'+(i<steps.length-1?'<span class="ha" aria-hidden="true">◀</span>':'')}).join('')+'</div>';
 }

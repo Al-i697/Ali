@@ -1,5 +1,5 @@
 /* Teacher-tools check (u4/tools.js): dock, pen / highlighter / eraser, undo and clear, drawings kept per slide, laser pointer, timer, blank screen, keys ignored inside answer boxes,
-   and the slide underneath untouched while a tool is on.   node ../_core/tools/tools_check.js lesson32.html */
+   and the slide underneath untouched while a tool is on.   node ../_core/tools/tools_check.js lesson32.html [slide number that has an answer box, for the typing check] */
 const {chromium}=require('playwright');const path=require('path');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1280,height:720}});
  await p.route(/fonts\.(googleapis|gstatic)/,r=>r.abort());
@@ -21,9 +21,9 @@ const {chromium}=require('playwright');const path=require('path');
  await drag(300,200,700,260); await p.keyboard.press('h'); await drag(300,330,800,330); const hl=await inked(); ok('the highlighter adds a wide stroke', hl>a, hl+' px');
  await p.keyboard.press('Escape'); ok('Esc leaves the drawing tool', await p.evaluate(()=>!document.querySelector('.tcv').classList.contains('on')));
  // drawings belong to the slide
- await p.click('#bNext'); await p.waitForTimeout(400); const other=await cur(); ok('the next slide opens', other!==slideBefore, slideBefore+' -> '+other);
+ await p.evaluate(()=>{const g=[...document.querySelectorAll('#prog .seg')]; g[g.findIndex(b=>b.classList.contains('cur'))+1].click()}); await p.waitForTimeout(500); const other=await cur(); ok('the next slide opens', other!==slideBefore, slideBefore+' -> '+other);
  ok('the next slide has no ink', (await inked())===0);
- await p.click('#bPrev'); await p.waitForTimeout(400); ok('going back restores the ink', (await inked())>20);
+ await p.evaluate(()=>{const g=[...document.querySelectorAll('#prog .seg')]; g[g.findIndex(b=>b.classList.contains('cur'))-1].click()}); await p.waitForTimeout(500); ok('going back restores the ink', (await inked())>20);
  // clear and undo the clear
  await p.keyboard.press('c'); ok('C clears the slide', (await inked())===0);
  await p.keyboard.press('Control+z'); ok('Ctrl+Z brings the cleared drawing back', (await inked())>20);
@@ -51,8 +51,9 @@ const {chromium}=require('playwright');const path=require('path');
  await p.keyboard.press('Space'); ok('a key brings the slide back without changing slide', await p.evaluate(()=>document.querySelector('.tblank').hidden)&&(await cur())===sid);
  // keys typed into an answer box are not shortcuts
  await p.keyboard.press('Escape');
- const hasInput=await p.evaluate(()=>!!document.querySelector('.slide.on input'));
- if(hasInput){ await p.focus('.slide.on input'); await p.keyboard.type('plhtbec'); ok('typing in an answer box triggers no tool', await p.evaluate(()=>!document.querySelector('.tcv').classList.contains('on')&&document.querySelector('.tblank').hidden&&document.querySelector('.ttmr').hidden&&!document.body.classList.contains('tl-laser'))) }
+ const k=+process.argv[3]||0; if(k){ await p.keyboard.press('Escape'); await p.evaluate(i=>document.querySelectorAll('#prog .seg')[i].click(),k-1); await p.waitForTimeout(900) }
+ const box=p.locator('.slide.on input:visible:not([disabled]):not([readonly])').first(), hasInput=await box.count()>0;
+ if(hasInput){ await box.focus(); await p.keyboard.type('plhtbec'); ok('typing in an answer box triggers no tool', await p.evaluate(()=>!document.querySelector('.tcv').classList.contains('on')&&document.querySelector('.tblank').hidden&&document.querySelector('.ttmr').hidden&&!document.body.classList.contains('tl-laser'))) }
  else ok('(this slide has no answer box: input-key check skipped)', true);
  ok('no script errors', errs.length===0, errs.join(' | '));
  res.forEach(r=>console.log((r[1]?'ok   ':'FAIL ')+r[0]+(r[2]?'  ['+r[2]+']':'')));

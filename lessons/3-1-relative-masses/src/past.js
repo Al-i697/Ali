@@ -63,7 +63,7 @@
   /* end-of-unit question 1 (student book p.78): the ammonium sulfate fertiliser */
   /* a verbal equation always starts from the RIGHT: reactants on the right, the arrow pointing left, products on the left (forced right-to-left, so no browser can flip it) */
   function veq(a,b){ return '<span dir="rtl" style="unicode-bidi:isolate"><bdi dir="rtl">'+a+'</bdi> ← <bdi dir="rtl">'+b+'</bdi></span>' }
-  slide({id:'eou1',ch:6,title:'سؤال نهاية الوحدة ١',tag:'كتاب الطالب ص٧٨',
+  slide({id:'eou1',ch:6,title:'سؤال نهاية الوحدة ١',tag:'أجب',
    html:function(){
     function row(lab,id,unit){return '<div class="frm brk" style="padding:8px 14px;gap:4px"><div style="font-size:21px;line-height:1.35">'+lab+'</div><div style="display:flex;align-items:center;gap:10px">'+ninHTML(id,unit,'sm')+'<div class="fb" style="flex:1;min-height:22px;font-size:18px"></div></div></div>'}
     return '<div class="col grow" style="gap:8px;justify-content:flex-start">'+
