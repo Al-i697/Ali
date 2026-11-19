@@ -7,8 +7,8 @@ slide({id:'cm',ch:2,title:'التركيز المولي: المثلث',tag:'اض�
    ${triSVG('n (mol)','C (mol/L)','V (L)',{cv:1,w:340})}
    <div class="sm" style="font-size:20px;text-align:center">n عدد المولات ، C التركيز المولي ، V الحجم باللتر</div></div>
   <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
-   <div class="frm brk" style="padding:14px 22px;gap:6px;align-items:center;min-height:130px;justify-content:center"><div class="bigeq" id="tf" style="font-size:44px;color:var(--gold)">؟</div><div class="sm" id="tfd" style="font-size:21px;text-align:center"> </div></div>
-   <div class="panel" style="padding:10px 18px;gap:4px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">وقبل ذلك من الدرس ٣-٢:</div><div class="bigeq" style="font-size:30px;text-align:start;color:var(--gold)">n = m ÷ M<sub>r</sub></div></div>
+   ${lawHTML({sm:true,cls:'lawbox',t:'القانون',body:'<div class="bigeq" id="tf" style="font-size:44px;color:var(--gold);text-align:center">؟</div><div class="sm" id="tfd" style="font-size:21px;text-align:center"> </div>'})}
+   ${remHTML({sm:true,t:'وقبل ذلك من الدرس ٣-٢',eq:'n = m ÷ M<sub>r</sub>'})}
    <div class="panel hide" id="mq" style="padding:10px 18px;gap:5px"><div style="font-size:21px;font-weight:800">محلول من NaOH تركيزه <span class="num">1 mol/L</span>. كم غراماً من NaOH في كل لتر؟ (Na = 23 ، O = 16 ، H = 1)</div>${optsHTML([{t:'1 g'},{t:'40 g'},{t:'23 g'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:8px"')}<div class="fb" style="min-height:22px"></div></div>
    <div class="gbar hide" id="gb" style="font-size:20px">التركيز المولي هو <b>عدد المولات في كل لتر</b>: 1 mol/L من NaOH = 40 g/L.</div></div></div>`;},
  init:function(el){

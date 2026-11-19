@@ -135,8 +135,7 @@ slide({id:'draw',ch:1,title:'أكمل الصيغة البنائية',tag:'ارس
     <div style="display:flex;align-items:center;gap:14px"><span style="font-size:23px;font-weight:800">عدد الهيدروجين:</span><b class="num" id="hc" style="font-size:38px;color:var(--gold)">0</b><span class="num" style="font-size:26px;font-weight:800" id="hm"></span></div>
     <div class="fb" style="min-height:26px;text-align:center"></div></div>
    <div class="col" style="width:350px;flex:none;gap:10px;justify-content:center">
-    <div class="panel" style="padding:14px 18px;gap:8px"><div style="font-size:24px;font-weight:800">تذكّر</div>
-     ${ul(['الرابطة الثنائية بين أول ذرتي كربون، ارسمها <b>خطين</b>.','حول كل كربون <b>٤ روابط</b>: الخطان المزدوجان يُحسبان اثنتين.','عدد H = 2n'])}</div>
+    ${remHTML({sm:true,items:['الرابطة الثنائية بين أول ذرتي كربون، ارسمها <b>خطين</b>.','حول كل كربون <b>٤ روابط</b>: الخطان المزدوجان يُحسبان اثنتين.','عدد H = 2n']})}
     <div class="gbar hide" id="gb" style="font-size:21px">أنجزت الثلاثة: لكل كربون ٤ روابط، وعدد H = 2n.</div></div></div>`;},
  init:function(el){
   var done={}, fb=$('.fb',el), filled;

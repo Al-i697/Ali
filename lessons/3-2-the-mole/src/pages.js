@@ -6,3 +6,9 @@ var BOOKPG={
   ar:'كتاب الطالب ص61', ex31:'كتاب الطالب ص61', q35:'كتاب الطالب ص61', q36:'كتاب الطالب ص61', q37:'كتاب الطالب ص61',
   act31:'كتاب الطالب ص56 و62', tbl33a:'كتاب النشاط ص38–39', tbl33b:'كتاب النشاط ص38–39', eou2:'كتاب الطالب ص78'
 };
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={count:'intro', weigh:'intro', graphite:'intro', t34a:'ask', t34b:'ask', ar:'ask', chain:'learn', act31:'learn', ways:'learn'};
+/* laws that appear only as a clickable triangle in the lesson (no static card): listed for the student's one-page summary (_core/u4/summary.js) */
+var SUMLAWS=[['قانون المول','n = m ÷ M','عدد المولات = الكتلة ÷ الكتلة المولية (g/mol)'],['عدد الجسيمات','N = n × 6.02 × 10²³','كل 1 mol يحتوي على 6.02 × 10²³ جسيم']];
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={ex31:1.25, chain:1.25};

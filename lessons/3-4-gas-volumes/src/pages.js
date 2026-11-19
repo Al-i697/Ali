@@ -9,3 +9,13 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=['labq'];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={matrix:'ask', challenge:'ask', avog:'learn', rtp:'learn', tri:'learn', flow34:'learn', labq:'act'};
+/* «توقّع ثم اكتشف»: the prediction asked before a lab slide (see _core/u4/predict.js). The questions are ours (من عندي); the answers are the ones the lab itself shows. */
+var PREDICT={
+  lab:{q:'نضيف حمض الهيدروكلوريك الزائد إلى شريط ماغنيسيوم ونجمع غاز الهيدروجين. إذا ضاعفنا طول الشريط (وكتلته)، فإن حجم الغاز:',opts:['يتضاعف تقريباً','يبقى كما هو','يتناقص'],ok:0,why:'عدد مولات Mg يتضاعف فيتضاعف عدد مولات H₂ (النسبة 1 : 1)، والحجم يتناسب مع عدد المولات.',when:'#gb'}
+};
+/* laws that appear only as a clickable triangle in the lesson (no static card): listed for the student's one-page summary (_core/u4/summary.js) */
+var SUMLAWS=[['الحجم المولي','V = n × 24','الحجم (L) = عدد المولات × 24 L/mol عند درجة حرارة الغرفة والضغط القياسي'],['عدد المولات','n = V ÷ 24','V (L) ÷ 24 L/mol، أو V (mL) ÷ 24000']];
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={q312:1.25, q313:1.25};

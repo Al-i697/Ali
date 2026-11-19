@@ -40,6 +40,12 @@ python3 site/build.py   # يبني site/dist: index.html (الصفحة الرئ�
 | `style.css`, `theme*.css` | التنسيق ولوحات الألوان (`data-pal`: navy, emerald, ember, gold, violet) |
 | `art_core.js` | تدرجات الكرات والمساعدات المشتركة للرسوم |
 | `stickers.js`, `stickers.css`, `stickers_assets.js` | الملصقات: ٥٢ ملصقاً مقصوصاً من لوحات الملصقات (`art-src/stickers`) + ٨ ملصقات مرسومة بالكود. تُوضع تحت محتوى الشرائح، وتظهر ملصقة مديح وشرارات عند الإجابة الصحيحة، وزر «ملصقات» في الشريط العلوي يخفيها ويحفظ الاختيار |
+| `u4/bookpg.js`, `u4/defn.js`, `u4/book.css` | `build(..., book=True)`: شارة صفحة الكتاب فوق العنوان (`BOOKPG` في `src/pages.js`)، وبطاقات المحتوى الموحدة: «تعريف» (`dfcHTML`)، «قانون» (`lawHTML`)، «انتبه» (`warnHTML`)، «تذكّر» (`remHTML`)، وشريط الخطوات `howHTML`. فحص: `tools/book_check.js` |
+| `u4/kinds.js`, `u4/kinds.css` | `kinds=True` (نوفمبر ٢٠٢٦): نوع كل شريحة (تمهيد، شرح، مثال، نشاط، تدريب، امتحان، تذكرة خروج، الواجب) بلون ثابت فوق العنوان وتحت كل جزء من الشريط العلوي وفي التذييل والفهرس، والزمن المقترح في ملاحظة المعلم (تقديري ومن عندي). `KINDS` في `src/pages.js` يصحّح ما لا يكفي عنوانه. فحص: `tools/kinds_check.js` |
+| `u4/predict.js` | `predict=True`: «توقّع ثم اكتشف» قبل المختبرات الافتراضية (`PREDICT` في `src/pages.js`؛ الأسئلة من عندي). لا يظهر في وضع الاختبار `?pts=all`. فحص: `tools/predict_check.js` |
+| `u4/summary.js`, `u4/summary.css` | `summary=True`: ملخص الطالب في صفحة A4 واحدة قابلة للطباعة (زر في فهرس الدرس أو المفتاح S)، يُجمَّع من الأهداف وخلاصة الدرس وبطاقات الشرائح والواجب وصفحات الكتابين (`SUMLAWS` للقوانين التي تظهر مثلثاً فقط). فحص: `tools/summary_check.js` |
+| `u4/fill.js` | `fill=True`: تكبير محتوى الشرائح الصغيرة في مساحة كبيرة بـ CSS zoom (`FILL` في `src/pages.js`)، ومعاملاته من `tools/fill_tune.js` الذي يقيس كل شريحة بكل ما يظهر لاحقاً |
+| `u4/tools.js`, `u4/tools.css` | `tools=True`: أدوات المعلم (قلم، تظليل، ممحاة، ليزر، مؤقت، شاشة فاضية). فحص: `tools/tools_check.js` |
 | `tools/cut_stickers.py`, `tools/pack_stickers.py` | قصّ الملصقات من اللوحات بحافة بيضاء ثم تحويلها إلى `stickers_assets.js` |
 
 ## درس جديد

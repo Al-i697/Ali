@@ -1,0 +1,27 @@
+/* slide kinds: one fixed colour per kind (see u4/kinds.js) */
+[data-k=intro]{--k:#5BC0EB; --kb:#1d374d}
+[data-k=learn]{--k:#9AA9FF; --kb:#2a3251}
+[data-k=ex]{--k:#35D0BA; --kb:#143a42}
+[data-k=act]{--k:#82DB6E; --kb:#253d31}
+[data-k=ask]{--k:#F2C14E; --kb:#3e372a}
+[data-k=exam]{--k:#FF7C98; --kb:#41283a}
+[data-k=exit]{--k:#FFA35A; --kb:#41302d}
+[data-k=hw]{--k:#CBC5E8; --kb:#35384c}
+/* the pill above the title, opposite corner to the page badge */
+.hd .kd{position:absolute; right:0; top:-34px; height:28px; display:inline-flex; align-items:center; gap:8px; padding:0 15px 0 13px; border-radius:15px; background:var(--kb,#161b2c); border:2px solid var(--k); color:#fff; font-weight:800; font-size:16px; line-height:1; white-space:nowrap; z-index:2}
+.hd .kd i{width:11px; height:11px; border-radius:50%; background:var(--k); flex:0 0 auto}
+/* a coloured line under every segment of the progress bar */
+.prog .seg[data-k]::before{content:""; position:absolute; inset-inline:16%; bottom:-7px; height:4px; border-radius:2px; background:var(--k); opacity:1; pointer-events:none}
+/* the lesson index: colour key + a small tag on every row */
+.kkey{display:flex; flex-wrap:wrap; gap:8px 10px; margin:2px 0 14px}
+.kkey span{display:inline-flex; align-items:center; gap:7px; padding:3px 11px 3px 10px; border-radius:13px; border:1.5px solid var(--k); font-size:14px; font-weight:700; line-height:1.4}
+.kkey span i{width:9px; height:9px; border-radius:50%; background:var(--k)}
+.idx .it[data-k]{border-inline-start:4px solid var(--k)}
+.idx .it .kl{margin-inline-start:auto; padding:1px 9px; border-radius:11px; border:1.5px solid var(--k); font-size:12.5px; font-weight:700; line-height:1.5; flex:0 0 auto}
+@media (max-width:760px){ .hd .kd{height:23px; font-size:13px; padding:0 10px} }
+.kkey+.ktot{margin:-6px 0 14px; font-size:14.5px; opacity:.85}
+.note .tmin{margin:0 0 8px; font-size:15px; opacity:.9}
+.note .tmin small{opacity:.8}
+/* the footer line is now longer (the kind word comes first): it must never push the Next button out of the screen */
+.where{min-width:0; overflow:hidden}
+.where small{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}

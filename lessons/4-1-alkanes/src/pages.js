@@ -9,3 +9,7 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=[];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={carbon:'learn', bonds:'learn', hydro:'learn', alk:'learn', names:'learn', formula:'learn', q1to4:'ask', draw:'ask', names2:'ask', q89:'ask'};
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={};

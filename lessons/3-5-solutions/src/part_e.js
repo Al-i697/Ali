@@ -39,7 +39,7 @@ chainSlide({id:'ex310',ch:4,title:'مثال ٣-١٠: نسبة ١ : ٢',
 rowsSlide({id:'q318',ch:4,title:'سؤال ٣-١٨: تركيز حمض الكبريتيك',
  intro:'تفاعل <b class="num">20 mL</b> من NaOH تركيزه <b class="num">0.1 mol/L</b> مع <b class="num">22.7 mL</b> من حمض الكبريتيك: <span class="num">2NaOH + H<sub>2</sub>SO<sub>4</sub> → Na<sub>2</sub>SO<sub>4</sub> + 2H<sub>2</sub>O</span>. احسب تركيز الحمض بالخطوات:',
  rows:[{n:'a',q:'أ. عدد مولات NaOH في 20 mL',u:'mol',lab:'n =',a:0.002,t:0.00003,w:'✓ 0.1 × 0.020 = 0.002 mol',h:'n = C × V (بالـ L)'},{n:'b',q:'ب. عدد مولات H<sub>2</sub>SO<sub>4</sub> لكل 1 mol من NaOH',u:'mol',lab:'=',a:0.5,t:0.005,w:'✓ النسبة H₂SO₄ : NaOH = 1 : 2 = 0.5',h:'انظر إلى المعاملات في المعادلة'},{n:'c',q:'ج. عدد مولات H<sub>2</sub>SO<sub>4</sub> المتفاعلة',u:'mol',lab:'n =',a:0.001,t:0.000015,w:'✓ 0.002 × 0.5 = 0.001 mol',h:'اضرب نتيجة (أ) في نتيجة (ب)'},{n:'d',q:'د. التركيز المولي لحمض الكبريتيك',u:'mol/L',lab:'C =',a:0.001/0.0227,t:0.0007,w:'✓ 0.001 ÷ 0.0227 = 0.044 mol/L',h:'اقسم على 22.7 mL = 0.0227 L'}],
- side:'<div class="defc gold" style="flex:none"><b>انتبه للنسبة</b><span>2NaOH : 1H<sub>2</sub>SO<sub>4</sub> ← عدد مولات الحمض <b>نصف</b> عدد مولات القاعدة.</span></div>',
+ side:warnHTML({sm:true,t:'انتبه للنسبة',h:'2NaOH : 1H<sub>2</sub>SO<sub>4</sub> ← عدد مولات الحمض <b>نصف</b> عدد مولات القاعدة.'}),
  gbar:'<b>0.044 mol/L</b>. الخطوات: مولات القاعدة ← نسبة ← مولات الحمض ← ÷ الحجم.',
  note:'<ul><li>كتاب الطالب سؤال ٣-١٨ (ص٧٦). الإجابة: ٠٫٠٠٢ mol، ٠٫٥، ٠٫٠٠١ mol، ٠٫٠٤٤ mol/L.</li></ul>'});
 
@@ -48,7 +48,7 @@ chainSlide({id:'q319',ch:4,title:'سؤال ٣-١٩: حجم الحمض',
  eq:'NaOH + HCl → NaCl + H<sub>2</sub>O',eqSize:34,data:'تمت معايرة <b class="num">25 mL</b> من NaOH تركيزه <b class="num">0.1 mol/L</b> مع HCl تركيزه <b class="num">0.2 mol/L</b>. احسب حجم الحمض المستخدم بالـ mL.',
  labels:['المعطى (NaOH)','n(NaOH)','n(HCl)','V(HCl)'],first:'C = 0.1<br>V = 25 mL',
  steps:[{n:'e1',q:'n(NaOH) = C × V',u:'mol',lab:'n =',a:0.0025,t:0.00003,w:'✓ 0.1 × 0.025 = 0.0025 mol',h:'حوّل 25 mL إلى 0.025 L',fill:'0.0025 mol'},{n:'e2',q:'n(HCl) من النسبة 1 : 1',u:'mol',lab:'n =',a:0.0025,t:0.00003,w:'✓ النسبة 1 : 1',h:'1 mol HCl لكل 1 mol NaOH',fill:'0.0025 mol'},{n:'e3',q:'V(HCl) = n ÷ C',u:'mL',lab:'V =',a:12.5,t:0.15,w:'✓ 0.0025 ÷ 0.2 = 0.0125 L = 12.5 mL',h:'V = n ÷ C ثم حوّل إلى mL',fill:'12.5 mL'}],
- side:'<div class="defc blue" style="flex:none"><b>تحقق من المنطق</b><span>الحمض أقوى تركيزاً (0.2 مقابل 0.1) فنحتاج حجماً <b>أقل</b> منه من القاعدة (12.5 &lt; 25).</span></div>',
+ side:remHTML({sm:true,tag:'تحقق',t:'تحقق من المنطق',h:'الحمض أقوى تركيزاً (0.2 مقابل 0.1) فنحتاج حجماً <b>أقل</b> منه من القاعدة (12.5 &lt; 25).'}),
  gbar:'الحجم <b>12.5 mL</b>: هنا نبحث عن <b>حجم</b> لا تركيز: <b>V = n ÷ C</b>.',
  note:'<ul><li>كتاب الطالب سؤال ٣-١٩ (ص٧٦). الإجابة: ١٢٫٥ mL.</li></ul>'});
 

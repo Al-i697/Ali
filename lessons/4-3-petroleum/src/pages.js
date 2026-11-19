@@ -10,3 +10,12 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=[];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={order:'ask', uses:'ask', why:'ask', labq:'act', labcq:'act'};
+/* «توقّع ثم اكتشف»: the prediction asked before a lab slide (see _core/u4/predict.js). The questions are ours (من عندي); the answers are the ones the lab itself shows. */
+var PREDICT={
+  lab:{q:'نسخّن النفط الخام ببطء ونجمع المشتقات على التوالي. أي جزء يُجمع أولاً؟',opts:['الأخف (الأقل درجة غليان)','الأثقل (الأعلى درجة غليان)','كل الأجزاء معاً'],ok:0,why:'الجزء الأقل درجة غليان يتبخر أولاً فيُجمع أولاً، ثم الأثقل تدريجياً مع ارتفاع الحرارة.',when:'#gb'},
+  labc:{q:'جُمع غاز من تكسير البارافين فوق الحفّاز الساخن. ماذا يحدث عند إضافة ماء البروم إلى هذا الغاز؟',opts:['يزول لون ماء البروم','لا يتغير لونه','يصبح لونه أغمق'],ok:0,why:'التكسير ينتج ألكينات غير مشبعة، فيزول لون ماء البروم بإضافة البروم على الرابطة الثنائية.',when:'#gb'}
+};
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={crack2:1.25};

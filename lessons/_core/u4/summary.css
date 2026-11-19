@@ -1,0 +1,47 @@
+/* the student's one-page summary (u4/summary.js): a preview on screen, one A4 sheet on paper */
+.sumov{position:fixed; inset:0; z-index:200; display:none; flex-direction:column; align-items:center; gap:12px; padding:14px 12px 20px; background:rgba(4,8,18,.9); overflow:auto}
+.sumov.on{display:flex}
+.sumov .sbar{display:flex; gap:12px}
+.sumov .sbar button{height:42px; padding:0 26px; border-radius:21px; border:2px solid #ffd76b; background:transparent; color:#fff; font:700 19px Cairo,Tajawal,sans-serif; cursor:pointer}
+.sumov .sbar .sprint{background:#ffd76b; color:#1b1400}
+.sheet2{width:min(794px,100%); background:#fff; color:#17202a; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); font-family:Tajawal,Cairo,sans-serif}
+.sheet2 .sbox{padding:26px 30px 22px; display:flex; flex-direction:column; gap:12px}
+.sheet2 header{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:3px solid #1b6a8a}
+.sheet2 .sh1{font:800 26px Cairo,sans-serif; color:#1b6a8a}
+.sheet2 .sh2{font:700 18px Cairo,sans-serif; color:#37464f}
+.sheet2 .ss h3{margin:0 0 5px; padding-inline-start:9px; border-inline-start:5px solid #c99a16; font:800 17px Cairo,sans-serif; color:#17202a}
+.sheet2 .ss ul{margin:0; padding-inline-start:22px; font-size:15px; line-height:1.55}
+.sheet2 .ss li{margin:1px 0; break-inside:avoid}
+.sheet2 .ss.goals ul,.sheet2 .ss.bul ul{columns:2; column-gap:26px}
+.sheet2 .sg{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.sheet2 .sc{border:1.6px solid #c99a16; border-inline-start-width:6px; border-radius:8px; padding:6px 10px 7px; font-size:14.5px; line-height:1.5; break-inside:avoid; background:#fffaf0}
+.sheet2 .sc.law{border-color:#1b8aa6; background:#f0fafd}
+.sheet2 .sc.warn{border-color:#e07a30; background:#fff5ed}
+.sheet2 .sc.rem{border-color:#7c5cd6; background:#f5f1ff}
+.sheet2 .sc .st{display:block; font:800 15.5px Cairo,sans-serif; margin-bottom:2px}
+.sheet2 .sc .st i{font-weight:600; font-size:.9em; color:#4b5a64}
+.sheet2 .sc .se{font:700 19px "STIX Two Text",Cairo,serif; text-align:center; padding:2px 0; color:#7a5a00}
+.sheet2 .sc p{margin:2px 0}
+.sheet2 .spg{margin:5px 0 0; font-weight:700; font-size:14.5px; color:#1b6a8a}
+.sheet2 footer{margin-top:auto; padding-top:8px; border-top:1.5px dashed #9aa7b0; font-size:14px; color:#37464f}
+.sheet2 b{font-weight:800}
+@media (max-width:760px){ .sheet2 .sg{grid-template-columns:1fr} .sheet2 .sbox{padding:18px 16px} }
+@page{size:A4; margin:10mm}
+@media print{
+  html.sum-open body>*:not(#sumov){display:none!important}
+  html.sum-open,html.sum-open body{background:#fff!important}
+  html.sum-open .sumov{position:static; display:block; padding:0; background:#fff; overflow:visible}
+  html.sum-open .sumov .sbar{display:none}
+  html.sum-open .sheet2{width:100%; box-shadow:none; border-radius:0}
+  html.sum-open .sheet2 .sbox{padding:0; gap:8px}
+  html.sum-open .sheet2 .ss ul{font-size:13.5px; line-height:1.45}
+  html.sum-open .sheet2 .sc{font-size:13px; line-height:1.42; padding:4px 9px 5px}
+  html.sum-open .sheet2 .sc .se{font-size:17px}
+  html.sum-open .sheet2 .sh1{font-size:23px}
+  .sheet2 *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+/* the button in the lesson index */
+.sumbtn{display:inline-flex; align-items:center; gap:9px; margin:2px 0 12px; height:40px; padding:0 18px 0 14px; border-radius:20px; border:2px solid #ffd76b; background:rgba(255,215,107,.12); color:inherit; font:700 17px Cairo,Tajawal,sans-serif; cursor:pointer}
+.sumbtn svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.sumbtn kbd{font:700 14px Cairo,sans-serif; padding:0 7px; border-radius:6px; border:1.5px solid currentColor; opacity:.8}
+.sumbtn:hover,.sumbtn:focus-visible{background:rgba(255,215,107,.25); outline:none}

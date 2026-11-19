@@ -1412,12 +1412,135 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 .dfc.sm .dn{font-size:30px}
 .dfc.sm .de{font-size:21px}
 .dfc.sm .dx{font-size:24px; line-height:1.45}
+.dfc.xs{gap:3px; padding:6px 16px 8px}
+.dfc.xs .dt{height:24px; font-size:14px; padding:0 11px 0 9px}
+.dfc.xs .dn{font-size:25px}
+.dfc.xs .de{font-size:17px}
+.dfc.xs .dx{font-size:20px; line-height:1.4}
 .dfc .eg{display:block; margin-top:4px; color:var(--cyan); font-size:.86em; font-weight:700}
 .how{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .how .hl{font-weight:800; font-size:20px; color:var(--cyan)}
 .how .hs{display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:4px 16px 4px 8px; border-radius:999px; background:rgba(var(--d2),.7); border:1.5px solid rgba(var(--t2),.5); font-size:23px; font-weight:700}
 .how .hs i{flex:none; width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#06121c; font-style:normal; font-weight:800; font-size:18px; display:inline-flex; align-items:center; justify-content:center}
 .how .ha{color:var(--muted); font-size:14px}
+
+/* ===== law / warning / reminder cards (same family as the definition card, u4/defn.js) ===== */
+.dfc.law{border-color:var(--cyan); background:linear-gradient(135deg,rgba(80,200,240,.26),rgba(80,200,240,.08)),linear-gradient(rgba(12,10,22,.86),rgba(12,10,22,.86)); box-shadow:0 0 26px rgba(80,200,240,.16)}
+.dfc.law .dt{background:var(--cyan); color:#06121c}
+.dfc.law .dn{color:var(--cyan)}
+.dfc.warn{border-color:#FF9B5A; background:linear-gradient(135deg,rgba(255,155,90,.30),rgba(255,155,90,.09)),linear-gradient(rgba(12,10,22,.86),rgba(12,10,22,.86)); box-shadow:0 0 26px rgba(255,155,90,.16)}
+.dfc.warn .dt{background:#FF9B5A; color:#1f0e00}
+.dfc.warn .dn{color:#FFB27E}
+.dfc.rem{border-color:#B79CFF; background:linear-gradient(135deg,rgba(183,156,255,.28),rgba(183,156,255,.09)),linear-gradient(rgba(12,10,22,.86),rgba(12,10,22,.86)); box-shadow:0 0 26px rgba(183,156,255,.16)}
+.dfc.rem .dt{background:#B79CFF; color:#150a2e}
+.dfc.rem .dn{color:#CDB9FF}
+.dfc .eqx{font-family:var(--font-math); font-size:40px; font-weight:700; line-height:1.3; color:var(--gold); text-align:center; padding:2px 0}
+.dfc.sm .eqx{font-size:32px}
+.dfc.xs .eqx{font-size:26px}
+.dfc ul.dx{padding-inline-start:26px; display:flex; flex-direction:column; gap:3px}
+.dfc.sm ul.dx{font-size:22px}
+.dfc.xs ul.dx{font-size:19px}
+.dfc .bigeq{margin:0}
+.dfc.lawbox{min-height:150px; justify-content:center; align-items:stretch}
+
+/* ===== predict, then discover (u4/predict.js) ===== */
+.dfc.pred{border-color:#35D0BA; background:linear-gradient(135deg,rgba(53,208,186,.26),rgba(53,208,186,.08)),linear-gradient(rgba(12,10,22,.9),rgba(12,10,22,.9)); box-shadow:0 0 30px rgba(53,208,186,.2)}
+.dfc.pred .dt{background:#35D0BA; color:#04201b}
+.dfc.pred .dn{color:#6FE6D2}
+.predbox{position:absolute; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; background:rgba(6,10,22,.66); opacity:0; transition:opacity .2s ease-out}
+.predbox.on{opacity:1}
+.predbox[hidden]{display:none}
+.predbox .dfc{width:min(900px,88%); gap:14px; padding:18px 28px 16px}
+.predbox .pq{font-size:30px; line-height:1.55}
+.predbox .pwhy{display:block; margin-top:10px; font-size:25px; color:var(--muted); font-weight:600}
+.predbox .pops{display:flex; flex-direction:column; gap:10px}
+.predbox .pop{display:flex; align-items:center; gap:14px; text-align:start; padding:9px 18px 9px 14px; border-radius:14px; border:2px solid rgba(var(--t2),.5); background:rgba(var(--d2),.75); color:var(--ink); font-family:inherit; font-weight:700; font-size:26px; line-height:1.4; cursor:pointer; transition:border-color .15s, background-color .15s}
+.predbox .pop:hover,.predbox .pop:focus-visible{border-color:#35D0BA; background:rgba(53,208,186,.16); outline:none}
+.predbox .pop i{flex:none; width:36px; height:36px; border-radius:50%; background:#35D0BA; color:#04201b; font-style:normal; font-weight:800; font-size:21px; display:inline-flex; align-items:center; justify-content:center}
+.predbox .pfoot{display:flex; justify-content:flex-start; min-height:30px}
+.predbox .pskip{background:none; border:0; color:var(--muted); font-family:inherit; font-size:19px; cursor:pointer; text-decoration:underline; padding:4px 6px}
+.predbox.verdict .pskip{background:#35D0BA; color:#04201b; text-decoration:none; font-weight:800; padding:6px 22px; border-radius:999px; font-size:20px}
+/* the small chip at the top centre of the slide while the lab runs */
+.hd .pdc{position:absolute; left:50%; transform:translateX(-50%); top:-34px; height:28px; display:inline-flex; align-items:center; gap:8px; padding:0 14px; border-radius:14px; border:2px solid #35D0BA; background:rgba(8,12,26,.82); color:#fff; font-weight:800; font-size:16px; line-height:1; white-space:nowrap; z-index:2}
+.hd .pdc i{width:10px; height:10px; border-radius:50%; background:#35D0BA}
+.hd .pdc[data-s=ok]{border-color:#82DB6E} .hd .pdc[data-s=ok] i{background:#82DB6E}
+.hd .pdc[data-s=no]{border-color:#FFA35A} .hd .pdc[data-s=no] i{background:#FFA35A}
+
+/* slide kinds: one fixed colour per kind (see u4/kinds.js) */
+[data-k=intro]{--k:#5BC0EB; --kb:#1d374d}
+[data-k=learn]{--k:#9AA9FF; --kb:#2a3251}
+[data-k=ex]{--k:#35D0BA; --kb:#143a42}
+[data-k=act]{--k:#82DB6E; --kb:#253d31}
+[data-k=ask]{--k:#F2C14E; --kb:#3e372a}
+[data-k=exam]{--k:#FF7C98; --kb:#41283a}
+[data-k=exit]{--k:#FFA35A; --kb:#41302d}
+[data-k=hw]{--k:#CBC5E8; --kb:#35384c}
+/* the pill above the title, opposite corner to the page badge */
+.hd .kd{position:absolute; right:0; top:-34px; height:28px; display:inline-flex; align-items:center; gap:8px; padding:0 15px 0 13px; border-radius:15px; background:var(--kb,#161b2c); border:2px solid var(--k); color:#fff; font-weight:800; font-size:16px; line-height:1; white-space:nowrap; z-index:2}
+.hd .kd i{width:11px; height:11px; border-radius:50%; background:var(--k); flex:0 0 auto}
+/* a coloured line under every segment of the progress bar */
+.prog .seg[data-k]::before{content:""; position:absolute; inset-inline:16%; bottom:-7px; height:4px; border-radius:2px; background:var(--k); opacity:1; pointer-events:none}
+/* the lesson index: colour key + a small tag on every row */
+.kkey{display:flex; flex-wrap:wrap; gap:8px 10px; margin:2px 0 14px}
+.kkey span{display:inline-flex; align-items:center; gap:7px; padding:3px 11px 3px 10px; border-radius:13px; border:1.5px solid var(--k); font-size:14px; font-weight:700; line-height:1.4}
+.kkey span i{width:9px; height:9px; border-radius:50%; background:var(--k)}
+.idx .it[data-k]{border-inline-start:4px solid var(--k)}
+.idx .it .kl{margin-inline-start:auto; padding:1px 9px; border-radius:11px; border:1.5px solid var(--k); font-size:12.5px; font-weight:700; line-height:1.5; flex:0 0 auto}
+@media (max-width:760px){ .hd .kd{height:23px; font-size:13px; padding:0 10px} }
+.kkey+.ktot{margin:-6px 0 14px; font-size:14.5px; opacity:.85}
+.note .tmin{margin:0 0 8px; font-size:15px; opacity:.9}
+.note .tmin small{opacity:.8}
+/* the footer line is now longer (the kind word comes first): it must never push the Next button out of the screen */
+.where{min-width:0; overflow:hidden}
+.where small{display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+
+/* the student's one-page summary (u4/summary.js): a preview on screen, one A4 sheet on paper */
+.sumov{position:fixed; inset:0; z-index:200; display:none; flex-direction:column; align-items:center; gap:12px; padding:14px 12px 20px; background:rgba(4,8,18,.9); overflow:auto}
+.sumov.on{display:flex}
+.sumov .sbar{display:flex; gap:12px}
+.sumov .sbar button{height:42px; padding:0 26px; border-radius:21px; border:2px solid #ffd76b; background:transparent; color:#fff; font:700 19px Cairo,Tajawal,sans-serif; cursor:pointer}
+.sumov .sbar .sprint{background:#ffd76b; color:#1b1400}
+.sheet2{width:min(794px,100%); background:#fff; color:#17202a; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); font-family:Tajawal,Cairo,sans-serif}
+.sheet2 .sbox{padding:26px 30px 22px; display:flex; flex-direction:column; gap:12px}
+.sheet2 header{display:flex; align-items:baseline; justify-content:space-between; gap:14px; padding-bottom:8px; border-bottom:3px solid #1b6a8a}
+.sheet2 .sh1{font:800 26px Cairo,sans-serif; color:#1b6a8a}
+.sheet2 .sh2{font:700 18px Cairo,sans-serif; color:#37464f}
+.sheet2 .ss h3{margin:0 0 5px; padding-inline-start:9px; border-inline-start:5px solid #c99a16; font:800 17px Cairo,sans-serif; color:#17202a}
+.sheet2 .ss ul{margin:0; padding-inline-start:22px; font-size:15px; line-height:1.55}
+.sheet2 .ss li{margin:1px 0; break-inside:avoid}
+.sheet2 .ss.goals ul,.sheet2 .ss.bul ul{columns:2; column-gap:26px}
+.sheet2 .sg{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.sheet2 .sc{border:1.6px solid #c99a16; border-inline-start-width:6px; border-radius:8px; padding:6px 10px 7px; font-size:14.5px; line-height:1.5; break-inside:avoid; background:#fffaf0}
+.sheet2 .sc.law{border-color:#1b8aa6; background:#f0fafd}
+.sheet2 .sc.warn{border-color:#e07a30; background:#fff5ed}
+.sheet2 .sc.rem{border-color:#7c5cd6; background:#f5f1ff}
+.sheet2 .sc .st{display:block; font:800 15.5px Cairo,sans-serif; margin-bottom:2px}
+.sheet2 .sc .st i{font-weight:600; font-size:.9em; color:#4b5a64}
+.sheet2 .sc .se{font:700 19px "STIX Two Text",Cairo,serif; text-align:center; padding:2px 0; color:#7a5a00}
+.sheet2 .sc p{margin:2px 0}
+.sheet2 .spg{margin:5px 0 0; font-weight:700; font-size:14.5px; color:#1b6a8a}
+.sheet2 footer{margin-top:auto; padding-top:8px; border-top:1.5px dashed #9aa7b0; font-size:14px; color:#37464f}
+.sheet2 b{font-weight:800}
+@media (max-width:760px){ .sheet2 .sg{grid-template-columns:1fr} .sheet2 .sbox{padding:18px 16px} }
+@page{size:A4; margin:10mm}
+@media print{
+  html.sum-open body>*:not(#sumov){display:none!important}
+  html.sum-open,html.sum-open body{background:#fff!important}
+  html.sum-open .sumov{position:static; display:block; padding:0; background:#fff; overflow:visible}
+  html.sum-open .sumov .sbar{display:none}
+  html.sum-open .sheet2{width:100%; box-shadow:none; border-radius:0}
+  html.sum-open .sheet2 .sbox{padding:0; gap:8px}
+  html.sum-open .sheet2 .ss ul{font-size:13.5px; line-height:1.45}
+  html.sum-open .sheet2 .sc{font-size:13px; line-height:1.42; padding:4px 9px 5px}
+  html.sum-open .sheet2 .sc .se{font-size:17px}
+  html.sum-open .sheet2 .sh1{font-size:23px}
+  .sheet2 *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+/* the button in the lesson index */
+.sumbtn{display:inline-flex; align-items:center; gap:9px; margin:2px 0 12px; height:40px; padding:0 18px 0 14px; border-radius:20px; border:2px solid #ffd76b; background:rgba(255,215,107,.12); color:inherit; font:700 17px Cairo,Tajawal,sans-serif; cursor:pointer}
+.sumbtn svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.sumbtn kbd{font:700 14px Cairo,sans-serif; padding:0 7px; border-radius:6px; border:1.5px solid currentColor; opacity:.8}
+.sumbtn:hover,.sumbtn:focus-visible{background:rgba(255,215,107,.25); outline:none}
 
 /* ===== teacher tools (u4/tools.js): dock, drawing layer, laser pointer, timer, blank screen ===== */
 .view{position:relative}
@@ -3668,6 +3791,10 @@ var SKIN=(function(){
    Now it is its own card: a gold «تعريف» tag, the term in Arabic and English, and the book's wording on its own line; the steps for using it sit in a separate numbered strip.
      dfcHTML({t:'المُول', en:'Mole', h:'كمية من مادة …', sm:true})       -> definition card (sm: a smaller card for crowded slides)
      howHTML('طريقة الحساب', ['اعدّ الذرات','اضرب في Ar','اجمع'])          -> numbered steps, one chip per step
+   Three more cards of the same family (teacher's request: one look for each kind of content), each with its own colour and tag:
+     lawHTML({t:'قانون المول', eq:'n = m ÷ M<sub>r</sub>', h:'…', sm:true})   -> «قانون» (blue): the title, the equation large and on its own line, a line of explanation. body:'<html>' replaces eq+h (used where the equation is filled in by a click)
+     warnHTML({t:'انتبه إلى الوحدات', h:'…'})                              -> «انتبه» (orange): a common slip; eq:'…' adds a large equation line
+     remHTML({t:'…', items:['…','…']})                                 -> «تذكّر» (violet): a reminder, as one sentence (h) or a short list (items)
    The wording of a definition is the book's (student book «مصطلحات علمية» boxes, activity-book glossary), not ours; the page goes in BOOKPG. ---------- */
 function dfcHTML(o){
   return '<div class="dfc'+(o.sm?' sm':'')+(o.cls?' '+o.cls:'')+'"><div class="dh"><span class="dt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg>تعريف</span>'+
@@ -3676,6 +3803,281 @@ function dfcHTML(o){
 function howHTML(label,steps,cls){
   return '<div class="how'+(cls?' '+cls:'')+'"><span class="hl">'+label+'</span>'+steps.map(function(s,i){return '<span class="hs"><i class="num">'+(i+1)+'</i><span class="ht">'+s+'</span></span>'+(i<steps.length-1?'<span class="ha" aria-hidden="true">◀</span>':'')}).join('')+'</div>';
 }
+var CARD_TAGS={
+  law:['قانون','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9h14M5 15h14"/></svg>'],
+  warn:['انتبه','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.8 20h18.4zM12 10v4.5M12 17.4v.1"/></svg>'],
+  rem:['تذكّر','<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v16l-5-3.6L7 20z"/></svg>']
+};
+function cardHTML(kind,o){
+  var tg=CARD_TAGS[kind], inner=o.body||((o.eq?'<div class="eqx" dir="ltr">'+o.eq+'</div>':'')+(o.items?'<ul class="dx">'+o.items.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>':(o.h?'<p class="dx">'+o.h+'</p>':'')));
+  return '<div class="dfc '+kind+(o.xs?' xs':(o.sm?' sm':''))+(o.cls?' '+o.cls:'')+'"'+(o.id?' id="'+o.id+'"':'')+'><div class="dh"><span class="dt">'+tg[1]+tg[0]+'</span>'+(o.t?'<b class="dn">'+o.t+'</b>':'')+'</div>'+inner+'</div>';
+}
+function lawHTML(o){ return cardHTML('law',o) }
+function warnHTML(o){ return cardHTML('warn',o) }
+function remHTML(o){ return cardHTML('rem',o) }
+
+/* the kind of every slide, shown with one fixed colour and one fixed word (teacher's request, November 2026):
+   تمهيد (lead-in) · شرح (explanation) · مثال (worked example) · نشاط (activity or lab) · تدريب (questions to answer) · امتحان (past exams) · تذكرة خروج · الواجب.
+   Where it shows: a pill above the title (opposite corner to the page badge), a coloured line under each segment of the progress bar,
+   the word in the footer, and a colour key plus a small tag on every row of the lesson index.
+   The kind is worked out from the slide's id, title and tag; a lesson can override any slide with  var KINDS={slideId:'act',...}  in src/pages.js.
+   Shared by every lesson: build(..., kinds=True) in _core/tools/u4build.py adds this file and u4/kinds.css. */
+(function(){
+  var K={
+    intro:['تمهيد'],
+    learn:['شرح'],
+    ex:['مثال'],
+    act:['نشاط'],
+    ask:['تدريب'],
+    exam:['امتحان'],
+    exit:['تذكرة خروج'],
+    hw:['الواجب']
+  };
+  var ORDER=['intro','learn','ex','act','ask','exam','exit','hw'];
+  /* suggested minutes for a slide of each kind (used in the teacher notes) */
+  var MIN={intro:3,learn:4,ex:6,act:10,ask:6,exam:6,exit:3,hw:1};
+  function kindOf(o){
+    var id=o.id||'', t=o.title||'', tg=o.tag||'';
+    if(typeof KINDS!=='undefined'&&KINDS[id]) return KINDS[id];
+    if(id==='goals') return 'intro';
+    if(id==='hw') return 'hw';
+    if(/^(tk\d*|final)$/.test(id)||/^تذكرة/.test(t)) return 'exit';
+    if(/^(past|exq|noo)/.test(id)||/امتحان/.test(t)||/امتحان/.test(tg)) return 'exam';
+    if(/^lab/.test(id)||/^(نشاط|المختبر)/.test(t)||/سباق|مسابقة/.test(t+' '+tg)) return 'act';
+    if(/^مثال/.test(t)) return 'ex';
+    if(/^(سؤال|أسئلة|السؤال|السؤالان|تمرين|ورقة العمل|كتاب النشاط|كتاب الطالب)/.test(t)||/^eou/.test(id)) return 'ask';
+    return o.ch===0?'intro':'learn';
+  }
+  var _s=slide;
+  slide=function(o){
+    var k=kindOf(o); o.kind=k;
+    var oi=o.init;
+    o.init=function(el){
+      var hd=el.querySelector('.hd');
+      if(hd&&!hd.querySelector('.kd')){
+        var b=document.createElement('span'); b.className='kd'; b.setAttribute('data-k',k); b.setAttribute('data-kd',K[k][0]);
+        b.innerHTML='<i></i><span>'+K[k][0]+'</span>'; hd.appendChild(b);
+      }
+      if(oi) return oi.apply(this,arguments);
+    };
+    _s(o);
+  };
+  /* the bar, the footer and the index (built by boot) */
+  var _boot=boot;
+  boot=function(){
+    _boot.apply(this,arguments);
+    $$('.seg',PROG).forEach(function(b,j){ var s=SLIDES[j]; if(s&&s.kind){ b.setAttribute('data-k',s.kind); b.title=(s.title||'الغلاف')+' · '+K[s.kind][0] } });
+    var sh=$('.sheet',IDX);
+    if(sh){
+      var used={}; SLIDES.forEach(function(s){ if(s.kind) used[s.kind]=1 });
+      var key='<div class="kkey" aria-label="ألوان أنواع الشرائح">'+ORDER.filter(function(k){return used[k]}).map(function(k){return '<span data-k="'+k+'"><i></i>'+K[k][0]+'</span>'}).join('')+'</div>';
+      var tot=0; SLIDES.forEach(function(s){ if(s.kind) tot+=MIN[s.kind]||0 });
+      key+='<p class="ktot">الزمن المقترح للدرس كاملاً نحو <b>'+ar(tot)+'</b> دقيقة (تقريبي، يكفي أكثر من حصة: اختر منه ما يناسب حصتك).</p>';
+      var h3=$('h3',sh); if(h3) h3.insertAdjacentHTML('afterend',key);
+      $$('.it',sh).forEach(function(b){ var s=SLIDES[+b.getAttribute('data-i')]; if(s&&s.kind){ b.setAttribute('data-k',s.kind); b.insertAdjacentHTML('beforeend','<b class="kl">'+K[s.kind][0]+'</b>') } });
+    }
+    paintChrome();
+  };
+  var _pc=paintChrome;
+  paintChrome=function(){
+    _pc.apply(this,arguments);
+    var s=SLIDES[CUR], sm=WHERE&&WHERE.querySelector('small');
+    if(s&&s.kind&&sm&&!/^\s*(تمهيد|شرح|مثال|نشاط|تدريب|امتحان|تذكرة خروج|الواجب) ·/.test(sm.textContent)) sm.textContent=K[s.kind][0]+' · '+sm.textContent;
+    /* the suggested time for a slide of this kind, at the top of the teacher note (a rough guide, ours: «من عندي») */
+    var h4=NOTE&&NOTE.querySelector('h4'); if(s&&s.kind&&h4&&!NOTE.querySelector('.tmin')) h4.insertAdjacentHTML('afterend','<p class="tmin">⏱ الزمن المقترح: <b>'+mins(MIN[s.kind])+'</b> <small>(تقريبي)</small></p>');
+  };
+  function mins(m){ return m===1?'دقيقة':(m===2?'دقيقتان':ar(m)+(m<=10?' دقائق':' دقيقة')) }
+  window.SLIDEKIND={K:K,ORDER:ORDER,MIN:MIN,of:kindOf};
+})();
+
+/* «توقّع ثم اكتشف» for the virtual labs and activities (teacher's request, November 2026).
+   When a lab slide opens, a card asks for a prediction first (the class says it, the teacher taps it). The lab then runs as usual;
+   when its result appears the card comes back with the verdict: the prediction, the right answer and the reason.
+   A lesson lists its predictions in src/pages.js:
+     var PREDICT={ lab:{q:'…؟', opts:['…','…','…'], ok:1, why:'…', when:'#gb'}, … }
+   when: a selector of the element that appears (loses class "hide") when the result is ready, usually the green bar #gb; or the lab fires  el.dispatchEvent(new Event('pred:done'))  itself.
+   Not shown in test mode (?pts=all), so the lesson test suites keep running the labs directly; add ?pred=1 to see it there.
+   Shared by every lesson: build(..., predict=True) in _core/tools/u4build.py adds this file (it needs book=True: the card family lives in u4/defn.js and u4/book.css). */
+(function(){
+  var q=''; try{ q=location.search }catch(e){}
+  var OFF=/[?&]pts=all/.test(q)&&!/[?&]pred=1/.test(q);
+  var _s=slide;
+  slide=function(o){
+    var P=(typeof PREDICT!=='undefined')&&PREDICT[o.id];
+    if(P&&!OFF){
+      var oi=o.init, oe=o.enter;
+      o.init=function(el){
+        var r=oi?oi.apply(this,arguments):undefined;
+        attach(el,P);
+        return r;
+      };
+      o.enter=function(el){
+        if(el._pred&&el._pred.state==='new') el._pred.open();
+        if(oe) return oe.apply(this,arguments);
+      };
+    }
+    _s(o);
+  };
+  function attach(el,P){
+    var hd=el.querySelector('.hd');
+    var S={state:'new',pick:-1};
+    var box=null, ops=null, chipEl=null;
+    /* the card is built on the first arrival, after the card skin has run over the slide (so its text is not wrapped in a reading plate) */
+    function ensure(){
+      if(box) return;
+      box=document.createElement('div'); box.className='predbox'; box.hidden=true;
+      box.innerHTML='<div class="dfc pred"><div class="dh"><span class="dt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6 6 0 0 0-3.5 10.9V17h7v-3.1A6 6 0 0 0 12 3zM9.5 20.5h5"/></svg>توقّع</span><b class="dn">قبل أن نبدأ</b></div>'+
+        '<p class="dx pq">'+P.q+'</p><div class="pops"></div><div class="pfoot"><button type="button" class="pskip">تخطَّ</button></div></div>';
+      ops=box.querySelector('.pops');
+      P.opts.forEach(function(t,i){
+        var b=document.createElement('button'); b.type='button'; b.className='pop'; b.setAttribute('data-i',i);
+        b.innerHTML='<i>'+'أبجدهو'.charAt(i)+'</i><span>'+t+'</span>'; ops.appendChild(b);
+        b.addEventListener('click',function(){ S.pick=i; S.state='asked'; close(); chip(); watch() });
+      });
+      box.querySelector('.pskip').addEventListener('click',function(){ S.state='skipped'; close() });
+      el.appendChild(box);
+    }
+    function chip(){
+      if(!hd) return; chipEl=hd.querySelector('.pdc'); if(!chipEl){ chipEl=document.createElement('span'); chipEl.className='pdc'; hd.appendChild(chipEl) }
+      chipEl.setAttribute('data-s','asked'); chipEl.innerHTML='<i></i><span>توقّعك: '+short(P.opts[S.pick])+'</span>';
+    }
+    function short(t){ t=t.replace(/<[^>]+>/g,''); return t.length>26?t.slice(0,25)+'…':t }
+    function open(){ if(S.state!=='new') return; ensure(); box.hidden=false; void box.offsetWidth; box.classList.add('on') }
+    function close(){ box.classList.remove('on'); setTimeout(function(){ if(!box.classList.contains('on')) box.hidden=true },200) }
+    function verdict(){
+      if(S.state!=='asked') return; S.state='done';
+      var good=S.pick===P.ok;
+      if(chipEl){ chipEl.setAttribute('data-s',good?'ok':'no'); chipEl.innerHTML='<i></i><span>'+(good?'توقّعك صحيح':'الصحيح غير توقّعك')+'</span>' }
+      box.classList.add('verdict'); box.querySelector('.dt').lastChild.nodeValue=good?'توقّعك صحيح':'النتيجة';
+      box.querySelector('.dn').textContent=good?'أحسنت':'قارن مع توقّعك';
+      box.querySelector('.pq').innerHTML=(good?'':'<b>توقّعت:</b> '+P.opts[S.pick]+'<br>')+'<b>النتيجة:</b> '+P.opts[P.ok]+'<span class="pwhy">'+P.why+'</span>';
+      ops.style.display='none';
+      var sk=box.querySelector('.pskip'); sk.textContent='حسناً'; sk.onclick=function(){ close() };
+      box.hidden=false; void box.offsetWidth; box.classList.add('on');
+    }
+    function watch(){
+      if(S.watching) return; S.watching=true;
+      el.addEventListener('pred:done',verdict);
+      var t=P.when&&el.querySelector(P.when);
+      if(t) new MutationObserver(function(){ if(!t.classList.contains('hide')&&getComputedStyle(t).display!=='none') verdict() }).observe(t,{attributes:true,attributeFilter:['class','style']});
+    }
+    el._pred={get state(){return S.state},open:open,verdict:verdict};
+    if(el.classList.contains('on')) open();
+  }
+})();
+
+/* A few slides leave a lot of empty stage around small content (found by measuring every slide at its fullest, with the hidden bars and feedback lines shown).
+   Their content is enlarged with CSS zoom, by a factor chosen per slide so that it still fits, including everything that appears later:
+     var FILL={slideId:1.18,…}   in src/pages.js  (made by _core/tools/fill_tune.js, which measures each slide and finds the largest factor that fits)
+   Only the body of the slide is zoomed; the header, the badges and the stickers are not.
+   Shared by every lesson: build(..., fill=True) in _core/tools/u4build.py adds this file. */
+(function(){
+  var _s=slide;
+  slide=function(o){
+    var z=(typeof FILL!=='undefined')&&FILL[o.id];
+    if(z){
+      var oi=o.init;
+      o.init=function(el){ var b=el.querySelector('.body'); if(b) b.style.zoom=z; return oi?oi.apply(this,arguments):undefined };
+    }
+    _s(o);
+  };
+})();
+
+/* The student's one-page summary of the lesson, printable (teacher's request, November 2026).
+   A «ملخص الطالب للطباعة» button in the lesson index (or the key S) opens the page; «طباعة» prints it on one A4 sheet.
+   Nothing is written twice: the page is assembled from what the lesson already says —
+     the goals (the goals slide), the lesson's own summary bullets («خلاصة الدرس» on the last slide), the definition / law / warning / reminder cards of the slides,
+     the homework (last slide) and the pages of the books used (BOOKPG).
+   Laws that appear only as a clickable triangle (no static card) are listed in src/pages.js:  var SUMLAWS=[['قانون المول','n = m ÷ M','…'],…]
+   Shared by every lesson: build(..., summary=True) in _core/tools/u4build.py adds this file and u4/summary.css (it needs book=True for the cards). */
+(function(){
+  function parse(s){ var t=document.createElement('div'); try{ t.innerHTML=(typeof s.html==='function')?s.html():'' }catch(e){} return t }
+  function clean(h){ return h.replace(/\sstyle="[^"]*"/g,'').replace(/\sclass="(ptn|num|fx[^"]*)"/g,'').replace(/<(button|span class="ck")[^>]*>/g,'').replace(/<\/button>/g,'') }
+  function cardsOf(root,kind){
+    var out=[]; root.querySelectorAll('.dfc.'+kind).forEach(function(c){
+      var n=c.querySelector('.dn'), en=c.querySelector('.de'), eq=c.querySelector('.eqx'), xs=c.querySelectorAll('.dx'), tag=c.querySelector('.dt');
+      if(!n&&!eq&&!xs.length) return;
+      var items=[]; xs.forEach(function(x){ if(x.tagName==='UL') x.querySelectorAll('li').forEach(function(l){items.push(l.innerHTML)}); else items.push(x.innerHTML.replace(/<span class="eg">[\s\S]*?<\/span>/g,'')) });
+      if(kind==='law'&&!eq&&!items.length) return;
+      if(items.length===1&&/^\s*؟?\s*$/.test(items[0].replace(/<[^>]+>/g,''))) return;
+      out.push({t:n?n.innerHTML:'',en:en?en.textContent:'',eq:eq?eq.innerHTML:'',items:items,tag:tag?tag.textContent.trim():''});
+    });
+    return out;
+  }
+  function collect(){
+    var D={goals:[],bul:[],defs:[],laws:[],warn:[],rem:[],hw:[],pages:{sb:[],ab:[]}}, seen={};
+    SLIDES.forEach(function(s){
+      var r=parse(s), id=s.id;
+      if(id==='goals') r.querySelectorAll('.gi').forEach(function(g){ var sp=g.querySelectorAll('span'); D.goals.push(clean((sp[sp.length-1]||g).innerHTML)) });
+      if(id==='hw'){
+        var pl=r.querySelectorAll('.panel'); if(pl[0]) pl[0].querySelectorAll('li').forEach(function(l){ D.bul.push(clean(l.innerHTML)) });
+        r.querySelectorAll('.stp').forEach(function(p){ var sp=p.querySelectorAll('span'); D.hw.push(clean((sp[sp.length-1]||p).innerHTML)) });
+      }
+      [['def','defs'],['law','laws'],['warn','warn'],['rem','rem']].forEach(function(k){
+        var cs=(k[0]==='def')?cardsOf(r,'dfc').filter(function(c){return c.tag==='تعريف'}):cardsOf(r,k[0]);
+        cs.forEach(function(c){ var key=k[0]+'|'+c.t+'|'+c.eq+'|'+c.items.join('|'); if(!seen[key]){ seen[key]=1; D[k[1]].push(c) } });
+      });
+    });
+    if(typeof SUMLAWS!=='undefined') SUMLAWS.forEach(function(l){ D.laws.push({t:l[0],en:'',eq:l[1],items:l[2]?[l[2]]:[],tag:'قانون'}) });
+    if(typeof BOOKPG!=='undefined'){
+      var set={sb:{},ab:{}};
+      Object.keys(BOOKPG).forEach(function(k){
+        var m=/(الطالب|النشاط)\s*ص\s*(\d+)(?:\s*[–-]\s*(\d+))?/.exec(BOOKPG[k].replace(/<[^>]+>/g,'')); if(!m) return;
+        var t=set[m[1]==='الطالب'?'sb':'ab'], a=+m[2], b=+(m[3]||m[2]); for(var i=a;i<=b;i++) t[i]=1;
+      });
+      /* the pages used, merged into ranges: 62, 63, 64, 65 -> 62–65 */
+      ['sb','ab'].forEach(function(w){
+        var ps=Object.keys(set[w]).map(Number).sort(function(x,y){return x-y}), out=[], i=0;
+        while(i<ps.length){ var j=i; while(j+1<ps.length&&ps[j+1]===ps[j]+1) j++; out.push(ps[i]===ps[j]?String(ps[i]):ps[i]+'–'+ps[j]); i=j+1 }
+        D.pages[w]=out;
+      });
+    }
+    return D;
+  }
+  function sec(title,cls,inner){ return inner?'<section class="ss '+cls+'"><h3>'+title+'</h3>'+inner+'</section>':'' }
+  function cardHTML(c,kind){
+    return '<div class="sc '+kind+'">'+(c.t?'<b class="st">'+c.t+(c.en?' <i dir="ltr">'+c.en+'</i>':'')+'</b>':'')+(c.eq?'<div class="se" dir="ltr">'+c.eq+'</div>':'')+c.items.map(function(x){return '<p>'+x+'</p>'}).join('')+'</div>';
+  }
+  function html(){
+    var D=collect(), pg=function(a){ return a.map(function(x){return '<bdi dir="ltr">'+x+'</bdi>'}).join('، ') };
+    var s='<div class="sbox"><header><div class="sh1">ملخص الطالب</div><div class="sh2">'+(LESSON.brand||LESSON.short||'')+'</div></header>';
+    s+=sec('ماذا سأتعلّم؟','goals','<ul>'+D.goals.map(function(g){return '<li>'+g+'</li>'}).join('')+'</ul>');
+    s+=sec('الخلاصة','bul','<ul>'+D.bul.map(function(g){return '<li>'+g+'</li>'}).join('')+'</ul>');
+    s+=sec('التعريفات','defs','<div class="sg">'+D.defs.map(function(c){return cardHTML(c,'def')}).join('')+'</div>');
+    s+=sec('القوانين','laws','<div class="sg">'+D.laws.map(function(c){return cardHTML(c,'law')}).join('')+'</div>');
+    s+=sec('انتبه وتذكّر','tips','<div class="sg">'+D.warn.map(function(c){return cardHTML(c,'warn')}).join('')+D.rem.map(function(c){return cardHTML(c,'rem')}).join('')+'</div>');
+    s+=sec('للتدرّب','prac','<ul>'+D.hw.map(function(g){return '<li>'+g+'</li>'}).join('')+'</ul>'+((D.pages.sb.length||D.pages.ab.length)?'<p class="spg">'+(D.pages.sb.length?'كتاب الطالب ص'+pg(D.pages.sb):'')+(D.pages.sb.length&&D.pages.ab.length?' · ':'')+(D.pages.ab.length?'كتاب النشاط ص'+pg(D.pages.ab):'')+'</p>':''));
+    s+='<footer>الاسم: ................................. الشعبة: ........</footer></div>';
+    return s;
+  }
+  function open(){
+    var ov=document.getElementById('sumov');
+    if(!ov){
+      ov=document.createElement('div'); ov.id='sumov'; ov.className='sumov'; ov.setAttribute('role','dialog'); ov.setAttribute('aria-label','ملخص الطالب');
+      ov.innerHTML='<div class="sbar"><button type="button" class="sprint">طباعة</button><button type="button" class="sclose">إغلاق</button></div><div class="sheet2"></div>';
+      document.body.appendChild(ov);
+      ov.querySelector('.sclose').addEventListener('click',close);
+      ov.querySelector('.sprint').addEventListener('click',function(){ try{ window.print() }catch(e){} });
+      ov.addEventListener('click',function(e){ if(e.target===ov) close() });
+    }
+    ov.querySelector('.sheet2').innerHTML=html(); ov.classList.add('on'); document.documentElement.classList.add('sum-open');
+  }
+  function close(){ var ov=document.getElementById('sumov'); if(ov) ov.classList.remove('on'); document.documentElement.classList.remove('sum-open') }
+  var _boot=boot;
+  boot=function(){
+    _boot.apply(this,arguments);
+    /* the button is in the lesson index (the top bar has no room left at the width the platform gives a lesson beside the class drawer) and on the key S */
+    var sh=document.querySelector('#idx .sheet'), h3=sh&&sh.querySelector('h3');
+    if(h3){ h3.insertAdjacentHTML('afterend','<button class="sumbtn" id="bSum" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/></svg>ملخص الطالب للطباعة <kbd>S</kbd></button>'); document.getElementById('bSum').addEventListener('click',function(){ var ix=document.getElementById('idx'); if(ix) ix.classList.remove('open'); open() }) }
+    document.addEventListener('keydown',function(e){
+      var t=e.target&&e.target.tagName; if(t==='INPUT'||t==='TEXTAREA') return;
+      if(e.ctrlKey||e.metaKey||e.altKey) return;
+      if(e.code==='KeyS'){ var ov=document.getElementById('sumov'); if(ov&&ov.classList.contains('on')) close(); else open() }
+      else if(e.key==='Escape') close();
+    });
+  };
+  window.SUMMARY={html:html,open:open,close:close,collect:collect};
+})();
 
 /* ---------- teacher tools in the player (teacher's request, November 2026): pen, highlighter, eraser, laser pointer, timer, blank screen.
    The «أدوات» button in the top bar opens a small dock on the left edge of the slide; every tool also has a key (physical keys, so the Arabic layout works too):
@@ -3901,6 +4303,16 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=[];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={vocab:'learn', cg:'learn', cm:'learn', ncv:'learn', what:'learn', tsteps:'learn', method:'learn', map:'learn', labq:'act'};
+/* «توقّع ثم اكتشف»: the prediction asked before a lab slide (see _core/u4/predict.js). The questions are ours (من عندي); the answers are the ones the lab itself shows. */
+var PREDICT={
+  lab:{q:'نضيف الحمض من السحاحة إلى القاعدة (مع الكاشف) نقطة نقطة. كيف يتغير لون الكاشف عند نقطة النهاية؟',opts:['يتغير فجأة بقطرة واحدة تقريباً','يتغير تدريجياً على مدى عدة mL','لا يتغير أبداً'],ok:0,why:'قرب نقطة النهاية تكفي قطرة واحدة لتغيير اللون، لذلك نقترب بالتنقيط ونقرأ الحجم بدقة.',when:'#gb'}
+};
+/* laws that appear only as a clickable triangle in the lesson (no static card): listed for the student's one-page summary (_core/u4/summary.js) */
+var SUMLAWS=[['تركيز الكتلة','C = m ÷ V','الوحدة g/L: كتلة المذاب (g) ÷ حجم المحلول (L)'],['التركيز المولي','C = n ÷ V','الوحدة mol/L: عدد مولات المذاب ÷ حجم المحلول (L)'],['عدد المولات من التركيز','n = C × V','الحجم V بالـ L']];
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={cg:1.25, q316:1.25};
 
 /* ---------- helpers for the reacting-masses lesson: formulas, molar masses, answer rows, matching, tables ---------- */
 var AR={H:1,C:12,N:14,O:16,F:19,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,K:39,Ca:40,Fe:56,Cu:63.5,Zn:65,Ag:108,Ba:137};
@@ -4188,9 +4600,8 @@ slide({id:'cg',ch:1,title:'تركيز الكتلة: المثلث',tag:'اضغط 
    ${triSVG('m (g)','V (L)','C (g/L)',{cv:1,w:340})}
    <div class="sm" style="font-size:20px;text-align:center">m كتلة المذاب ، V حجم المحلول ، C تركيز الكتلة</div></div>
   <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">
-   <div class="frm brk" style="padding:16px 22px;gap:8px;align-items:center;min-height:150px;justify-content:center"><div class="bigeq" id="tf" style="font-size:46px;color:var(--gold)">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div></div>
-   <div class="panel" style="padding:12px 20px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">انتبه إلى الوحدات</div>
-    <p class="lead" style="margin:0;font-size:22px">الحجم في المحاليل يُقاس غالباً بالـ <span class="num">mL</span> ، لكن التركيز يحتاجه باللتر <span class="num">L</span>:</p><div class="bigeq" style="font-size:30px;text-align:start;color:var(--gold)">V (L) = V (mL) ÷ 1000</div></div>
+   ${lawHTML({sm:true,cls:'lawbox',t:'القانون',body:'<div class="bigeq" id="tf" style="font-size:46px;color:var(--gold);text-align:center">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div>'})}
+   ${warnHTML({sm:true,t:'انتبه إلى الوحدات',h:'الحجم في المحاليل يُقاس غالباً بالـ <span class="num">mL</span> ، لكن التركيز يحتاجه باللتر <span class="num">L</span>:',eq:'V (L) = V (mL) ÷ 1000'})}
    <div class="gbar hide" id="gb" style="font-size:21px">ثلاث علاقات من مثلث واحد: <b>C = m ÷ V</b> ، <b>m = C × V</b> ، <b>V = m ÷ C</b></div></div></div>`;},
  init:function(el){
   var T={r:['C = m ÷ V','تركيز الكتلة (g/L) = كتلة المذاب (g) ÷ حجم المحلول (L)'],t:['m = C × V','كتلة المذاب = التركيز × الحجم'],l:['V = m ÷ C','حجم المحلول = كتلة المذاب ÷ التركيز']}, seen={};
@@ -4242,8 +4653,8 @@ slide({id:'cm',ch:2,title:'التركيز المولي: المثلث',tag:'اض�
    ${triSVG('n (mol)','C (mol/L)','V (L)',{cv:1,w:340})}
    <div class="sm" style="font-size:20px;text-align:center">n عدد المولات ، C التركيز المولي ، V الحجم باللتر</div></div>
   <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
-   <div class="frm brk" style="padding:14px 22px;gap:6px;align-items:center;min-height:130px;justify-content:center"><div class="bigeq" id="tf" style="font-size:44px;color:var(--gold)">؟</div><div class="sm" id="tfd" style="font-size:21px;text-align:center"> </div></div>
-   <div class="panel" style="padding:10px 18px;gap:4px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">وقبل ذلك من الدرس ٣-٢:</div><div class="bigeq" style="font-size:30px;text-align:start;color:var(--gold)">n = m ÷ M<sub>r</sub></div></div>
+   ${lawHTML({sm:true,cls:'lawbox',t:'القانون',body:'<div class="bigeq" id="tf" style="font-size:44px;color:var(--gold);text-align:center">؟</div><div class="sm" id="tfd" style="font-size:21px;text-align:center"> </div>'})}
+   ${remHTML({sm:true,t:'وقبل ذلك من الدرس ٣-٢',eq:'n = m ÷ M<sub>r</sub>'})}
    <div class="panel hide" id="mq" style="padding:10px 18px;gap:5px"><div style="font-size:21px;font-weight:800">محلول من NaOH تركيزه <span class="num">1 mol/L</span>. كم غراماً من NaOH في كل لتر؟ (Na = 23 ، O = 16 ، H = 1)</div>${optsHTML([{t:'1 g'},{t:'40 g'},{t:'23 g'}]).replace('class="opts"','class="opts" style="flex-direction:row;gap:8px"')}<div class="fb" style="min-height:22px"></div></div>
    <div class="gbar hide" id="gb" style="font-size:20px">التركيز المولي هو <b>عدد المولات في كل لتر</b>: 1 mol/L من NaOH = 40 g/L.</div></div></div>`;},
  init:function(el){
@@ -4549,7 +4960,7 @@ chainSlide({id:'ex310',ch:4,title:'مثال ٣-١٠: نسبة ١ : ٢',
 rowsSlide({id:'q318',ch:4,title:'سؤال ٣-١٨: تركيز حمض الكبريتيك',
  intro:'تفاعل <b class="num">20 mL</b> من NaOH تركيزه <b class="num">0.1 mol/L</b> مع <b class="num">22.7 mL</b> من حمض الكبريتيك: <span class="num">2NaOH + H<sub>2</sub>SO<sub>4</sub> → Na<sub>2</sub>SO<sub>4</sub> + 2H<sub>2</sub>O</span>. احسب تركيز الحمض بالخطوات:',
  rows:[{n:'a',q:'أ. عدد مولات NaOH في 20 mL',u:'mol',lab:'n =',a:0.002,t:0.00003,w:'✓ 0.1 × 0.020 = 0.002 mol',h:'n = C × V (بالـ L)'},{n:'b',q:'ب. عدد مولات H<sub>2</sub>SO<sub>4</sub> لكل 1 mol من NaOH',u:'mol',lab:'=',a:0.5,t:0.005,w:'✓ النسبة H₂SO₄ : NaOH = 1 : 2 = 0.5',h:'انظر إلى المعاملات في المعادلة'},{n:'c',q:'ج. عدد مولات H<sub>2</sub>SO<sub>4</sub> المتفاعلة',u:'mol',lab:'n =',a:0.001,t:0.000015,w:'✓ 0.002 × 0.5 = 0.001 mol',h:'اضرب نتيجة (أ) في نتيجة (ب)'},{n:'d',q:'د. التركيز المولي لحمض الكبريتيك',u:'mol/L',lab:'C =',a:0.001/0.0227,t:0.0007,w:'✓ 0.001 ÷ 0.0227 = 0.044 mol/L',h:'اقسم على 22.7 mL = 0.0227 L'}],
- side:'<div class="defc gold" style="flex:none"><b>انتبه للنسبة</b><span>2NaOH : 1H<sub>2</sub>SO<sub>4</sub> ← عدد مولات الحمض <b>نصف</b> عدد مولات القاعدة.</span></div>',
+ side:warnHTML({sm:true,t:'انتبه للنسبة',h:'2NaOH : 1H<sub>2</sub>SO<sub>4</sub> ← عدد مولات الحمض <b>نصف</b> عدد مولات القاعدة.'}),
  gbar:'<b>0.044 mol/L</b>. الخطوات: مولات القاعدة ← نسبة ← مولات الحمض ← ÷ الحجم.',
  note:'<ul><li>كتاب الطالب سؤال ٣-١٨ (ص٧٦). الإجابة: ٠٫٠٠٢ mol، ٠٫٥، ٠٫٠٠١ mol، ٠٫٠٤٤ mol/L.</li></ul>'});
 
@@ -4558,7 +4969,7 @@ chainSlide({id:'q319',ch:4,title:'سؤال ٣-١٩: حجم الحمض',
  eq:'NaOH + HCl → NaCl + H<sub>2</sub>O',eqSize:34,data:'تمت معايرة <b class="num">25 mL</b> من NaOH تركيزه <b class="num">0.1 mol/L</b> مع HCl تركيزه <b class="num">0.2 mol/L</b>. احسب حجم الحمض المستخدم بالـ mL.',
  labels:['المعطى (NaOH)','n(NaOH)','n(HCl)','V(HCl)'],first:'C = 0.1<br>V = 25 mL',
  steps:[{n:'e1',q:'n(NaOH) = C × V',u:'mol',lab:'n =',a:0.0025,t:0.00003,w:'✓ 0.1 × 0.025 = 0.0025 mol',h:'حوّل 25 mL إلى 0.025 L',fill:'0.0025 mol'},{n:'e2',q:'n(HCl) من النسبة 1 : 1',u:'mol',lab:'n =',a:0.0025,t:0.00003,w:'✓ النسبة 1 : 1',h:'1 mol HCl لكل 1 mol NaOH',fill:'0.0025 mol'},{n:'e3',q:'V(HCl) = n ÷ C',u:'mL',lab:'V =',a:12.5,t:0.15,w:'✓ 0.0025 ÷ 0.2 = 0.0125 L = 12.5 mL',h:'V = n ÷ C ثم حوّل إلى mL',fill:'12.5 mL'}],
- side:'<div class="defc blue" style="flex:none"><b>تحقق من المنطق</b><span>الحمض أقوى تركيزاً (0.2 مقابل 0.1) فنحتاج حجماً <b>أقل</b> منه من القاعدة (12.5 &lt; 25).</span></div>',
+ side:remHTML({sm:true,tag:'تحقق',t:'تحقق من المنطق',h:'الحمض أقوى تركيزاً (0.2 مقابل 0.1) فنحتاج حجماً <b>أقل</b> منه من القاعدة (12.5 &lt; 25).'}),
  gbar:'الحجم <b>12.5 mL</b>: هنا نبحث عن <b>حجم</b> لا تركيز: <b>V = n ÷ C</b>.',
  note:'<ul><li>كتاب الطالب سؤال ٣-١٩ (ص٧٦). الإجابة: ١٢٫٥ mL.</li></ul>'});
 

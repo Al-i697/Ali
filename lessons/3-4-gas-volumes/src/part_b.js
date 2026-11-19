@@ -80,10 +80,8 @@ slide({id:'tri',ch:2,title:'الحجم والمولات: المثلث',tag:'اض
    ${triSVG('V (L)','n (mol)','24 L/mol',{cv:1,w:340})}
    <div class="sm" style="font-size:20px;text-align:center">اضغط على أي زاوية لتخفيها وترى العلاقة</div></div>
   <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">
-   <div class="frm brk" style="padding:16px 22px;gap:8px;align-items:center;min-height:150px;justify-content:center"><div class="bigeq" id="tf" style="font-size:46px;color:var(--gold)">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div></div>
-   <div class="panel" style="padding:12px 20px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">انتبه إلى الوحدات</div>
-    <div class="bigeq" style="font-size:28px;direction:ltr;text-align:start">1 L = 1000 mL ، 24 L = 24000 mL</div>
-    <p class="lead" style="margin:0;font-size:22px">إذا كان الحجم بوحدة <span class="num">L</span> نستخدم <b class="num">24 L/mol</b> ، وإذا كان بوحدة <span class="num">mL</span> نستخدم <b class="num">24000 mL/mol</b></p></div>
+   ${lawHTML({sm:true,cls:'lawbox',t:'القانون',body:'<div class="bigeq" id="tf" style="font-size:46px;color:var(--gold);text-align:center">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div>'})}
+   ${warnHTML({sm:true,t:'انتبه إلى الوحدات',eq:'1 L = 1000 mL ، 24 L = 24000 mL',h:'إذا كان الحجم بوحدة <span class="num">L</span> نستخدم <b class="num">24 L/mol</b> ، وإذا كان بوحدة <span class="num">mL</span> نستخدم <b class="num">24000 mL/mol</b>'})}
    <div class="gbar hide" id="gb" style="font-size:21px">ثلاث علاقات من مثلث واحد: <b>V = n × 24</b> ، <b>n = V ÷ 24</b> ، <b>V<sub>m</sub> = V ÷ n</b></div></div></div>`;},
  init:function(el){
   var T={V:['V = n × 24','الحجم = عدد المولات × الحجم المولي'],n:['n = V ÷ 24','عدد المولات = الحجم ÷ الحجم المولي'],M:['V<sub>m</sub> = V ÷ n','الحجم المولي = الحجم ÷ عدد المولات']}, seen={};

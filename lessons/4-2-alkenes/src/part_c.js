@@ -93,7 +93,7 @@ slide({id:'eqBr',ch:5,title:'اكتب معادلة إضافة البروم',tag:
    <div class="col" style="width:420px;flex:none;gap:10px;justify-content:center">
     <div class="panel compact" id="qp" style="padding:10px 16px;gap:6px"><div style="font-size:21px;font-weight:800">سؤال ٤-١٤ · البروبين مع ماء البروم، الناتج:</div>
      ${optsHTML([{t:'<span class="num lbl">C<sub>3</sub>H<sub>6</sub>Br<sub>2</sub>(l)</span>'},{t:'<span class="num lbl">C<sub>3</sub>H<sub>6</sub>Br(l)</span>'},{t:'<span class="num lbl">C<sub>3</sub>H<sub>8</sub>Br<sub>2</sub>(l)</span>'}])}<div class="fb" style="min-height:24px"></div></div>
-    <div class="panel" style="padding:10px 14px;gap:4px;align-items:center"><div style="font-size:20px;font-weight:800;color:var(--gold)">تذكّر</div>${chainSVG(3,{b:[2,1],u:['H','H','H'],d:['H',null,'H'],l:null,r:'H',w:118})}<div style="font-size:18px;line-height:1.4;text-align:center">تُضاف ذرتا البروم إلى <b>ذرتي الكربون المرتبطتين بـ C=C</b>، وليس إلى طرفي السلسلة.</div></div>
+    ${remHTML({xs:true,body:'<div style="display:flex;flex-direction:column;align-items:center;gap:2px">'+chainSVG(3,{b:[2,1],u:['H','H','H'],d:['H',null,'H'],l:null,r:'H',w:104})+'<p class="dx" style="text-align:center;font-size:18px">تُضاف ذرتا البروم إلى <b>ذرتي الكربون المرتبطتين بـ C=C</b>، وليس إلى طرفي السلسلة.</p></div>'})}
     <div class="gbar hide" id="gb" style="font-size:21px">إضافة البروم: ألكين + Br<sub>2</sub> ← ناتج واحد فيه ذرتا بروم على كربونين متجاورين.</div></div></div>`;},
  init:function(el){
   var d1=false,d2=false,q=false; function chk(){ if(d1&&d2&&q) unhide(el) }

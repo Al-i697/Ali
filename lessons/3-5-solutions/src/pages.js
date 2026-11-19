@@ -11,3 +11,13 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=[];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={vocab:'learn', cg:'learn', cm:'learn', ncv:'learn', what:'learn', tsteps:'learn', method:'learn', map:'learn', labq:'act'};
+/* «توقّع ثم اكتشف»: the prediction asked before a lab slide (see _core/u4/predict.js). The questions are ours (من عندي); the answers are the ones the lab itself shows. */
+var PREDICT={
+  lab:{q:'نضيف الحمض من السحاحة إلى القاعدة (مع الكاشف) نقطة نقطة. كيف يتغير لون الكاشف عند نقطة النهاية؟',opts:['يتغير فجأة بقطرة واحدة تقريباً','يتغير تدريجياً على مدى عدة mL','لا يتغير أبداً'],ok:0,why:'قرب نقطة النهاية تكفي قطرة واحدة لتغيير اللون، لذلك نقترب بالتنقيط ونقرأ الحجم بدقة.',when:'#gb'}
+};
+/* laws that appear only as a clickable triangle in the lesson (no static card): listed for the student's one-page summary (_core/u4/summary.js) */
+var SUMLAWS=[['تركيز الكتلة','C = m ÷ V','الوحدة g/L: كتلة المذاب (g) ÷ حجم المحلول (L)'],['التركيز المولي','C = n ÷ V','الوحدة mol/L: عدد مولات المذاب ÷ حجم المحلول (L)'],['عدد المولات من التركيز','n = C × V','الحجم V بالـ L']];
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={cg:1.25, q316:1.25};

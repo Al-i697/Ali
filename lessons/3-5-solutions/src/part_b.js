@@ -7,9 +7,8 @@ slide({id:'cg',ch:1,title:'تركيز الكتلة: المثلث',tag:'اضغط 
    ${triSVG('m (g)','V (L)','C (g/L)',{cv:1,w:340})}
    <div class="sm" style="font-size:20px;text-align:center">m كتلة المذاب ، V حجم المحلول ، C تركيز الكتلة</div></div>
   <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">
-   <div class="frm brk" style="padding:16px 22px;gap:8px;align-items:center;min-height:150px;justify-content:center"><div class="bigeq" id="tf" style="font-size:46px;color:var(--gold)">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div></div>
-   <div class="panel" style="padding:12px 20px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">انتبه إلى الوحدات</div>
-    <p class="lead" style="margin:0;font-size:22px">الحجم في المحاليل يُقاس غالباً بالـ <span class="num">mL</span> ، لكن التركيز يحتاجه باللتر <span class="num">L</span>:</p><div class="bigeq" style="font-size:30px;text-align:start;color:var(--gold)">V (L) = V (mL) ÷ 1000</div></div>
+   ${lawHTML({sm:true,cls:'lawbox',t:'القانون',body:'<div class="bigeq" id="tf" style="font-size:46px;color:var(--gold);text-align:center">؟</div><div class="sm" id="tfd" style="font-size:22px;text-align:center"> </div>'})}
+   ${warnHTML({sm:true,t:'انتبه إلى الوحدات',h:'الحجم في المحاليل يُقاس غالباً بالـ <span class="num">mL</span> ، لكن التركيز يحتاجه باللتر <span class="num">L</span>:',eq:'V (L) = V (mL) ÷ 1000'})}
    <div class="gbar hide" id="gb" style="font-size:21px">ثلاث علاقات من مثلث واحد: <b>C = m ÷ V</b> ، <b>m = C × V</b> ، <b>V = m ÷ C</b></div></div></div>`;},
  init:function(el){
   var T={r:['C = m ÷ V','تركيز الكتلة (g/L) = كتلة المذاب (g) ÷ حجم المحلول (L)'],t:['m = C × V','كتلة المذاب = التركيز × الحجم'],l:['V = m ÷ C','حجم المحلول = كتلة المذاب ÷ التركيز']}, seen={};

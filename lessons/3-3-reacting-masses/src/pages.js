@@ -9,3 +9,11 @@ var BOOKPG={
 };
 /* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
 var BOOKPG_OWN=['noo'];
+/* the kind of a slide when the title alone does not say it (see _core/u4/kinds.js): intro تمهيد · learn شرح · ex مثال · act نشاط · ask تدريب · exam امتحان · exit تذكرة خروج · hw الواجب */
+var KINDS={sand1:'intro', sand2:'intro', mgo:'ex', sio2:'ex', fes:'ex', bacl:'ask', fe48:'ask', cls:'ask', prop:'ask', solv:'ask', steps3:'learn', si6:'learn', conserve:'learn', rule:'learn', parts:'learn'};
+/* «توقّع ثم اكتشف»: the prediction asked before a lab slide (see _core/u4/predict.js). The questions are ours (من عندي); the answers are the ones the lab itself shows. */
+var PREDICT={
+  lab:{q:'نضع كربونات الصوديوم وحمض الهيدروكلوريك في دورق مفتوح على الميزان ثم نقلب الأنبوبة. بعد توقف الفوران، قراءة الميزان:',opts:['تزيد عن القراءة قبل التفاعل','تنقص عن القراءة قبل التفاعل','تبقى كما هي'],ok:1,why:'خرج غاز CO₂ من الدورق المفتوح إلى الهواء، فنقصت الكتلة بمقدار كتلة CO₂ (0.65 g في هذه التجربة).',when:'#gb'}
+};
+/* slides whose content is small for the stage: enlarged with CSS zoom by the factor that still fits everything that appears later (made by _core/tools/fill_tune.js, applied by _core/u4/fill.js) */
+var FILL={prop:1.25};

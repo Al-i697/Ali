@@ -102,8 +102,7 @@ slide({id:'draw',ch:2,title:'أكمل الصيغة البنائية',tag:'ارس
     <div style="display:flex;align-items:center;gap:14px"><span style="font-size:23px;font-weight:800">عدد الهيدروجين:</span><b class="num" id="hc" style="font-size:38px;color:var(--gold)">0</b><span class="num" style="font-size:26px;font-weight:800" id="hm"></span></div>
     <div class="fb" style="min-height:26px;text-align:center"></div></div>
    <div class="col" style="width:350px;flex:none;gap:10px;justify-content:center">
-    <div class="panel" style="padding:14px 18px;gap:8px"><div style="font-size:24px;font-weight:800">تذكّر</div>
-     <ul style="margin:0;padding-inline-start:22px;font-size:21px;line-height:1.55"><li>أظهر كل الذرات وكل الروابط.</li><li>عدّ الروابط حول كل كربون: يجب أن تكون <b>أربعاً</b> فقط.</li><li>الصيغة الجزيئية تبيّن العدد الفعلي للذرات، والبنائية تبيّن كيف ترتبط.</li></ul></div>
+    ${remHTML({sm:true,items:['أظهر كل الذرات وكل الروابط.','عدّ الروابط حول كل كربون: يجب أن تكون <b>أربعاً</b> فقط.','الصيغة الجزيئية تبيّن العدد الفعلي للذرات، والبنائية تبيّن كيف ترتبط.']})}
     <div class="gbar hide" id="gb" style="font-size:21px">أنجزت الأربعة: كل كربون له 4 روابط، وعدد H = 2n + 2.</div></div></div>`;},
  init:function(el){
   var done={}, cur=1, fb=$('.fb',el), filled;

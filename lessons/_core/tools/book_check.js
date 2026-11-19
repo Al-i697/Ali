@@ -20,7 +20,7 @@ const {chromium}=require('playwright');const path=require('path'),fs=require('fs
   else if(NEED.test(r.title)&&!EXEMPT.test(r.title)){ need++; missing.push([r.id,r.title]) }
  }
  // every id listed in src/pages.js exists as a slide and got exactly its badge
- const src=fs.readFileSync(path.join(path.dirname(path.resolve(process.argv[2]||'lesson32.html')),'src','pages.js'),'utf8'), body=src.slice(src.indexOf('BOOKPG={'));
+ const src=fs.readFileSync(path.join(path.dirname(path.resolve(process.argv[2]||'lesson32.html')),'src','pages.js'),'utf8'), body=(function(){ const i=src.indexOf('BOOKPG={'), j=src.indexOf('};',i); return src.slice(i,j<0?undefined:j+2) })();
  const own=(src.match(/BOOKPG_OWN\s*=\s*\[([^\]]*)\]/)||[0,''])[1].match(/\w+/g)||[];
  const want={}; body.replace(/(\w+)\s*:\s*'([^']+)'/g,(m,k,v)=>{want[k]=v});
 
