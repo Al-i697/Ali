@@ -32,8 +32,7 @@ slide({id:'types',ch:0,title:'أنواع الوقود الأحفوري',tag:'ا�
   var items=[['الفحم Coal','وقود أحفوري <b>صلب</b>، مركّبات عضوية فيها نسبة عالية من الكربون.'],['النفط (البترول، الزيت الخام) Petroleum','وقود أحفوري <b>سائل</b> لزج، مخلوط من هيدروكربونات كثيرة بأطوال سلاسل مختلفة.'],['الغاز الطبيعي Natural gas','وقود أحفوري <b>غازي</b>، مكوّنه الرئيسي غاز <b>الميثان</b>.']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
    <div class="col" style="width:440px;flex:none;gap:12px;justify-content:center">
-    <div class="frm brk" style="padding:16px 22px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">مصطلحات علمية · Fossil fuel</div>
-     <p style="margin:0;font-size:24px;font-weight:800;line-height:1.5"><span style="color:var(--gold)">الوقود الأحفوري</span>: وقود كربوني تكوَّن تحت الأرض نتيجة تحلّل مواد عضوية لبقايا كائنات حية، بتأثير درجة الحرارة والضغط المرتفعين، وبغياب الأكسجين على مدى أطوار (أزمنة) جيولوجية.</p></div>
+    ${dfcHTML({sm:true,t:'الوقود الأحفوري',en:'Fossil fuel',h:'وقود كربوني تكوَّن تحت الأرض نتيجة تحلُّل مواد عضوية لبقايا كائنات حية، بتأثير درجة الحرارة والضغط المرتفعين، وبغياب الأكسجين على مدى أطوار (أزمنة) جيولوجية.'})}
     <div class="panel compact" id="qp" style="padding:10px 16px"><div style="font-size:21px;font-weight:800;margin-bottom:2px">٤-٢١ سمِّ ثلاثة أنواع من الوقود الأحفوري:</div>
      ${optsHTML([{t:'الفحم والنفط والغاز الطبيعي'},{t:'الفحم والحطب والغاز الطبيعي'},{t:'النفط والفحم النباتي والهيدروجين'}])}<div class="fb" style="min-height:24px"></div></div></div>
    <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">

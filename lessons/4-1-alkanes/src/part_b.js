@@ -5,11 +5,10 @@ slide({id:'hydro',ch:1,title:'الهيدروكربونات: مشبعة وغير 
  html:function(){
   var rows=[['CH4',alkSVG(1,{w:66}),'s'],['C2H6',alkSVG(2,{w:96}),'s'],['C2H4',ene2SVG(120),'u'],['C2H2',yne2SVG(150),'u']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
-   <div class="col" style="width:420px;flex:none;gap:12px;justify-content:center">
-    <div class="frm brk" style="padding:18px 22px;gap:8px"><div style="font-size:23px;font-weight:800;color:var(--cyan)">المركّب الهيدروكربوني</div>
-     <p style="margin:0;font-size:27px;font-weight:800;line-height:1.4">مركّب يحتوي على <span style="color:var(--gold)">الكربون والهيدروجين فقط</span>.</p></div>
-    <div class="panel" style="padding:12px 18px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--ok)">مشبعة</div><div style="font-size:21px;line-height:1.4">كل الروابط بين ذرات الكربون <b>أحادية</b>.</div>
-     <div style="font-size:22px;font-weight:800;color:var(--gold);margin-top:4px">غير مشبعة</div><div style="font-size:21px;line-height:1.4">فيها رابطة <b>ثنائية أو ثلاثية</b> على الأقل بين ذرتي كربون.</div></div></div>
+   <div class="col" style="width:450px;flex:none;gap:8px;justify-content:center">
+    ${dfcHTML({sm:true,cls:'xs',t:'الهيدروكربون',en:'Hydrocarbon',h:'مُركّب يحتوي فقط على الكربون والهيدروجين.'})}
+    ${dfcHTML({sm:true,cls:'xs',t:'الهيدروكربون المشبع',en:'Saturated hydrocarbon',h:'مُركّب تكون فيه جميع الروابط بين ذرّات الكربون أحادية.'})}
+    ${dfcHTML({sm:true,cls:'xs',t:'الهيدروكربون غير المشبع',en:'Unsaturated hydrocarbon',h:'مُركّب لا تكون فيه جميع الروابط بين ذرّات الكربون أحادية، بل تتخلّلها رابطة (أو روابط) ثنائية أو ثلاثية.'})}</div>
    <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
     <div style="font-size:23px;font-weight:800;color:var(--cyan)">صنّف كل هيدروكربون:</div>
     ${rows.map(function(r,i){return '<div class="cls" data-a="'+r[2]+'" style="display:grid;grid-template-columns:200px auto 1fr;gap:14px;align-items:center;background:rgba(var(--d2),.55);border-radius:16px;padding:3px 14px"><div style="display:flex;justify-content:center">'+r[1]+'</div><b class="num" style="font-size:26px">'+sub(r[0])+'</b><div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" class="btn" data-v="s">مشبع</button><button type="button" class="btn" data-v="u">غير مشبع</button></div></div>'}).join('')}
@@ -33,8 +32,7 @@ slide({id:'alk',ch:1,title:'الألكانات',tag:'مصطلح علمي',
   var items=[['مركّبات هيدروكربونية مشبعة','تتكوّن من الكربون والهيدروجين فقط، ولا يمكن إضافة ذرات أخرى إلى سلسلتها.'],['روابط أحادية فقط','كل الروابط بين ذرات الكربون في السلسلة أحادية.'],['الصيغة العامة <span class="num">C<sub>n</sub>H<sub>2n+2</sub></span>','n هو عدد ذرات الكربون، وعدد ذرات الهيدروجين يساوي 2n + 2.'],['اسمها ينتهي بـ «آن»','ميث<b>ان</b>، إيث<b>ان</b>، بروب<b>ان</b>، بيوت<b>ان</b>…']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
    <div class="col" style="width:470px;flex:none;gap:12px;justify-content:center">
-    <div class="frm brk" style="padding:20px 24px;gap:8px"><div style="font-size:24px;font-weight:800;color:var(--cyan)">مصطلحات علمية · Alkanes</div>
-     <p style="margin:0;font-size:27px;font-weight:800;line-height:1.5"><span style="color:var(--gold)">الألكانات</span>: مركّبات هيدروكربونية مُشبَعة، تحتوي جُزيئاتها على روابط أحادية فقط بين ذرّات الكربون، وصيغتها العامة <span class="num">C<sub>n</sub>H<sub>2n+2</sub></span>، واسمها ينتهي بـ «آن».</p></div>
+    ${dfcHTML({sm:true,t:'الألكانات',en:'Alkanes',h:'مُركّبات هيدروكربونية مُشبَعة. تحتوي جُزيئاتها على روابط أحادية فقط بين ذرّات الكربون في السلسلة، وتمتلك الصيغة العامة <span class="num">C<sub>n</sub>H<sub>2n+2</sub></span> مع اسم ينتهي بـ «آن».'})}
     <div class="panel" style="padding:10px 14px;align-items:center">${alkSVG(4,{w:360})}</div></div>
    <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
     <div style="font-size:22px;font-weight:800;color:var(--cyan)">فكّك التعريف إلى أربعة أجزاء، واضغط لتفهم كل جزء:</div>

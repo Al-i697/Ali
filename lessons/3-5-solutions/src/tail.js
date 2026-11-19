@@ -14,7 +14,7 @@
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-١٦ إلى ٣-٢٠','كتاب النشاط: تمرين ٣-٦ (حسابات تتضمن محاليل)','كتاب النشاط: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤','كتاب النشاط: ورقة العمل ٣-٦ (صيغة حمض عضوي)','أسئلة نهاية الوحدة: السؤال ٥'];
+  var hw=['كتاب الطالب ص<bdi dir="ltr">76</bdi>: الأسئلة ٣-١٦ إلى ٣-٢٠','كتاب النشاط ص<bdi dir="ltr">44–45</bdi>: تمرين ٣-٦','كتاب النشاط ص<bdi dir="ltr">52–53</bdi>: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤','كتاب النشاط ص<bdi dir="ltr">54–55</bdi>: ورقة العمل ٣-٦ (صيغة حمض عضوي)','كتاب الطالب ص<bdi dir="ltr">79</bdi>: نهاية الوحدة، السؤال ٥'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:23px;line-height:1.55"><li>تركيز الكتلة: <b class="num">C = m ÷ V</b> بوحدة g/L</li><li>التركيز المولي: <b class="num">C = n ÷ V</b> بوحدة mol/L، و<b class="num">n = C × V</b></li><li>الحجم دائماً <b>باللتر</b>: mL ÷ 1000</li><li>المعايرة: محلول قياسي من السحاحة يعادل حجماً محدداً (ماصة) حتى <b>نقطة النهاية</b>، ونأخذ متوسط نتيجتين (≤ 0.1 mL)</li><li>الحل: معطى ← <b>مولات</b> ← نسبة المعادلة ← مولات ← مطلوب</li></ul></div>

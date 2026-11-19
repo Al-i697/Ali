@@ -14,13 +14,13 @@
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب النشاط: ورقة العمل ٣-٢ (المول والصيغ الكيميائية)','كتاب النشاط ص<bdi dir="ltr">38–39</bdi>: تمرين ٣-٣ (الجزئية أ)','كتاب الطالب ص<bdi dir="ltr">61</bdi>: الأسئلة ٣-٥ إلى ٣-٧','كتاب الطالب ص<bdi dir="ltr">78</bdi>: نهاية الوحدة، السؤال ٢'];
+  var hw=['كتاب النشاط ص<bdi dir="ltr">47</bdi>: ورقة العمل ٣-٢ (المول والصيغ الكيميائية)','كتاب النشاط ص<bdi dir="ltr">38–39</bdi>: تمرين ٣-٣ (الجزئية أ)','كتاب الطالب ص<bdi dir="ltr">61</bdi>: الأسئلة ٣-٥ إلى ٣-٧','كتاب الطالب ص<bdi dir="ltr">78</bdi>: نهاية الوحدة، السؤال ٢'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:25px;line-height:1.5"><li>المول = <b class="num">6.02×10<sup>23</sup></b> جسيم (عدد أفوجادرو)</li><li>الكتلة المولية M = كتلة الصيغة النسبية بوحدة <b class="num">g/mol</b></li><li>عدد المولات <b class="num">n = m ÷ M</b></li><li>عدد الجسيمات <b class="num">N = n × 6.02×10<sup>23</sup></b></li><li>الكتلة تختلف من مادة لأخرى وعدد الجسيمات في المول ثابت</li></ul></div>
    <div class="col" style="width:470px;flex:none;gap:12px"><div class="panel" style="padding:18px 22px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:28px">الواجب</h3><div class="steps" style="gap:10px">${hw.map(function(h,i){return `<button type="button" class="stp" style="padding:10px 14px;font-size:21px"><span class="sn">${ar(i+1)}</span><span>${h}</span></button>`}).join('')}</div></div>
     <div class="panel" style="padding:12px 20px"><div class="sm" style="font-size:20px;color:var(--cyan);font-weight:800">الدرس التالي</div><p style="margin:0;font-size:23px;line-height:1.4">٣-٣ حسابات تتضمن كتلاً متفاعلة (استنباط الصيغ الكيميائية)</p></div></div></div>`;},
  init:function(el){ $$('.stp',el).forEach(function(b,i){b.addEventListener('click',function(){var on=b.classList.toggle('final'); $('.sn',b).textContent=on?'✓':ar(i+1)})}) },
- note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>دليل المعلم ص٥٥: ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط غير متوفرة في الملفات المرسلة (الملف ينتهي عند ص٥٠)، فلا توجد لها شريحة. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) له شريحة في الدرس (eou2) قبل الأسئلة السابقة.</li></ul>'});
+ note:'<ul><li>الواجب حسب دليل المعلم للموضوع ٣-٢. اضغط على البند لتظليله عند الإعلان عنه.</li><li>ورقة العمل ٣-٢ (المول والصيغ الكيميائية) في كتاب النشاط ص٤٧ (وصلت لاحقاً مع النسخة الكاملة من الكتاب)، ولا توجد لها شريحة بعد. سؤال نهاية الوحدة ٢ (كتاب الطالب ص٧٨) له شريحة في الدرس (eou2) قبل الأسئلة السابقة.</li></ul>'});
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();

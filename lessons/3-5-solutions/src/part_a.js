@@ -56,7 +56,7 @@ slide({id:'vocab',ch:0,title:'المذاب والمذيب والمحلول',tag:
   <div class="col" style="width:430px;flex:none;gap:10px;justify-content:center">
    <div class="defc gold" style="flex:none"><b>المذيب</b><span>المادة التي تُذيب غيرها. في المحاليل المائية الماء هو المذيب العام.</span></div>
    <div class="defc blue" style="flex:none"><b>المذاب</b><span>المادة التي أُذيبت في المذيب.</span></div>
-   <div class="gbar hide" id="gb" style="font-size:20px">لوصف محلول نحتاج <b>كمية المذاب</b> و<b>حجم المحلول</b> (باللتر). والمحلول <b>القياسي</b> تركيزه معروف بدقة.</div></div></div>`;},
+   <div class="hide" id="gb">${dfcHTML({sm:true,t:'التركيز',en:'Concentration',h:'يُقصد به كمّية مادة ذائبة (المذاب) في حجم مُعيّن من محلول. يُعبَّر عن التركيز بوحدة g/L (التركيز الكتلي) أو بوحدة mol/L (التركيز المولي).'})}</div></div></div>`;},
  init:function(el){
   bindMatch(el,[['m','محلول ملح الطعام'],['s','ملح الطعام NaCl'],['v','الماء']],{css:'font-size:21px;padding:9px 16px',bad:'فكّر: أيهما أُذيب في الآخر؟'});
  },

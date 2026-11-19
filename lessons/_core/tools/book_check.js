@@ -11,7 +11,7 @@ const {chromium}=require('playwright');const path=require('path'),fs=require('fs
   await p.evaluate(i=>document.querySelectorAll('#prog .seg')[i].click(),i); await p.waitForTimeout(900);
   const r=await p.evaluate(()=>{
    const s=document.querySelector('.slide.on'); if(!s) return null;
-   const h2=s.querySelector('.hd h2'), pg=s.querySelector('.hd .pgb'), st=document.getElementById('stage').getBoundingClientRect();
+   const h2=s.querySelector('.hd h2'), pg=s.querySelector('.hd .pgb'), st=s.getBoundingClientRect();   // the slide itself: a slide still sliding in moves with its badge
    const out={id:s.dataset.id,title:h2?h2.textContent:'',pg:pg?pg.getAttribute('data-pg'):''};
    if(pg){ const a=pg.getBoundingClientRect(), t=h2.getBoundingClientRect(); out.inside=a.left>=st.left-1&&a.top>=st.top-1&&a.right<=st.right+1&&a.bottom<=st.bottom+1; out.clear=a.bottom<=t.top+4||a.top>=t.bottom||a.right<=t.left||a.left>=t.right; out.txt=pg.textContent }
    return out});

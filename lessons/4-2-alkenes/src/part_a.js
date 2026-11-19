@@ -41,8 +41,7 @@ slide({id:'what',ch:1,title:'ما هي الألكينات؟',tag:'اكتشف',
   var items=[['هيدروكربونات غير مشبعة','تتكوّن من الكربون والهيدروجين فقط، وفي جزيئاتها رابطة ثنائية واحدة على الأقل C=C.'],['الصيغة العامة <span class="num">C<sub>n</sub>H<sub>2n</sub></span>','n عدد ذرات الكربون، وعدد ذرات الهيدروجين يساوي 2n، أي أقل بذرتين من الألكان المقابل.'],['أبسط ألكين: الإيثين','صيغته <span class="num">CH<sub>2</sub>=CH<sub>2</sub></span>، ويلزم ذرتا كربون على الأقل لتكوين الرابطة الثنائية.'],['اسمها ينتهي بـ «ين»','إيث<b>ين</b>، بروب<b>ين</b>، بيوت<b>ين</b>…']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
    <div class="col" style="width:440px;flex:none;gap:12px;justify-content:center">
-    <div class="frm brk" style="padding:16px 22px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">مصطلحات علمية · Alkenes</div>
-     <p style="margin:0;font-size:25px;font-weight:800;line-height:1.45"><span style="color:var(--gold)">الألكينات</span>: مركّبات هيدروكربونية غير مُشبَعة، تحتوي جُزيئاتها على رابطة ثنائية <span class="num">C=C</span> واحدة على الأقل، وصيغتها العامة <span class="num">C<sub>n</sub>H<sub>2n</sub></span>.</p></div>
+    ${dfcHTML({sm:true,t:'الألكينات',en:'Alkenes',h:'مُركّبات هيدروكربونية غير مُشبَعة، تحتوي جُزيئاتها على رابطة ثنائية <span class="num">C=C</span> واحدة على الأقل في مكان ما في السلسلة، وتمتلك الصيغة العامة <span class="num">C<sub>n</sub>H<sub>2n</sub></span> مع اسم ينتهي بـ «ين».'})}
     <div class="panel compact" style="padding:10px 16px"><div style="font-size:21px;font-weight:800;margin-bottom:2px">فكّر: لماذا لا يوجد ألكين بذرة كربون واحدة؟</div>
      ${optsHTML([{t:'لأن الرابطة الثنائية تكون بين ذرتي كربون'},{t:'لأن الهيدروجين يكوّن رابطة ثنائية مع الكربون'},{t:'لأن الكربون لا يكوّن روابط'}])}<div class="fb" style="min-height:24px"></div></div></div>
    <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">

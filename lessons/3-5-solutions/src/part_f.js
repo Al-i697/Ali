@@ -1,7 +1,7 @@
 /* ---------- solutions, part F: applications (worksheets 3-5 and 3-6, exercise 3-6 b), the route map, end-of-unit question 5, the race ---------- */
 
 /* 25 worksheet 3-5 (questions 1 to 3) */
-slide({id:'ws35',ch:5,title:'ورقة العمل ٣-٥: تراكيز ومعايرة',tag:'كتاب النشاط ص٥٢',
+slide({id:'ws35',ch:5,title:'ورقة العمل ٣-٥: تراكيز ومعايرة',tag:'ورقة العمل ٣-٥',
  html:function(){
   var C=[['١ أ','أُذيب <b class="num">60 g</b> من NaOH في ماء لتكوين <b class="num">1 L</b> من المحلول.',[['w1','mol/L','C =']]],
          ['١ ب','أُضيف <b class="num">20 g</b> من NaOH إلى ماء لتحضير <b class="num">500 mL</b> من المحلول.',[['w2','g/L','تركيز الكتلة ='],['w3','mol/L','التركيز المولي =']]],
@@ -35,7 +35,7 @@ rowsSlide({id:'na2co3',ch:5,title:'ورقة العمل ٣-٥ (٤): ماء الت
  note:'<ul><li>كتاب النشاط ورقة العمل ٣-٥ سؤال ٤ (ص٥٣) وإجابته في عرض NotebookLM (شريحة ١٣): n(HCl) = 0.0175، n(Na₂CO₃) = 0.00875، الكتلة 0.9275 g، كتلة الماء 1.5725 g، n(H₂O) = 0.08736، x ≈ 10.</li><li>دليل المعلم: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤ واجب للموضوع ٣-٥.</li></ul>'});
 
 /* 28 worksheet 3-6: the readings of three burettes */
-slide({id:'wsburette',ch:5,title:'ورقة العمل ٣-٦: قراءات السحاحة',tag:'كتاب النشاط ص٥٥',
+slide({id:'wsburette',ch:5,title:'ورقة العمل ٣-٦: قراءات السحاحة',tag:'اقرأ السحاحة',
  html:function(){
   var B=[[0.0,26.5],[6.0,31.7],[23.0,48.6]], s='', i, k, y0=24, px=6;
   B.forEach(function(b,i){
@@ -124,7 +124,7 @@ slide({id:'map',ch:6,title:'الخريطة الكبرى: كل حسابات ال�
  note:'<ul><li>كتاب الطالب الشكل ٣-٨ (ص٧٦) وملخص الوحدة: ثلاث طرق للحصول على عدد المولات (كتلة ÷ M للمواد الصلبة والسائلة، حجم ÷ 24 للغازات فقط، تركيز × حجم للمحلول)، ثم نسبة المعادلة، ثم ثلاث طرق للمطلوب (n × M، n × 24، n ÷ V).</li><li>الشكل نفسه ظهر في الدرس ٣-٤ بدون المحلول. جرّبوا الحالات التسع، وكل واحدة منها سؤال حللناه في الوحدة.</li></ul>'});
 
 /* 31 end-of-unit question 5 */
-slide({id:'q5',ch:6,title:'سؤال ٥ نهاية الوحدة',tag:'كتاب الطالب ص٧٩',
+slide({id:'q5',ch:6,title:'سؤال ٥ نهاية الوحدة',tag:'أجب',
  html:function(){return `<div style="display:flex;gap:16px;flex:1;align-items:stretch">
   <div class="frm brk" style="width:470px;flex:none;padding:12px 18px;gap:7px;justify-content:flex-start"><div style="font-size:23px;font-weight:800;color:var(--cyan)">أ</div>
    <p class="lead" style="margin:0;font-size:21px;line-height:1.5">أُذيب <b class="num">2 g</b> من NaOH في الماء لتحضير محلول حجمه النهائي <b class="num">250 mL</b>. <span class="num">Na = 23 ، H = 1 ، O = 16</span></p>

@@ -14,7 +14,7 @@
 
 slide({id:'hw',ch:8,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط: ورقة العمل ٣-٣ (الكتل المتفاعلة)','كتاب النشاط: تمرين ٣-٣ الازدياد النسبي (الجزئيتان ب وج)','كتاب النشاط: ورقة العمل ٣-٤ BaCl₂ (اختياري)','أسئلة نهاية الوحدة: السؤال ٣'];
+  var hw=['كتاب الطالب ص<bdi dir="ltr">64–65</bdi>: الأسئلة ٣-٨ إلى ٣-١١','كتاب النشاط ص<bdi dir="ltr">48–49</bdi>: ورقة العمل ٣-٣','كتاب النشاط ص<bdi dir="ltr">39</bdi>: تمرين ٣-٣ (ب وج)','كتاب النشاط ص<bdi dir="ltr">50–51</bdi>: ورقة العمل ٣-٤ (اختياري)','كتاب الطالب ص<bdi dir="ltr">78</bdi>: نهاية الوحدة، السؤال ٣'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:24px;line-height:1.55"><li>الصيغة من الكتل: كتلة ← مولات (÷ M) ← أبسط نسبة (÷ الأقل)</li><li>الكتلة من المعادلة: كتلة ← مولات ← نسبة المعادلة ← كتلة</li><li>المادة المحددة: الأقل في <b class="num">n ÷ المعامل</b>، تنتهي أولاً وتحدد الناتج</li><li>المادة الفائضة: يبقى منها جزء بعد التفاعل</li><li>نشاط ٣-٢: <b class="num">n(Na<sub>2</sub>CO<sub>3</sub>) : n(CO<sub>2</sub>) = 1 : 1</b></li></ul></div>

@@ -49,8 +49,7 @@ slide({id:'define',ch:4,title:'ما هو التكسير الحراري؟',tag:'�
   var items=[['المشكلة','الطلب على المشتقات الخفيفة (الجازولين) أكبر من المعروض، والعكس للثقيلة (الديزل والكيروسين).'],['الحل: التكسير الحراري','تكسير الجزيئات الكبيرة في المشتقات الثقيلة إلى جزيئات أصغر وأكبر قيمة.'],['الشرط: حرارة مرتفعة','الطاقة ضرورية لتكسير الروابط، فيصبح ممكناً تكسير جزيئات كبيرة إلى جزيئات أصغر.'],['النواتج دائماً','ألكان أقصر وألكين قصير السلسلة، أو ألكين واحد أو أكثر وهيدروجين.']];
   return `<div style="display:flex;gap:22px;flex:1;align-items:stretch">
    <div class="col" style="width:440px;flex:none;gap:12px;justify-content:center">
-    <div class="frm brk" style="padding:16px 22px;gap:6px"><div style="font-size:22px;font-weight:800;color:var(--cyan)">مصطلحات علمية · Thermal cracking</div>
-     <p style="margin:0;font-size:24px;font-weight:800;line-height:1.5"><span style="color:var(--gold)">التكسير الحراري</span>: تفكّك هيدروكربونات ذات سلاسل طويلة إلى ألكانات وألكينات ذات سلاسل أقصر، أو هيدروجين.</p></div>
+    ${dfcHTML({sm:true,t:'التكسير الحراري',en:'Thermal cracking',h:'تفكُّك هيدروكربونات ذات سلاسل طويلة إلى ألكانات وألكينات ذات سلاسل أقصر أو هيدروجين.'})}
     <div class="panel compact" id="qp" style="padding:10px 16px"><div style="font-size:21px;font-weight:800;margin-bottom:2px">لماذا تُجرى هذه العملية في المصفاة؟</div>
      ${optsHTML([{t:'لتلبية الطلب على المشتقات الخفيفة الأكثر فائدة'},{t:'لإنتاج الأسفلت'},{t:'لتبريد النفط'}])}<div class="fb" style="min-height:24px"></div></div></div>
    <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">

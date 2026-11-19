@@ -33,7 +33,7 @@ slide({id:'scaleup',ch:4,title:'الكميات تكبر والنسبة ثابت�
  note:'<ul><li>كتاب الطالب ص٦٣: CaCO₃ → CaO + CO₂ بالنسبة ١٠٠ : ٥٦ : ٤٤ (g)، ومن ١٠ أطنان كربونات الكالسيوم نتوقع ٥٫٦ أطنان من CaO.</li><li>الفكرة: المعادلة تعطينا نسباً ثابتة بين الكتل، والكتلة الكلية تُحفظ (٥٦ + ٤٤ = ١٠٠).</li></ul>'});
 
 /* 18b proportion in chemical calculations (activity book exercise 3-2) */
-slide({id:'prop',ch:4,title:'التناسب في الحسابات الكيميائية',tag:'كتاب النشاط تمرين ٣-٢',
+slide({id:'prop',ch:4,title:'التناسب في الحسابات الكيميائية',tag:'تمرين ٣-٢',
  html:function(){
   var Q=[['أ','يلزم <b class="num">5 طن</b> من ZnO لإنتاج <b class="num">4 طن</b> من الخارصين. ما كتلة الخارصين الناتجة من <b class="num">20 طناً</b> من ZnO؟','t'],['ب','تحوّل <b class="num">14 طناً</b> من النيتروجين إلى <b class="num">17 طناً</b> من الأمونيا. ما كتلة النيتروجين اللازمة لإنتاج <b class="num">34 طناً</b> من الأمونيا؟','t'],['ج','<b class="num">27 g</b> من Al تعطي <b class="num">51 g</b> من Al<sub>2</sub>O<sub>3</sub>. كم g من Al<sub>2</sub>O<sub>3</sub> تنتج من <b class="num">4.5 g</b> من Al؟','g']];
   return `<div class="col grow" style="gap:12px;justify-content:center"><div style="display:flex;gap:14px">${Q.map(function(q,i){return `<div class="frm brk" style="flex:1;min-width:0;padding:14px 16px;gap:10px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">${q[0]}</div><p class="lead" style="margin:0;font-size:22px;line-height:1.5">${q[1]}</p>${nin('p'+i,q[2])}</div>`}).join('')}</div>
@@ -117,7 +117,7 @@ slide({id:'q39',ch:4,title:'السؤالان ٣-٩ و٣-١٠',tag:'أجب',
  note:'<ul><li>٣-٩: ٢٫٨٦ طن Fe₂O₃. ٣-١٠: ١٧٫٣٥ g (في عرضك ١٧٫٣٣ من تقريب الخطوات؛ نقبل الاثنين).</li><li>في ٣-٩ المعطى بالأطنان: نحوّله إلى g (٢ طن = ٢٬٠٠٠٬٠٠٠ g) ثم نرجع إلى الأطنان.</li></ul>'});
 
 /* 23b end-of-unit question 3 (a) and (b): masses from equations (book p.78) */
-slide({id:'eou3',ch:4,title:'سؤال نهاية الوحدة ٣ (أ) و(ب)',tag:'كتاب الطالب ص٧٨',
+slide({id:'eou3',ch:4,title:'سؤال نهاية الوحدة ٣ (أ) و(ب)',tag:'أجب',
  html:function(){return `<div class="col grow" style="gap:8px;justify-content:flex-start">
   ${arStrip(['H','C','O','Na','Ca'])}
   <div style="display:flex;gap:16px;flex:1;align-items:stretch">
@@ -132,7 +132,7 @@ slide({id:'eou3',ch:4,title:'سؤال نهاية الوحدة ٣ (أ) و(ب)',ta
  note:'<ul><li>كتاب الطالب ص٧٨، أسئلة نهاية الوحدة، السؤال ٣ (أ) و(ب). إجابات دليل المعلم (ص٧٥–٧٦): (أ) ٣ mol ثم ٥٤ g ماء؛ (ب) ٠٫٠٥ mol ثم ٠٫٠٢٥ mol ثم ٢٫٦٥ g.</li><li>الجزء (ج) (النحاس وأيونات الفضة) في الشريحة «كتاب الطالب ص٧٨» ضمن المادة المحددة.</li><li>مفيدة كمراجعة لطريقة الثلاث خطوات: n من الكتلة ← نسبة المعادلة ← الكتلة المطلوبة. لا يعطي السؤال Ar لـ Na وC في (ب)، فنستخدم قيم الشريط أعلى الشريحة.</li></ul>'});
 
 /* 24 the activity book worksheet, mass parts of the Solvay process */
-slide({id:'solv',ch:4,title:'كتاب النشاط: عملية سولفاي (الكتل)',tag:'ورقة العمل ٣-٣ سؤال ٢',
+slide({id:'solv',ch:4,title:'عملية سولفاي (الكتل)',tag:'ورقة العمل ٣-٣ سؤال ٢',
  html:function(){return `<div class="col grow" style="gap:8px;justify-content:flex-start">
   ${arStrip(['H','C','N','O','Na','Cl'])}
   <div style="display:flex;gap:16px;flex:1">

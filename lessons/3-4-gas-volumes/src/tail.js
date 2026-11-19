@@ -14,7 +14,7 @@
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-١٢ إلى ٣-١٥','كتاب النشاط: تمرين ٣-٤ (شريط Mg طوله 5 cm)','كتاب النشاط: تمرين ٣-٥ (حجوم الغازات المتفاعلة)','كتاب النشاط: ورقة العمل ٣-٥ السؤال ١','أسئلة نهاية الوحدة: السؤال ٤'];
+  var hw=['كتاب الطالب ص<bdi dir="ltr">69</bdi>: الأسئلة ٣-١٢ إلى ٣-١٥','كتاب النشاط ص<bdi dir="ltr">40–41</bdi>: تمرين ٣-٤ (شريط Mg)','كتاب النشاط ص<bdi dir="ltr">42–43</bdi>: تمرين ٣-٥ (حجوم الغازات)','كتاب النشاط ص<bdi dir="ltr">52</bdi>: ورقة العمل ٣-٥ السؤال ١','كتاب الطالب ص<bdi dir="ltr">79</bdi>: نهاية الوحدة، السؤال ٤'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:23px;line-height:1.55"><li>قانون أفوجادرو: الحجوم المتساوية من الغازات (الظروف نفسها) فيها العدد نفسه من الجسيمات</li><li>الحجم المولي <b class="num">24 L/mol</b> عند درجة حرارة الغرفة والضغط القياسي: <b class="num">V = n × 24</b></li><li>تفاعلات الغازات فقط: <b>نسبة الحجوم = نسبة المعاملات</b></li><li>كتلة وغاز: المعطى ← مولات ← نسبة المعادلة ← مولات ← المطلوب</li><li>نشاط ٣-٣: حجم H<sub>2</sub> يتناسب مع كتلة Mg، وكل <b class="num">1 mL</b> ≙ <b class="num">0.001 g</b> من Mg</li></ul></div>

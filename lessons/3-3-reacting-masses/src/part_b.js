@@ -22,7 +22,7 @@ slide({id:'si6',ch:3,title:'ماذا يحدث إذا لم تكن الكميات 
   <div class="col" style="flex:1;min-width:0;gap:12px;justify-content:center">
    <div class="panel" style="padding:12px 20px;gap:8px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">من جدول SiO₂: 5.3 g من O تلزمها 4.7 g من Si</div>
     ${barsHTML('b6',[{lab:'Si',parts:[[4.7,'used','يتفاعل 4.7 g'],[1.3,'left','يبقى 1.3 g']]},{lab:'O',parts:[[5.3,'used','يتفاعل 5.3 g']]}],6)}</div>
-   <div class="hide" id="defs" style="display:flex;gap:12px"><div class="defc gold"><b>المادة المحددة للتفاعل</b><span>تنتهي أولاً وتحدد كمية الناتج: هنا الأكسجين.</span></div><div class="defc blue"><b>المادة الفائضة</b><span>يبقى جزء منها بعد التفاعل: هنا السيليكون.</span></div></div></div></div>`;},
+   <div class="hide" id="defs" style="display:flex;flex-direction:column;gap:10px">${dfcHTML({sm:true,t:'المادة المتفاعلة المحدِّدة للتفاعل',en:'Limiting reactant',h:'هي المادة المتفاعلة بكمّية أقلّ والتي تحدّد كمّية النواتج وتنتهي أوّلاً عند إجراء التفاعل. <span class="eg">في مثالنا: الأكسجين</span>'})}${dfcHTML({sm:true,t:'الفائض',en:'Excess',h:'وجود كمّية من مادة متفاعلة أكثر مما هو مطلوب في التفاعل، وبالتالي يبقى بعضها دون تفاعُل. <span class="eg">في مثالنا: السيليكون</span>'})}</div></div></div>`;},
  init:function(el){
   var bars=$('#b6',el);
   bindMcq($('.frm',el),[{t:'',why:'الأكسجين لا يكفي لكل السيليكون'},{t:'',ok:true,why:'صح: 5.3 g من O تتفاعل مع 4.7 g من Si فقط'},{t:'',why:'المتبقي هو السيليكون لا الأكسجين'},{t:'',why:'المادتان تتفاعلان لكن ليس كلاهما بالكامل'}],$('.frm .fb',el),function(){
@@ -136,7 +136,7 @@ slide({id:'cuo',ch:3,title:'السؤال ٣-١١: أكسيد النحاس (II) �
  note:'<ul><li>سؤال ٣-١١ من كتاب الطالب ص٦٥. عرضك (شريحتا ٩ و١٠): n(C) = ٠٫٠٦٢٥، Mr(CuO) = ٨٠ (بـ Cu = ٦٤) فـ n = ٠٫٠٦٥، ثم ٠٫٠٦٥ ÷ ٢ = ٠٫٠٣٢٥ أقل من ٠٫٠٦٢٥: CuO محددة وC فائضة.</li><li>الكتاب يعطي Cu = ٦٣٫٥ فنعتمده (٧٩٫٥، ٠٫٠٦٥٤، ٠٫٠٣٢٧)، ونقبل أيضاً ٨٠ و٠٫٠٦٥ و٠٫٠٣٢٥.</li><li>الميزان: الكفة الأثقل (القيمة الأكبر) أكثر نزولاً، والأقل هو المحدد.</li></ul>'});
 
 /* 13 activity book p.48: iron and sulfur again, with the worksheet questions */
-slide({id:'fe48',ch:3,title:'كتاب النشاط ص٤٨: الحديد والكبريت',tag:'ورقة العمل ٣-٣',
+slide({id:'fe48',ch:3,title:'الحديد والكبريت',tag:'ورقة العمل ٣-٣',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
   <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">
    <div class="frm brk" style="padding:10px 18px;gap:4px"><div class="bigeq" style="font-size:34px;color:var(--gold);text-align:center">Fe + S → FeS</div><p class="lead" style="margin:0;font-size:22px">استُخدم <b class="num">7 g</b> من الحديد و<b class="num">10 g</b> من الكبريت <span class="num">(Fe = 56, S = 32)</span></p></div>
@@ -160,7 +160,7 @@ slide({id:'fe48',ch:3,title:'كتاب النشاط ص٤٨: الحديد والك
  note:'<ul><li>عرضك (شريحة ١١) وكتاب النشاط ص٤٨ سؤال ١: ٧ g Fe و١٠ g S ← n(Fe) = ٠٫١٢٥، n(S) = ٠٫٣١٢، الأقل Fe فهو المحدد والكبريت فائض.</li><li>أسئلة الورقة: أ) ٣٢ g، ب) FeS = ١١ g ويبقى ٦ g كبريت، ج) ١٧٫٥ g.</li></ul>'});
 
 /* 14 copper and silver ions (page 78 of the student book) */
-slide({id:'ag',ch:3,title:'كتاب الطالب ص٧٨: النحاس وأيونات الفضة',tag:'تحدٍّ',
+slide({id:'ag',ch:3,title:'النحاس وأيونات الفضة',tag:'تحدٍّ',
  html:function(){return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
   <div class="col" style="width:250px;flex:none;align-items:center;justify-content:center"><img class="pic" src="${IMG.flasks}" alt="" style="width:230px"></div>
   <div class="col" style="flex:1;min-width:0;gap:6px;justify-content:flex-start">

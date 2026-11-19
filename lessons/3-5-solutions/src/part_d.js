@@ -35,7 +35,7 @@ slide({id:'what',ch:3,title:'ما المعايرة؟ وما أدواتها؟',ta
  html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
   <div class="col" style="width:470px;flex:none;gap:6px;justify-content:center"><div class="panel" style="padding:6px 8px;align-items:center">${titrSVG({id:'wt',extras:1,callouts:1,h:420})}</div></div>
   <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
-   <div class="defc gold" style="flex:none"><b>المعايرة Titration</b><span>طريقة مخبرية لتحديد تركيز محلول مجهول بتفاعله مع محلول <b>قياسي</b> معلوم التركيز.</span></div>
+   ${dfcHTML({sm:true,t:'المعايرة',en:'Titration',h:'طريقة لتحديد تركيز محلول ما استناداً إلى حجمه وتركيز وحجم آخر يتفاعل معه؛ يتمّ قياس الحجوم باستخدام ماصّة وسحّاحة.'})}
    <div class="chips" style="gap:8px">${[['B','السحاحة'],['F','الدورق'],['P','الماصة'],['I','الكاشف']].map(function(x){return '<button type="button" class="pill pk" data-k="'+x[0]+'" style="min-height:44px;font-size:21px">'+x[1]+'</button>'}).join('')}</div>
    <div class="frm brk" style="padding:12px 18px;gap:6px;min-height:150px;justify-content:center"><div style="font-size:22px;font-weight:800;color:var(--gold)" id="wtn">اضغط على جزء من الجهاز</div><div style="font-size:21px;line-height:1.5" id="wtd"> </div></div>
    <div class="gbar hide" id="gb" style="font-size:20px">نضيف الحمض من السحاحة <b>بالتنقيط</b> حتى يتغير لون الكاشف: <b>نقطة النهاية</b>، وعندها نعرف حجم الحمض المستهلك.</div></div></div>`;},

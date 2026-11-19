@@ -17,6 +17,12 @@
 .dfc.sm .dn{font-size:30px}
 .dfc.sm .de{font-size:21px}
 .dfc.sm .dx{font-size:24px; line-height:1.45}
+.dfc.xs{gap:3px; padding:6px 16px 8px}
+.dfc.xs .dt{height:24px; font-size:14px; padding:0 11px 0 9px}
+.dfc.xs .dn{font-size:25px}
+.dfc.xs .de{font-size:17px}
+.dfc.xs .dx{font-size:20px; line-height:1.4}
+.dfc .eg{display:block; margin-top:4px; color:var(--cyan); font-size:.86em; font-weight:700}
 .how{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .how .hl{font-weight:800; font-size:20px; color:var(--cyan)}
 .how .hs{display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:4px 16px 4px 8px; border-radius:999px; background:rgba(var(--d2),.7); border:1.5px solid rgba(var(--t2),.5); font-size:23px; font-weight:700}

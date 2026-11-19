@@ -92,8 +92,7 @@ slide({id:'react',ch:3,title:'لماذا الألكينات نشطة؟ تفاع�
     <div style="font-size:22px;font-weight:800;color:var(--cyan)">اضغط «الخطوة التالية» وراقب الرابطة الثنائية:</div>
     ${animHTML('an')}</div>
    <div class="col" style="flex:1;min-width:0;gap:10px;justify-content:center">
-    <div class="frm brk" style="padding:12px 18px;gap:4px"><div style="font-size:21px;font-weight:800;color:var(--cyan)">مصطلحات علمية · Addition reaction</div>
-     <p style="margin:0;font-size:23px;font-weight:800;line-height:1.45"><span style="color:var(--gold)">تفاعل الإضافة</span>: تفاعل يتم فيه دمج مادتين معاً لتكوين <b>مادة ناتجة واحدة فقط</b>، مثل التفاعل بين الألكينات والبروم.</p></div>
+    ${dfcHTML({sm:true,t:'تفاعل الإضافة',en:'Addition reaction',h:'تفاعُل يتم فيه دمج مادّتَين معاً لتكوين مادة ناتجة واحدة فقط، مثل التفاعُل بين الألكينات والبروم.'})}
     <div class="panel" style="padding:10px 14px;gap:6px"><div style="font-size:21px;font-weight:800">أي هذه تفاعل إضافة؟</div>
      ${clsHTML([['<span class="num lbl" style="direction:ltr;display:inline-block">C<sub>2</sub>H<sub>4</sub> + 3O<sub>2</sub> → 2CO<sub>2</sub> + 2H<sub>2</sub>O</span>','c','نواتجه اثنان (CO₂ وH₂O): هذا احتراق'],['<span class="num lbl" style="direction:ltr;display:inline-block">C<sub>2</sub>H<sub>4</sub> + Br<sub>2</sub> → C<sub>2</sub>H<sub>4</sub>Br<sub>2</sub></span>','a','مادتان تعطيان ناتجاً واحداً'],['<span class="num lbl" style="direction:ltr;display:inline-block">C<sub>2</sub>H<sub>4</sub> + H<sub>2</sub> → C<sub>2</sub>H<sub>6</sub></span>','a','مادتان تعطيان ناتجاً واحداً'],['<span class="num lbl" style="direction:ltr;display:inline-block">C<sub>2</sub>H<sub>4</sub> + H<sub>2</sub>O → C<sub>2</sub>H<sub>5</sub>OH</span>','a','مادتان تعطيان ناتجاً واحداً']],[['a','إضافة'],['c','احتراق']],20)}
      <div class="fb" style="min-height:24px"></div></div>

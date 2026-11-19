@@ -33,8 +33,8 @@ slide({id:'avog',ch:1,title:'قانون أفوجادرو والحجم المول
   var rows=[['الهيدروجين','H<sub>2</sub>',2,null],['الأكسجين','O<sub>2</sub>',32,null],['ثاني أكسيد الكربون','CO<sub>2</sub>',null,'av1'],['الإيثان','C<sub>2</sub>H<sub>6</sub>',null,'av2']];
   return `<div style="display:flex;gap:20px;flex:1;align-items:stretch">
    <div class="col" style="width:430px;flex:none;gap:12px;justify-content:center">
-    <div class="defc gold" style="flex:none"><b>قانون أفوجادرو</b><span>الحجوم المتساوية من الغازات المختلفة، عند درجة الحرارة والضغط نفسيهما، تحتوي على العدد نفسه من الجسيمات.</span></div>
-    <div class="defc blue" style="flex:none"><b>الحجم المولي</b><span>الحجم الذي يشغله 1 mol من الغاز: يساوي <span class="num">24 L</span> عند درجة حرارة الغرفة والضغط القياسي.</span></div>
+    ${dfcHTML({sm:true,t:'قانون أفوجادرو',en:"Avogadro's law",h:'الحجوم المتساوية من الغازات المختلفة، عند درجة الحرارة والضغط نفسيهما، تحتوي على العدد نفسه من الجسيمات.'})}
+    ${dfcHTML({sm:true,t:'الحجم المولي',en:'Molar volume',h:'الحجم الذي يشغله مول واحد من غاز؛ وهو يساوي <span class="num">24 L</span> عند درجة حرارة الغرفة والضغط القياسي.'})}
     <div class="gbar hide" id="gb" style="font-size:21px">الكتل مختلفة (2 و32 و44 و30 g) لكن الحجم المولي <b>واحد</b>: لا يعتمد على نوع الغاز.</div></div>
    <div class="col" style="flex:1;min-width:0;gap:8px;justify-content:center">
     <table class="mtab"><thead><tr><th>الغاز</th><th>الكتلة المولية (g/mol)</th><th>الحجم المولي (L/mol)</th><th>عدد الجزيئات</th></tr></thead><tbody>
