@@ -1395,6 +1395,85 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 /* living-engine builds (skin 'cards'): the scrim of the background engine is lighter, so the sharp photographs show through; the cards and plates carry the text */
 .app .bgscrim{background:linear-gradient(180deg,rgba(var(--d1),.34) 0,rgba(var(--d1),.06) 22%,rgba(var(--d1),.04) 68%,rgba(var(--d1),.3) 100%),radial-gradient(ellipse at 50% 50%,transparent 58%,rgba(0,0,0,.34) 100%)}
 
+/* ===== page-of-the-book badge (u4/bookpg.js) ===== */
+/* a small badge in the top margin above the slide's header, so it never moves the slide's content */
+.hd .pgb{position:absolute; left:0; top:-30px; height:27px; padding:0 13px 0 11px; border-radius:999px; display:inline-flex; align-items:center; gap:7px; font-size:17px; font-weight:800; line-height:1; white-space:nowrap; background:rgba(6,12,26,.78); border:1.5px solid var(--cyan); color:#fff; z-index:3}
+.hd .pgb svg{width:16px; height:16px; fill:var(--cyan); flex:none}
+
+/* ===== definition card and how-to strip (u4/defn.js) ===== */
+.dfc{position:relative; display:flex; flex-direction:column; gap:8px; padding:12px 24px 14px; border-radius:16px; border:2px solid var(--gold); border-inline-start-width:9px; background:linear-gradient(135deg,rgba(228,188,75,.28),rgba(228,188,75,.10)),linear-gradient(rgba(12,10,22,.86),rgba(12,10,22,.86)); box-shadow:0 0 26px rgba(228,188,75,.22)}
+.dfc .dh{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.dfc .dt{display:inline-flex; align-items:center; gap:7px; height:34px; padding:0 14px 0 12px; border-radius:999px; background:var(--gold); color:#171100; font-weight:800; font-size:18px}
+.dfc .dt svg{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round}
+.dfc .dn{font-family:var(--font-display); font-size:36px; font-weight:800; color:var(--gold); line-height:1.1}
+.dfc .de{font-family:var(--font-math); font-style:italic; font-size:24px; color:var(--muted); font-weight:600}
+.dfc .dx{margin:0; font-size:29px; line-height:1.55; font-weight:600; color:var(--ink)}
+.dfc .dx b{color:var(--gold); font-weight:800}
+.dfc.sm{gap:5px; padding:8px 20px 10px}
+.dfc.sm .dt{height:28px; font-size:16px}
+.dfc.sm .dn{font-size:30px}
+.dfc.sm .de{font-size:21px}
+.dfc.sm .dx{font-size:24px; line-height:1.45}
+.dfc.xs{gap:3px; padding:6px 16px 8px}
+.dfc.xs .dt{height:24px; font-size:14px; padding:0 11px 0 9px}
+.dfc.xs .dn{font-size:25px}
+.dfc.xs .de{font-size:17px}
+.dfc.xs .dx{font-size:20px; line-height:1.4}
+.dfc .eg{display:block; margin-top:4px; color:var(--cyan); font-size:.86em; font-weight:700}
+.how{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.how .hl{font-weight:800; font-size:20px; color:var(--cyan)}
+.how .hs{display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:4px 16px 4px 8px; border-radius:999px; background:rgba(var(--d2),.7); border:1.5px solid rgba(var(--t2),.5); font-size:23px; font-weight:700}
+.how .hs i{flex:none; width:28px; height:28px; border-radius:50%; background:var(--cyan); color:#06121c; font-style:normal; font-weight:800; font-size:18px; display:inline-flex; align-items:center; justify-content:center}
+.how .ha{color:var(--muted); font-size:14px}
+
+/* ===== teacher tools (u4/tools.js): dock, drawing layer, laser pointer, timer, blank screen ===== */
+.view{position:relative}
+.tcv{position:absolute; left:0; top:0; width:1280px; height:720px; z-index:50; pointer-events:none; touch-action:none}
+.tcv.on{pointer-events:auto}
+.tcv[data-tool=pen]{cursor:crosshair}
+.tcv[data-tool=hl]{cursor:cell}
+.tcv[data-tool=er]{cursor:not-allowed}
+body.tl-laser .view, body.tl-laser .view *{cursor:none!important}
+.tlaser{position:absolute; left:-14px; top:-14px; width:28px; height:28px; border-radius:50%; pointer-events:none; z-index:90; opacity:0; transition:opacity 120ms; background:radial-gradient(circle,#fff 0 18%,#ff3b30 34%,rgba(255,59,48,.55) 62%,rgba(255,59,48,0) 100%); box-shadow:0 0 22px 8px rgba(255,59,48,.55)}
+.tlaser.on{opacity:1}
+
+.tdock{position:absolute; left:8px; top:50%; transform:translateY(-50%); z-index:70; width:62px; padding:8px 5px; display:flex; flex-direction:column; align-items:center; gap:5px; border-radius:18px; background:rgba(6,12,26,.86); border:1.5px solid rgba(255,255,255,.22); box-shadow:0 10px 30px rgba(0,0,0,.45); backdrop-filter:blur(6px)}
+.tdock[hidden],.ttmr[hidden],.tblank[hidden]{display:none}
+.tdock hr{width:80%; margin:2px 0; border:0; border-top:1.5px solid rgba(255,255,255,.2)}
+.tdock .tb{width:52px; min-height:50px; padding:5px 0 3px; border:0; border-radius:12px; background:transparent; color:#fff; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; font-family:inherit}
+.tdock .tb svg{width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round}
+.tdock .tb span{font-size:13px; font-weight:700; line-height:1}
+.tdock .tb:hover{background:rgba(255,255,255,.12)}
+.tdock .tb.act{background:var(--accent); color:var(--accent-ink)}
+.tdock .tb:disabled{opacity:.35; cursor:default}
+.tdock .sws{display:flex; flex-wrap:wrap; justify-content:center; gap:6px; padding:4px 2px; width:100%}
+.tdock .sw{width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,.55); background:var(--c); cursor:pointer; padding:0}
+.tdock .sw.act{box-shadow:0 0 0 3px #fff; transform:scale(1.12)}
+.tdock button:focus-visible,.ttmr button:focus-visible{outline:3px solid var(--accent); outline-offset:1px}
+
+.ttoast{position:absolute; left:50%; bottom:16px; transform:translate(-50%,10px); z-index:95; max-width:80%; padding:8px 20px; border-radius:999px; background:rgba(6,12,26,.9); border:1.5px solid var(--accent); color:#fff; font-size:20px; font-weight:700; opacity:0; pointer-events:none; transition:opacity 200ms, transform 200ms; text-align:center}
+.ttoast.on{opacity:1; transform:translate(-50%,0)}
+
+.ttmr{position:absolute; left:84px; bottom:14px; z-index:70; padding:8px 14px 9px; border-radius:18px; background:rgba(6,12,26,.9); border:1.5px solid rgba(255,255,255,.28); box-shadow:0 10px 30px rgba(0,0,0,.45); color:#fff; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:grab; user-select:none; touch-action:none}
+.ttmr .tl{font-size:15px; font-weight:700; color:var(--cyan)}
+.ttmr .tt{font-family:var(--font-display); font-weight:800; font-size:54px; line-height:1; font-variant-numeric:tabular-nums; direction:ltr}
+.ttmr.low .tt{color:#ffb347}
+.ttmr.over{border-color:#ff5a4e; animation:tmrFlash 700ms steps(2,jump-none) 8}
+.ttmr.over .tt,.ttmr.over .tl{color:#ff5a4e}
+@keyframes tmrFlash{50%{background:rgba(120,20,16,.95)}}
+.ttmr .tr,.ttmr .tp{display:flex; align-items:center; gap:6px}
+.ttmr button{min-width:38px; height:36px; border:0; border-radius:10px; background:rgba(255,255,255,.14); color:#fff; font-size:20px; font-weight:800; cursor:pointer; font-family:inherit; padding:0 8px}
+.ttmr button:hover{background:rgba(255,255,255,.26)}
+.ttmr .go{background:var(--accent); color:var(--accent-ink); min-width:48px}
+.ttmr .go svg{width:20px; height:20px; fill:currentColor; stroke:currentColor; stroke-width:2.4; stroke-linejoin:round; stroke-linecap:round}
+.ttmr .tp button{min-width:34px; height:30px; font-size:17px}
+.ttmr .tp small{font-size:14px; color:rgba(255,255,255,.7)}
+
+.tblank{position:absolute; inset:0; z-index:100; background:#000; display:flex; align-items:flex-end; justify-content:center; cursor:pointer}
+.tblank span{margin-bottom:22px; font-size:20px; color:rgba(255,255,255,.28); font-weight:700}
+@media (max-width:760px){.tdock{width:56px}.tdock .tb{width:46px}.ttmr{left:70px}}
+@media print{.tdock,.ttmr,.tlaser,.ttoast,.tblank,.tcv{display:none!important}}
+
 /* ===== mole lesson: components that only this lesson uses ===== */
 .nin.lock{opacity:.45}
 .nin.lock input{pointer-events:none}
@@ -3569,6 +3648,264 @@ var SKIN=(function(){
   return {slide:slide};
 })();
 
+/* ---------- the page of the book next to every activity, exercise, example or question taken from the books (teacher's request, November 2026).
+   A small badge above the slide's title: «كتاب الطالب ص61» or «كتاب النشاط ص38–39».
+   Each lesson lists its slides in src/pages.js:  var BOOKPG={ slideId:'كتاب الطالب ص61', ... };
+   Slides of our own (explanations from the teacher's deck, exit tickets) carry none.  The numbers are checked against the books, never copied from a note.
+   Pages are written with Western digits (one numeral style); bdi keeps "38–39" in reading order inside the Arabic line. ---------- */
+(function(){
+  var ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C4 4.7 4.7 4 5.5 4H11v15H5.5C4.7 19 4 18.3 4 17.5zM13 4h5.5c.8 0 1.5.7 1.5 1.5v12c0 .8-.7 1.5-1.5 1.5H13z"/></svg>';
+  var _s=slide;
+  slide=function(o){
+    var oi=o.init;
+    o.init=function(el){
+      var pg=(typeof BOOKPG!=='undefined')&&BOOKPG[o.id];
+      if(pg){ var hd=el.querySelector('.hd'); if(hd&&!hd.querySelector('.pgb')){ var b=document.createElement('span'); b.className='pgb'; b.setAttribute('data-pg',pg); b.innerHTML=ICON+pg.replace(/(\d+(?:–\d+)?)/g,'<bdi dir="ltr">$1</bdi>'); hd.appendChild(b) } }
+      if(oi) return oi.apply(this,arguments);
+    };
+    _s(o);
+  };
+})();
+
+/* ---------- shared "definition" card and "how to" strip (teacher's request, November 2026).
+   A definition used to be one more sentence inside an ordinary panel, often in the same paragraph as the instructions for using it.
+   Now it is its own card: a gold «تعريف» tag, the term in Arabic and English, and the book's wording on its own line; the steps for using it sit in a separate numbered strip.
+     dfcHTML({t:'المُول', en:'Mole', h:'كمية من مادة …', sm:true})       -> definition card (sm: a smaller card for crowded slides)
+     howHTML('طريقة الحساب', ['اعدّ الذرات','اضرب في Ar','اجمع'])          -> numbered steps, one chip per step
+   The wording of a definition is the book's (student book «مصطلحات علمية» boxes, activity-book glossary), not ours; the page goes in BOOKPG. ---------- */
+function dfcHTML(o){
+  return '<div class="dfc'+(o.sm?' sm':'')+(o.cls?' '+o.cls:'')+'"><div class="dh"><span class="dt"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11"/></svg>تعريف</span>'+
+    '<b class="dn">'+o.t+'</b>'+(o.en?'<i class="de" dir="ltr">'+o.en+'</i>':'')+'</div><p class="dx">'+o.h+'</p></div>';
+}
+function howHTML(label,steps,cls){
+  return '<div class="how'+(cls?' '+cls:'')+'"><span class="hl">'+label+'</span>'+steps.map(function(s,i){return '<span class="hs"><i class="num">'+(i+1)+'</i><span class="ht">'+s+'</span></span>'+(i<steps.length-1?'<span class="ha" aria-hidden="true">◀</span>':'')}).join('')+'</div>';
+}
+
+/* ---------- teacher tools in the player (teacher's request, November 2026): pen, highlighter, eraser, laser pointer, timer, blank screen.
+   The «أدوات» button in the top bar opens a small dock on the left edge of the slide; every tool also has a key (physical keys, so the Arabic layout works too):
+     P pen · H highlighter · E eraser · L laser · T timer · B blank screen · C clear the slide's drawing · Ctrl+Z undo · Esc leave the tool
+   Drawings belong to the slide they were made on (kept in memory until the page is closed) and are stored in stage coordinates (1280×720), so they scale with the stage.
+   While the pen, highlighter or eraser is on, the slide itself is not clickable; press Esc or the same tool again to go back to the slide. The laser and the timer never block the slide. ---------- */
+var TOOLS=(function(){
+  var COLS=['#FFD54A','#FF5A4E','#4DD0FF','#6BE58A','#FFFFFF'], COLN=['أصفر','أحمر','أزرق','أخضر','أبيض'];
+  var S={tool:'',col:0,open:false}, strokes={}, undone={}, cv,cx,dock,dot,tmr,blank,toast,btn, cur=0, live=null, tt=0;
+  var T={total:180,left:180,end:0,iv:0,run:false,over:false};
+  var NAMES={pen:'القلم',hl:'التظليل',er:'الممحاة',laser:'المؤشر الليزري'};
+  var IC={
+    pen:'<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/><path d="M14 7l3 3"/>',
+    hl:'<path d="M9 15l7.5-7.5 3 3L12 18H9z"/><path d="M5 21h7"/>',
+    er:'<path d="M7 18l-3-3 9.5-9.5 6 6L12 18z"/><path d="M12 18h8"/>',
+    laser:'<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/>',
+    undo:'<path d="M9 14L4 9l5-5"/><path d="M4 9h9a6 6 0 0 1 0 12h-3"/>',
+    clear:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',
+    timer:'<circle cx="12" cy="13.5" r="7"/><path d="M12 9.5v4l2.6 2M9 3h6"/>',
+    blank:'<rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8M12 17v4"/>',
+    tools:'<path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z"/><path d="M14 7l3 3"/>'
+  };
+  function svg(k){return '<svg viewBox="0 0 24 24" aria-hidden="true">'+IC[k]+'</svg>'}
+  function el(h){var d=document.createElement('div'); d.innerHTML=h; return d.firstElementChild}
+  function pad(n){return (n<10?'0':'')+n}
+  function say(t){ toast.textContent=t; toast.classList.add('on'); clearTimeout(tt); tt=setTimeout(function(){toast.classList.remove('on')},2600) }
+
+  /* ----- drawing ----- */
+  function list(){return strokes[cur]||(strokes[cur]=[])}
+  function paint(){
+    cx.clearRect(0,0,1280,720);
+    var all=list().concat(live&&!live.er?[live]:[]);
+    all.forEach(function(s){
+      if(!s.p.length) return;
+      cx.save(); cx.lineCap='round'; cx.lineJoin='round'; cx.strokeStyle=s.c; cx.lineWidth=s.w; cx.globalAlpha=s.h?0.38:1;
+      cx.beginPath(); cx.moveTo(s.p[0][0],s.p[0][1]);
+      if(s.p.length===1) cx.lineTo(s.p[0][0]+0.01,s.p[0][1]);
+      for(var i=1;i<s.p.length-1;i++){ var a=s.p[i], b=s.p[i+1]; cx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2) }
+      if(s.p.length>1){ var z=s.p[s.p.length-1]; cx.lineTo(z[0],z[1]) }
+      cx.stroke(); cx.restore();
+    });
+  }
+  function pt(e){var r=cv.getBoundingClientRect(); return [(e.clientX-r.left)*1280/r.width,(e.clientY-r.top)*720/r.height]}
+  function down(e){
+    if(!S.tool||S.tool==='laser'||e.button>0) return;
+    e.preventDefault(); try{cv.setPointerCapture(e.pointerId)}catch(x){}
+    var p=pt(e);
+    if(S.tool==='er'){ live={er:true}; erase(p); return }
+    live={c:COLS[S.col],w:S.tool==='hl'?30:5,h:S.tool==='hl',p:[p]}; paint();
+  }
+  function move(e){
+    if(!live) return;
+    var p=pt(e);
+    if(live.er){ erase(p); return }
+    var q=live.p[live.p.length-1]; if(Math.abs(p[0]-q[0])+Math.abs(p[1]-q[1])<1.5) return;
+    live.p.push(p); paint();
+  }
+  function up(){
+    if(!live) return;
+    if(!live.er) list().push(live);
+    live=null; paint(); syncBtns();
+  }
+  function erase(p){
+    var l=list(), n=l.length;
+    strokes[cur]=l.filter(function(s){ return !s.p.some(function(q){var dx=q[0]-p[0], dy=q[1]-p[1]; return dx*dx+dy*dy<(s.h?24*24:16*16)}) });
+    if(strokes[cur].length!==n){ paint(); syncBtns() }
+  }
+  function undo(){
+    var l=list();
+    if(l.length){ l.pop(); paint() }
+    else if(undone[cur]&&undone[cur].cleared){ strokes[cur]=undone[cur].cleared; undone[cur]=null; paint() }
+    syncBtns();
+  }
+  function clearAll(){
+    var l=list(); if(!l.length) return;
+    undone[cur]={cleared:l.slice()}; strokes[cur]=[]; paint(); syncBtns(); say('تم مسح الرسم · Ctrl+Z للتراجع');
+  }
+
+  /* ----- tools on / off ----- */
+  function setTool(t){
+    if(S.tool===t) t='';
+    S.tool=t; live=null;
+    var draw=t==='pen'||t==='hl'||t==='er';
+    cv.classList.toggle('on',draw); cv.setAttribute('data-tool',t);
+    document.body.classList.toggle('tl-laser',t==='laser'); document.body.classList.toggle('tl-draw',draw);
+    dot.classList.remove('on');
+    if(t&&!S.open) openDock(true);
+    if(t) say(NAMES[t]+(t==='laser'?' · حرّك المؤشر فوق الشريحة':' · اضغط Esc أو الأداة نفسها للرجوع إلى الشريحة'));
+    syncBtns();
+  }
+  function openDock(on){
+    S.open=on; dock.hidden=!on; btn.setAttribute('aria-pressed',on?'true':'false'); btn.classList.toggle('acc',on);
+    if(!on&&S.tool) setTool(S.tool);
+  }
+  function syncBtns(){
+    ['pen','hl','er','laser'].forEach(function(k){var b=dock.querySelector('[data-t="'+k+'"]'); b.classList.toggle('act',S.tool===k); b.setAttribute('aria-pressed',S.tool===k?'true':'false')});
+    dock.querySelector('[data-t="undo"]').disabled=!(list().length||(undone[cur]&&undone[cur].cleared));
+    dock.querySelector('[data-t="clear"]').disabled=!list().length;
+    dock.querySelector('[data-t="timer"]').classList.toggle('act',!tmr.hidden);
+    dock.querySelectorAll('.sw').forEach(function(s,i){s.classList.toggle('act',i===S.col)});
+  }
+
+  /* ----- laser ----- */
+  function laserMove(e){
+    if(S.tool!=='laser') return;
+    var r=dot.parentNode.getBoundingClientRect();
+    dot.style.transform='translate('+(e.clientX-r.left)+'px,'+(e.clientY-r.top)+'px)'; dot.classList.add('on');
+  }
+
+  /* ----- timer ----- */
+  function showT(){
+    var m=Math.floor(T.left/60), s=T.left%60;
+    tmr.querySelector('.tt').textContent=pad(m)+':'+pad(s);
+    tmr.classList.toggle('low',T.left<=10&&T.left>0&&T.run); tmr.classList.toggle('over',T.over);
+    tmr.querySelector('[data-a="go"]').innerHTML=svgPlay(T.run);
+    tmr.querySelector('.tl').textContent=T.over?'انتهى الوقت':(T.run?'جارٍ العدّ':'المؤقت');
+  }
+  function svgPlay(run){return run?'<svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>':'<svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>'}
+  function tick(){
+    var left=Math.max(0,Math.ceil((T.end-Date.now())/1000));
+    if(left!==T.left){ T.left=left; showT() }
+    if(left<=0){ stopT(); T.over=true; showT(); beep() }
+  }
+  function startT(){
+    if(T.left<=0){ T.left=T.total } T.over=false; T.end=Date.now()+T.left*1000; T.run=true; clearInterval(T.iv); T.iv=setInterval(tick,200); showT();
+  }
+  function stopT(){ T.run=false; clearInterval(T.iv); showT() }
+  function setT(sec){ stopT(); T.total=T.left=sec; T.over=false; showT() }
+  function beep(){
+    try{
+      var A=window.AudioContext||window.webkitAudioContext; if(!A) return; var c=new A();
+      [0,0.38,0.76].forEach(function(d){var o=c.createOscillator(), g=c.createGain(); o.type='sine'; o.frequency.value=880; o.connect(g); g.connect(c.destination); g.gain.setValueAtTime(0.0001,c.currentTime+d); g.gain.exponentialRampToValueAtTime(0.35,c.currentTime+d+0.03); g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+d+0.3); o.start(c.currentTime+d); o.stop(c.currentTime+d+0.32)});
+      setTimeout(function(){try{c.close()}catch(x){}},1600);
+    }catch(x){}
+  }
+  function toggleTimer(){
+    tmr.hidden=!tmr.hidden; if(tmr.hidden){ stopT() } else { showT(); if(!S.open) openDock(true) }
+    syncBtns();
+  }
+  function dragTimer(e){
+    if(e.target.closest('button')) return;
+    var r=tmr.getBoundingClientRect(), pr=tmr.parentNode.getBoundingClientRect(), ox=e.clientX-r.left, oy=e.clientY-r.top;
+    tmr.setPointerCapture(e.pointerId);
+    function mv(ev){ tmr.style.left=Math.max(0,Math.min(pr.width-r.width,ev.clientX-pr.left-ox))+'px'; tmr.style.top=Math.max(0,Math.min(pr.height-r.height,ev.clientY-pr.top-oy))+'px'; tmr.style.bottom='auto' }
+    function en(){ tmr.removeEventListener('pointermove',mv); tmr.removeEventListener('pointerup',en) }
+    tmr.addEventListener('pointermove',mv); tmr.addEventListener('pointerup',en);
+  }
+
+  /* ----- blank screen ----- */
+  function setBlank(on){ blank.hidden=!on; document.body.classList.toggle('tl-blank',on) }
+
+  /* ----- keys: physical keys, in the capture phase so the player's own handler does not also act on them ----- */
+  function key(e){
+    var t=e.target&&e.target.tagName; if(t==='INPUT'||t==='TEXTAREA'||t==='SELECT') return;
+    if(e.altKey||e.metaKey) return;
+    if(!blank.hidden){ if(/^(Shift|Control|Alt|Meta|CapsLock)/.test(e.key)) return; e.preventDefault(); e.stopImmediatePropagation(); setBlank(false); return }
+    var c=e.code, hit=true;
+    if(e.ctrlKey){ if(c==='KeyZ'){ e.preventDefault(); e.stopImmediatePropagation(); undo() } return }
+    if(c==='KeyP') setTool('pen'); else if(c==='KeyH') setTool('hl'); else if(c==='KeyE') setTool('er'); else if(c==='KeyL') setTool('laser');
+    else if(c==='KeyT') toggleTimer(); else if(c==='KeyB') setBlank(true); else if(c==='KeyC') clearAll();
+    else if(c==='Escape'&&S.tool) setTool(S.tool); else hit=false;
+    if(hit){ e.preventDefault(); e.stopImmediatePropagation() }
+  }
+
+  /* ----- build ----- */
+  function init(){
+    var view=document.getElementById('view'), stage=document.getElementById('stage'); if(!view||!stage) return;
+    cv=el('<canvas class="tcv" width="2560" height="1440" aria-hidden="true"></canvas>'); cx=cv.getContext('2d'); cx.scale(2,2); stage.appendChild(cv);
+    dot=el('<div class="tlaser" aria-hidden="true"></div>'); view.appendChild(dot);
+    toast=el('<div class="ttoast" role="status" aria-live="polite"></div>'); view.appendChild(toast);
+    blank=el('<div class="tblank" hidden><span>اضغط أي مفتاح أو انقر للعودة</span></div>'); view.appendChild(blank);
+    var tb=function(k,lab,key){return '<button type="button" class="tb" data-t="'+k+'" title="'+lab+(key?' ('+key+')':'')+'" aria-label="'+lab+'">'+svg(k)+'<span>'+lab+'</span></button>'};
+    dock=el('<div class="tdock" hidden role="toolbar" aria-label="أدوات المعلم">'+tb('pen','قلم','P')+tb('hl','تظليل','H')+tb('er','ممحاة','E')+tb('laser','ليزر','L')+
+      '<div class="sws" role="group" aria-label="اللون">'+COLS.map(function(c,i){return '<button type="button" class="sw" data-c="'+i+'" style="--c:'+c+'" title="'+COLN[i]+'" aria-label="'+COLN[i]+'"></button>'}).join('')+'</div>'+
+      tb('undo','تراجع','Ctrl+Z')+tb('clear','مسح','C')+'<hr>'+tb('timer','مؤقت','T')+tb('blank','فارغة','B')+'</div>'); view.appendChild(dock);
+    tmr=el('<div class="ttmr" hidden role="timer" aria-label="مؤقت"><div class="tl">المؤقت</div><div class="tt" dir="ltr">03:00</div>'+
+      '<div class="tr"><button type="button" data-a="m" title="دقيقة أقل" aria-label="دقيقة أقل">−</button><button type="button" data-a="go" class="go" aria-label="ابدأ أو أوقف"></button><button type="button" data-a="p" title="دقيقة أكثر" aria-label="دقيقة أكثر">+</button><button type="button" data-a="rs" title="إعادة" aria-label="إعادة">↺</button><button type="button" data-a="x" title="إغلاق" aria-label="إغلاق">×</button></div>'+
+      '<div class="tp">'+[1,3,5,10].map(function(m){return '<button type="button" data-m="'+m+'">'+m+'</button>'}).join('')+'<small>دقائق</small></div></div>'); view.appendChild(tmr);
+    btn=el('<button class="tbtn" id="bTools" type="button" aria-label="أدوات المعلم" aria-pressed="false">'+svg('tools')+'<span>أدوات</span></button>');
+    var nb=document.getElementById('bNote'); nb.parentNode.insertBefore(btn,nb);
+    btn.addEventListener('click',function(){openDock(!S.open)});
+    dock.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      if(b.classList.contains('sw')){ S.col=+b.getAttribute('data-c'); if(S.tool==='er'||!S.tool) setTool('pen'); syncBtns(); return }
+      var t=b.getAttribute('data-t');
+      if(t==='pen'||t==='hl'||t==='er'||t==='laser') setTool(t); else if(t==='undo') undo(); else if(t==='clear') clearAll(); else if(t==='timer') toggleTimer(); else if(t==='blank') setBlank(true);
+    });
+    tmr.addEventListener('click',function(e){
+      var b=e.target.closest('button'); if(!b) return;
+      var a=b.getAttribute('data-a'), m=b.getAttribute('data-m');
+      if(m) setT(+m*60);
+      else if(a==='go'){ if(T.run) stopT(); else startT() }
+      else if(a==='p') setT(Math.min(99*60,T.total+60)); else if(a==='m') setT(Math.max(60,T.total-60));
+      else if(a==='rs') setT(T.total); else if(a==='x') toggleTimer();
+    });
+    tmr.addEventListener('pointerdown',dragTimer);
+    blank.addEventListener('click',function(){setBlank(false)});
+    cv.addEventListener('pointerdown',down); cv.addEventListener('pointermove',move); cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+    view.addEventListener('pointermove',laserMove); view.addEventListener('pointerleave',function(){dot.classList.remove('on')});
+    window.addEventListener('keydown',key,true);
+    showT(); syncBtns();
+  }
+  function slideChanged(i){ cur=i; if(cv){ live=null; paint(); syncBtns() } }
+  return {init:init, slide:slideChanged, state:S};
+})();
+/* hooks: build the tools after the player is built, and swap the drawing whenever the slide changes */
+(function(){
+  var _b=boot, _p=paintChrome;
+  boot=function(){ _b(); TOOLS.init(); TOOLS.slide(CUR) };
+  paintChrome=function(){ _p(); TOOLS.slide(CUR) };
+})();
+
+/* ---------- the page of the book next to every example, activity, exercise or question taken from the books (teacher's request, November 2026).
+   Checked against the books themselves, not copied from the notes: student book p69 (solute, solvent, mass concentration), p70 (molar concentration, example 3-7), p71 (example 3-8, titration, figure 3-6), p72-73 (figure 3-7, examples 3-9 and 3-10),
+   p74-75 (activity 3-4), p76 (questions 3-16 to 3-20), p77 (figure 3-8, the map of calculations), p79 (end-of-unit question 5);
+   activity book p44-45 (exercise 3-6), p52-53 (worksheet 3-5), p54-55 (worksheet 3-6). Note: the older notes put example 3-7 on p71 and the map on p76; the book has them on p70 and p77.
+   Shown by u4/bookpg.js as a badge above the slide's title. ---------- */
+var BOOKPG={
+  mix:'كتاب الطالب ص69', vocab:'كتاب الطالب ص69', cg:'كتاب الطالب ص69', ex37:'كتاب الطالب ص70', q316:'كتاب الطالب ص76', cm:'كتاب الطالب ص70', ex38:'كتاب الطالب ص71',
+  ncv:'كتاب الطالب ص70', q317:'كتاب الطالب ص76', ex36:'كتاب النشاط ص44–45', what:'كتاب الطالب ص71', tsteps:'كتاب الطالب ص71', lab0:'كتاب الطالب ص74–75', labq:'كتاب الطالب ص75',
+  method:'كتاب الطالب ص72–73', ex39:'كتاب الطالب ص72–73', ex310:'كتاب الطالب ص73', q318:'كتاب الطالب ص76', q319:'كتاب الطالب ص76', q320:'كتاب الطالب ص76',
+  ws35:'كتاب النشاط ص52–53', citric:'كتاب النشاط ص44–45', na2co3:'كتاب النشاط ص53', wsburette:'كتاب النشاط ص55', wsorg:'كتاب النشاط ص54–55', map:'كتاب الطالب ص77', q5:'كتاب الطالب ص79'
+};
+/* slides whose title says exercise/question but which come from past exams or the teacher's own deck (no page): checked by book_check.js */
+var BOOKPG_OWN=[];
+
 /* ---------- helpers for the reacting-masses lesson: formulas, molar masses, answer rows, matching, tables ---------- */
 var AR={H:1,C:12,N:14,O:16,F:19,Na:23,Mg:24,Al:27,Si:28,P:31,S:32,Cl:35.5,K:39,Ca:40,Fe:56,Cu:63.5,Zn:65,Ag:108,Ba:137};
 function parseF(f){
@@ -3840,7 +4177,7 @@ slide({id:'vocab',ch:0,title:'المذاب والمذيب والمحلول',tag:
   <div class="col" style="width:430px;flex:none;gap:10px;justify-content:center">
    <div class="defc gold" style="flex:none"><b>المذيب</b><span>المادة التي تُذيب غيرها. في المحاليل المائية الماء هو المذيب العام.</span></div>
    <div class="defc blue" style="flex:none"><b>المذاب</b><span>المادة التي أُذيبت في المذيب.</span></div>
-   <div class="gbar hide" id="gb" style="font-size:20px">لوصف محلول نحتاج <b>كمية المذاب</b> و<b>حجم المحلول</b> (باللتر). والمحلول <b>القياسي</b> تركيزه معروف بدقة.</div></div></div>`;},
+   <div class="hide" id="gb">${dfcHTML({sm:true,t:'التركيز',en:'Concentration',h:'يُقصد به كمّية مادة ذائبة (المذاب) في حجم مُعيّن من محلول. يُعبَّر عن التركيز بوحدة g/L (التركيز الكتلي) أو بوحدة mol/L (التركيز المولي).'})}</div></div></div>`;},
  init:function(el){
   bindMatch(el,[['m','محلول ملح الطعام'],['s','ملح الطعام NaCl'],['v','الماء']],{css:'font-size:21px;padding:9px 16px',bad:'فكّر: أيهما أُذيب في الآخر؟'});
  },
@@ -3951,7 +4288,7 @@ rowsSlide({id:'q317',ch:2,title:'سؤال ٣-١٧: احسب التركيز ال�
  note:'<ul><li>كتاب الطالب سؤال ٣-١٧ (ص٧٦). الإجابات: ٢ و٠٫٢ و١ و٠٫٠٢ mol/L.</li><li><b>تصحيح:</b> في عرض NotebookLM (شريحة ٧) الجزء (د) مكتوب «0.8 g في 100 mL» فتصبح إجابته 0.2 mol/L، لكن الكتاب يقول إن الحجم النهائي <b>1 L</b> والإجابة <b>0.02 mol/L</b> فاعتمدت الكتاب. (إذا كانت طبعتكم تقول 100 mL فالإجابة 0.2.)</li></ul>'});
 
 /* 12 exercise 3-6: the six rows */
-slide({id:'ex36',ch:2,title:'تمرين ٣-٦: أكمل الجدول',tag:'كتاب النشاط',
+slide({id:'ex36',ch:2,title:'تمرين ٣-٦: أكمل الجدول',tag:'أكمل',
  html:function(){
   var R=[['كلوريد الصوديوم','NaCl','0.5','1 L',['t1','mol']],['حمض الهيدروكلوريك','HCl','0.5','500 mL',['t2','mol']],['هيدروكسيد الصوديوم','NaOH',['t3','mol/L'],'2 L','1'],['حمض الكبريتيك','H<sub>2</sub>SO<sub>4</sub>',['t4','mol/L'],'250 mL','0.5'],['ثيوكبريتات الصوديوم','Na<sub>2</sub>S<sub>2</sub>O<sub>3</sub>','2',['t5','L'],'0.4'],['كبريتات النحاس (II)','CuSO<sub>4</sub>','0.1',['t6','L'],'0.75']];
   function cell(c){return Array.isArray(c)?nin(c[0],c[1]):'<span class="num">'+c+'</span>'}
@@ -4017,7 +4354,7 @@ slide({id:'what',ch:3,title:'ما المعايرة؟ وما أدواتها؟',ta
  html:function(){return `<div style="display:flex;gap:18px;flex:1;align-items:stretch">
   <div class="col" style="width:470px;flex:none;gap:6px;justify-content:center"><div class="panel" style="padding:6px 8px;align-items:center">${titrSVG({id:'wt',extras:1,callouts:1,h:420})}</div></div>
   <div class="col" style="flex:1;min-width:0;gap:9px;justify-content:center">
-   <div class="defc gold" style="flex:none"><b>المعايرة Titration</b><span>طريقة مخبرية لتحديد تركيز محلول مجهول بتفاعله مع محلول <b>قياسي</b> معلوم التركيز.</span></div>
+   ${dfcHTML({sm:true,t:'المعايرة',en:'Titration',h:'طريقة لتحديد تركيز محلول ما استناداً إلى حجمه وتركيز وحجم آخر يتفاعل معه؛ يتمّ قياس الحجوم باستخدام ماصّة وسحّاحة.'})}
    <div class="chips" style="gap:8px">${[['B','السحاحة'],['F','الدورق'],['P','الماصة'],['I','الكاشف']].map(function(x){return '<button type="button" class="pill pk" data-k="'+x[0]+'" style="min-height:44px;font-size:21px">'+x[1]+'</button>'}).join('')}</div>
    <div class="frm brk" style="padding:12px 18px;gap:6px;min-height:150px;justify-content:center"><div style="font-size:22px;font-weight:800;color:var(--gold)" id="wtn">اضغط على جزء من الجهاز</div><div style="font-size:21px;line-height:1.5" id="wtd"> </div></div>
    <div class="gbar hide" id="gb" style="font-size:20px">نضيف الحمض من السحاحة <b>بالتنقيط</b> حتى يتغير لون الكاشف: <b>نقطة النهاية</b>، وعندها نعرف حجم الحمض المستهلك.</div></div></div>`;},
@@ -4241,7 +4578,7 @@ chainSlide({id:'q320',ch:4,title:'سؤال ٣-٢٠: مادة صلبة مع ال�
 /* ---------- solutions, part F: applications (worksheets 3-5 and 3-6, exercise 3-6 b), the route map, end-of-unit question 5, the race ---------- */
 
 /* 25 worksheet 3-5 (questions 1 to 3) */
-slide({id:'ws35',ch:5,title:'ورقة العمل ٣-٥: تراكيز ومعايرة',tag:'كتاب النشاط ص٥٢',
+slide({id:'ws35',ch:5,title:'ورقة العمل ٣-٥: تراكيز ومعايرة',tag:'ورقة العمل ٣-٥',
  html:function(){
   var C=[['١ أ','أُذيب <b class="num">60 g</b> من NaOH في ماء لتكوين <b class="num">1 L</b> من المحلول.',[['w1','mol/L','C =']]],
          ['١ ب','أُضيف <b class="num">20 g</b> من NaOH إلى ماء لتحضير <b class="num">500 mL</b> من المحلول.',[['w2','g/L','تركيز الكتلة ='],['w3','mol/L','التركيز المولي =']]],
@@ -4275,7 +4612,7 @@ rowsSlide({id:'na2co3',ch:5,title:'ورقة العمل ٣-٥ (٤): ماء الت
  note:'<ul><li>كتاب النشاط ورقة العمل ٣-٥ سؤال ٤ (ص٥٣) وإجابته في عرض NotebookLM (شريحة ١٣): n(HCl) = 0.0175، n(Na₂CO₃) = 0.00875، الكتلة 0.9275 g، كتلة الماء 1.5725 g، n(H₂O) = 0.08736، x ≈ 10.</li><li>دليل المعلم: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤ واجب للموضوع ٣-٥.</li></ul>'});
 
 /* 28 worksheet 3-6: the readings of three burettes */
-slide({id:'wsburette',ch:5,title:'ورقة العمل ٣-٦: قراءات السحاحة',tag:'كتاب النشاط ص٥٥',
+slide({id:'wsburette',ch:5,title:'ورقة العمل ٣-٦: قراءات السحاحة',tag:'اقرأ السحاحة',
  html:function(){
   var B=[[0.0,26.5],[6.0,31.7],[23.0,48.6]], s='', i, k, y0=24, px=6;
   B.forEach(function(b,i){
@@ -4364,7 +4701,7 @@ slide({id:'map',ch:6,title:'الخريطة الكبرى: كل حسابات ال�
  note:'<ul><li>كتاب الطالب الشكل ٣-٨ (ص٧٦) وملخص الوحدة: ثلاث طرق للحصول على عدد المولات (كتلة ÷ M للمواد الصلبة والسائلة، حجم ÷ 24 للغازات فقط، تركيز × حجم للمحلول)، ثم نسبة المعادلة، ثم ثلاث طرق للمطلوب (n × M، n × 24، n ÷ V).</li><li>الشكل نفسه ظهر في الدرس ٣-٤ بدون المحلول. جرّبوا الحالات التسع، وكل واحدة منها سؤال حللناه في الوحدة.</li></ul>'});
 
 /* 31 end-of-unit question 5 */
-slide({id:'q5',ch:6,title:'سؤال ٥ نهاية الوحدة',tag:'كتاب الطالب ص٧٩',
+slide({id:'q5',ch:6,title:'سؤال ٥ نهاية الوحدة',tag:'أجب',
  html:function(){return `<div style="display:flex;gap:16px;flex:1;align-items:stretch">
   <div class="frm brk" style="width:470px;flex:none;padding:12px 18px;gap:7px;justify-content:flex-start"><div style="font-size:23px;font-weight:800;color:var(--cyan)">أ</div>
    <p class="lead" style="margin:0;font-size:21px;line-height:1.5">أُذيب <b class="num">2 g</b> من NaOH في الماء لتحضير محلول حجمه النهائي <b class="num">250 mL</b>. <span class="num">Na = 23 ، H = 1 ، O = 16</span></p>
@@ -4481,7 +4818,7 @@ slide({id:'race',ch:6,title:'سباق الفصل: محاليل ومعايرة',t
 
 slide({id:'hw',ch:7,title:'ماذا تعلّمنا؟ والواجب',
  html:function(){
-  var hw=['كتاب الطالب: الأسئلة ٣-١٦ إلى ٣-٢٠','كتاب النشاط: تمرين ٣-٦ (حسابات تتضمن محاليل)','كتاب النشاط: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤','كتاب النشاط: ورقة العمل ٣-٦ (صيغة حمض عضوي)','أسئلة نهاية الوحدة: السؤال ٥'];
+  var hw=['كتاب الطالب ص<bdi dir="ltr">76</bdi>: الأسئلة ٣-١٦ إلى ٣-٢٠','كتاب النشاط ص<bdi dir="ltr">44–45</bdi>: تمرين ٣-٦','كتاب النشاط ص<bdi dir="ltr">52–53</bdi>: ورقة العمل ٣-٥ الأسئلة ٢ و٣ و٤','كتاب النشاط ص<bdi dir="ltr">54–55</bdi>: ورقة العمل ٣-٦ (صيغة حمض عضوي)','كتاب الطالب ص<bdi dir="ltr">79</bdi>: نهاية الوحدة، السؤال ٥'];
   return `<div class="col grow" style="gap:14px;flex-direction:row">
    <div class="panel dark" style="flex:1;padding:20px 26px"><h3 style="margin:0 0 10px;font-family:var(--font-display);font-size:30px;color:var(--accent)">خلاصة الدرس</h3>
     <ul style="margin:0;padding-inline-start:26px;font-size:23px;line-height:1.55"><li>تركيز الكتلة: <b class="num">C = m ÷ V</b> بوحدة g/L</li><li>التركيز المولي: <b class="num">C = n ÷ V</b> بوحدة mol/L، و<b class="num">n = C × V</b></li><li>الحجم دائماً <b>باللتر</b>: mL ÷ 1000</li><li>المعايرة: محلول قياسي من السحاحة يعادل حجماً محدداً (ماصة) حتى <b>نقطة النهاية</b>، ونأخذ متوسط نتيجتين (≤ 0.1 mL)</li><li>الحل: معطى ← <b>مولات</b> ← نسبة المعادلة ← مولات ← مطلوب</li></ul></div>
