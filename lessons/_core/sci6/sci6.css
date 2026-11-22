@@ -230,3 +230,12 @@ body{background:var(--c-bg); color:var(--ink)}
 .wsbtn:hover,.wsbtn:focus-visible{background:rgba(255,215,107,.25); outline:none}
 .idx .sumbtn,.idx .wsbtn{border-color:var(--edge); background:#fff; color:var(--ink); box-shadow:3px 3px 0 var(--edge)}
 .idx .sumbtn:hover,.idx .wsbtn:hover{background:var(--accent-soft)}
+
+/* ---- the teacher's photographs: a framed photo (thick outline + flat shadow like every other surface) and die-cut stickers ---- */
+.photo{position:relative; overflow:hidden; border:3px solid var(--edge); border-radius:18px; box-shadow:5px 5px 0 var(--edge); background:#fff; min-width:0}
+.photo img{display:block; width:100%; height:100%; object-fit:cover}
+.photo.round{border-radius:50%}
+.phwrap{position:relative; min-width:0}
+.phwrap .tagc{position:absolute; z-index:2; box-shadow:3px 3px 0 var(--edge)}
+.stk6{display:inline-block; object-fit:contain; filter:drop-shadow(2px 3px 0 rgba(58,36,24,.28)); pointer-events:none; -webkit-user-drag:none}
+.stk6.mini{width:38px; height:38px; flex:none}

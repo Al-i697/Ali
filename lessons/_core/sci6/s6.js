@@ -8,6 +8,10 @@ var S6=(function(){
   function down(){ return '<div class="dn-arrow" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 6v28M10 24l14 16 14-16" fill="none" stroke="'+INK+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' }
   function fig(svg,cap,sub,cls){ return '<div class="figbox'+(cls?' '+cls:'')+'">'+svg+(cap?'<div class="cap">'+cap+(sub?'<small>'+sub+'</small>':'')+'</div>':'')+'</div>' }
   function shuf(a,order){ return order.map(function(i){return a[i]}) }
+  /* the teacher's own pictures (PIC is packed by the lesson: name -> data URI). pic(): a photo cut to fit its box, in the notebook frame; st(): a die-cut sticker. */
+  function src(n){ return (typeof PIC!=='undefined'&&PIC[n])||'' }
+  function pic(n,cls,style,pos){ return '<div class="photo'+(cls?' '+cls:'')+'"'+(style?' style="'+style+'"':'')+'><img src="'+src(n)+'" alt="" draggable="false"'+(pos?' style="object-position:'+pos+'"':'')+'></div>' }
+  function st(n,cls,style){ return '<img class="stk6'+(cls?' '+cls:'')+'" src="'+src(n)+'" alt="" draggable="false"'+(style?' style="'+style+'"':'')+'>' }
 
   /* ================= the virtual filtration workshop =================
      flabHTML(keys) -> markup, bindFlab(root,keys,onPour): the student (or the teacher for the class) picks a mixture, predicts, pours, and sees what stays on the paper and what passes.
@@ -189,5 +193,5 @@ var S6=(function(){
     function close(){ var ov=document.getElementById('wsov'); if(ov) ov.classList.remove('on'); document.documentElement.classList.remove('ws-open') }
     return {open:open,close:close,html:html};
   }
-  return {worksheet:worksheet,INK:INK,cloud:cloud,nbox:nbox,sticky:sticky,down:down,fig:fig,shuf:shuf,FLAB:FLAB,flabHTML:flabHTML,bindFlab:bindFlab,orderHTML:orderHTML,bindOrder:bindOrder,labelHTML:labelHTML,bindLabel:bindLabel};
+  return {worksheet:worksheet,INK:INK,pic:pic,st:st,cloud:cloud,nbox:nbox,sticky:sticky,down:down,fig:fig,shuf:shuf,FLAB:FLAB,flabHTML:flabHTML,bindFlab:bindFlab,orderHTML:orderHTML,bindOrder:bindOrder,labelHTML:labelHTML,bindLabel:bindLabel};
 })();

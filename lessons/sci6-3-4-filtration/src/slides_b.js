@@ -3,21 +3,21 @@
 /* 6 the activity: materials and steps */
 slide({id:'labA',ch:2,title:'نشاط تكويني (جماعي): Science Coffee',
  html:function(){
-  var MAT=['محلول معلّق (ماء + قهوة)','كؤوس','قمع','ورق ترشيح','ورقة عمل'];
+  var MAT=[['st_beaker_mix','محلول معلّق (ماء + قهوة)'],['st_beaker','كؤوس'],['st_funnel','قمع'],['st_papers','ورق ترشيح'],['','ورقة عمل']];
   var ST=['نحضّر المخلوط: نضع ١٠٠ mL ماء وملعقة صغيرة من القهوة في كأس ونحرّك.','نضع ورقة الترشيح في القمع فوق كأس آخر.','نصبّ المخلوط في القمع ونراقب.','نكتب في ورقة العمل: ماذا نزل في الكأس؟ ماذا بقي على الورقة؟'];
   return `<div class="row" style="flex:1;gap:26px;align-items:center">
    <div class="vstack" style="flex:1.3;gap:10px">
     <div style="font-size:26px;font-weight:800;color:var(--cyan)">المواد والأدوات</div>
-    <div class="row" style="gap:10px;flex-wrap:wrap">${MAT.map(function(m){return '<span class="pill" style="min-height:42px;font-size:21px;padding:0 14px">'+m+'</span>'}).join('')}</div>
+    <div class="row" style="gap:10px;flex-wrap:wrap">${MAT.map(function(m){return '<span class="pill" style="min-height:48px;font-size:21px;padding:0 14px;gap:8px">'+(m[0]?S6.st(m[0],'mini'):'')+m[1]+'</span>'}).join('')}</div>
     <div style="font-size:26px;font-weight:800;color:var(--cyan);margin-top:2px">الإجراءات</div>
     ${ST.map(function(t,i){return '<div class="stp" style="font-size:23px;padding:7px 16px;gap:12px"><i>'+ar(i+1)+'</i><span>'+t+'</span></div>'}).join('')}
    </div>
-   <div class="figbox" style="flex:.8;position:relative"><div style="height:360px">${ART.setup()}</div>
-    <span class="tagc" style="position:absolute;top:18px;inset-inline-start:0">مخلوط</span>
-    <span class="tagc dk" style="position:absolute;top:96px;inset-inline-start:0">ورقة ترشيح</span>
-    <span class="tagc dk" style="position:absolute;top:176px;inset-inline-start:0">قمع</span>
-    <span class="tagc" style="position:absolute;bottom:18px;inset-inline-start:0">كأس</span></div></div>`;},
- note:'<ul><li>النشاط التكويني الجماعي من خطتك (Science Coffee): المواد: محلول معلّق (ماء + قهوة)، كؤوس، قمع، ورق ترشيح، ورقة عمل. الإجراءات والرسم من خطتك أيضاً. هذا النشاط <b>من خطتك وليس من الكتاب</b>؛ أما نشاط الكتاب ٣-٤ (رمل، دقيق، طباشير) فنجرّبه في الشريحة التالية وتجد أسئلته بعد ذلك.</li><li>الإجراءات تتبع صياغة الكتاب: ١٠٠ مل ماء في كأس، ملعقة صغيرة من المادة الصلبة، تحريك، ثم قمع وورقة ترشيح لكل مخلوط في كأس آخر.</li><li>اطبع صفحة «ورقة عمل Science Coffee» من فهرس الدرس (أو اطلب من الطلبة الكتابة في دفاترهم).</li></ul>'});
+   <div class="phwrap" style="flex:1;align-self:center">${S6.pic('lab_setup','','width:100%;aspect-ratio:1672/941')}
+    <span class="tagc" style="left:3%;top:14%">مخلوط</span>
+    <span class="tagc dk" style="left:25%;top:24%">ورق ترشيح</span>
+    <span class="tagc dk" style="left:77%;top:10%">قمع</span>
+    <span class="tagc" style="left:70%;top:48%">كأس</span></div></div>`;},
+ note:'<ul><li>النشاط التكويني الجماعي من خطتك (Science Coffee): المواد: محلول معلّق (ماء + قهوة)، كؤوس، قمع، ورق ترشيح، ورقة عمل. الإجراءات من خطتك أيضاً، والصورة من الصور التي أرسلتها أنت. هذا النشاط <b>من خطتك وليس من الكتاب</b>؛ أما نشاط الكتاب ٣-٤ (رمل، دقيق، طباشير) فنجرّبه في الشريحة التالية وتجد أسئلته بعد ذلك.</li><li>الإجراءات تتبع صياغة الكتاب: ١٠٠ مل ماء في كأس، ملعقة صغيرة من المادة الصلبة، تحريك، ثم قمع وورقة ترشيح لكل مخلوط في كأس آخر.</li><li>اطبع صفحة «ورقة عمل Science Coffee» من فهرس الدرس (أو اطلب من الطلبة الكتابة في دفاترهم).</li></ul>'});
 
 /* 7 the virtual lab */
 slide({id:'labB',ch:2,title:'نجرّب الترشيح: ماذا يبقى؟ وماذا يمرّ؟',
@@ -34,8 +34,10 @@ slide({id:'obs',ch:2,title:'ماذا لاحظنا؟ ولماذا؟',
     <div class="opt2">${S6.nbox('<b>التفسير: ما السبب؟</b><br>جزيئات الماء صغيرة فمرّت من ثقوب الورقة، أما جزيئات القهوة فكبيرة فلم تستطع المرور فبقيت على الورقة.','m')}</div>
     <div class="opt2">${S6.nbox('<b>الاستنتاج</b><br>الترشيح يفصل <b>المادة الصلبة غير القابلة للذوبان</b> عن السائل.','key m')}</div>
    </div>
-   <div class="figbox" style="flex:.7"><div style="height:360px">${ART.pores()}</div></div></div>`;},
- note:'<ul><li>من خطتك: الملاحظات (١) الماء ينزل في الكأس (٢) ترسّب القهوة في ورقة الترشيح؛ ثم «التفسير؟ السبب؟»؛ ثم «الاستنتاج». اطلب من الطلبة أن يجيبوا قبل أن تضغط.</li><li>التفسير بكلام كتاب الطالب ودليل المعلم: جزيئات الماء الصغيرة تمرّ من ثقوب الورقة، والمادة الصلبة غير القابلة للذوبان لا تمرّ لأن جزيئاتها كبيرة.</li></ul>'});
+   <div class="phwrap" style="flex:.8;align-self:center;aspect-ratio:1/1.05">${S6.pic('obs_zoom','round','position:absolute;left:0;top:0;width:88%;height:84%')}
+    ${S6.pic('obs_paper','round','position:absolute;right:0;bottom:9%;width:46%;height:42%')}
+    <span class="tagc" style="right:2%;top:2%">مكبّر جداً</span><span class="tagc dk" style="right:-2%;bottom:-1%">ما بقي على الورقة</span></div></div>`;},
+ note:'<ul><li>من خطتك: الملاحظات (١) الماء ينزل في الكأس (٢) ترسّب القهوة في ورقة الترشيح؛ ثم «التفسير؟ السبب؟»؛ ثم «الاستنتاج». اطلب من الطلبة أن يجيبوا قبل أن تضغط.</li><li>التفسير بكلام كتاب الطالب ودليل المعلم: جزيئات الماء الصغيرة تمرّ من ثقوب الورقة، والمادة الصلبة غير القابلة للذوبان لا تمرّ لأن جزيئاتها كبيرة.</li><li>الدائرتان من صورك: التكبير الكبير يوضّح مرور الماء بين ألياف الورقة، والصغيرة ما بقي من القهوة على الورقة. (قصصنا الدائرتين فقط ولم نأخذ الكأس الصافي، لأن ماء القهوة المرشَّح في الواقع يبقى بنّياً.)</li></ul>'});
 
 /* 9 the book's questions 1 and 2 */
 slide({id:'q12',ch:2,title:'أسئلة نشاط الكتاب: السؤالان الأول والثاني',

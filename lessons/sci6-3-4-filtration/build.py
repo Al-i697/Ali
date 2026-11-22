@@ -2,4 +2,4 @@
 import sys
 sys.path.insert(0, '../_core/tools')
 from u4build import build
-build('s634', 'الترشيح ٣-٤', ['slides_a.js', 'slides_b.js', 'slides_c.js', 'tail.js'], sys.argv, css_extra=['lesson.css'], skin='sci', digits=True, book=True, tools=True, kinds=True, summary=True)
+build('s634', 'الترشيح ٣-٤', ['pics.js', 'slides_a.js', 'slides_b.js', 'slides_c.js', 'tail.js'], sys.argv, css_extra=['lesson.css'], skin='sci', digits=True, book=True, tools=True, kinds=True, summary=True)
