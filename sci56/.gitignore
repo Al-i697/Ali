@@ -1,0 +1,8 @@
+# Textbook text/PDFs are copyrighted and this repo is public: keep them local only (they stay in the handoff zip)
+ocr_*/
+txt/
+src_pdf/
+# local test output
+shots/
+__pycache__/
+*.pyc

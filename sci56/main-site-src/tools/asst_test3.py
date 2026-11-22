@@ -1,0 +1,96 @@
+"""Assistant: mobile layout, standalone (no claude), stop, errors, export/presentation with a locked plan."""
+import sys, os
+from playwright.sync_api import sync_playwright
+exec(open('/home/claude/work/tools/asst_test.py').read().split("fails = []")[0])
+fails = []
+def check(name, cond, extra=''):
+    print(('PASS ' if cond else 'FAIL ') + name, extra if not cond else '')
+    if not cond: fails.append(name)
+with sync_playwright() as p:
+    b = p.chromium.launch(); errs = []
+    # ---------- standalone (no window.claude)
+    pg = b.new_page(viewport={'width': 1400, 'height': 900}); pg.on('pageerror', lambda e: errs.append(str(e)))
+    pg.on('console', lambda m: errs.append('console:' + m.text) if m.type == 'error' and 'ERR_' not in m.text else None)
+    pg.add_init_script(INIT)
+    pg.goto(URL + '#env11~2-1'); pg.wait_for_timeout(900)
+    check('standalone: fab visible', pg.is_visible('#asstFab'))
+    pg.click('#asstFab'); pg.wait_for_timeout(200)
+    check('standalone: cfg auto-open', pg.is_visible('#asstCfg') and not pg.is_visible('#asstLog')); pg.click('#axCfgClose'); pg.wait_for_timeout(150)
+    check('standalone: banner explains', 'مفتاح Anthropic API' in pg.inner_text('#asstSt') and pg.is_visible('#asstSt [data-ax=cfg]'))
+    check('standalone: input disabled', pg.is_disabled('#asstIn'))
+    check('standalone: ppt-in chip disabled', pg.is_disabled('#asstTools [data-chip="0"]'))
+    check('standalone: ppt-out chip enabled', not pg.is_disabled('#asstTools [data-chip="1"]'))
+    pg.click('#asstTools [data-chip="1"]'); pg.wait_for_selector('[data-ax=deckout-quick]')
+    check('standalone: no AI button', pg.locator('[data-ax=deckout-ai]').count() == 0)
+    pg.click('[data-ax=deckout-quick]'); pg.wait_for_selector('[data-ax=deck-save]', timeout=10000)
+    pg.screenshot(path=OUT + '/20_standalone.png')
+    pg.click('[data-ax=deck-save]'); pg.wait_for_timeout(500)
+    check('standalone: fallback download did not throw', not errs, errs[:3])
+    pg.close()
+    # ---------- mobile
+    m = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True, has_touch=True); m.on('pageerror', lambda e: errs.append(str(e)))
+    m.add_init_script(INIT); m.add_init_script(MOCK)
+    m.goto(URL + '#env11~2-1'); m.wait_for_timeout(900)
+    check('mobile: fab visible', m.is_visible('#asstFab'))
+    fab = m.evaluate('(()=>{const r=document.querySelector("#asstFab").getBoundingClientRect(); return [r.left, r.bottom, r.width, innerHeight, innerWidth]})()')
+    print('fab rect', fab)
+    check('mobile: fab inside viewport', fab[0] >= 0 and fab[1] <= fab[3] and fab[0] + fab[2] <= fab[4])
+    m.screenshot(path=OUT + '/21_mobile_fab.png')
+    m.click('#asstFab'); m.wait_for_timeout(300)
+    r = m.evaluate('(()=>{const r=document.querySelector("#asst").getBoundingClientRect(); return [r.left,r.top,r.width,r.height,innerWidth,innerHeight,document.documentElement.scrollWidth]})()')
+    print('panel rect', r)
+    check('mobile: panel full screen', r[2] >= r[4] - 1 and r[3] >= r[5] - 1)
+    check('mobile: no horizontal scroll', r[6] <= r[4] + 1)
+    m.evaluate('''window.__chatReply = () => "أهلاً، هذا رد قصير.\\n\\n- نقطة أولى\\n- نقطة ثانية\\n\\n**مهم:** راجع الأهداف."''')
+    m.fill('#asstIn', 'ما الاستراتيجية الأنسب؟'); m.click('#asstSend'); m.wait_for_selector('.am.a .bd ul', timeout=5000)
+    m.screenshot(path=OUT + '/22_mobile_chat.png')
+    check('mobile: markdown list rendered', m.locator('.am.a .bd ul li').count() == 2 and m.locator('.am.a .bd strong').count() >= 1)
+    m.click('#asstClose'); m.wait_for_timeout(200)
+    check('mobile: closed', not m.is_visible('#asst'))
+    m.close()
+    # ---------- stop + errors + exports
+    pg = b.new_page(viewport={'width': 1400, 'height': 900}); pg.on('pageerror', lambda e: errs.append(str(e)))
+    pg.add_init_script(INIT); pg.add_init_script(MOCK)
+    pg.goto(URL + '#env11~2-1'); pg.wait_for_timeout(900)
+    pg.click('#asstFab')
+    pg.evaluate('''window.__delay = 60; window.__chatReply = () => ("كلمة ").repeat(400)''')
+    pg.fill('#asstIn', 'اكتب طويلاً'); pg.press('#asstIn', 'Enter'); pg.wait_for_timeout(250)
+    check('stop: button in stop mode', pg.evaluate('document.querySelector("#asstSend").classList.contains("stop")'))
+    pg.click('#asstSend'); pg.wait_for_timeout(500)
+    txt = pg.inner_text('#asstLog')
+    check('stop: partial kept + marked', '(تم الإيقاف)' in txt and 'كلمة' in txt)
+    check('stop: idle again', not pg.evaluate('AX.busy'))
+    # error: not_granted
+    pg.evaluate('''window.claude.use = async (n) => { if (n === "sample") { const f = async () => { throw {code:"not_granted", message:"x"}; }; f.json = f; return f; } return null; }''')
+    pg.evaluate('(()=>{ sampleFn = async () => { throw {code:"rate_limited", message:"x"}; }; })()')
+    pg.fill('#asstIn', 'مرحبا'); pg.press('#asstIn', 'Enter'); pg.wait_for_timeout(500)
+    check('error: rate limit message shown', 'الطلبات كثيرة' in pg.inner_text('#asstLog'))
+    # locked plan then exports
+    pg.evaluate('''(()=>{ const pl = computePlan(); const mat = axMaterialize(pl); const rep={ok:0,skipped:[],notes:[],warn:[]};
+      axApplyOps(mat, [{op:"insert_row", rid: pl.flow[2].id, row:{phase:"نشاط جديد", min:6, t:["خطوة"], s:["خطوة"], tool:"سؤال", q:"سؤال جديد؟", ans:"جواب", crit:"معيار"}}], pl.d, rep); axNormalize(mat, pl, rep); axCommit(pl.rec, mat); refresh(); })()''')
+    pg.wait_for_timeout(300)
+    check('locked plan computed', pg.evaluate('computePlan().aiLocked'))
+    pg.evaluate("document.querySelector('#asstClose').click()")
+    # word export
+    pg.evaluate('exportWord()'); pg.wait_for_timeout(1500)
+    sv = pg.evaluate('window.__saved')
+    check('word export works on locked plan', sv and sv['filename'].endswith('.docx') and sv['size'] > 5000, sv)
+    # presentation + cards
+    pg.click('#presentBtn'); pg.wait_for_timeout(500)
+    check('presentation opens', pg.evaluate('document.querySelector("#presentDlg").open'))
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+    pg.evaluate('state.view="cards"; renderOutput()'); pg.wait_for_timeout(200)
+    check('cards view renders rows', pg.locator('.timeline .tl').count() == 16, pg.locator('.timeline .tl').count())
+    pg.evaluate('state.view="form"; renderOutput()')
+    # print pages
+    pg.emulate_media(media='print'); pg.pdf(path=OUT + '/locked_print.pdf', format='A4', print_background=True); pg.emulate_media(media='screen')
+    import subprocess, re
+    out = subprocess.run(['pdfinfo', OUT + '/locked_print.pdf'], capture_output=True, text=True).stdout
+    pages = int(re.search(r'Pages:\s+(\d+)', out).group(1)); print('print pages', pages)
+    check('print: FAB/panel hidden and <=4 pages', pages <= 4, pages)
+    txt = subprocess.run(['pdftotext', OUT + '/locked_print.pdf', '-'], capture_output=True, text=True).stdout
+    check('print: no assistant text', 'مساعد التحضير' not in txt)
+    check('no page errors', not errs, errs[:5])
+    b.close()
+print('FAILS', fails)
+sys.exit(1 if fails else 0)
