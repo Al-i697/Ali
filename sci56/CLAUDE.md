@@ -43,9 +43,11 @@ python3 tools/shot.py site/app.html 'sci6~3-1' out_prefix   # screenshots *_d.pn
 Lesson URL hash: `#sci6~<unit>-<n>` (split sheets `#sci6~3-1b`).
 
 ## Content rules (enforced by build.py; violations fail the build)
-- Period = 40 minutes. ONE continuous execution table per sheet with per-period opener band (prior learning + warm-up) and closer band (exit/formative question, answer, criterion).
+- Period length is chosen by the teacher in step 3 («مدة الحصة»: 30/35/40/45/50; default 35, saved in `store.meta.periodMin`, global for all lessons; `PM()` in the app). Authored rows are written for 40 minutes and are scaled per period at render time (`scalePeriods`/`scaleTo`, every row >= 2 min); so authoring stays at 40. The warm-up «الزمن» text follows the opening row. Test: `python3 tools/period_test.py`.
+- Sheet «عنوان الدرس» = `(code) base title` (the "أ./ب." part is stripped by `baseTitle`) and is editable (`rec.edits["t:title"]`; also used by Word and the copied text). A saved school name equal to the old default «معهد العلوم الإسلامية» is dropped at load.
+- (authoring unit) Period = 40 minutes. ONE continuous execution table per sheet with per-period opener band (prior learning + warm-up) and closer band (exit/formative question, answer, criterion).
 - Print = 2–3 pages (three-period lessons print 4 pages in the Ministry template). Lessons with > 3 periods are split into sheets of 2–3 periods: keys "1","1b" (same `code`), titles "…: أ. …" / "…: ب. …".
-- Every period sums to 40 min and has at least one row tied to an objective; every objective is covered by some row. Total minutes = periods × 40.
+- Every period sums to 40 min and has at least one row tied to an objective; every objective is covered by some row. Total minutes = periods × 40 in the data (shown scaled to the chosen period length).
 - Row 1 of a sheet = `R("التمهيد", …)` with q = warm.question and ans = warm.expected, objs `[]`. Last row = `R("الختام","بطاقة الخروج",5,[],…)` whose q/ans equal `exit`.
 - Periods ≥ 2 start with `OPEN(…)` (5 min, no objectives); non-last periods end with `CLOSE(…)` (5 min, no objectives).
 - Phase title ≤ 18 characters (except «تعلم قبلي وتمهيد» and exit-ticket rows). Formative questions unique within a sheet.

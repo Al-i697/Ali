@@ -85,7 +85,7 @@ with sync_playwright() as p:
     print('plan after', pl1)
     check('applied: locked', pl1['locked'])
     check('applied: +1 row', pl1['rows'] == pl0['rows'] + 1, pl1['rows'])
-    check('applied: total = periods*40', pl1['total'] == pl1['periods'] * 40, (pl1['total'], pl1['periods']))
+    check('applied: total = periods*35 (default period length)', pl1['total'] == pl1['periods'] * 35, (pl1['total'], pl1['periods']))
     check('applied: homework', 'فرضية جديدة' in pl1['hw'])
     check('applied: phase renamed', 'تهيئة عُمانية' in pl1['codes'])
     check('card shows applied + undo', pg.is_visible('.prop-st.ok') and pg.is_visible('[data-ax=undo]'))
@@ -93,7 +93,7 @@ with sync_playwright() as p:
     pg.screenshot(path=OUT + '/02_applied.png')
     # per-period sums
     sums = pg.evaluate('''(()=>{const p=computePlan(); const s={}; p.flow.forEach(r=>s[r.period]=(s[r.period]||0)+r.minutes); return s})()''')
-    check('each period 40', all(v == 40 for v in sums.values()), sums)
+    check('each period 35', all(v == 35 for v in sums.values()), sums)
     # form renders and persistence
     pg.evaluate("document.querySelector('#asstClose').click()")
     pg.wait_for_timeout(200)

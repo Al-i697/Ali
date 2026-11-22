@@ -67,7 +67,7 @@ with sync_playwright() as p:
     st = pg.evaluate('''(()=>{const p=computePlan(); const s={}; p.flow.forEach(r=>s[r.period]=(s[r.period]||0)+r.minutes); return {rows:p.flow.length, periods:p.periods, sums:s, bk:p.flow.map(r=>r.bk), split:p.split, codes:p.codes, exit:p.t.exit, warm:p.t.warm, total:p.total, dur:p.duration}})()''')
     print(st)
     check('plan applied 2 periods', st['periods'] == 2 and st['rows'] == 8)
-    check('each period 40', all(v == 40 for v in st['sums'].values()), st['sums'])
+    check('each period 35', all(v == 35 for v in st['sums'].values()), st['sums'])
     check('bands set', st['bk'][3] == 'close' and st['bk'][4] == 'open')
     check('split flag', st['split'])
     check('exit synced', 'قارن بين المستقل والتابع' in st['exit'])

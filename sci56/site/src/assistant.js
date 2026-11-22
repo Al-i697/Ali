@@ -140,7 +140,7 @@ function axCommit(rec, mat){
 function axPatchRow(row, s, d){
   if (s.phase != null) row.phase = axPhase(s.phase);
   if (s.strat != null) row.strat = axClean(s.strat).replace(/<[^>]*>/g, "").slice(0, 40);
-  if (s.min != null) row.minutes = axInt(s.min, row.minutes || 5, 1, 40);
+  if (s.min != null) row.minutes = axInt(s.min, row.minutes || 5, 1, PM());
   if (s.obj != null) row.objIds = axObjIds(s.obj, d);
   if (s.t != null) row.teacher = axSteps(s.t);
   if (s.s != null) row.student = axSteps(s.s);
@@ -229,11 +229,11 @@ function axNormalize(mat, pl, rep){
   });
   for (let p = 1; p <= P; p++){
     const seg = rows.filter(r => r.period === p), sum = seg.reduce((t, r) => t + r.minutes, 0);
-    if (sum !== 40){
+    if (sum !== PM()){
       const bands = seg.filter(r => r.bk), free = seg.filter(r => !r.bk), bsum = bands.reduce((t, r) => t + r.minutes, 0);
-      if (free.length && bsum <= 14 && 40 - bsum >= free.length){ const m = axScale(free.map(r => r.minutes), 40 - bsum); free.forEach((r, i) => { r.minutes = m[i]; }); }
-      else { const m = axScale(seg.map(r => r.minutes), 40); seg.forEach((r, i) => { r.minutes = m[i]; }); }
-      rep.notes.push(`ضُبطت أزمنة الحصة ${p} لتصبح 40 دقيقة (كانت ${sum}).`);
+      if (free.length && bsum <= 14 && PM() - bsum >= free.length){ const m = axScale(free.map(r => r.minutes), PM() - bsum); free.forEach((r, i) => { r.minutes = m[i]; }); }
+      else { const m = axScale(seg.map(r => r.minutes), PM()); seg.forEach((r, i) => { r.minutes = m[i]; }); }
+      rep.notes.push(`ضُبطت أزمنة الحصة ${p} لتصبح ${PM()} دقيقة (كانت ${sum}).`);
     }
   }
   rows.forEach(r => { r.time = r.minutes + " د"; if (!/^[A-Za-z]/.test(r.id || "")) r.id = "m" + (++mat.seq); });
@@ -278,7 +278,7 @@ function axLessonCtx(pl){
   const objs = d.objectives.map(o => `- [${objLabel(o)}] ${o.text}${pl.rec.sel[o.id] ? "" : " (غير محدد في التحضير)"}`).join("\n");
   return `المقرر: ${cm.subj.name} للصف ${cm.gradeName} (سلسلة كامبريدج المواءمة، سلطنة عُمان)
 الدرس: ${d.code} ${d.title} — ${d.unitTitle}
-عدد الحصص في هذه الورقة: ${pl.periods}، والحصة الواحدة 40 دقيقة.
+عدد الحصص في هذه الورقة: ${pl.periods}، والحصة الواحدة ${PM()} دقيقة.
 أهداف الدرس:
 ${objs}
 التعلم القبلي في الدليل: ${axPlain(d.prior)}
@@ -302,7 +302,7 @@ function axProtocol(){
 - at وafter رقم الصف كما في القائمة (#). في update_row أرسل في set الحقول المراد تغييرها فقط. حقول الصف: phase اسم المرحلة (حتى 18 حرفاً)، strat الاستراتيجية، min الدقائق، obj أرقام الأهداف مثل ["2-2"]، t خطوات المعلم (قائمة نصوص قصيرة)، s خطوات الطالب، tool أداة التقويم، q سؤال التقويم، ans الإجابة المتوقعة، crit معيار النجاح.
 - حقول set المسموحة: prior و warm و exit و homework و mis و lab و resources (نص عادي؛ أو للثلاثة الأولى كائن: prior={"items":[..],"technique":"..","qs":[{"q":"..","a":".."}]}، warm={"stimulus":"..","question":"..","expected":".."}، exit={"q":"..","a":"..","crit":".."})، و support و enrich (قائمة خطوات).
 - لإعادة بناء التحضير كاملاً (تغيير الاستراتيجية أو توزيع الأنشطة من جديد) استخدم بدل @@OP الصيغة الآتية (وتنتهي بـ @@END)، وهي تحلّ محل الجدول الحالي كله:
-${AX_PLAN_FMT}`;
+${axPlanFmt()}`;
 }
 function axInstr(pl){
   return `أنت «مساعد التحضير» داخل منظومة تحضير العلوم لمعلم في سلطنة عُمان. تحاور المعلم بالعربية الفصحى المبسطة وبإيجاز (غالباً أقل من 110 كلمات)، وتعينه على تطوير تحضير الدرس الحالي ليناسب الاستراتيجية وأسلوب التدريس الذي يريده، مع الحفاظ على الدقة العلمية.

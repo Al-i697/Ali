@@ -1039,6 +1039,7 @@ dialog.present{width:100vw; height:100vh; height:100dvh; max-width:none; max-hei
 .seg.seg6 button b{font-size:1.15rem; font-weight:900; line-height:1.2;}
 .seg.seg6 button small{font-size:.7rem;}
 .seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}
+.seg.seg5{grid-template-columns:repeat(5,minmax(0,1fr)); margin-bottom:14px;}
 .offb{position:absolute; top:-8px; inset-inline-start:50%; transform:translateX(50%); font-style:normal; font-size:.6rem; font-weight:800; padding:0 6px; border-radius:99px; background:linear-gradient(135deg,#F2D184,#D4A548); color:var(--navy); white-space:nowrap;}
 .per-h{margin:10px 0 6px; padding:3px 12px; border-radius:99px; background:linear-gradient(135deg,var(--navy),var(--navy3)); color:#fff; font-size:.8rem; font-weight:800; display:inline-block;}
 .per-h:first-child{margin-top:0;}
@@ -1590,7 +1591,9 @@ body.asst-open .asst-fab{display:none;}
     <div class="step" aria-labelledby="s3t">
       <div class="step-h"><span class="step-n">3</span><div class="grow"><h2 id="s3t">ضبط الحصة</h2><p>الزمن والاستراتيجيات ومحتوى الخطة</p></div></div>
       <div class="col-l">
-        <span class="fl" id="durLbl">عدد حصص الدرس <small class="fl-sub">الحصة 40 دقيقة</small></span>
+        <span class="fl" id="minLbl">مدة الحصة <small class="fl-sub">تُحفظ لكل دروسك</small></span>
+        <div class="seg seg6 seg5" id="minSeg" role="group" aria-labelledby="minLbl"></div>
+        <span class="fl" id="durLbl">عدد حصص الدرس <small class="fl-sub" id="durSub">الحصة 35 دقيقة</small></span>
         <div class="seg seg6" id="durSeg" role="group" aria-labelledby="durLbl"></div>
         <p class="hint" id="perHint" style="margin:-10px 0 14px"></p>
         <span class="fl" id="primLbl">الاستراتيجية الرئيسية لبناء الحصة</span>
@@ -2032,7 +2035,7 @@ function formatDate(iso){
   return m ? `${m[1]}/${m[2]}/${m[3]}` : (iso || "");
 }
 function minutesOf(t){ const m = /(\d+)/.exec(t || ""); return m ? parseInt(m[1], 10) : 0; }
-function durLabel(n){ return n === 1 ? "حصة واحدة (40 دقيقة)" : n === 2 ? "حصتان (80 دقيقة)" : `${n} حصص (${n * 40} دقيقة)`; }
+function durLabel(n){ const m = PM(); return n === 1 ? `حصة واحدة (${m} دقيقة)` : n === 2 ? `حصتان (${2 * m} دقيقة)` : `${n} حصص (${n * m} دقيقة)`; }
 function codeHTML(label){ const i = label.indexOf(" "); const c = i === -1 ? label : label.slice(0, i); const s = i === -1 ? "" : label.slice(i + 1); return `<bdi dir="ltr">${escapeHTML(c)}</bdi>${s ? " " + escapeHTML(s) : ""}`; }
 /* long outcome lists shrink to stay inside their week cell */
 function fitCls(v){ const n = String(v || "").length; return n >= 28 ? "fit4" : n >= 24 ? "fit3" : n >= 20 ? "fit2" : ""; }
@@ -2054,6 +2057,8 @@ const store = (() => {
     }
   }
   s.meta = Object.assign({ teacher: "", school: "" }, s.meta || {});
+  if (/معهد\s*العلوم\s*الإسلامية/.test(s.meta.school || "")) s.meta.school = "";
+  if (s.profile && /معهد\s*العلوم\s*الإسلامية/.test(s.profile.school || "")) s.profile.school = "";
   if (!s.profile && /سيف بن حمدان/.test(s.meta.teacher || "")) s.meta.teacher = "";
   s.lessons = s.lessons || {};
   return s;
@@ -2113,7 +2118,31 @@ const state = { key: null, course: "sci6", sem: 1, unit: "sci6:1:1", view: "form
 /* ============================================================
    عدد الحصص الرسمي لكل درس (دليل المعلم، جداول موضوعات الوحدات)
    ============================================================ */
-const PERIOD_MIN = 40;
+const PERIOD_MIN = 40;   // the length the authored rows are written for: each authored period sums to 40 minutes
+const PM_CHOICES = [30, 35, 40, 45, 50];
+function PM(){ const v = parseInt(store.meta && store.meta.periodMin, 10); return PM_CHOICES.includes(v) ? v : 35; }
+/* scale a list of minutes to a new total (largest remainder, every item at least lo) */
+function scaleTo(list, target, lo){
+  const total = list.reduce((a, b) => a + b, 0); if (!total) return list.slice();
+  const raw = list.map(x => x * target / total), out = raw.map(x => Math.max(lo, Math.floor(x)));
+  let diff = target - out.reduce((a, b) => a + b, 0);
+  const order = raw.map((x, i) => [x - Math.floor(x), i]).sort((a, b) => b[0] - a[0]);
+  for (let k = 0; diff > 0 && k < order.length * 4; k++){ out[order[k % order.length][1]]++; diff--; }
+  for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > lo){ out[k]--; diff++; } }
+  return out;
+}
+function scalePeriods(flow){
+  const pm = PM(); if (pm === PERIOD_MIN) return flow;
+  const by = {}; flow.forEach(r => { (by[r.period || 1] = by[r.period || 1] || []).push(r); });
+  Object.values(by).forEach(g => {
+    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / PERIOD_MIN), 2);
+    g.forEach((r, i) => { r.minutes = m[i]; r.time = m[i] + " د"; });
+  });
+  return flow;
+}
+function minsAr(n){ return n === 1 ? "دقيقة واحدة" : n === 2 ? "دقيقتان" : n >= 3 && n <= 10 ? n + " دقائق" : n + " دقيقة"; }
+function baseTitle(s){ return String(s || "").replace(/\s*[:：]\s*[أ-د]\.\s.*$/, ""); }
+
 const OFFICIAL_PERIODS = {};
 
 /* ============================================================
@@ -2317,11 +2346,11 @@ function lessonCtx(d, objs, acts, warm){
 function scaleMinutes(list, target){
   const total = list.reduce((t, x) => t + x, 0);
   if (!total) return list;
-  const raw = list.map(x => x * target / total), out = raw.map(x => Math.max(3, Math.floor(x)));
+  const lo = Math.max(1, Math.min(3, Math.floor(target / list.length))), raw = list.map(x => x * target / total), out = raw.map(x => Math.max(lo, Math.floor(x)));
   let diff = target - out.reduce((t, x) => t + x, 0);
   const order = raw.map((x, i) => [x - Math.floor(x), i]).sort((a, b) => b[0] - a[0]);
   for (let k = 0; diff > 0 && k < order.length * 3; k++){ out[order[k % order.length][1]]++; diff--; }
-  for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > 3){ out[k]--; diff++; } }
+  for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > lo){ out[k]--; diff++; } }
   return out;
 }
 const LABISH = /نشاط|تجربة|استقصاء|عرض توضيحي|العرض العملي|عرض عملي|نمذجة|بناء نماذج|مجسمات|معاينة|فحص|معايرة|قياس|تسخين/;
@@ -2408,8 +2437,8 @@ function warmHTML(c){
 function aPriorHTML(A){
   return `<strong>المتطلبات السابقة:</strong> ${A.prior.items.join("، ")}.<br><strong>أسلوب التنشيط:</strong> ${A.prior.technique}.<br><strong>أسئلة تشخيصية:</strong><br>${A.prior.qs.map((x, i) => `${i + 1}) ${x.q}<br><strong>الإجابة:</strong> ${x.a}`).join("<br>")}`;
 }
-function aWarmHTML(A){
-  return `<strong>المثير:</strong> ${A.warm.stimulus}<br><strong>السؤال المحفز:</strong> ${A.warm.question}<br><strong>الإجابة المتوقعة:</strong> ${A.warm.expected}<br><strong>الزمن:</strong> 5 دقائق`;
+function aWarmHTML(A, mins = 5){
+  return `<strong>المثير:</strong> ${A.warm.stimulus}<br><strong>السؤال المحفز:</strong> ${A.warm.question}<br><strong>الإجابة المتوقعة:</strong> ${A.warm.expected}<br><strong>الزمن:</strong> ${minsAr(mins)}`;
 }
 
 /* ---------- التحضير المعتمد (مكتوب) موزعاً على الحصص ---------- */
@@ -2479,7 +2508,7 @@ function dedupePeriod(rows, c){
 }
 function continuousFlow(key, rec, c, acts, def, N){
   if (N > 1 && acts.length) return genericFlow(key, Object.assign({}, rec, { periods: N }), c, acts, def).rows;
-  const total = N * 40;
+  const total = N * PM();
   let rows;
   if (def && acts.length) rows = buildDetailedFlow(rec.primary, c, total);
   else if (acts.length){
@@ -2500,12 +2529,12 @@ function rowObjLabels(r, d){
 function dayCodes(flow, d){
   const days = [[], [], [], [], []]; let cum = 0;
   const byPeriod = flow.some(r => (r.period || 1) > 1);
-  flow.forEach(r => { const day = Math.min(4, byPeriod ? (r.period || 1) - 1 : Math.floor(cum / 40)); rowObjLabels(r, d).forEach(l => { if (!days[day].includes(l)) days[day].push(l); }); cum += r.minutes; });
+  flow.forEach(r => { const day = Math.min(4, byPeriod ? (r.period || 1) - 1 : Math.floor(cum / PM())); rowObjLabels(r, d).forEach(l => { if (!days[day].includes(l)) days[day].push(l); }); cum += r.minutes; });
   const order = l => d.objectives.findIndex(o => objLabel(o) === l);
   return days.map(x => x.sort((p, q) => order(p) - order(q)).join("، "));
 }
 function genericFlow(key, rec, c, acts, def){
-  const N = Math.max(1, rec.periods || 1), cap = 40 - 10;
+  const N = Math.max(1, rec.periods || 1), cap = PM() - 10;
   const per = Array.from({ length: N }, () => []);
   const list = acts.map(a => Object.assign({}, a));
   while (list.length && list.length < N){
@@ -2531,7 +2560,7 @@ function genericFlow(key, rec, c, acts, def){
     if (!list.length) return;
     const pc = Object.assign({}, c, { acts: list });
     let pr;
-    if (def) pr = buildDetailedFlow(rec.primary, pc, 40);
+    if (def) pr = buildDetailedFlow(rec.primary, pc, PM());
     else {
       pr = [{ id: "open", code: "التمهيد", minutes: 5, q: c.hookQ, teacher: stepsHTML([`يعرض المثير: ${c.warm}`, `يطرح السؤال المحفز: «${c.hookQ}»`]), student: stepsHTML(["يتأمل المثير ويقدّم إجابة أولية."]), eval: evalHTML({ tool: "سؤال شفهي", q: c.hookQ, crit: c.critFirst }) }]
         .concat(enrichActs(pc, list))
@@ -2589,14 +2618,14 @@ function computePlan(o = {}){
   const c = lessonCtx(d, objs, acts, warm);
   const aiL = (!o.noAI && rec.aiFlow && rec.aiFlow.locked) ? rec.aiFlow : null;
   const periods = aiL ? Math.max(1, aiL.periods || 1) : authored ? (OFFICIAL_PERIODS[key] || AU.periods.length) : N;
-  const sig = objs.map(x => x.id).join(",") + "|" + periods + "p|" + (rec.primary || (authored ? "A" : ""));
+  const sig = objs.map(x => x.id).join(",") + "|" + periods + "p" + PM() + "m|" + (rec.primary || (authored ? "A" : ""));
   const ai = aiL || ((!o.noAI && rec.aiFlow && rec.aiFlow.sig === sig) ? rec.aiFlow : null);
   let flow, codes, aiUsed = false;
   if (ai && Array.isArray(ai.rows)){
     flow = ai.rows.map((r, i) => ({ id: r.id || "ai" + i, period: r.period || 1, bk: r.bk || "", code: r.phase || "", strat: r.strat || "", time: r.time, minutes: minutesOf(r.time), teacher: r.teacher, student: r.student, eval: r.eval, q: r.q || "", objIds: r.objIds || [] }));
     aiUsed = true;
   } else if (authored){
-    flow = authoredFlow(key, d, rec).rows;
+    flow = scalePeriods(authoredFlow(key, d, rec).rows);
     flow.forEach((r, i) => {
       if (r.code === "ربط بالحصة السابقة") r.code = "مراجعة وربط";
       else if (/^الختام/.test(r.code) && i < flow.length - 1) r.code = "تقويم مرحلي";
@@ -2609,7 +2638,7 @@ function computePlan(o = {}){
   });
   const T = {
     prior: ai && ai.prior ? ai.prior : authored ? aPriorHTML(AU) : priorHTML(c),
-    warm: ai && ai.warm ? ai.warm : authored ? aWarmHTML(AU) : warmHTML(c),
+    warm: ai && ai.warm ? ai.warm : authored ? aWarmHTML(AU, flow[0] ? flow[0].minutes : 5) : warmHTML(c),
     resources: aiL && aiL.resources ? aiL.resources : d.resources, exit: ai && ai.exit ? ai.exit : authored ? aExitHTML(AU, c) : exitHTML(c),
     homework: aiL && aiL.homework ? aiL.homework : authored ? AU.homework : d.homework, mis: aiL && aiL.mis ? aiL.mis : d.misconception, lab: aiL && aiL.lab ? aiL.lab : d.lab
   };
@@ -2627,7 +2656,8 @@ function computePlan(o = {}){
     key, d, rec, objs, flow, def, authored, AU, aiUsed, aiLocked: !!aiL, sig, ctx: c, periods, codes, split: (!aiUsed || !!aiL) && flow.some(r => (r.period || 1) > 1), lockedStrats: authored ? usedStrats : [],
     staleAI: !!(rec.aiFlow && !rec.aiFlow.locked && rec.aiFlow.sig !== sig),
     total: flow.reduce((t, r) => t + r.minutes, 0), actTotal,
-    duration: periods * 40, durLabel: durLabel(periods),
+    duration: periods * PM(), periodMin: PM(), durLabel: durLabel(periods),
+    title: (ed["t:title"] || "").trim() || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),
     strategies, t: T, tEd, opts: state.opts, meta: metaNow(rec),
     diff, ai: rec.ai, reflect: rec.reflect,
     editedCount: Object.keys(ed).length
@@ -2766,7 +2796,7 @@ function renderObjectives(){
   if (AU) AU.periods.forEach(P => P.rows.forEach(r => { r[3].forEach(i => { const id = d.objectives[i] && d.objectives[i].id; if (id) aMin[id] = (aMin[id] || 0) + r[2] / r[3].length; }); }));
   $("#objList").innerHTML = d.objectives.map(o => {
     const on = !!rec.sel[o.id];
-    const mins = AU ? Math.round(aMin[o.id] || 0) : o.activities.reduce((t, a) => t + minutesOf(a[f]), 0), n = o.activities.length;
+    const mins = AU ? Math.round((aMin[o.id] || 0) * PM() / PERIOD_MIN) : o.activities.reduce((t, a) => t + minutesOf(a[f]), 0), n = o.activities.length;
     return `<label class="obj" data-on="${on}">
       <input type="checkbox" data-obj="${o.id}" ${on ? "checked" : ""}>
       <span class="box" aria-hidden="true"><svg class="i"><use href="#i-check"/></svg></span>
@@ -2859,6 +2889,8 @@ function renderStep3(){
   const AU = AUTHORED[state.key], authored = !!AU && !rec.primary, off = OFFICIAL_PERIODS[state.key] || 1;
   const LK = rec.aiFlow && rec.aiFlow.locked ? rec.aiFlow : null;
   const cur = LK ? LK.periods : authored ? off : (rec.periods || off);
+  $("#minSeg").innerHTML = PM_CHOICES.map(n => `<button type="button" data-pm="${n}" aria-pressed="${n === PM()}"><b>${n}</b><small>دقيقة</small></button>`).join("");
+  $("#durSub").textContent = `الحصة ${PM()} دقيقة`;
   $("#durSeg").innerHTML = [1, 2, 3, 4, 5, 6].map(n => `<button type="button" data-p="${n}" aria-pressed="${n === cur}"${(authored || LK) && n !== cur ? ' aria-disabled="true"' : ""}><b>${n}</b><small>${n === 1 ? "حصة" : n === 2 ? "حصتان" : "حصص"}</small>${n === off ? '<i class="offb">الدليل</i>' : ""}</button>`).join("");
   $("#perHint").textContent = LK ? `التحضير معدّل بمساعد التحضير ويشمل ${durLabel(cur)}؛ استعد التحضير الأصلي من المساعد لتغيير عدد الحصص.` : authored ? `التحضير المعتمد مبني على ${durLabel(cur)} كما في دليل المعلم.` : `عدد الحصص في دليل المعلم: ${durLabel(off)}.`;
   const sel = $("#primarySel");
@@ -3183,7 +3215,7 @@ function formHTML(pl, splits){
 
     <section class="sh-box sh-info">
       <div class="ib g-gold"><div class="tx"><span class="k">الوحدة</span><span class="v">${escapeHTML(unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : "")}${escapeHTML(unit.name)}</span></div>${icon("ic-layers")}</div>
-      <div class="ib g-blue wide"><div class="tx"><span class="k">عنوان الدرس</span><span class="v"><span class="code">(${d.code})</span>${escapeHTML(d.title)}</span></div>${icon("ic-book")}</div>
+      <div class="ib g-blue wide"><div class="tx"><span class="k">عنوان الدرس</span><span class="v"><span class="code">(${d.code})</span><span ${editAttrs("t:title", pl.titleEd)} aria-label="عنوان الدرس">${escapeHTML(pl.title)}</span></span></div>${icon("ic-book")}</div>
       <div class="ib g-navy"><div class="tx"><span class="k">الصف</span><span class="v">${escapeHTML(courseMeta(pl.key).gradeName)} / <input data-meta="section" value="${escapeHTML(m.section || "")}" placeholder="الشعبة" aria-label="الشعبة"></span></div>${icon("ic-users")}</div>
     </section>
 
@@ -3306,7 +3338,7 @@ function keyFromHash(){
 function planAsText(pl){
   const d = pl.d, m = pl.meta, L = [], wk = weekData(pl);
   L.push(`تحضير ${courseMeta(pl.key).subj.short} ${courseMeta(pl.key).grade}، وزارة التعليم${pl.meta.school ? "، " + pl.meta.school : ""}`);
-  L.push(`${d.unitTitle} | عنوان الدرس: (\u200E${d.code}\u200E) ${d.title} | الصف: ${courseMeta(pl.key).gradeName}${m.section ? " / " + m.section : ""}، ${semName(semOf(pl.key))}`);
+  L.push(`${d.unitTitle} | عنوان الدرس: (\u200E${d.code}\u200E) ${pl.title} | الصف: ${courseMeta(pl.key).gradeName}${m.section ? " / " + m.section : ""}، ${semName(semOf(pl.key))}`);
   L.push("");
   wk.forEach(w => { if (w.date || w.period || w.codes) L.push(`${w.name}: التاريخ ${w.date || "—"} | الحصة ${w.period || "—"} | المخرجات ${w.codes || "—"}`); });
   L.push(""); L.push(`التعلم القبلي: ${plainText(pl.t.prior)}`); L.push(`التمهيد: ${plainText(pl.t.warm)}`);
@@ -3500,7 +3532,7 @@ const DOCX = (() => {
 
     b += table([2600, 4638, 2400], [[
       kv("الوحدة", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { bold: true, size: 19, color: "2B1E06" }), "gold", 2600),
-      kv("عنوان الدرس", run(`(${d.code})  `, { bold: true, size: 20, color: "E9C46A" }) + run(d.title, { bold: true, size: 20, color: "FFFFFF" }), "blue", 4638),
+      kv("عنوان الدرس", run(`(${d.code})  `, { bold: true, size: 20, color: "E9C46A" }) + run(pl.title, { bold: true, size: 20, color: "FFFFFF" }), "blue", 4638),
       kv("الصف", run(courseMeta(pl.key).gradeName + (m.section ? " / " + m.section : ""), { bold: true, size: 20, color: "FFFFFF" }), "navy", 2400)
     ]], { style: "grid" });
     b += gap(100);
@@ -3667,7 +3699,7 @@ function aiErr(e){
 }
 function aiContextText(pl){
   const list = (pl.objs.length ? pl.objs : pl.d.objectives).map(o => `- [${objLabel(o)}] ${o.text}`).join("\n");
-  return `الدرس: ${pl.d.code} ${pl.d.title} (${pl.d.unitTitle})\nعدد الحصص: ${pl.periods}، والحصة ${40} دقيقة (المجموع ${pl.duration} دقيقة)\nالأهداف المحددة:\n${list}`;
+  return `الدرس: ${pl.d.code} ${pl.d.title} (${pl.d.unitTitle})\nعدد الحصص: ${pl.periods}، والحصة ${PM()} دقيقة (المجموع ${pl.duration} دقيقة)\nالأهداف المحددة:\n${list}`;
 }
 function aiPrompt(pl, request){
   return `أنت موجّه تربوي وخبير في تدريس مادة ${courseMeta(pl.key).subj.name} للصف ${courseMeta(pl.key).gradeName} وفق منهج سلطنة عُمان (سلسلة كامبريدج المواءمة).\n${aiContextText(pl)}\n\nالمطلوب: ${request}\n\nتعليمات الكتابة: اكتب بالعربية الفصحى المبسطة وبإيجاز (لا يزيد عن 150 كلمة)، بلا عناوين Markdown ولا رموز تنسيق، واستخدم فقرات قصيرة أو ترقيماً بسيطاً. لا تذكر أسماء منشآت أو أرقاماً محددة عن سلطنة عُمان إلا إن كنت متأكداً منها.`;
@@ -3731,7 +3763,7 @@ ${aiContextText(base)}
 - rows: سير الحصة مرحلة مرحلة؛ لكل صف: time مثل "10 د"، phase اسم المرحلة، teacher خطوات مرقمة دقيقة (ماذا يقول ويفعل المعلم)، student خطوات مرقمة لما يفعله الطالب، eval التقويم التكويني متضمناً: الأداة، والسؤال، والإجابة المتوقعة إن وجدت، ومعيار النجاح.
 - exit: التقويم الختامي مع معيار النجاح.
 - support و enrich: نشاط علاجي ونشاط إثرائي محددان بخطوات.
-القيود: اكتب خطة متصلة للدرس كاملاً دون تقسيمها على الحصص، تبدأ بالتمهيد وتنتهي بالختام، ومجموع أزمنتها ${base.duration} دقيقة (${base.periods} حصص × 40 دقيقة)؛ اجعل الحقل period يساوي 1، والحقل strat اسم الاستراتيجية المستخدمة في الصف؛ لا تكرر سؤال التقويم نفسه في أكثر من صف؛ افصل الخطوات بسطر جديد؛ لا تستخدم Markdown ولا رموز تنسيق؛ لا تكتب جملاً عامة مثل «يستمع لإجابات الطلاب» بل اكتب ما يقوله المعلم والأسئلة بإجاباتها.
+القيود: اكتب خطة متصلة للدرس كاملاً دون تقسيمها على الحصص، تبدأ بالتمهيد وتنتهي بالختام، ومجموع أزمنتها ${base.duration} دقيقة (${base.periods} حصص × ${PM()} دقيقة)؛ اجعل الحقل period يساوي 1، والحقل strat اسم الاستراتيجية المستخدمة في الصف؛ لا تكرر سؤال التقويم نفسه في أكثر من صف؛ افصل الخطوات بسطر جديد؛ لا تستخدم Markdown ولا رموز تنسيق؛ لا تكتب جملاً عامة مثل «يستمع لإجابات الطلاب» بل اكتب ما يقوله المعلم والأسئلة بإجاباتها.
 أعد JSON فقط بهذه الصيغة: {"prior":"..","warm":"..","rows":[{"period":1,"time":"..","phase":"..","strat":"..","teacher":"..","student":"..","eval":".."}],"exit":"..","support":"..","enrich":".."}`;
   const old = btn.innerHTML;
   btn.innerHTML = "جارٍ إعداد التحضير التفصيلي… (اضغط للإيقاف)";
@@ -3891,7 +3923,7 @@ function axCommit(rec, mat){
 function axPatchRow(row, s, d){
   if (s.phase != null) row.phase = axPhase(s.phase);
   if (s.strat != null) row.strat = axClean(s.strat).replace(/<[^>]*>/g, "").slice(0, 40);
-  if (s.min != null) row.minutes = axInt(s.min, row.minutes || 5, 1, 40);
+  if (s.min != null) row.minutes = axInt(s.min, row.minutes || 5, 1, PM());
   if (s.obj != null) row.objIds = axObjIds(s.obj, d);
   if (s.t != null) row.teacher = axSteps(s.t);
   if (s.s != null) row.student = axSteps(s.s);
@@ -3980,11 +4012,11 @@ function axNormalize(mat, pl, rep){
   });
   for (let p = 1; p <= P; p++){
     const seg = rows.filter(r => r.period === p), sum = seg.reduce((t, r) => t + r.minutes, 0);
-    if (sum !== 40){
+    if (sum !== PM()){
       const bands = seg.filter(r => r.bk), free = seg.filter(r => !r.bk), bsum = bands.reduce((t, r) => t + r.minutes, 0);
-      if (free.length && bsum <= 14 && 40 - bsum >= free.length){ const m = axScale(free.map(r => r.minutes), 40 - bsum); free.forEach((r, i) => { r.minutes = m[i]; }); }
-      else { const m = axScale(seg.map(r => r.minutes), 40); seg.forEach((r, i) => { r.minutes = m[i]; }); }
-      rep.notes.push(`ضُبطت أزمنة الحصة ${p} لتصبح 40 دقيقة (كانت ${sum}).`);
+      if (free.length && bsum <= 14 && PM() - bsum >= free.length){ const m = axScale(free.map(r => r.minutes), PM() - bsum); free.forEach((r, i) => { r.minutes = m[i]; }); }
+      else { const m = axScale(seg.map(r => r.minutes), PM()); seg.forEach((r, i) => { r.minutes = m[i]; }); }
+      rep.notes.push(`ضُبطت أزمنة الحصة ${p} لتصبح ${PM()} دقيقة (كانت ${sum}).`);
     }
   }
   rows.forEach(r => { r.time = r.minutes + " د"; if (!/^[A-Za-z]/.test(r.id || "")) r.id = "m" + (++mat.seq); });
@@ -4029,7 +4061,7 @@ function axLessonCtx(pl){
   const objs = d.objectives.map(o => `- [${objLabel(o)}] ${o.text}${pl.rec.sel[o.id] ? "" : " (غير محدد في التحضير)"}`).join("\n");
   return `المقرر: ${cm.subj.name} للصف ${cm.gradeName} (سلسلة كامبريدج المواءمة، سلطنة عُمان)
 الدرس: ${d.code} ${d.title} — ${d.unitTitle}
-عدد الحصص في هذه الورقة: ${pl.periods}، والحصة الواحدة 40 دقيقة.
+عدد الحصص في هذه الورقة: ${pl.periods}، والحصة الواحدة ${PM()} دقيقة.
 أهداف الدرس:
 ${objs}
 التعلم القبلي في الدليل: ${axPlain(d.prior)}
@@ -4053,7 +4085,7 @@ function axProtocol(){
 - at وafter رقم الصف كما في القائمة (#). في update_row أرسل في set الحقول المراد تغييرها فقط. حقول الصف: phase اسم المرحلة (حتى 18 حرفاً)، strat الاستراتيجية، min الدقائق، obj أرقام الأهداف مثل ["2-2"]، t خطوات المعلم (قائمة نصوص قصيرة)، s خطوات الطالب، tool أداة التقويم، q سؤال التقويم، ans الإجابة المتوقعة، crit معيار النجاح.
 - حقول set المسموحة: prior و warm و exit و homework و mis و lab و resources (نص عادي؛ أو للثلاثة الأولى كائن: prior={"items":[..],"technique":"..","qs":[{"q":"..","a":".."}]}، warm={"stimulus":"..","question":"..","expected":".."}، exit={"q":"..","a":"..","crit":".."})، و support و enrich (قائمة خطوات).
 - لإعادة بناء التحضير كاملاً (تغيير الاستراتيجية أو توزيع الأنشطة من جديد) استخدم بدل @@OP الصيغة الآتية (وتنتهي بـ @@END)، وهي تحلّ محل الجدول الحالي كله:
-${AX_PLAN_FMT}`;
+${axPlanFmt()}`;
 }
 function axInstr(pl){
   return `أنت «مساعد التحضير» داخل منظومة تحضير العلوم لمعلم في سلطنة عُمان. تحاور المعلم بالعربية الفصحى المبسطة وبإيجاز (غالباً أقل من 110 كلمات)، وتعينه على تطوير تحضير الدرس الحالي ليناسب الاستراتيجية وأسلوب التدريس الذي يريده، مع الحفاظ على الدقة العلمية.
@@ -4506,7 +4538,7 @@ function axCardHTML(m){
     return `<div class="acard"><h3><svg class="i"><use href="#i-ppt"/></svg>قرأتُ العرض «${escapeHTML(dk.name)}»</h3>
       <div class="meta">${n} شريحة، منها ${nn} بملاحظات المتحدث، و${nt} جدول، و${np} صورة (تُقرأ النصوص فقط).</div>
       <div class="slides">${dk.slides.slice(0, 60).map(s => `<div><b>${s.n}.</b> ${escapeHTML((s.title || "—").slice(0, 70))}</div>`).join("")}</div>
-      <div class="row2"><label>عدد الحصص<select name="periods">${[1, 2, 3, 4, 5, 6].map(x => `<option value="${x}"${x === per ? " selected" : ""}>${x} ${x === 1 ? "حصة" : x === 2 ? "حصتان" : "حصص"} (${x * 40} د)</option>`).join("")}</select></label>
+      <div class="row2"><label>عدد الحصص<select name="periods">${[1, 2, 3, 4, 5, 6].map(x => `<option value="${x}"${x === per ? " selected" : ""}>${x} ${x === 1 ? "حصة" : x === 2 ? "حصتان" : "حصص"} (${x * PM()} د)</option>`).join("")}</select></label>
       <label>الاستراتيجية المطلوبة<input type="text" name="strat" list="axStrats" placeholder="اتركه فارغاً ليختار المساعد"></label></div>
       <div class="row2"><label>من الشريحة<input type="number" name="from" min="1" max="${n}" value="1"></label><label>إلى الشريحة<input type="number" name="to" min="1" max="${n}" value="${n}"></label></div>
       <label>ملاحظات للمساعد (اختياري)<textarea name="note" placeholder="مثال: اجعل الشرائح 5 إلى 8 عملاً في مجموعات، وأبقِ أسئلة العرض كما هي."></textarea></label>
@@ -4557,7 +4589,7 @@ function axDeckPrompt(pl, deck, o){
 ${axLessonCtx(pl).replace(/عدد الحصص في هذه الورقة: \d+/, "عدد الحصص المطلوب: " + o.periods)}
 
 [خيارات المعلم]
-- عدد الحصص: ${o.periods} (الحصة 40 دقيقة).
+- عدد الحصص: ${o.periods} (الحصة ${PM()} دقيقة).
 - الاستراتيجية: ${stratTxt}
 - نطاق الشرائح المعتمد: من ${o.from} إلى ${o.to}.
 ${o.note ? "- ملاحظات المعلم: " + o.note : ""}
@@ -4575,7 +4607,7 @@ ${axDeckOutline(deck, o.from, o.to, 60000)}
 [صيغة الإخراج]
 جملتان على الأكثر تشرحان كيف وزّعتَ الشرائح على الحصص وأي تنبيهات، ثم الخطة كاملة بالصيغة الآتية دون أي نص بعد @@END:
 @@PROPOSAL {"title":"تحضير مبني على العرض"}
-${AX_PLAN_FMT}`;
+${axPlanFmt()}`;
 }
 async function axDeckInBuild(m){
   if (AX.busy || !AX.deck) return;
@@ -4591,9 +4623,9 @@ async function axDeckInBuild(m){
 }
 
 /* ---------- التحضير → عرض ---------- */
-const AX_PLAN_FMT = `@@PLAN {"periods":2,"prior":{"items":[".."],"technique":"..","qs":[{"q":"..","a":".."}]},"warm":{"stimulus":"..","question":"..","expected":".."},"exit":{"q":"..","a":"..","crit":".."},"homework":"..","support":[".."],"enrich":[".."]}
+const axPlanFmt = () => `@@PLAN {"periods":2,"prior":{"items":[".."],"technique":"..","qs":[{"q":"..","a":".."}]},"warm":{"stimulus":"..","question":"..","expected":".."},"exit":{"q":"..","a":"..","crit":".."},"homework":"..","support":[".."],"enrich":[".."]}
 @@ROW {"p":1,"bk":"","phase":"التمهيد","strat":"..","min":5,"obj":[],"t":[".."],"s":[".."],"tool":"..","q":"..","ans":"..","crit":".."}
-(سطر @@ROW لكل صف بالترتيب. قواعد الخطة: مجموع دقائق كل حصة 40 بالضبط؛ أول صف في الحصة 1 هو «التمهيد» وسؤاله هو سؤال warm؛ أول صف في كل حصة تالية bk:"open" (مراجعة التعلم القبلي + تمهيد)؛ آخر صف في كل حصة غير الأخيرة bk:"close" (تقويم تكويني بسؤال وإجابة ومعيار)؛ وآخر صف في الخطة «الختام» (بطاقة الخروج، 5 دقائق) وسؤاله هو سؤال exit؛ في كل حصة صف واحد على الأقل مرتبط بهدف (obj)؛ أسئلة التقويم غير مكررة؛ لا تتجاوز 8 صفوف في الحصة.)
+(سطر @@ROW لكل صف بالترتيب. قواعد الخطة: مجموع دقائق كل حصة ${PM()} بالضبط؛ أول صف في الحصة 1 هو «التمهيد» وسؤاله هو سؤال warm؛ أول صف في كل حصة تالية bk:"open" (مراجعة التعلم القبلي + تمهيد)؛ آخر صف في كل حصة غير الأخيرة bk:"close" (تقويم تكويني بسؤال وإجابة ومعيار)؛ وآخر صف في الخطة «الختام» (بطاقة الخروج، 5 دقائق) وسؤاله هو سؤال exit؛ في كل حصة صف واحد على الأقل مرتبط بهدف (obj)؛ أسئلة التقويم غير مكررة؛ لا تتجاوز 8 صفوف في الحصة.)
 @@END`;
 function axDeckOutPrompt(pl, o){
   const rows = o.part ? pl.flow.filter(r => (r.period || 1) === o.part) : pl.flow;
@@ -5096,6 +5128,10 @@ function bind(){
     const b = e.target.closest("[data-p]"); if (!b) return;
     if (b.getAttribute("aria-disabled") === "true"){ toast(axLocked(getRec(state.key)) ? "التحضير معدّل بمساعد التحضير؛ استعد الأصل من المساعد لتغيير عدد الحصص" : "التحضير المعتمد مبني على عدد حصص الدليل؛ اختر قالباً آلياً لتغيير العدد"); return; }
     getRec(state.key).periods = parseInt(b.dataset.p, 10); touch(); refresh();
+  });
+  $("#minSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-pm]"); if (!b) return;
+    store.meta.periodMin = parseInt(b.dataset.pm, 10); persist(); refresh(); toast(`صارت الحصة ${PM()} دقيقة وأُعيد توزيع أزمنة التحضير`);
   });
   $("#primarySel").addEventListener("change", e => {
     const rec = getRec(state.key);

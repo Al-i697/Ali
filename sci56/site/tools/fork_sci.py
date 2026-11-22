@@ -125,6 +125,80 @@ _rep1('<b>مدير المعهد</b>', '<b>مدير المدرسة</b>')
 _rep1('placeholder="اسم مدير المعهد"', 'placeholder="اسم مدير المدرسة"')
 _one('sg("مدير المعهد"', 'sg("مدير المدرسة"')
 
+# ---- period length (35 / 40 / 45 ... min, chosen by the teacher; the authored rows are written for 40 and are scaled), editable lesson title, legacy school name ----
+_one('const PERIOD_MIN = 40;',
+     'const PERIOD_MIN = 40;   // the length the authored rows are written for: each authored period sums to 40 minutes\n'
+     'const PM_CHOICES = [30, 35, 40, 45, 50];\n'
+     'function PM(){ const v = parseInt(store.meta && store.meta.periodMin, 10); return PM_CHOICES.includes(v) ? v : 35; }\n'
+     '/* scale a list of minutes to a new total (largest remainder, every item at least lo) */\n'
+     'function scaleTo(list, target, lo){\n'
+     '  const total = list.reduce((a, b) => a + b, 0); if (!total) return list.slice();\n'
+     '  const raw = list.map(x => x * target / total), out = raw.map(x => Math.max(lo, Math.floor(x)));\n'
+     '  let diff = target - out.reduce((a, b) => a + b, 0);\n'
+     '  const order = raw.map((x, i) => [x - Math.floor(x), i]).sort((a, b) => b[0] - a[0]);\n'
+     '  for (let k = 0; diff > 0 && k < order.length * 4; k++){ out[order[k % order.length][1]]++; diff--; }\n'
+     '  for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > lo){ out[k]--; diff++; } }\n'
+     '  return out;\n'
+     '}\n'
+     'function scalePeriods(flow){\n'
+     '  const pm = PM(); if (pm === PERIOD_MIN) return flow;\n'
+     '  const by = {}; flow.forEach(r => { (by[r.period || 1] = by[r.period || 1] || []).push(r); });\n'
+     '  Object.values(by).forEach(g => {\n'
+     '    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / PERIOD_MIN), 2);\n'
+     '    g.forEach((r, i) => { r.minutes = m[i]; r.time = m[i] + " د"; });\n'
+     '  });\n'
+     '  return flow;\n'
+     '}\n'
+     'function minsAr(n){ return n === 1 ? "دقيقة واحدة" : n === 2 ? "دقيقتان" : n >= 3 && n <= 10 ? n + " دقائق" : n + " دقيقة"; }\n'
+     'function baseTitle(s){ return String(s || "").replace(/\\s*[:：]\\s*[أ-د]\\.\\s.*$/, ""); }\n')
+_one('function durLabel(n){ return n === 1 ? "حصة واحدة (40 دقيقة)" : n === 2 ? "حصتان (80 دقيقة)" : `${n} حصص (${n * 40} دقيقة)`; }',
+     'function durLabel(n){ const m = PM(); return n === 1 ? `حصة واحدة (${m} دقيقة)` : n === 2 ? `حصتان (${2 * m} دقيقة)` : `${n} حصص (${n * m} دقيقة)`; }')
+_one('<span class="fl" id="durLbl">عدد حصص الدرس <small class="fl-sub">الحصة 40 دقيقة</small></span>',
+     '<span class="fl" id="minLbl">مدة الحصة <small class="fl-sub">تختلف من مدرسة لأخرى، وتُحفظ لكل دروسك</small></span>\n'
+     '        <div class="seg seg6 seg5" id="minSeg" role="group" aria-labelledby="minLbl"></div>\n'
+     '        <span class="fl" id="durLbl">عدد حصص الدرس <small class="fl-sub" id="durSub">الحصة 35 دقيقة</small></span>')
+_one('  const cur = LK ? LK.periods : authored ? off : (rec.periods || off);\n',
+     '  const cur = LK ? LK.periods : authored ? off : (rec.periods || off);\n'
+     '  $("#minSeg").innerHTML = PM_CHOICES.map(n => `<button type="button" data-pm="${n}" aria-pressed="${n === PM()}"><b>${n}</b><small>دقيقة</small></button>`).join("");\n'
+     '  $("#durSub").textContent = `الحصة ${PM()} دقيقة`;\n')
+_one('  $("#primarySel").addEventListener("change", e => {',
+     '  $("#minSeg").addEventListener("click", e => {\n'
+     '    const b = e.target.closest("[data-pm]"); if (!b) return;\n'
+     '    store.meta.periodMin = parseInt(b.dataset.pm, 10); persist(); refresh(); toast(`صارت الحصة ${PM()} دقيقة وأُعيد توزيع أزمنة التحضير`);\n'
+     '  });\n'
+     '  $("#primarySel").addEventListener("change", e => {')
+_one('Math.floor(cum / 40)', 'Math.floor(cum / PM())')
+_one('const total = N * 40;', 'const total = N * PM();')
+_one('cap = 40 - 10;', 'cap = PM() - 10;')
+_one('buildDetailedFlow(rec.primary, pc, 40)', 'buildDetailedFlow(rec.primary, pc, PM())')
+_one('"|" + periods + "p|" + (rec.primary', '"|" + periods + "p" + PM() + "m|" + (rec.primary')
+_one('    flow = authoredFlow(key, d, rec).rows;\n', '    flow = scalePeriods(authoredFlow(key, d, rec).rows);\n')
+_one('duration: periods * 40, durLabel: durLabel(periods),',
+     'duration: periods * PM(), periodMin: PM(), durLabel: durLabel(periods),\n'
+     '    title: (ed["t:title"] || "").trim() || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),')
+_one('<span class="code">(${d.code})</span>${escapeHTML(d.title)}</span></div>${icon("ic-book")}',
+     '<span class="code">(${d.code})</span><span ${editAttrs("t:title", pl.titleEd)} aria-label="عنوان الدرس">${escapeHTML(pl.title)}</span></span></div>${icon("ic-book")}')
+_one('عنوان الدرس: (\\u200E${d.code}\\u200E) ${d.title} |', 'عنوان الدرس: (\\u200E${d.code}\\u200E) ${pl.title} |')
+_one('run(d.title, { bold: true, size: 20, color: "FFFFFF" })', 'run(pl.title, { bold: true, size: 20, color: "FFFFFF" })')
+_one('والحصة ${40} دقيقة', 'والحصة ${PM()} دقيقة')
+_one('(${base.periods} حصص × 40 دقيقة)', '(${base.periods} حصص × ${PM()} دقيقة)')
+# the legacy default school of the old build ("معهد العلوم الإسلامية") may still sit in the browser's saved data: drop it
+_one('  s.meta = Object.assign({ teacher: "", school: "" }, s.meta || {});\n',
+     '  s.meta = Object.assign({ teacher: "", school: "" }, s.meta || {});\n'
+     '  if (/معهد\\s*العلوم\\s*الإسلامية/.test(s.meta.school || "")) s.meta.school = "";\n'
+     '  if (s.profile && /معهد\\s*العلوم\\s*الإسلامية/.test(s.profile.school || "")) s.profile.school = "";\n')
+# the generic strategy templates keep every row at 3+ minutes; with a short period (30/35) and many activities, lower that floor so the sum stays exact
+_one('const raw = list.map(x => x * target / total), out = raw.map(x => Math.max(3, Math.floor(x)));',
+     'const lo = Math.max(1, Math.min(3, Math.floor(target / list.length))), raw = list.map(x => x * target / total), out = raw.map(x => Math.max(lo, Math.floor(x)));')
+_one('while (diff < 0 && out[k] > 3){ out[k]--; diff++; }', 'while (diff < 0 && out[k] > lo){ out[k]--; diff++; }')
+_rxg(r'(function aWarmHTML\(A)\)\{(\s*return `[^\n]*?<strong>الزمن:</strong>) 5 دقائق`;',
+     lambda m: m.group(1) + ', mins = 5){' + m.group(2) + ' ${minsAr(mins)}`;')
+_one('authored ? aWarmHTML(AU) : warmHTML(c)', 'authored ? aWarmHTML(AU, flow[0] ? flow[0].minutes : 5) : warmHTML(c)')
+_one('const mins = AU ? Math.round(aMin[o.id] || 0) :', 'const mins = AU ? Math.round((aMin[o.id] || 0) * PM() / PERIOD_MIN) :')
+_one('تختلف من مدرسة لأخرى، وتُحفظ لكل دروسك', 'تُحفظ لكل دروسك')
+_one('.seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}',
+     '.seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}\n.seg.seg5{grid-template-columns:repeat(5,minmax(0,1fr)); margin-bottom:14px;}')
+
 _j = t.index('</style>', t.index('THE PREP SHEET'))
 t = t[:_j] + open(os.path.join(HERE, 'src', 'brand_moe.css'), encoding='utf-8').read() + open(os.path.join(HERE, 'src', 'brand_sheet.css'), encoding='utf-8').read() + t[_j:]
 for _bad in ('السلطان قابوس العالي', 'معهد العلوم', 'العلوم الإسلامية', 'ديوان البلاط', 'LOGO_RED', 'LOGO_GOLD', 'المعهد', 'logoBytes'):

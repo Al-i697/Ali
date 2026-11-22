@@ -135,7 +135,7 @@ function axCardHTML(m){
     return `<div class="acard"><h3><svg class="i"><use href="#i-ppt"/></svg>قرأتُ العرض «${escapeHTML(dk.name)}»</h3>
       <div class="meta">${n} شريحة، منها ${nn} بملاحظات المتحدث، و${nt} جدول، و${np} صورة (تُقرأ النصوص فقط).</div>
       <div class="slides">${dk.slides.slice(0, 60).map(s => `<div><b>${s.n}.</b> ${escapeHTML((s.title || "—").slice(0, 70))}</div>`).join("")}</div>
-      <div class="row2"><label>عدد الحصص<select name="periods">${[1, 2, 3, 4, 5, 6].map(x => `<option value="${x}"${x === per ? " selected" : ""}>${x} ${x === 1 ? "حصة" : x === 2 ? "حصتان" : "حصص"} (${x * 40} د)</option>`).join("")}</select></label>
+      <div class="row2"><label>عدد الحصص<select name="periods">${[1, 2, 3, 4, 5, 6].map(x => `<option value="${x}"${x === per ? " selected" : ""}>${x} ${x === 1 ? "حصة" : x === 2 ? "حصتان" : "حصص"} (${x * PM()} د)</option>`).join("")}</select></label>
       <label>الاستراتيجية المطلوبة<input type="text" name="strat" list="axStrats" placeholder="اتركه فارغاً ليختار المساعد"></label></div>
       <div class="row2"><label>من الشريحة<input type="number" name="from" min="1" max="${n}" value="1"></label><label>إلى الشريحة<input type="number" name="to" min="1" max="${n}" value="${n}"></label></div>
       <label>ملاحظات للمساعد (اختياري)<textarea name="note" placeholder="مثال: اجعل الشرائح 5 إلى 8 عملاً في مجموعات، وأبقِ أسئلة العرض كما هي."></textarea></label>
@@ -186,7 +186,7 @@ function axDeckPrompt(pl, deck, o){
 ${axLessonCtx(pl).replace(/عدد الحصص في هذه الورقة: \d+/, "عدد الحصص المطلوب: " + o.periods)}
 
 [خيارات المعلم]
-- عدد الحصص: ${o.periods} (الحصة 40 دقيقة).
+- عدد الحصص: ${o.periods} (الحصة ${PM()} دقيقة).
 - الاستراتيجية: ${stratTxt}
 - نطاق الشرائح المعتمد: من ${o.from} إلى ${o.to}.
 ${o.note ? "- ملاحظات المعلم: " + o.note : ""}
@@ -204,7 +204,7 @@ ${axDeckOutline(deck, o.from, o.to, 60000)}
 [صيغة الإخراج]
 جملتان على الأكثر تشرحان كيف وزّعتَ الشرائح على الحصص وأي تنبيهات، ثم الخطة كاملة بالصيغة الآتية دون أي نص بعد @@END:
 @@PROPOSAL {"title":"تحضير مبني على العرض"}
-${AX_PLAN_FMT}`;
+${axPlanFmt()}`;
 }
 async function axDeckInBuild(m){
   if (AX.busy || !AX.deck) return;
@@ -220,9 +220,9 @@ async function axDeckInBuild(m){
 }
 
 /* ---------- التحضير → عرض ---------- */
-const AX_PLAN_FMT = `@@PLAN {"periods":2,"prior":{"items":[".."],"technique":"..","qs":[{"q":"..","a":".."}]},"warm":{"stimulus":"..","question":"..","expected":".."},"exit":{"q":"..","a":"..","crit":".."},"homework":"..","support":[".."],"enrich":[".."]}
+const axPlanFmt = () => `@@PLAN {"periods":2,"prior":{"items":[".."],"technique":"..","qs":[{"q":"..","a":".."}]},"warm":{"stimulus":"..","question":"..","expected":".."},"exit":{"q":"..","a":"..","crit":".."},"homework":"..","support":[".."],"enrich":[".."]}
 @@ROW {"p":1,"bk":"","phase":"التمهيد","strat":"..","min":5,"obj":[],"t":[".."],"s":[".."],"tool":"..","q":"..","ans":"..","crit":".."}
-(سطر @@ROW لكل صف بالترتيب. قواعد الخطة: مجموع دقائق كل حصة 40 بالضبط؛ أول صف في الحصة 1 هو «التمهيد» وسؤاله هو سؤال warm؛ أول صف في كل حصة تالية bk:"open" (مراجعة التعلم القبلي + تمهيد)؛ آخر صف في كل حصة غير الأخيرة bk:"close" (تقويم تكويني بسؤال وإجابة ومعيار)؛ وآخر صف في الخطة «الختام» (بطاقة الخروج، 5 دقائق) وسؤاله هو سؤال exit؛ في كل حصة صف واحد على الأقل مرتبط بهدف (obj)؛ أسئلة التقويم غير مكررة؛ لا تتجاوز 8 صفوف في الحصة.)
+(سطر @@ROW لكل صف بالترتيب. قواعد الخطة: مجموع دقائق كل حصة ${PM()} بالضبط؛ أول صف في الحصة 1 هو «التمهيد» وسؤاله هو سؤال warm؛ أول صف في كل حصة تالية bk:"open" (مراجعة التعلم القبلي + تمهيد)؛ آخر صف في كل حصة غير الأخيرة bk:"close" (تقويم تكويني بسؤال وإجابة ومعيار)؛ وآخر صف في الخطة «الختام» (بطاقة الخروج، 5 دقائق) وسؤاله هو سؤال exit؛ في كل حصة صف واحد على الأقل مرتبط بهدف (obj)؛ أسئلة التقويم غير مكررة؛ لا تتجاوز 8 صفوف في الحصة.)
 @@END`;
 function axDeckOutPrompt(pl, o){
   const rows = o.part ? pl.flow.filter(r => (r.period || 1) === o.part) : pl.flow;
