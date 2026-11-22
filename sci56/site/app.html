@@ -1437,39 +1437,6 @@ body.asst-open .asst-fab{display:none;}
 @media (prefers-reduced-motion:reduce){ .asst-fab, .am .bd.busy::after{transition:none; animation:none;} }
 @media print{ .asst, .asst-fab{display:none !important;} }
 
-/* ===== site header: Ministry of Education identity (replaces the Royal Court crest, the Sultan Qaboos Centre line and the institute) ===== */
-.hero-moe{display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:18px; width:min(780px,100%); margin:0 auto 10px; padding:12px 26px; background:#fff; border:1.5px solid rgba(255,255,255,.75); border-radius:22px; box-shadow:0 18px 40px -22px rgba(0,0,0,.65);}
-.hero-moe > div{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:0;}
-.hero-moe img{display:block; width:auto; max-width:100%;}
-.hm-r img{height:100px;} .hm-c img{height:84px;} .hm-l img{height:92px;}
-@media screen and (max-width:720px){
-  .hero-moe{padding:8px 12px; gap:8px; border-radius:16px;}
-  .hm-r img{height:66px;} .hm-c img{height:56px;} .hm-l img{height:60px;}
-}
-
-/* ---- sheet header of the main site: Ministry logo | title | Vision 2040 + QMS ---- */
-.paper.sheet .sh-head{grid-template-columns:150px minmax(0,1fr) 240px;}
-.paper.sheet .sh-head .dr{width:auto; justify-self:start; line-height:0;}
-.paper.sheet .sh-head .dl{width:auto; justify-self:end; line-height:0; display:flex; align-items:center; gap:12px;}
-.paper.sheet .sh-head img{display:block; width:auto; filter:none;}
-.paper.sheet .sh-head .dr img{height:100px;} .paper.sheet .sh-head .dl .lg-v{height:66px;} .paper.sheet .sh-head .dl .lg-q{height:88px;}
-.paper.pv .sh-head{grid-template-columns:62px minmax(0,1fr) 124px;}
-.paper.pv .sh-head .dr{width:auto;} .paper.pv .sh-head .dl{width:auto; gap:6px;}
-.paper.pv .sh-head .dr img{height:50px;} .paper.pv .sh-head .dl .lg-v{height:34px;} .paper.pv .sh-head .dl .lg-q{height:44px;}
-@media print{
-  .paper.sheet .sh-head{grid-template-columns:62px minmax(0,1fr) 124px;}
-  .paper.sheet .sh-head .dl{gap:6px;}
-  .paper.sheet .sh-head .dr img{height:50px;} .paper.sheet .sh-head .dl .lg-v{height:34px;} .paper.sheet .sh-head .dl .lg-q{height:44px;}
-}
-@media screen and (max-width:720px){
-  .paper:not(.pv) .sh-head{grid-template-columns:70px minmax(0,1fr) 120px;}
-  .paper:not(.pv) .sh-head .dr img{height:52px;} .paper:not(.pv) .sh-head .dl .lg-v{height:34px;} .paper:not(.pv) .sh-head .dl .lg-q{height:44px;}
-}
-
-/* sheet header plates: the transparent logos need a white backing over the decorative waves */
-.paper.sheet .sh-head .dr, .paper.sheet .sh-head .dl{background:#fff; border-radius:14px; padding:4px 10px; box-shadow:0 4px 12px -6px rgba(11,29,58,.35); align-self:center;}
-.paper.pv .sh-head .dr, .paper.pv .sh-head .dl{padding:2px 6px; border-radius:8px;}
-@media print{ .paper.sheet .sh-head .dr, .paper.sheet .sh-head .dl{padding:2px 6px; border-radius:8px;} }
 /* ===== the prep sheet in the Ministry of Education template (spliced into the main <style> by tools/fork_sci.py) ===== */
 .paper.sheet[data-moe]{position:relative; isolation:auto; overflow-x:auto; max-width:1060px; margin:0 auto; padding:14px 18px 12px; background:#fff !important; color:#000; font-size:.86rem; line-height:1.6;
   border:1px solid #cfd4dc; border-radius:8px; box-shadow:var(--sh);}
@@ -1588,6 +1555,15 @@ body.asst-open .asst-fab{display:none;}
 .paper.sheet[data-moe] .m-eval .diffedit{font-size:8pt; min-height:1.6em;}
 .paper.sheet[data-moe] .note.ai{font-size:7.8pt; padding:4px 6px;}
 }
+/* ===== site header: Ministry of Education identity (replaces the Royal Court crest, the Sultan Qaboos Centre line and the institute) ===== */
+.hero-moe{display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:18px; width:min(780px,100%); margin:0 auto 10px; padding:12px 26px; background:#fff; border:1.5px solid rgba(255,255,255,.75); border-radius:22px; box-shadow:0 18px 40px -22px rgba(0,0,0,.65);}
+.hero-moe > div{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:0;}
+.hero-moe img{display:block; width:auto; max-width:100%;}
+.hm-r img{height:100px;} .hm-c img{height:84px;} .hm-l img{height:92px;}
+@media screen and (max-width:720px){
+  .hero-moe{padding:8px 12px; gap:8px; border-radius:16px;}
+  .hm-r img{height:66px;} .hm-c img{height:56px;} .hm-l img{height:60px;}
+}
 </style>
 </head>
 <body>
@@ -1645,9 +1621,9 @@ body.asst-open .asst-fab{display:none;}
     <div class="deco deco-r" id="decoR" aria-hidden="true"></div>
     <div class="hero-c">
       <div class="hero-moe">
-        <div class="hm-r"><img id="heroEmblem" alt="وزارة التعليم" width="254" height="340"></div>
-        <div class="hm-c"><img id="heroV2040" alt="رؤية عُمان 2040" width="460" height="258"></div>
-        <div class="hm-l"><img id="heroQms" alt="نظام إدارة الجودة" width="291" height="320"></div>
+        <div class="hm-r"><img id="heroEmblem" alt="وزارة التعليم" width="358" height="480"></div>
+        <div class="hm-c"><img id="heroV2040" alt="رؤية عُمان 2040" width="138" height="88"></div>
+        <div class="hm-l"><img id="heroQms" alt="نظام إدارة الجودة" width="191" height="204"></div>
       </div>
       <div class="title-pill"><h1>منظومة التحضير الذكي للعلوم <small class="h1-sub">الصفان الخامس والسادس</small></h1></div>
     </div>

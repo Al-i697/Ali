@@ -2,7 +2,7 @@
 
 Arabic RTL, single-file web app «منظومة التحضير الذكي للعلوم — الصفان الخامس والسادس» (lesson-prep generator:
 prep sheet per lesson, Word export, floating assistant). It is a SEPARATE site forked from the user's main
-chemistry/environment site (`main-site-src/`, reference only: do not modify the main site, EXCEPT the identity change the user explicitly asked for on 2026-11-22, done by `site/tools/brand_main.py`: Ministry of Education logos in the home header, the sheet header and the Word header, no Royal Court crest / Sultan Qaboos Centre / institute name. `fork_sci.py` works with the branded main base).
+chemistry/environment site (`main-site-src/`, reference only — NEVER modify the main site; the user confirmed on 2026-11-22 that "the main site" in their last requests meant THIS science site).
 
 ## User preferences (apply always)
 - Reply in Arabic, concise, no unnecessary questions; pick the best technical option yourself.
@@ -26,7 +26,7 @@ named `sb6.pdf tb6.pdf ab6.pdf sb5.pdf tb5.pdf ab5.pdf` (sb = student book, tb =
 - `site/data/sci6_s1_u<unit>_l<n>[b].py` one file per prep sheet (authored content). `site/data/lib/scilib.py` authoring API.
 - `site/src/docx_moe.js` the Word export in the Ministry of Education prep template (2 pages: header/schedule/outcomes/strategies/execution/resources, then formative/enrichment/closing/homework/teacher notes; three logos from `src/logos.js`). `tools/fork_sci.py` splices it over the main site's DOCX builder, so edit THIS file (not `app_base.html`), then run `python3 tools/fork_sci.py && python3 tools/build.py`. Check by exporting with the Word button and converting with `soffice --headless --convert-to pdf`.
 - `site/src/paper_moe.js` + `site/src/paper_moe.css` the sheet shown in the site (screen, A4 preview, print) in the same Ministry template: `formHTML`, `measureFlow`, `pageBreaks`. Spliced over the main site's paper by `tools/fork_sci.py` (edit these, not `app_base.html`). The execution table is ONE row that the browser splits across pages (like Word); `pageBreaks` predicts the cuts column by column so the preview markers and `tests.py --pages` (real vs estimate) agree. `tools/layout.py` is obsolete (old layout).
-- `site/src/brand_moe.css` + the hero patch in `tools/fork_sci.py` (site home header = the Ministry identity above). Brand strings are asserted absent in `fork_sci.py`.
+- `site/src/brand_moe.css` + the hero patch in `tools/fork_sci.py` (site home header = the Ministry identity above). Old brand strings are asserted absent in `fork_sci.py`.
 - `site/tools/build.py` merges base + data (+ src/assistant + vendor) into `site/app.html` and validates everything.
 - `site/server/` Cloudflare Worker for the assistant (server mode so the assistant works for everyone). Deployment guide for the main site: `deploy/دليل-نشر-الموقع.md` (same pattern: index.html + `_worker.js`).
 - `ocr_*/pNNN.txt` OCR per PDF page; `./rd.sh <sb6|tb6|ab6|sb5|tb5|ab5> <first> [last]` prints cleaned text. OCR is noisy (digits/letters garbled): confirm numbers and answers visually on the page image when it matters.

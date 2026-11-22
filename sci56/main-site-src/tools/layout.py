@@ -1,7 +1,7 @@
 """Section and column heights (mm) in the print preview. Usage: layout.py KEY [KEY...]"""
 import sys
 from playwright.sync_api import sync_playwright
-SEED='if(!localStorage.getItem("chem10-smart-planner:v2")){localStorage.setItem("chem10-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"", school:"مدرسة تجريبية"}, lessons:{}, profile:{name:"أ. اختبار", school:"مدرسة تجريبية", courses:["chem10","chem11"]}}))}'
+SEED='if(!localStorage.getItem("chem10-smart-planner:v2")){localStorage.setItem("chem10-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"", school:"معهد العلوم الإسلامية"}, lessons:{}, profile:{name:"أ. اختبار", school:"معهد العلوم الإسلامية", courses:["chem10","chem11"]}}))}'
 with sync_playwright() as p:
     b=p.chromium.launch(); pg=b.new_page(viewport={'width':1300,'height':1000}); pg.add_init_script(SEED)
     for key in sys.argv[1:]:
