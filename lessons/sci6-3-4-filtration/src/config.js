@@ -7,7 +7,7 @@ var LESSON={
   bgMap:['x','x','x','x','x'],
   palCh:['cafe','cafe','sky','mint','rose'],
   bgId:{},
-  palId:{goals:'cafe',prior:'sun',hook:'cafe',paper:'sky',fold:'cafe',labA:'sky',labB:'mint',obs:'sky',q12:'sun',q34:'sun',apps:'rose',sand:'mint',ex34:'sun',salt:'cafe',final:'rose',hw:'cafe'},
+  palId:{goals:'cafe',prior:'sun',hook:'cafe',paper:'sky',fold:'cafe',labA:'sky',labB:'mint',obs:'sky',more:'mint',q12:'sun',q34:'sun',apps:'rose',sand:'mint',ex34:'sun',salt:'cafe',final:'rose',hw:'cafe'},
   /* points that appear one click at a time (slide id: selector) */
   pts:{prior:'.pt',hook:'.hpt',paper:'.ppt',fold:'.fs',labA:'.stp',obs:'.opt2',q12:'.qa-a',q34:'.qa-a',apps:'.acard',sand:'.lyr'},
   stk:{}

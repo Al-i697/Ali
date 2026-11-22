@@ -156,13 +156,13 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('lesson hash survives a reload: opening #l-chem10-3-4 directly shows lesson 3-4 with the drawer',async()=>{
     const st=seed(), p=await page({state:st,hash:'#l-chem10-3-4'}); await p.waitForTimeout(1500); assert.ok((await p.innerText('#dLs')).includes('٣-٤')); assert.strictEqual(await p.locator('#slist .stu').count(),6); await p.context().close();
   });
-  await T('grade 6 science, unit 3: the grade card comes first, science is its only subject, lesson 3-4 (filtration) is listed in the first semester and opens in the frame with its 16 slides',async()=>{
+  await T('grade 6 science, unit 3: the grade card comes first, science is its only subject, lesson 3-4 (filtration) is listed in the first semester and opens in the frame with its 17 slides',async()=>{
     const p=await page(); assert.ok((await p.innerText('#v-home .bcard >> nth=0')).includes('السادس'),'grade 6 is the first card');
     await p.click('a[href="#grade-6"]'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6'); assert.strictEqual(await p.locator('#v-grade .bcard').count(),1,'grade 6 offers science only'); assert.strictEqual(await p.locator('#v-grade a.bcard').count(),1,'only science has lessons in grade 6'); assert.ok((await p.innerText('#v-grade a.bcard')).includes('العلوم'));
     await p.click('#v-grade a.bcard'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6-sci'); await p.click('#v-term a.bcard >> nth=0'); await p.waitForTimeout(300);
     assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6-sci-1'); assert.strictEqual(await p.locator('#v-course .unit').count(),1); assert.strictEqual(await p.locator('#v-course .lc.built').count(),1); assert.ok((await p.innerText('#v-course')).includes('الترشيح'));
     await p.click('#v-course .lc.built'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
-    assert.strictEqual(await p.evaluate(()=>location.hash),'#l-sci6-3-4'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0); assert.strictEqual(await fr.locator('.prog .seg').count(),16);
+    assert.strictEqual(await p.evaluate(()=>location.hash),'#l-sci6-3-4'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0); assert.strictEqual(await fr.locator('.prog .seg').count(),17);
     await p.close();
   });
   await T('environmental science 11, unit 3: lesson 3-2 (scene edition) is listed in the first semester, opens in the frame with the class button and its scene slides, and its home button returns to the semester page',async()=>{

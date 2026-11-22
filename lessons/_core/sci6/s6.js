@@ -23,36 +23,37 @@ var S6=(function(){
     chalk: {n:'ماء + طباشير', solid:'#F4F4F0', edge:'#8A8A80', liq:'#E4EEF0', fil:'#CDEBF7', stay:true,  pass:'ماء', left:'الطباشير', why:'الطباشير مادة غير قابلة للذوبان، فبقيت جزيئاتها على الورقة.'},
     salt:  {n:'ماء + ملح',    solid:null,      edge:'#8C8C8C', liq:'#D8ECF4', fil:'#D8ECF4', stay:false, pass:'الماء مع الملح الذائب', left:'لا شيء', why:'الملح ذاب في الماء وصار جزءاً من السائل، فمرّ كله مع الماء. الترشيح وحده لا يفصل الملح.'}
   };
-  function flabHTML(keys){
+  function flabHTML(keys,uid){
+    var u=uid||'', one=keys.length===1;   /* uid: clip-path ids must differ when two labs are on different slides; one mixture: no choosing step */
     var chips=keys.map(function(k){ var m=FLAB[k]; return '<button type="button" class="fchip" data-m="'+k+'"><i style="background:'+(m.solid||'#fff')+'"></i>'+m.n+'</button>' }).join('');
     return '<div class="flab">'+
      '<div class="fscene"><svg viewBox="0 0 640 440" class="art flsvg" aria-hidden="true">'+
-      '<defs><clipPath id="clS"><rect x="52" y="190" width="126" height="168" rx="12"/></clipPath><clipPath id="clR"><rect x="322" y="292" width="116" height="116" rx="12"/></clipPath><clipPath id="clP"><path d="M312 138H448L382 214Z"/></clipPath></defs>'+
+      '<defs><clipPath id="clS'+u+'"><rect x="52" y="190" width="126" height="168" rx="12"/></clipPath><clipPath id="clR'+u+'"><rect x="322" y="292" width="116" height="116" rx="12"/></clipPath><clipPath id="clP'+u+'"><path d="M312 138H448L382 214Z"/></clipPath></defs>'+
       '<rect x="40" y="410" width="560" height="14" rx="7" fill="#C9A560" stroke="'+INK+'" stroke-width="3"/>'+
       /* the mixture beaker */
-      '<g id="fSrc"><rect id="fSrcL" x="52" y="190" width="126" height="168" fill="#CDEBF7" clip-path="url(#clS)" style="transition:y 3.2s linear,height 3.2s linear"/><g id="fSrcG" clip-path="url(#clS)" style="transition:opacity 3s linear 1s"></g>'+
+      '<g id="fSrc"><rect id="fSrcL" x="52" y="190" width="126" height="168" fill="#CDEBF7" clip-path="url(#clS'+u+')" style="transition:y 3.2s linear,height 3.2s linear"/><g id="fSrcG" clip-path="url(#clS'+u+')" style="transition:opacity 3s linear 1s"></g>'+
       '<path d="M44 184L54 190V344Q54 360 70 360H160Q176 360 176 344V190L186 184" fill="none" stroke="'+INK+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></g>'+
       '<text x="116" y="392" text-anchor="middle" font-family="Cairo,Tajawal,sans-serif" font-size="22" font-weight="800" fill="'+INK+'" id="fSrcT"></text>'+
       '<path id="fStream" d="M188 186Q250 110 330 150" fill="none" stroke="#46B6E8" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 12" opacity="0"/>'+
       /* the funnel */
       '<path d="M296 130H466L394 216V268H366V216Z" fill="#DCEEF5" stroke="'+INK+'" stroke-width="4" stroke-linejoin="round"/>'+
       '<path d="M312 138H448L382 214Z" fill="#FFFDF5" stroke="'+INK+'" stroke-width="3" stroke-linejoin="round"/>'+
-      '<rect id="fFunL" x="300" y="214" width="160" height="0" fill="#CDEBF7" clip-path="url(#clP)" style="transition:y 1s ease-out,height 1s ease-out"/>'+
+      '<rect id="fFunL" x="300" y="214" width="160" height="0" fill="#CDEBF7" clip-path="url(#clP'+u+')" style="transition:y 1s ease-out,height 1s ease-out"/>'+
       '<g id="fPap" style="transition:opacity 2.4s ease-in 1.4s" opacity="0"></g>'+
       '<path d="M312 138H448L382 214Z" fill="none" stroke="'+INK+'" stroke-width="3" stroke-linejoin="round"/>'+
       '<path d="M370 214V266M394 214V266" stroke="'+INK+'" stroke-width="4" fill="none"/>'+
       '<g id="fDrops" opacity="0"><circle class="fdr" cx="382" cy="272" r="5" fill="#46B6E8"/><circle class="fdr fd2" cx="382" cy="272" r="5" fill="#46B6E8"/><circle class="fdr fd3" cx="382" cy="272" r="5" fill="#46B6E8"/></g>'+
       /* the receiving beaker */
-      '<rect id="fRecL" x="322" y="408" width="116" height="0" fill="#CDEBF7" clip-path="url(#clR)" style="transition:y 3.4s linear 1s,height 3.4s linear 1s"/>'+
+      '<rect id="fRecL" x="322" y="408" width="116" height="0" fill="#CDEBF7" clip-path="url(#clR'+u+')" style="transition:y 3.4s linear 1s,height 3.4s linear 1s"/>'+
       '<path d="M314 286L324 292V394Q324 410 340 410H420Q436 410 436 394V292L446 286" fill="none" stroke="'+INK+'" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>'+
       '<text x="380" y="436" text-anchor="middle" font-family="Cairo,Tajawal,sans-serif" font-size="22" font-weight="800" fill="'+INK+'">الكأس</text>'+
       '<text x="381" y="112" font-family="Cairo,Tajawal,sans-serif" font-size="22" font-weight="800" fill="'+INK+'" text-anchor="middle" id="fPapT" opacity="0">ورقة الترشيح</text>'+
      '</svg></div>'+
      '<div class="fpanel">'+
-      '<div class="fstep"><b>١</b> اختر المخلوط</div><div class="fchips">'+chips+'</div>'+
-      '<div class="fstep fpredq hide"><b>٢</b> ماذا ستتوقع؟ <span class="fhint">اضغط إجابة قبل الصبّ</span></div>'+
+      (one?'':'<div class="fstep"><b>١</b> اختر المخلوط</div><div class="fchips">'+chips+'</div>')+
+      '<div class="fstep fpredq hide"><b>'+(one?'١':'٢')+'</b> ماذا ستتوقع؟ <span class="fhint">اضغط إجابة قبل الصبّ</span></div>'+
       '<div class="fpred hide"><button type="button" class="fp" data-p="stay">سيبقى شيء على الورقة</button><button type="button" class="fp" data-p="pass">سيمرّ كله مع الماء</button></div>'+
-      '<div class="fgo"><button type="button" class="btn acc" id="fPour" disabled>٣ · اسكب المخلوط ▸</button><button type="button" class="btn ghost sm hide" id="fAgain">أعد التجربة</button></div>'+
+      '<div class="fgo"><button type="button" class="btn acc" id="fPour" disabled>'+(one?'٢':'٣')+' · اسكب المخلوط ▸</button><button type="button" class="btn ghost sm hide" id="fAgain">أعد التجربة</button></div>'+
       '<div class="fres hide" id="fRes"></div>'+
      '</div></div>';
   }
@@ -108,6 +109,7 @@ var S6=(function(){
     $$r('.fp').forEach(function(b){ b.addEventListener('click',function(){ if(busy||poured) return; pred=b.getAttribute('data-p'); $$r('.fp').forEach(function(x){ x.classList.toggle('on',x===b) }) }) });
     $r('#fPour').addEventListener('click',pour);
     $r('#fAgain').addEventListener('click',function(){ if(busy) return; reset() });
+    if(keys.length===1) cur=keys[0];   /* a lab with one mixture starts with it on the bench */
     reset();
   }
 

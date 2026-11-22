@@ -1,7 +1,7 @@
 /* Interaction tests for the Grade-6 filtration lesson: every slide is driven the way a student or the teacher would use it. Run from the lesson folder: node tools/test.js [id1,id2] */
 const {chromium}=require('playwright');
 const URL='file://'+process.cwd()+'/lessons634.html';
-const IDS=['goals','prior','hook','paper','fold','labA','labB','obs','q12','q34','apps','sand','ex34','salt','final','hw'];
+const IDS=['goals','prior','hook','paper','fold','labA','labB','obs','more','q12','q34','apps','sand','ex34','salt','final','hw'];
 const ONLY=process.argv[2]?process.argv[2].split(','):null;
 const results=[]; const errs=[];
 (async()=>{
@@ -38,8 +38,18 @@ const results=[]; const errs=[];
   await T('fold',async(p,sl)=>await points(p,sl,5),false);
   await T('labA',async(p,sl)=>await points(p,sl,4),false);
   await T('labB',async(p,sl)=>{
-    /* every mixture: choose, predict, pour; the result says what stays; salt leaves nothing on the paper */
-    const want={coffee:true,sand:true,flour:true,chalk:true,salt:false};
+    /* the coffee lab: no choosing step, the mixture is already on the bench; predict, pour, the result says what stays */
+    if(await cnt(sl.locator('.fchip'))!==0) return false;
+    if(await sl.locator('#fPour').isDisabled()) return false;
+    await sl.locator('.fp[data-p="stay"]').click(); await sl.locator('#fPour').click(); await p.waitForTimeout(5300);
+    const res=sl.locator('#fRes'); if(!(await vis(res))) return false;
+    const txt=await res.textContent(); if(!/توقّعك صحيح/.test(txt)||!/بنّي/.test(txt)) return false;
+    return await p.evaluate(()=>document.querySelector('.slide.on #fPap circle')!==null&&document.querySelector('.slide.on #fPap').getAttribute('opacity')==='1');
+  });
+  await T('more',async(p,sl)=>{
+    /* every other mixture: choose, predict, pour; salt leaves nothing on the paper */
+    if(await cnt(sl.locator('.fchip'))!==4||await cnt(sl.locator('.fchip[data-m="coffee"]'))!==0) return false;
+    const want={sand:true,flour:true,chalk:true,salt:false};
     for(const k of Object.keys(want)){
       await sl.locator('.fchip[data-m="'+k+'"]').click(); await p.waitForTimeout(150);
       if(await sl.locator('#fPour').isDisabled()) return false;
@@ -47,7 +57,7 @@ const results=[]; const errs=[];
       await sl.locator('#fPour').click(); await p.waitForTimeout(5300);
       const res=sl.locator('#fRes'); if(!(await vis(res))) return false;
       const txt=await res.textContent(); if(!/توقّعك صحيح/.test(txt)) return false;
-      const grains=await p.evaluate(()=>document.querySelector('#fPap circle')!==null&&document.querySelector('#fPap').getAttribute('opacity')==='1');
+      const grains=await p.evaluate(()=>document.querySelector('.slide.on #fPap circle')!==null&&document.querySelector('.slide.on #fPap').getAttribute('opacity')==='1');
       if(grains!==want[k]) return false;
       await sl.locator('#fAgain').click(); await p.waitForTimeout(250);
     }
