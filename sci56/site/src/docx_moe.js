@@ -79,7 +79,7 @@ const DOCX = (() => {
     return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ""}${fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : ""}<w:vAlign w:val="${va}"/></w:tcPr>${content || mp("", { after: 0 })}</w:tc>`;
   }
   function mt(widths, rows, { none = false } = {}){
-    const ln = n => none ? `<w:${n} w:val="nil"/>` : `<w:${n} w:val="single" w:sz="8" w:space="0" w:color="000000"/>`;
+    const ln = n => none ? `<w:${n} w:val="nil"/>` : `<w:${n} w:val="single" w:sz="${/^(top|left|bottom|right)$/.test(n) ? 18 : 12}" w:space="0" w:color="000000"/>`;
     const borders = ["top", "left", "bottom", "right", "insideH", "insideV"].map(ln).join("");
     const total = widths.reduce((a, b) => a + b, 0);
     const trs = rows.map(r => `<w:tr><w:trPr>${r.split ? "" : "<w:cantSplit/>"}${r.height ? `<w:trHeight w:val="${r.height}" w:hRule="atLeast"/>` : ""}</w:trPr>${r.cells.join("")}</w:tr>`).join("");
@@ -88,10 +88,10 @@ const DOCX = (() => {
 
   function documentXML(pl){
     const d = pl.d, m = pl.meta, unit = splitUnit(d.unitTitle), wk = weekData(pl), cm = courseMeta(pl.key);
-    const T = 17;                                              // خط المتن: 8.5 نقطة
+    const T = 18;                                              // خط المتن: 9 نقطة
     const P = (html, o = {}) => mp(rich(html || "—", { size: T }), Object.assign({ after: 40 }, o));
     const L = (k, html, kc = INK, base = {}) => mp(run(k + " ", { bold: true, size: T, color: kc }) + rich(html || "—", Object.assign({ size: T }, base)), { after: 40 });
-    const hd = (txt, w, o = {}) => mc(mp(run(txt, { bold: true, size: 22 }), { center: true, after: 0 }), w, Object.assign({ va: "center" }, o));
+    const hd = (txt, w, o = {}) => mc(mp(run(txt, { bold: true, size: 24 }), { center: true, after: 0 }), w, Object.assign({ va: "center", fill: PEACH }, o));
     const gp = h => gap(h);
     const ph = (r, i, arr) => pl.split && (i === 0 || arr[i - 1].period !== r.period) ? mp(run(`الحصة ${r.period}`, { bold: true, size: 19, color: NAVY }), { after: 30, before: i ? 60 : 0, keep: true }) : "";
     const objById = {}; pl.objs.forEach(o => { objById[o.id] = o; });
@@ -102,9 +102,9 @@ const DOCX = (() => {
     // الوحدة / عنوان الدرس / الصف
     const lv = (label, val) => mp(run(label + " ", { bold: true, size: 22 }) + val, { center: true, after: 0 });
     const info = mt([3000, PW - 6000, 3000], [{ cells: [
-      mc(lv("الوحدة:", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { size: 22, color: PURPLE })), 3000, { va: "center" }),
-      mc(lv("عنوان الدرس:", run(`(‎${d.code}‎) `, { bold: true, size: 22, color: ORANGE }) + run(d.title, { size: 22, color: PURPLE })), PW - 6000, { va: "center" }),
-      mc(lv("الصف:", run(cm.gradeName + (m.section ? " / " + m.section : ""), { size: 22, color: PURPLE })), 3000, { va: "center" })
+      mc(lv("الوحدة:", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { size: 22, color: PURPLE })), 3000, { va: "center", fill: PEACH }),
+      mc(lv("عنوان الدرس:", run(`(‎${d.code}‎) `, { bold: true, size: 22, color: ORANGE }) + run(d.title, { size: 22, color: PURPLE })), PW - 6000, { va: "center", fill: PEACH }),
+      mc(lv("الصف:", run(cm.gradeName + (m.section ? " / " + m.section : ""), { size: 22, color: PURPLE })), 3000, { va: "center", fill: PEACH })
     ] }]);
 
     // اليوم والتاريخ / الحصة / أرقام المخرجات

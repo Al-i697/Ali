@@ -1442,10 +1442,10 @@ body.asst-open .asst-fab{display:none;}
   border:1px solid #cfd4dc; border-radius:8px; box-shadow:var(--sh);}
 .paper.sheet[data-moe]::before, .paper.sheet[data-moe]::after{content:none !important; display:none !important;}
 .paper[data-moe] .m-banner{display:block; width:100%; height:auto; aspect-ratio:1860/230; margin:0 0 8px;}
-.paper[data-moe] .m-t{width:100%; min-width:640px; border-collapse:collapse; table-layout:fixed; margin:0 0 8px; background:#fff;}
-.paper[data-moe] .m-t th, .paper[data-moe] .m-t td{border:1px solid #000; padding:4px 8px; vertical-align:top; overflow-wrap:anywhere;}
-.paper[data-moe] .m-t th{background:#fff; font-weight:800; text-align:center; vertical-align:middle; font-size:1.04em; line-height:1.4;}
-.paper[data-moe] .m-info td{text-align:center; vertical-align:middle; font-size:1.04em;}
+.paper[data-moe] .m-t{width:100%; min-width:640px; border-collapse:collapse; table-layout:fixed; margin:0 0 8px; background:#fff; border:2.5px solid #000;}
+.paper[data-moe] .m-t th, .paper[data-moe] .m-t td{border:1.5px solid #000; padding:4px 8px; vertical-align:top; overflow-wrap:anywhere;}
+.paper[data-moe] .m-t th{background:#FBE4D5; color:#000; font-weight:800; text-align:center; vertical-align:middle; font-size:1.04em; line-height:1.4;}
+.paper[data-moe] .m-info td{text-align:center; vertical-align:middle; font-size:1.04em; background:#FBE4D5;}
 .paper[data-moe] .m-info .mv{color:#7030A0; font-weight:700;}
 .paper[data-moe] .m-info .mc{color:#C55A11; font-weight:800;}
 .paper[data-moe] .m-info .m-sec{display:inline-block; width:5.5em; color:#7030A0; font-weight:700;}
@@ -1511,15 +1511,16 @@ body.asst-open .asst-fab{display:none;}
 .paper.pv[data-moe] .m-banner{width:auto; height:20mm; max-width:100%; aspect-ratio:1860/230; margin:0 auto 2mm;}
 .paper.pv[data-moe] .m-t{min-width:0; margin-bottom:2mm;}
 .paper.pv[data-moe] .m-t th, .paper.pv[data-moe] .m-t td{padding:1px 4px;}
-.paper.pv[data-moe] .m-t th{font-size:9.5pt;}
-.paper.pv[data-moe] .m-info td{font-size:9.5pt;}
+.paper.pv[data-moe] .m-t{border-width:2.5px;}
+.paper.pv[data-moe] .m-t th{font-size:11pt;}
+.paper.pv[data-moe] .m-info td{font-size:11pt;}
 .paper.pv[data-moe] .m-week td{padding:0 3px;}
 .paper.pv[data-moe] .m-in{padding:0;}
 .paper.pv[data-moe] .m-act{margin-bottom:1.2mm;}
-.paper.pv[data-moe] .m-main .m-body > td{font-size:7.8pt; line-height:1.4;}
+.paper.pv[data-moe] .m-main .m-body > td{font-size:8.3pt; line-height:1.4;}
 .paper.pv[data-moe] .m-chk li{margin-bottom:.2mm; font-size:7.2pt; line-height:1.3;}
 .paper.pv[data-moe] .m-o{margin-bottom:1.4mm;}
-.paper.pv[data-moe] .m-prior td, .paper.pv[data-moe] .m-mis td{font-size:7.8pt; line-height:1.4;}
+.paper.pv[data-moe] .m-prior td, .paper.pv[data-moe] .m-mis td{font-size:8.3pt; line-height:1.4;}
 .paper.pv[data-moe] .m-ev{margin-bottom:1.4mm;}
 .paper.pv[data-moe] .m-sign{margin-top:2mm; gap:8mm;}
 .paper.pv[data-moe] .m-notes td{height:12mm;}
@@ -1531,15 +1532,16 @@ body.asst-open .asst-fab{display:none;}
 .paper.sheet[data-moe] .m-banner{width:auto; height:20mm; max-width:100%; aspect-ratio:1860/230; margin:0 auto 2mm;}
 .paper.sheet[data-moe] .m-t{min-width:0; margin-bottom:2mm;}
 .paper.sheet[data-moe] .m-t th, .paper.sheet[data-moe] .m-t td{padding:1px 4px;}
-.paper.sheet[data-moe] .m-t th{font-size:9.5pt;}
-.paper.sheet[data-moe] .m-info td{font-size:9.5pt;}
+.paper.sheet[data-moe] .m-t{border-width:2.5px;}
+.paper.sheet[data-moe] .m-t th{font-size:11pt;}
+.paper.sheet[data-moe] .m-info td{font-size:11pt;}
 .paper.sheet[data-moe] .m-week td{padding:0 3px;}
 .paper.sheet[data-moe] .m-in{padding:0;}
 .paper.sheet[data-moe] .m-act{margin-bottom:1.2mm;}
-.paper.sheet[data-moe] .m-main .m-body > td{font-size:7.8pt; line-height:1.4;}
+.paper.sheet[data-moe] .m-main .m-body > td{font-size:8.3pt; line-height:1.4;}
 .paper.sheet[data-moe] .m-chk li{margin-bottom:.2mm; font-size:7.2pt; line-height:1.3;}
 .paper.sheet[data-moe] .m-o{margin-bottom:1.4mm;}
-.paper.sheet[data-moe] .m-prior td, .paper.sheet[data-moe] .m-mis td{font-size:7.8pt; line-height:1.4;}
+.paper.sheet[data-moe] .m-prior td, .paper.sheet[data-moe] .m-mis td{font-size:8.3pt; line-height:1.4;}
 .paper.sheet[data-moe] .m-ev{margin-bottom:1.4mm;}
 .paper.sheet[data-moe] .m-sign{margin-top:2mm; gap:8mm;}
 .paper.sheet[data-moe] .m-notes td{height:12mm;}
@@ -3000,7 +3002,7 @@ function pageBreaks(paper){
   const pageH = 280 * MM, top = 7 * MM, breaks = []; breaks.acts = [];
   let limit = top + pageH, shift = 0;                     // shift: distance between the continuous measured layout and the paginated one
   const Yv = el => offsetIn(el, paper) + shift;
-  const hard = y => { breaks.push(y); limit = y + pageH; };
+  const hard = (y, extra = 0) => { breaks.push(y); limit = y + pageH + extra; };
   const cut = (y, h) => { while (y + h > limit + 1){ breaks.push(limit); limit += pageH; } };   // a block the browser may cut anywhere
   const atom = (y, h) => {                                                                        // a block that must not be cut
     if (y + h <= limit + 1) return;
@@ -3039,7 +3041,7 @@ function pageBreaks(paper){
   });
   const sg = p1.querySelector(".m-sign"); if (sg) atom(Yv(sg), sg.offsetHeight);
   if (p2){
-    hard(Yv(p2));                                          // the evaluation page always starts a new page
+    hard(Yv(p2), 3 * MM);                                  // the evaluation page always starts a new page (its start is exact, so no safety margin)
     const bn = p2.querySelector(".m-banner"); if (bn) atom(Yv(bn), bn.offsetHeight);
     Array.from(p2.querySelectorAll(".m-eval > tbody > tr")).forEach(tr => { if (tr.classList.contains("m-evrow")) cut(Yv(tr), tr.offsetHeight); else atom(Yv(tr), tr.offsetHeight); });
     const s2 = p2.querySelector(".m-sign"); if (s2) atom(Yv(s2), s2.offsetHeight);
@@ -3537,7 +3539,7 @@ const DOCX = (() => {
     return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ""}${fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : ""}<w:vAlign w:val="${va}"/></w:tcPr>${content || mp("", { after: 0 })}</w:tc>`;
   }
   function mt(widths, rows, { none = false } = {}){
-    const ln = n => none ? `<w:${n} w:val="nil"/>` : `<w:${n} w:val="single" w:sz="8" w:space="0" w:color="000000"/>`;
+    const ln = n => none ? `<w:${n} w:val="nil"/>` : `<w:${n} w:val="single" w:sz="${/^(top|left|bottom|right)$/.test(n) ? 18 : 12}" w:space="0" w:color="000000"/>`;
     const borders = ["top", "left", "bottom", "right", "insideH", "insideV"].map(ln).join("");
     const total = widths.reduce((a, b) => a + b, 0);
     const trs = rows.map(r => `<w:tr><w:trPr>${r.split ? "" : "<w:cantSplit/>"}${r.height ? `<w:trHeight w:val="${r.height}" w:hRule="atLeast"/>` : ""}</w:trPr>${r.cells.join("")}</w:tr>`).join("");
@@ -3546,10 +3548,10 @@ const DOCX = (() => {
 
   function documentXML(pl){
     const d = pl.d, m = pl.meta, unit = splitUnit(d.unitTitle), wk = weekData(pl), cm = courseMeta(pl.key);
-    const T = 17;                                              // خط المتن: 8.5 نقطة
+    const T = 18;                                              // خط المتن: 9 نقطة
     const P = (html, o = {}) => mp(rich(html || "—", { size: T }), Object.assign({ after: 40 }, o));
     const L = (k, html, kc = INK, base = {}) => mp(run(k + " ", { bold: true, size: T, color: kc }) + rich(html || "—", Object.assign({ size: T }, base)), { after: 40 });
-    const hd = (txt, w, o = {}) => mc(mp(run(txt, { bold: true, size: 22 }), { center: true, after: 0 }), w, Object.assign({ va: "center" }, o));
+    const hd = (txt, w, o = {}) => mc(mp(run(txt, { bold: true, size: 24 }), { center: true, after: 0 }), w, Object.assign({ va: "center", fill: PEACH }, o));
     const gp = h => gap(h);
     const ph = (r, i, arr) => pl.split && (i === 0 || arr[i - 1].period !== r.period) ? mp(run(`الحصة ${r.period}`, { bold: true, size: 19, color: NAVY }), { after: 30, before: i ? 60 : 0, keep: true }) : "";
     const objById = {}; pl.objs.forEach(o => { objById[o.id] = o; });
@@ -3560,9 +3562,9 @@ const DOCX = (() => {
     // الوحدة / عنوان الدرس / الصف
     const lv = (label, val) => mp(run(label + " ", { bold: true, size: 22 }) + val, { center: true, after: 0 });
     const info = mt([3000, PW - 6000, 3000], [{ cells: [
-      mc(lv("الوحدة:", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { size: 22, color: PURPLE })), 3000, { va: "center" }),
-      mc(lv("عنوان الدرس:", run(`(‎${d.code}‎) `, { bold: true, size: 22, color: ORANGE }) + run(d.title, { size: 22, color: PURPLE })), PW - 6000, { va: "center" }),
-      mc(lv("الصف:", run(cm.gradeName + (m.section ? " / " + m.section : ""), { size: 22, color: PURPLE })), 3000, { va: "center" })
+      mc(lv("الوحدة:", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { size: 22, color: PURPLE })), 3000, { va: "center", fill: PEACH }),
+      mc(lv("عنوان الدرس:", run(`(‎${d.code}‎) `, { bold: true, size: 22, color: ORANGE }) + run(d.title, { size: 22, color: PURPLE })), PW - 6000, { va: "center", fill: PEACH }),
+      mc(lv("الصف:", run(cm.gradeName + (m.section ? " / " + m.section : ""), { size: 22, color: PURPLE })), 3000, { va: "center", fill: PEACH })
     ] }]);
 
     // اليوم والتاريخ / الحصة / أرقام المخرجات

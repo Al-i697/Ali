@@ -90,7 +90,7 @@ function pageBreaks(paper){
   const pageH = 280 * MM, top = 7 * MM, breaks = []; breaks.acts = [];
   let limit = top + pageH, shift = 0;                     // shift: distance between the continuous measured layout and the paginated one
   const Yv = el => offsetIn(el, paper) + shift;
-  const hard = y => { breaks.push(y); limit = y + pageH; };
+  const hard = (y, extra = 0) => { breaks.push(y); limit = y + pageH + extra; };
   const cut = (y, h) => { while (y + h > limit + 1){ breaks.push(limit); limit += pageH; } };   // a block the browser may cut anywhere
   const atom = (y, h) => {                                                                        // a block that must not be cut
     if (y + h <= limit + 1) return;
@@ -129,7 +129,7 @@ function pageBreaks(paper){
   });
   const sg = p1.querySelector(".m-sign"); if (sg) atom(Yv(sg), sg.offsetHeight);
   if (p2){
-    hard(Yv(p2));                                          // the evaluation page always starts a new page
+    hard(Yv(p2), 3 * MM);                                  // the evaluation page always starts a new page (its start is exact, so no safety margin)
     const bn = p2.querySelector(".m-banner"); if (bn) atom(Yv(bn), bn.offsetHeight);
     Array.from(p2.querySelectorAll(".m-eval > tbody > tr")).forEach(tr => { if (tr.classList.contains("m-evrow")) cut(Yv(tr), tr.offsetHeight); else atom(Yv(tr), tr.offsetHeight); });
     const s2 = p2.querySelector(".m-sign"); if (s2) atom(Yv(s2), s2.offsetHeight);
