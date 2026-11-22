@@ -1443,6 +1443,16 @@ button.bot b{font-size:30px;font-family:var(--font-display);color:var(--gold)} b
 .eqw{display:flex;align-items:center;gap:8px;flex-wrap:wrap;direction:rtl;font-size:24px;font-weight:800;justify-content:center}
 .eqw .mslot{min-width:150px;min-height:48px;display:inline-flex;align-items:center;justify-content:center}
 .eqs{direction:ltr;font-family:var(--font-display);font-size:25px;font-weight:700;text-align:center;color:var(--gold)}
+.efr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 12px;direction:rtl;font-weight:800;line-height:1.35;text-align:center}
+.efr .el{color:var(--gold);white-space:nowrap}
+.efr .el.all{flex-basis:100%}
+.efr .ef{display:inline-flex;flex-direction:column;align-items:stretch}
+.efr .efn{border-bottom:3px solid var(--gold);padding:2px 8px 6px;color:#fff}
+.efr .efd{padding:6px 8px 2px;color:#fff}
+.efr .efn,.efr .efd{white-space:nowrap}
+.efr.tl{line-height:1.2}
+.efr.tl .efn{padding:0 8px 3px}
+.efr.tl .efd{padding:3px 8px 0}
 .tbl32{width:100%;border-collapse:separate;border-spacing:0 8px}
 .tbl32 td,.tbl32 th{padding:9px 14px;font-size:21px;line-height:1.4;text-align:start}
 .tbl32 th{color:var(--cyan);font-size:19px}
@@ -4711,7 +4721,8 @@ slide({id:'exp',ch:5,title:'مثال: النسبة المئوية للطاقة �
    <div class="panel pb" data-pt style="font-size:21px">النسبة المئوية = الطاقة المنتقلة ÷ طاقة المستوى السابق × 100. الطاقة المنقولة إلى المنتجات <b class="num">72567</b> kJ/m² year، وطاقة المستوى السابق (الشمس) <b class="num">1.6 × 10<sup>6</sup></b> kJ/m² year.</div>
    <div class="panel pb" data-pt style="font-size:23px;text-align:center"><span style="direction:ltr;display:inline-block;font-family:var(--font-display)">(72567 ÷ 1.6×10<sup>6</sup>) × 100 = </span> ${nin('pc','%')}<div class="fb" id="pfb" style="min-height:24px;font-size:19px"></div></div>
    <div class="panel pb" data-pt style="font-size:21px">وقد تُعطى معلومات مماثلة لشكل هرم الطاقة: في هذه الحالة تُستخدم الأعداد الموجودة في الهرم لحساب النسبة المئوية؛ اقسم الرقم لأي مستوى غذائي معيّن على الرقم الخاص بالمستوى الغذائي السابق ثم اضربه في 100.</div></div>
-   <div class="col" style="width:380px;flex:none;gap:10px;justify-content:center"><div class="panel" style="padding:12px 16px"><div class="sm" style="font-size:18px;color:var(--cyan);font-weight:800">القاعدة</div><div class="eqs" style="font-size:25px;line-height:1.5">نسبة النقل % = <span style="color:#fff">الطاقة في المستوى n+1</span><br>÷ <span style="color:#fff">الطاقة في المستوى n</span> × 100</div></div>
+   <div class="col" style="width:380px;flex:none;gap:10px;justify-content:center"><div class="panel" style="padding:12px 16px"><div class="sm" style="font-size:18px;color:var(--cyan);font-weight:800">القاعدة</div><div class="efr" style="font-size:20px"><span class="el all" style="font-size:22px">نسبة النقل (%) =</span><span class="ef"><span class="efn">الطاقة في المستوى المعيّن × 100</span><span class="efd">الطاقة في المستوى السابق</span></span></div>
+    <div style="font-size:17px;line-height:1.5;margin-top:10px;color:#dfe4f5">المعيّن: المستوى الذي نحسب نسبته. السابق: المستوى الذي قبله (الأدنى منه). اقسم دائماً (الأعلى على الأدنى) ثم اضرب في 100.<br><b style="color:var(--gold)">مثال (من الكتاب):</b> طاقة المستهلكات الأولية فوق طاقة المنتجات.</div></div>
    <div class="gbar hide" id="gb" style="font-size:22px">4.54% فقط من طاقة الشمس تنتقل إلى المنتجات.</div></div></div>`;},
  init:function(el){ bindNum($('.nin[data-n="pc"]',el),4.54,0.03,function(ok){ say($('#pfb',el),ok?'✓ 4.54%':'قسّم 72567 على 1 600 000 ثم اضرب في 100',ok?'ok':'bad'); if(ok) unhide(el) }) },
  note:'<ul><li>كتاب الطالب ص١٠٠: المثال، السؤال 2: 72567 ÷ (1.6×10⁶) × 100 = 4.54%.</li></ul>'});
@@ -4773,7 +4784,7 @@ slide({id:'tlte',ch:5,title:'نشاط 3-3: كفاءة نقل المستوى ال
  html:function(){
   return `<div style="display:flex;gap:16px;flex:1;align-items:stretch"><div class="col" style="flex:1.1;min-width:0;gap:7px;justify-content:center">
    <div class="panel pb" data-pt style="font-size:18px">${tm('كفاءة نقل المستوى الغذائي','Trophic level transfer efficiency (TLTE)')}: قياس كمّية الطاقة التي تنقل بين المستويات الغذائية.</div>
-   <div class="panel pb" data-pt style="text-align:center"><div class="eqs" style="font-size:27px;line-height:1.6">TLTE = <span style="color:#fff">طاقة المستوى n+1</span> ÷ <span style="color:#fff">طاقة المستوى n</span> × 100%</div></div>
+   <div class="panel pb" data-pt style="text-align:center"><div class="efr tl" style="font-size:22px"><span class="el"><bdi dir="ltr">TLTE</bdi> =</span><span class="ef"><span class="efn">طاقة المستوى الأعلى</span><span class="efd">طاقة المستوى الأدنى (السابق)</span></span><span class="el">× 100%</span></div></div>
    <div class="panel pb" data-pt style="font-size:18px"><b>أ.</b> احسب كفاءة نقل المستوى الغذائي إذا كان لدى المستهلك الثاني 500 kcal وكان لدى المستهلك الأولي 4500 kcal: 500 ÷ 4500 × 100 = ${nin('a','%')}<div class="fb" id="af" style="min-height:22px;font-size:18px"></div></div>
    <div class="panel pb" data-pt style="font-size:18px"><b>ب.</b> الشكل 3-5: هرم الطاقة لنظام بيئي بحري (وحدات تقديرية): العوالق النباتية 10000 ← العوالق الحيوانية 2000 ← سمك الرنجة 200 ← سمكة الماكريل 20 ← التونة 1. احسب كفاءة النقل:
     <div style="display:grid;grid-template-columns:auto auto;gap:6px 10px;margin-top:6px;align-items:center"><span>العوالق النباتية ← العوالق الحيوانية:</span>${nin('b1','%')}<span>العوالق الحيوانية ← سمك الرنجة:</span>${nin('b2','%')}<span>سمكة الماكريل ← سمكة التونة:</span>${nin('b3','%')}</div><div class="fb" id="bf" style="min-height:22px;font-size:18px"></div></div></div>
