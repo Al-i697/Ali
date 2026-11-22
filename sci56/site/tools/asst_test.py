@@ -97,7 +97,7 @@ with sync_playwright() as p:
     # form renders and persistence
     pg.evaluate("document.querySelector('#asstClose').click()")
     pg.wait_for_timeout(200)
-    txt = pg.inner_text('.exec-wrap')
+    txt = pg.inner_text('.m-exec')
     check('table shows new phase', 'نشاط تعاوني' in txt and 'تهيئة عُمانية' in txt)
     saved = pg.evaluate('JSON.parse(localStorage.getItem("sci56-smart-planner:v2")).lessons[state.key].aiFlow.locked')
     pg.wait_for_timeout(500)

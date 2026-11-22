@@ -9,7 +9,7 @@ chemistry/environment site (`main-site-src/`, reference only — NEVER modify th
 - Be usage-conscious: the user stopped a long run because it consumed their usage. Work in SMALL batches
   (one lesson or two per round), build, and tell the user what is ready.
 - In science content use «المتغير الضابط» (never «المتغير الثابت»).
-- No Vision 2040 / QMS logos. Follow the STUDENT BOOK content (teacher guide + activity book supply activities and model answers).
+- Page header = the three logos of the Ministry template (QMS, Oman Vision 2040, Ministry crest) as one banner image (`LOGO_MOE` in `src/docx_moe.js`); the user supplied this header, it replaces the earlier "no logos" rule. Follow the STUDENT BOOK content (teacher guide + activity book supply activities and model answers).
 - When giving the user technical steps in Arabic, put each English term (button names, shortcuts, file names) on its own line.
 
 ## Setup (once, on the user's machine)
@@ -24,7 +24,8 @@ named `sb6.pdf tb6.pdf ab6.pdf sb5.pdf tb5.pdf ab5.pdf` (sb = student book, tb =
 ## Layout
 - `site/app_base.html` engine/UI (forked; change only if the engine must change; `site/tools/fork_sci.py` re-forks from the main site base).
 - `site/data/sci6_s1_u<unit>_l<n>[b].py` one file per prep sheet (authored content). `site/data/lib/scilib.py` authoring API.
-- `site/src/docx_moe.js` the Word export in the Ministry of Education prep template (2 pages: header/schedule/outcomes/strategies/execution/resources, then formative/enrichment/closing/homework/teacher notes; Ministry crest only). `tools/fork_sci.py` splices it over the main site's DOCX builder, so edit THIS file (not `app_base.html`), then run `python3 tools/fork_sci.py && python3 tools/build.py`. Check by exporting with the Word button and converting with `soffice --headless --convert-to pdf`.
+- `site/src/docx_moe.js` the Word export in the Ministry of Education prep template (2 pages: header/schedule/outcomes/strategies/execution/resources, then formative/enrichment/closing/homework/teacher notes; three-logo banner). `tools/fork_sci.py` splices it over the main site's DOCX builder, so edit THIS file (not `app_base.html`), then run `python3 tools/fork_sci.py && python3 tools/build.py`. Check by exporting with the Word button and converting with `soffice --headless --convert-to pdf`.
+- `site/src/paper_moe.js` + `site/src/paper_moe.css` the sheet shown in the site (screen, A4 preview, print) in the same Ministry template: `formHTML`, `measureFlow`, `pageBreaks`. Spliced over the main site's paper by `tools/fork_sci.py` (edit these, not `app_base.html`). The execution table is ONE row that the browser splits across pages (like Word); `pageBreaks` predicts the cuts column by column so the preview markers and `tests.py --pages` (real vs estimate) agree. `tools/layout.py` is obsolete (old layout).
 - `site/tools/build.py` merges base + data (+ src/assistant + vendor) into `site/app.html` and validates everything.
 - `site/server/` Cloudflare Worker for the assistant (server mode so the assistant works for everyone). Deployment guide for the main site: `deploy/دليل-نشر-الموقع.md` (same pattern: index.html + `_worker.js`).
 - `ocr_*/pNNN.txt` OCR per PDF page; `./rd.sh <sb6|tb6|ab6|sb5|tb5|ab5> <first> [last]` prints cleaned text. OCR is noisy (digits/letters garbled): confirm numbers and answers visually on the page image when it matters.
@@ -44,7 +45,7 @@ Lesson URL hash: `#sci6~<unit>-<n>` (split sheets `#sci6~3-1b`).
 
 ## Content rules (enforced by build.py; violations fail the build)
 - Period = 40 minutes. ONE continuous execution table per sheet with per-period opener band (prior learning + warm-up) and closer band (exit/formative question, answer, criterion).
-- Print = 2–3 pages. Lessons with > 3 periods are split into sheets of 2–3 periods: keys "1","1b" (same `code`), titles "…: أ. …" / "…: ب. …".
+- Print = 2–3 pages (three-period lessons print 4 pages in the Ministry template). Lessons with > 3 periods are split into sheets of 2–3 periods: keys "1","1b" (same `code`), titles "…: أ. …" / "…: ب. …".
 - Every period sums to 40 min and has at least one row tied to an objective; every objective is covered by some row. Total minutes = periods × 40.
 - Row 1 of a sheet = `R("التمهيد", …)` with q = warm.question and ans = warm.expected, objs `[]`. Last row = `R("الختام","بطاقة الخروج",5,[],…)` whose q/ans equal `exit`.
 - Periods ≥ 2 start with `OPEN(…)` (5 min, no objectives); non-last periods end with `CLOSE(…)` (5 min, no objectives).

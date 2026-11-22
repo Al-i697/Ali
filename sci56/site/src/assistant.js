@@ -611,7 +611,7 @@ function axBind(){
     if (act === "apply" && bot){ if (bot.prop.status === "undone") bot.prop.status = "new"; axApply(bot); }
     else if (act === "dismiss" && bot){ bot.prop.status = "dismissed"; axRender(); }
     else if (act === "undo" && bot) axUndo(bot);
-    else if (act === "show"){ if (matchMedia("(max-width:720px)").matches) axOpen(false); setStep(4, true); const t = $(".exec-tbl"); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }
+    else if (act === "show"){ if (matchMedia("(max-width:720px)").matches) axOpen(false); setStep(4, true); const t = $(".m-exec") || $(".exec-tbl"); if (t) t.scrollIntoView({ behavior: "smooth", block: "start" }); }
     else if (act === "note" && bot){ getRec(state.key).ai.push({ title: "اقتراح مساعد التحضير", text: bot.text }); touch(); renderOutput(); toast("أُضيف إلى ملاحظات التحضير"); }
     else if (act === "copy" && bot){ (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(bot.text) : Promise.reject()).then(() => toast("تم النسخ"), () => toast("تعذّر النسخ")); }
     else axCardAction(act, b, bot);

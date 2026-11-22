@@ -74,7 +74,7 @@ with sync_playwright() as p:
     check('meter total = duration', st['total'] == st['dur'])
     check('report note on minutes', 'ضُبطت' in pg.inner_text('.prop'))
     pg.evaluate("document.querySelector('#asstClose').click()"); pg.wait_for_timeout(300)
-    check('table has bands', pg.locator('tr.pband').count() == 2, pg.locator('tr.pband').count())
+    check('table has bands', pg.locator('.m-act.pband').count() == 2, pg.locator('.m-act.pband').count())
     pg.pdf(path=OUT + '/deckin_print.pdf', format='A4', print_background=True) if False else None
     # --- deck out
     pg.click('#asstFab'); pg.wait_for_timeout(150)

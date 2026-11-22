@@ -56,6 +56,21 @@ sub1(r'buildPeriodic\(\); buildCalc\(\); ', '')
 sub1(r'[ \t]*if \(b\.dataset\.open === "calcDialog"\)[^\n]*\n', '')
 sub1(r'[ \t]*const chem = COURSES\[state\.course\]\.subject === "chem";\n[ \t]*\$\$\("\.chem-only"\)\.forEach\(b => \{ b\.hidden = !chem; \}\);\n', '')
 
+# ---- prep sheet (screen, preview, print) in the Ministry of Education template: src/paper_moe.js + src/paper_moe.css ----
+_pj = open(os.path.join(HERE, 'src', 'paper_moe.js'), encoding='utf-8').read()
+def _sect(name):
+    a = _pj.index('/*@' + name + '*/') + len('/*@' + name + '*/'); b = _pj.find('/*@', a)
+    return _pj[a:b if b != -1 else len(_pj)].strip('\n') + '\n'
+cut('function formHTML(pl, splits){', 'function notesHTML(pl){', keep_end=True, label='formHTML', repl=_sect('formHTML') + '\n')
+cut('function measureFlow(paperHTML, rebuild){', 'function renderOutput(){', keep_end=True, label='measureFlow', repl=_sect('measureFlow') + '\n')
+cut('function pageBreaks(paper){', 'function drawBreaks(paper){', keep_end=True, label='pageBreaks', repl=_sect('pageBreaks') + '\n')
+_css = open(os.path.join(HERE, 'src', 'paper_moe.css'), encoding='utf-8').read().split('\n')
+_compact = [l for l in _css if l.startswith('%S%')]
+_base = '\n'.join(l for l in _css if not l.startswith('%S%'))
+_all = _base + '\n' + '\n'.join(l.replace('%S%', '.paper.pv[data-moe]') for l in _compact) + '\n@media print{\n' + '\n'.join(l.replace('%S%', '.paper.sheet[data-moe]') for l in _compact) + '\n}\n'
+_j = t.index('</style>', t.index('THE PREP SHEET'))
+t = t[:_j] + _all + t[_j:]
+
 # ---- Word export: the Ministry of Education prep template (src/docx_moe.js replaces the main site's DOCX builder) ----
 cut('const DOCX = (() => {', '\n})();\n', label='docx', repl=open(os.path.join(HERE, 'src', 'docx_moe.js'), encoding='utf-8').read().rstrip('\n') + '\n')
 

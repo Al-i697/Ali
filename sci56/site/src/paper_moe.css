@@ -1,0 +1,88 @@
+/* ===== the prep sheet in the Ministry of Education template (spliced into the main <style> by tools/fork_sci.py) ===== */
+.paper.sheet[data-moe]{position:relative; isolation:auto; overflow-x:auto; max-width:1060px; margin:0 auto; padding:14px 18px 12px; background:#fff !important; color:#000; font-size:.86rem; line-height:1.6;
+  border:1px solid #cfd4dc; border-radius:8px; box-shadow:var(--sh);}
+.paper.sheet[data-moe]::before, .paper.sheet[data-moe]::after{content:none !important; display:none !important;}
+.paper[data-moe] .m-banner{display:block; width:100%; height:auto; aspect-ratio:1860/230; margin:0 0 8px;}
+.paper[data-moe] .m-t{width:100%; min-width:640px; border-collapse:collapse; table-layout:fixed; margin:0 0 8px; background:#fff;}
+.paper[data-moe] .m-t th, .paper[data-moe] .m-t td{border:1px solid #000; padding:4px 8px; vertical-align:top; overflow-wrap:anywhere;}
+.paper[data-moe] .m-t th{background:#fff; font-weight:800; text-align:center; vertical-align:middle; font-size:1.04em; line-height:1.4;}
+.paper[data-moe] .m-info td{text-align:center; vertical-align:middle; font-size:1.04em;}
+.paper[data-moe] .m-info .mv{color:#7030A0; font-weight:700;}
+.paper[data-moe] .m-info .mc{color:#C55A11; font-weight:800;}
+.paper[data-moe] .m-info .m-sec{display:inline-block; width:5.5em; color:#7030A0; font-weight:700;}
+.paper[data-moe] .m-week td{text-align:center; vertical-align:middle; padding:2px 4px;}
+.paper[data-moe] .m-week .wd{display:block; font-weight:800; color:#2E75B6; font-size:.95em;}
+.paper[data-moe] .m-in{display:block; width:100%; box-sizing:border-box; border:0; background:transparent; font:inherit; color:inherit; text-align:center; padding:1px 2px; outline:0; border-radius:4px;}
+.paper[data-moe] .m-in:hover{background:rgba(212,165,72,.12);}
+.paper[data-moe] .m-in:focus{background:#FFF8DC; box-shadow:inset 0 0 0 1.5px var(--gold);}
+.paper[data-moe] .m-week .wdate{color:#2E75B6; font-weight:700;}
+.paper[data-moe] .m-week tr.m-r2 .m-in, .paper[data-moe] .m-week tr.m-r3 .m-in{color:#C55A11; font-weight:700;}
+.paper[data-moe] .m-in.fit2{font-size:.92em;} .paper[data-moe] .m-in.fit3{font-size:.84em;} .paper[data-moe] .m-in.fit4{font-size:.76em;}
+.paper[data-moe] .m-prior td, .paper[data-moe] .m-mis td{font-size:.96em;}
+.paper[data-moe] .kv-line + .kv-line{margin-top:2px;}
+.paper[data-moe] .m-main > tbody > tr.m-body > td{font-size:.94em;}
+.paper[data-moe] .m-o{color:#0070C0; margin-bottom:7px;}
+.paper[data-moe] .m-o b{display:block; font-weight:800;}
+.paper[data-moe] .m-chk{list-style:none; margin:0; padding:0;}
+.paper[data-moe] .m-chk li{display:block; padding:1px 2px; margin:0 0 3px; border-radius:4px; line-height:1.45; cursor:pointer;}
+.paper[data-moe] .m-chk li[data-prim]{cursor:default;}
+.paper[data-moe] .m-chk li:hover{background:rgba(212,165,72,.1);}
+.paper[data-moe] .m-chk li.on{font-weight:800;}
+.paper[data-moe] .m-chk .bx{display:inline; width:auto; height:auto; min-width:0; border:0; border-radius:0; background:none; box-shadow:none; color:#0070C0; font-weight:800; margin-inline-end:4px;}
+.paper[data-moe] .m-act{margin-bottom:7px;}
+.paper[data-moe] .m-per{font-weight:800; color:#1F3864; margin:2px 0 3px;}
+.paper[data-moe] .m-ah{font-weight:800;}
+.paper[data-moe] .m-ah .cd{color:#0070C0;}
+.paper[data-moe] .m-ah .st{color:#C00000;}
+.paper[data-moe] .m-ar{margin-top:1px;}
+.paper[data-moe] .m-ar b{font-weight:800;}
+.paper[data-moe] .m-lab{margin-top:6px;} .paper[data-moe] .m-lab > b{color:#7030A0;}
+.paper[data-moe] .m-eval .m-head2 th, .paper[data-moe] .m-eval .m-notes th{background:#FBE4D5;}
+.paper[data-moe] .m-eval .m-evrow > td{font-size:.92em;}
+.paper[data-moe] .m-ev{margin-bottom:6px;}
+.paper[data-moe] .m-evh{font-weight:800; color:#7030A0;}
+.paper[data-moe] .m-evb{font-size:.96em;}
+.paper[data-moe] .m-eval .sublab{color:#00863D; font-size:.95em;}
+.paper[data-moe] .m-eval .diffedit{color:#0070C0; font-size:.96em; min-height:1.6em;}
+.paper[data-moe] .m-eval .subsec + .subsec{border-top:1px dashed #9aa3b2;}
+.paper[data-moe] .m-notes td{min-height:40px; height:40px;}
+.paper[data-moe] .m-sign{display:flex; justify-content:space-around; gap:18px; margin-top:8px;}
+.paper[data-moe] .m-sign .sg{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; text-align:center;}
+.paper[data-moe] .m-sign .sg b{font-weight:800;}
+.paper[data-moe] .m-sign .m-in{border-bottom:1px dotted #777; border-radius:0; min-width:9em;}
+.paper[data-moe] .m-p2{margin-top:16px; padding-top:12px; border-top:2px dashed #c9ced6;}
+
+.paper.pv[data-moe]{width:210mm; max-width:none; min-height:297mm; padding:7mm !important; border:0; border-radius:0; overflow:visible; box-shadow:0 10px 30px -12px rgba(11,29,58,.5);}
+
+/* preview (A4 box) and print share the same compact sizes, so what the preview measures is what prints */
+%S%{font-size:8.2pt; line-height:1.45; overflow:visible;}
+%S% .m-banner{width:auto; height:20mm; max-width:100%; aspect-ratio:1860/230; margin:0 auto 2mm;}
+%S% .m-t{min-width:0; margin-bottom:2mm;}
+%S% .m-t th, %S% .m-t td{padding:1px 4px;}
+%S% .m-t th{font-size:9.5pt;}
+%S% .m-info td{font-size:9.5pt;}
+%S% .m-week td{padding:0 3px;}
+%S% .m-in{padding:0;}
+%S% .m-act{margin-bottom:1.2mm;}
+%S% .m-main .m-body > td{font-size:7.8pt; line-height:1.4;}
+%S% .m-chk li{margin-bottom:.2mm; font-size:7.2pt; line-height:1.3;}
+%S% .m-o{margin-bottom:1.4mm;}
+%S% .m-prior td, %S% .m-mis td{font-size:7.8pt; line-height:1.4;}
+%S% .m-ev{margin-bottom:1.4mm;}
+%S% .m-sign{margin-top:2mm; gap:8mm;}
+%S% .m-notes td{height:12mm;}
+%S% .m-p2{margin-top:0; padding-top:0; border-top:0;}
+%S% .m-eval .diffedit{font-size:8pt; min-height:1.6em;}
+%S% .note.ai{font-size:7.8pt; padding:4px 6px;}
+
+@media print{
+  .paper.sheet[data-moe]{padding:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; background:#fff !important; max-width:none !important; overflow:visible !important;}
+  .paper[data-moe] .m-in::placeholder{color:transparent;}
+  .paper[data-moe] .m-week .wd.emp{visibility:hidden;}
+  .paper[data-moe] .m-in:hover, .paper[data-moe] .m-in:focus{background:transparent; box-shadow:none;}
+  .paper[data-moe] .m-p2{break-before:page;}
+  .paper[data-moe] tr.m-body{break-inside:auto;}
+  .paper[data-moe] tr.m-head, .paper[data-moe] tr.m-head2{break-after:avoid;}
+  .paper[data-moe] .m-act, .paper[data-moe] .m-ev, .paper[data-moe] .m-o, .paper[data-moe] .m-info, .paper[data-moe] .m-week, .paper[data-moe] .m-sign, .paper[data-moe] .m-prior, .paper[data-moe] .m-mis{break-inside:avoid;}
+  .paper[data-moe] .m-chk li:hover{background:none;}
+}
