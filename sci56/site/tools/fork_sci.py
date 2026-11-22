@@ -207,6 +207,66 @@ _one('تختلف من مدرسة لأخرى، وتُحفظ لكل دروسك', '
 _one('.seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}',
      '.seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}\n.seg.seg5{grid-template-columns:repeat(5,minmax(0,1fr)); margin-bottom:14px;}')
 
+# ---- deletable / editable bits: formative-evaluation items can be deleted (and restored), signature labels can be edited, deleted and restored ----
+_one('function flowCell(r, col, strip){',
+     '/* a formative item whose text was cleared (or deleted with the x) is gone: no bullet on screen, nothing in print / Word */\n'
+     'function evGone(r){ return !!r.ed.eval && !plainText(r.eval).trim(); }\n'
+     'const SIG = [["teacher", "معلم المادة", "اسم معلم المادة"], ["supervisor", "مشرف المادة", "اسم مشرف المادة"], ["principal", "مدير المدرسة", "اسم مدير المدرسة"]];\n'
+     'function sigLabel(m, k, def){ return String((m.sigLab && m.sigLab[k]) || "").trim() || def; }\n'
+     'function signsHTML(m){\n'
+     '  const off = m.sigOff || {}, items = SIG.filter(([k]) => !off[k]), edited = k => !!String((m.sigLab && m.sigLab[k]) || "").trim();\n'
+     '  const cells = items.map(([k, def, ph]) => `<div class="sg" data-sg="${k}"><b contenteditable="true" spellcheck="false" data-sglab="${k}" aria-label="اسم الخانة"${edited(k) ? \' class="edited"\' : ""}>${escapeHTML(sigLabel(m, k, def))}</b><button type="button" class="sg-x no-print" data-sgdel="${k}" title="حذف هذه الخانة" aria-label="حذف هذه الخانة">×</button><input data-meta="${k}" value="${escapeHTML(m[k] || "")}" placeholder="${ph}"${k === "teacher" ? \' autocomplete="name"\' : ""}></div>`).join("");\n'
+     '  const back = SIG.some(([k]) => off[k]) ? `<button type="button" class="sg-restore no-print" data-sgrestore="1">↺ استعادة الخانات المحذوفة</button>` : "";\n'
+     '  return `<div class="signs${items.length ? "" : " none"}" style="--n:${Math.max(1, items.length)}">${cells}${back}</div>`;\n'
+     '}\n'
+     'function flowCell(r, col, strip){')
+_one('  const evals = pl.flow.length ? `<ul class="ul">${pl.flow.map((r, i) => { const first = multi',
+     '  const evNone = pl.flow.filter(evGone).length;\n  const evals = pl.flow.length ? `<ul class="ul">${pl.flow.map((r, i) => { if (evGone(r)) return ""; const first = multi')
+_one('<li class="scr-only" data-rid="${escapeHTML(r.id)}">${flowCell(r, "eval", false)}</li>`; }).join("")}</ul>` : `<span class="empty-v">—</span>`;',
+     '<li class="scr-only" data-rid="${escapeHTML(r.id)}">${flowCell(r, "eval", false)}<button type="button" class="li-x no-print" data-evdel="${escapeHTML(r.id)}" title="حذف هذا البند" aria-label="حذف هذا البند">×</button></li>`; }).join("")}</ul>${evNone ? `<button type="button" class="ev-restore no-print" data-evrestore="1">↺ استعادة البنود المحذوفة (${evNone})</button>` : ""}` : `<span class="empty-v">—</span>`;')
+_rx(r'      <div class="signs">\n        <label class="sg"><b>معلم المادة</b>.*?\n      </div>\n    <span class="fd l"', '      ${signsHTML(m)}\n    <span class="fd l"')
+_one('pl.flow.forEach(r => L.push(`- (${r.code}) ${plainText(r.eval)', 'pl.flow.filter(r => !evGone(r)).forEach(r => L.push(`- (${r.code}) ${plainText(r.eval)')
+_one('const evals = pl.flow.length ? pl.flow.map((r, i, arr) => ph(r, i, arr)', 'const evR = pl.flow.filter(r => !evGone(r)), evals = evR.length ? evR.map((r, i, arr) => ph(r, i, arr)')
+_rxg(r'    const sgw = Math\.floor\(9638 / 3\);\n    const sg = ([^\n]*)\n    b \+= table\(\[sgw, sgw, 9638 - sgw \* 2\][^\n]*\n',
+     lambda m: ('    const sgI = SIG.filter(([k]) => !(m.sigOff || {})[k]), sgw = Math.floor(9638 / Math.max(1, sgI.length));\n'
+                '    const sgWs = sgI.map((_, i) => i === sgI.length - 1 ? 9638 - sgw * (sgI.length - 1) : sgw);\n'
+                '    const sg = ' + m.group(1) + '\n'
+                '    if (sgI.length) b += table(sgWs, [sgI.map(([k, def], i) => sg(sigLabel(m, k, def), m[k], sgWs[i]))], { style: "none" });\n'))
+_one('    const t = e.target, rec = getRec(state.key);\n    if (t.dataset && t.dataset.week){',
+     '    const t = e.target, rec = getRec(state.key);\n'
+     '    if (t.dataset && t.dataset.sglab){ (store.meta.sigLab = store.meta.sigLab || {})[t.dataset.sglab] = t.innerText.replace(/\\s+/g, " ").trim(); scheduleSave(); return; }\n'
+     '    if (t.dataset && t.dataset.week){')
+_one('    const rm = e.target.closest("[data-rm-ai]");',
+     '    const dEv = e.target.closest("[data-evdel]");\n'
+     '    if (dEv){ getRec(state.key).edits["f:" + dEv.dataset.evdel + ":eval"] = ""; touch(); renderOutput(); return; }\n'
+     '    if (e.target.closest("[data-evrestore]")){ const ed = getRec(state.key).edits; Object.keys(ed).forEach(k => { if (/^f:.*:eval$/.test(k) && !String(ed[k]).trim()) delete ed[k]; }); touch(); renderOutput(); return; }\n'
+     '    const dSg = e.target.closest("[data-sgdel]");\n'
+     '    if (dSg){ (store.meta.sigOff = store.meta.sigOff || {})[dSg.dataset.sgdel] = true; persist(); renderOutput(); return; }\n'
+     '    if (e.target.closest("[data-sgrestore]")){ store.meta.sigOff = {}; persist(); renderOutput(); return; }\n'
+     '    const rm = e.target.closest("[data-rm-ai]");')
+_one('  root.addEventListener("keydown", e => { if ((e.key === "Enter"',
+     '  root.addEventListener("focusout", e => { const el = e.target.closest && e.target.closest(\'[data-edit$=":eval"]\'); if (el && !el.innerText.trim()) renderOutput(); });\n'
+     '  root.addEventListener("keydown", e => { if ((e.key === "Enter"')
+_one('.sg input::placeholder{color:#B5AE9C; font-weight:500;}',
+     '.sg input::placeholder{color:#B5AE9C; font-weight:500;}\n'
+     '.signs{grid-template-columns:repeat(var(--n,3),minmax(0,1fr));}\n'
+     '.sg{position:relative;}\n'
+     '.sg b[contenteditable]{padding:0 8px; border-radius:6px; outline:none; cursor:text; min-width:3em;}\n'
+     '.sg b[contenteditable]:hover{background:rgba(212,165,72,.12); box-shadow:inset 0 0 0 1px rgba(212,165,72,.55);}\n'
+     '.sg b[contenteditable]:focus{background:#fff; box-shadow:inset 0 0 0 1.5px var(--gold);}\n'
+     '.sg b[contenteditable].edited{box-shadow:inset 0 -2px 0 var(--gold);}\n'
+     '.sg-x, .li-x{width:20px; height:20px; padding:0; display:none; align-items:center; justify-content:center; border:1px solid #D8CBA6; border-radius:50%; background:#fff; color:#9A6B1E; font-size:15px; line-height:1; cursor:pointer;}\n'
+     '.sg-x{position:absolute; top:-6px; inset-inline-end:2px;}\n'
+     '.ul > li.scr-only{padding-inline-end:24px;}\n'
+     '.li-x{position:absolute; top:.15em; inset-inline-end:0;}\n'
+     '.sg:hover .sg-x, .sg:focus-within .sg-x, li.scr-only:hover .li-x, li.scr-only:focus-within .li-x{display:inline-flex;}\n'
+     '.sg-x:hover, .li-x:hover{background:#FDE8E8; border-color:#E49A9A; color:#B42318;}\n'
+     '@media (hover:none){ .sg-x, .li-x{display:inline-flex;} }\n'
+     '.ev-restore, .sg-restore{justify-self:center; margin-top:6px; padding:4px 12px; border:1px dashed #CDBF9B; border-radius:99px; background:#FFFBF1; color:#7A5A16; font-size:.78rem; font-weight:700; cursor:pointer;}\n'
+     '.signs.none{display:flex; justify-content:center;}\n'
+     '.paper.pv .signs.none{display:none !important;}\n'
+     '@media print{ .signs.none{display:none !important;} }')
+
 _j = t.index('</style>', t.index('THE PREP SHEET'))
 t = t[:_j] + open(os.path.join(HERE, 'src', 'brand_moe.css'), encoding='utf-8').read() + open(os.path.join(HERE, 'src', 'brand_sheet.css'), encoding='utf-8').read() + t[_j:]
 for _bad in ('السلطان قابوس العالي', 'معهد العلوم', 'العلوم الإسلامية', 'ديوان البلاط', 'LOGO_RED', 'LOGO_GOLD', 'المعهد', 'logoBytes'):

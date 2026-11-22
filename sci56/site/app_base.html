@@ -959,6 +959,23 @@ dialog.present{width:100vw; height:100vh; height:100dvh; max-width:none; max-hei
 .sg input{width:100%; max-width:220px; text-align:center; border:0; border-bottom:1.5px dashed #CDBF9B; background:transparent; font-weight:700; font-size:.9rem; color:var(--ink); padding:2px 0; border-radius:0;}
 .sg input:focus{outline:none; border-bottom-color:var(--gold);}
 .sg input::placeholder{color:#B5AE9C; font-weight:500;}
+.signs{grid-template-columns:repeat(var(--n,3),minmax(0,1fr));}
+.sg{position:relative;}
+.sg b[contenteditable]{padding:0 8px; border-radius:6px; outline:none; cursor:text; min-width:3em;}
+.sg b[contenteditable]:hover{background:rgba(212,165,72,.12); box-shadow:inset 0 0 0 1px rgba(212,165,72,.55);}
+.sg b[contenteditable]:focus{background:#fff; box-shadow:inset 0 0 0 1.5px var(--gold);}
+.sg b[contenteditable].edited{box-shadow:inset 0 -2px 0 var(--gold);}
+.sg-x, .li-x{width:20px; height:20px; padding:0; display:none; align-items:center; justify-content:center; border:1px solid #D8CBA6; border-radius:50%; background:#fff; color:#9A6B1E; font-size:15px; line-height:1; cursor:pointer;}
+.sg-x{position:absolute; top:-6px; inset-inline-end:2px;}
+.ul > li.scr-only{padding-inline-end:24px;}
+.li-x{position:absolute; top:.15em; inset-inline-end:0;}
+.sg:hover .sg-x, .sg:focus-within .sg-x, li.scr-only:hover .li-x, li.scr-only:focus-within .li-x{display:inline-flex;}
+.sg-x:hover, .li-x:hover{background:#FDE8E8; border-color:#E49A9A; color:#B42318;}
+@media (hover:none){ .sg-x, .li-x{display:inline-flex;} }
+.ev-restore, .sg-restore{justify-self:center; margin-top:6px; padding:4px 12px; border:1px dashed #CDBF9B; border-radius:99px; background:#FFFBF1; color:#7A5A16; font-size:.78rem; font-weight:700; cursor:pointer;}
+.signs.none{display:flex; justify-content:center;}
+.paper.pv .signs.none{display:none !important;}
+@media print{ .signs.none{display:none !important;} }
 @media screen and (max-width:720px){ .signs{grid-template-columns:1fr; gap:10px;} }
 @media print{
   .sh-bottom{break-before:page;}
@@ -2907,6 +2924,16 @@ function weekData(pl){
 function icon(id){ return `<svg class="ic" aria-hidden="true"><use href="#${id}"/></svg>`; }
 function edSpan(pl, k){ return `<span ${editAttrs("s:" + k, pl.tEd[k])}>${pl.tEd[k] ? escapeHTML(pl.t[k]) : richText(pl.t[k])}</span>`; }
 function stripPhase(s){ return String(s || "").replace(/^\s*<strong>\s*\[[^\]]*\]\s*<\/strong>\s*/i, ""); }
+/* a formative item whose text was cleared (or deleted with the x) is gone: no bullet on screen, nothing in print / Word */
+function evGone(r){ return !!r.ed.eval && !plainText(r.eval).trim(); }
+const SIG = [["teacher", "معلم المادة", "اسم معلم المادة"], ["supervisor", "مشرف المادة", "اسم مشرف المادة"], ["principal", "مدير المدرسة", "اسم مدير المدرسة"]];
+function sigLabel(m, k, def){ return String((m.sigLab && m.sigLab[k]) || "").trim() || def; }
+function signsHTML(m){
+  const off = m.sigOff || {}, items = SIG.filter(([k]) => !off[k]), edited = k => !!String((m.sigLab && m.sigLab[k]) || "").trim();
+  const cells = items.map(([k, def, ph]) => `<div class="sg" data-sg="${k}"><b contenteditable="true" spellcheck="false" data-sglab="${k}" aria-label="اسم الخانة"${edited(k) ? ' class="edited"' : ""}>${escapeHTML(sigLabel(m, k, def))}</b><button type="button" class="sg-x no-print" data-sgdel="${k}" title="حذف هذه الخانة" aria-label="حذف هذه الخانة">×</button><input data-meta="${k}" value="${escapeHTML(m[k] || "")}" placeholder="${ph}"${k === "teacher" ? ' autocomplete="name"' : ""}></div>`).join("");
+  const back = SIG.some(([k]) => off[k]) ? `<button type="button" class="sg-restore no-print" data-sgrestore="1">↺ استعادة الخانات المحذوفة</button>` : "";
+  return `<div class="signs${items.length ? "" : " none"}" style="--n:${Math.max(1, items.length)}">${cells}${back}</div>`;
+}
 function flowCell(r, col, strip){
   const v = r.ed[col] ? escapeHTML(r[col]) : richText(strip ? stripPhase(r[col]) : r[col]);
   return `<span ${editAttrs("f:" + r.id + ":" + col, r.ed[col])}>${v}</span>`;
@@ -2975,7 +3002,8 @@ function formHTML(pl, splits){
   const seenP = {};
   const nq = x => plainText(x || "").replace(/[؟?.،:«»\s]+/g, " ").trim();
   const exQ = nq(evalParts(pl.t.exit).q);
-  const evals = pl.flow.length ? `<ul class="ul">${pl.flow.map((r, i) => { const first = multi && !r.bk && !seenP[r.period]; if (first) seenP[r.period] = 1; const dupExit = exQ && i === pl.flow.length - 1 && !r.ed.eval && nq(evalParts(r.eval).q) === exQ; return (r.bk || dupExit ? "" : evalPrint(r, first ? `<span class="plb">الحصة ${r.period}</span> ` : "")) + `<li class="scr-only" data-rid="${escapeHTML(r.id)}">${flowCell(r, "eval", false)}</li>`; }).join("")}</ul>` : `<span class="empty-v">—</span>`;
+  const evNone = pl.flow.filter(evGone).length;
+  const evals = pl.flow.length ? `<ul class="ul">${pl.flow.map((r, i) => { if (evGone(r)) return ""; const first = multi && !r.bk && !seenP[r.period]; if (first) seenP[r.period] = 1; const dupExit = exQ && i === pl.flow.length - 1 && !r.ed.eval && nq(evalParts(r.eval).q) === exQ; return (r.bk || dupExit ? "" : evalPrint(r, first ? `<span class="plb">الحصة ${r.period}</span> ` : "")) + `<li class="scr-only" data-rid="${escapeHTML(r.id)}">${flowCell(r, "eval", false)}<button type="button" class="li-x no-print" data-evdel="${escapeHTML(r.id)}" title="حذف هذا البند" aria-label="حذف هذا البند">×</button></li>`; }).join("")}</ul>${evNone ? `<button type="button" class="ev-restore no-print" data-evrestore="1">↺ استعادة البنود المحذوفة (${evNone})</button>` : ""}` : `<span class="empty-v">—</span>`;
   const objs = pl.objs.length ? `<ul class="ul plain">${pl.objs.map(o => `<li><span class="oc-b">${codeHTML(objLabel(o))}</span>${ltrChem(o.text)}</li>`).join("")}</ul>` : `<p class="warn-text">لم يُحدَّد أي هدف.</p>`;
   const chosen = new Set(pl.strategies), locked = new Set(pl.lockedStrats);
   const stratList = [...new Set((pl.def ? [pl.def.label] : []).concat(pl.lockedStrats, allStrategies(pl.key)))];
@@ -3026,11 +3054,7 @@ function formHTML(pl, splits){
     </section>
 
     <div class="sh-foot"><span class="fd r" aria-hidden="true">${flasksSVG()}</span>
-      <div class="signs">
-        <label class="sg"><b>معلم المادة</b><input data-meta="teacher" value="${escapeHTML(m.teacher || "")}" placeholder="اسم معلم المادة" autocomplete="name"></label>
-        <label class="sg"><b>مشرف المادة</b><input data-meta="supervisor" value="${escapeHTML(m.supervisor || "")}" placeholder="اسم مشرف المادة"></label>
-        <label class="sg"><b>مدير المدرسة</b><input data-meta="principal" value="${escapeHTML(m.principal || "")}" placeholder="اسم مدير المدرسة"></label>
-      </div>
+      ${signsHTML(m)}
     <span class="fd l" aria-hidden="true">${moleculeSVG()}</span></div>
   </article>`;
 }
@@ -3126,7 +3150,7 @@ function planAsText(pl){
   pl.flow.forEach((r, i, arr) => { if (pl.split && (i === 0 || arr[i - 1].period !== r.period)) L.push(`— الحصة ${r.period} —`); L.push(`• ${r.time} (${r.code}${r.strat ? "، استراتيجية: " + r.strat : ""})`); L.push(`  المعلم: ${plainText(pl.def && !r.ed.teacher ? stripPhase(r.teacher) : r.teacher)}`); L.push(`  المتعلم: ${plainText(r.student)}`); });
   L.push(""); L.push(`الوسائل ومصادر التعلم: ${pl.t.resources}`);
   if (pl.opts.lab) L.push(`النشاط العملي والسلامة: ${pl.t.lab}`);
-  L.push(""); L.push("التقويم التكويني:"); pl.flow.forEach(r => L.push(`- (${r.code}) ${plainText(r.eval).replace(/\n/g, " | ")}`));
+  L.push(""); L.push("التقويم التكويني:"); pl.flow.filter(r => !evGone(r)).forEach(r => L.push(`- (${r.code}) ${plainText(r.eval).replace(/\n/g, " | ")}`));
   L.push(""); L.push(`الطلاب ذوو التحصيل المنخفض (علاجي): ${plainText(pl.diff.support) || "—"}`); L.push(`الطلاب ذوو التحصيل المرتفع (إثرائي): ${plainText(pl.diff.enrich) || "—"}`);
   pl.ai.forEach(it => L.push(`إثراء مقترح (${it.title}): ${it.text}`));
   L.push(""); L.push(`التقويم الختامي: ${plainText(pl.t.exit)}`);
@@ -3355,15 +3379,16 @@ const DOCX = (() => {
 
     const Wb = [3000, 2300, 2600, 1738];
     const diffT = lbl("الطلاب ذوو التحصيل الدراسي المنخفض (علاجي):", pl.diff.support || "—", "rose") + lbl("الطلاب ذوو التحصيل الدراسي المرتفع (إثرائي):", pl.diff.enrich || "—", "rose") + pl.ai.map(it => lbl(it.title + ":", it.text, "rose")).join("");
-    const evals = pl.flow.length ? pl.flow.map((r, i, arr) => ph(r, i, arr) + p(run(`${r.code}`, { bold: true, size: 17, color: C.brown[1] }), { after: 10, keepNext: true }) + P(r.eval)).join("") : P("—");
+    const evR = pl.flow.filter(r => !evGone(r)), evals = evR.length ? evR.map((r, i, arr) => ph(r, i, arr) + p(run(`${r.code}`, { bold: true, size: 17, color: C.brown[1] }), { after: 10, keepNext: true }) + P(r.eval)).join("") : P("—");
     b += table(Wb, [
       [H("05  التقويم التكويني", "brown", Wb[0]), H("06  نشاط إثرائي / علاجي / تفريد التعليم", "rose", Wb[1]), H("07  التقويم الختامي", "teal", Wb[2]), H("08  الواجب المنزلي", "bluek", Wb[3])],
       { height: 9000, split: true, cells: [B(evals, "brown", Wb[0]), B(diffT, "rose", Wb[1]), B(P(pl.t.exit), "teal", Wb[2]), B(P(pl.t.homework), "bluek", Wb[3])] }
     ], { style: "grid", headerRow: true });
 
-    const sgw = Math.floor(9638 / 3);
+    const sgI = SIG.filter(([k]) => !(m.sigOff || {})[k]), sgw = Math.floor(9638 / Math.max(1, sgI.length));
+    const sgWs = sgI.map((_, i) => i === sgI.length - 1 ? 9638 - sgw * (sgI.length - 1) : sgw);
     const sg = (k, v, w) => cell(p(run(k, { bold: true, size: 20, color: "0B1D3A" }), { center: true, after: 60, before: 160 }) + p(run(v ? `أ/ ${String(v).replace(/^أ[./]\s*/, "")}` : "....................................", { size: 19, color: v ? "14213D" : "9AA3B5" }), { center: true, after: 0 }), w);
-    b += table([sgw, sgw, 9638 - sgw * 2], [[sg("معلم المادة", m.teacher, sgw), sg("مشرف المادة", m.supervisor, sgw), sg("مدير المدرسة", m.principal, 9638 - sgw * 2)]], { style: "none" });
+    if (sgI.length) b += table(sgWs, [sgI.map(([k, def], i) => sg(sigLabel(m, k, def), m[k], sgWs[i]))], { style: "none" });
 
     const sect = `<w:sectPr><w:footerReference w:type="default" r:id="rIdFtr"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/><w:bidi/></w:sectPr>`;
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${b}${sect}</w:body></w:document>`;
@@ -3677,6 +3702,7 @@ function bind(){
   const root = $("#planRoot");
   root.addEventListener("input", e => {
     const t = e.target, rec = getRec(state.key);
+    if (t.dataset && t.dataset.sglab){ (store.meta.sigLab = store.meta.sigLab || {})[t.dataset.sglab] = t.innerText.replace(/\s+/g, " ").trim(); scheduleSave(); return; }
     if (t.dataset && t.dataset.week){
       const [i, k] = t.dataset.week.split(":"); const wk = rec.week || (rec.week = [{}, {}, {}, {}, {}]);
       (wk[i] || (wk[i] = {}))[k] = t.value; if (k === "codes") t.className = fitCls(t.value); touch(); return;
@@ -3697,6 +3723,7 @@ function bind(){
       const sec = el.closest(".diffsec"); if (sec) sec.classList.toggle("no-print", !(rec.diff.support || rec.diff.enrich));
     }
   });
+  root.addEventListener("focusout", e => { const el = e.target.closest && e.target.closest('[data-edit$=":eval"]'); if (el && !el.innerText.trim()) renderOutput(); });
   root.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.strat){ e.preventDefault(); e.target.click(); } });
   root.addEventListener("paste", e => {
     if (!e.target.closest || !e.target.closest("[contenteditable]")) return;
@@ -3706,6 +3733,12 @@ function bind(){
   });
   root.addEventListener("click", e => {
     if (e.target.closest("[data-tip-off]")){ store.meta.tipOff = true; persist(); const tp = $(".tip", root); if (tp) tp.remove(); return; }
+    const dEv = e.target.closest("[data-evdel]");
+    if (dEv){ getRec(state.key).edits["f:" + dEv.dataset.evdel + ":eval"] = ""; touch(); renderOutput(); return; }
+    if (e.target.closest("[data-evrestore]")){ const ed = getRec(state.key).edits; Object.keys(ed).forEach(k => { if (/^f:.*:eval$/.test(k) && !String(ed[k]).trim()) delete ed[k]; }); touch(); renderOutput(); return; }
+    const dSg = e.target.closest("[data-sgdel]");
+    if (dSg){ (store.meta.sigOff = store.meta.sigOff || {})[dSg.dataset.sgdel] = true; persist(); renderOutput(); return; }
+    if (e.target.closest("[data-sgrestore]")){ store.meta.sigOff = {}; persist(); renderOutput(); return; }
     const rm = e.target.closest("[data-rm-ai]");
     if (rm){ getRec(state.key).ai.splice(parseInt(rm.dataset.rmAi, 10), 1); touch(); renderOutput(); return; }
     const sg = e.target.closest("[data-strat]");
