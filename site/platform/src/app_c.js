@@ -233,7 +233,7 @@ function boot(){
    '<section id="v-classes" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-summary" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-student" class="hide" style="display:flex;flex-direction:column;gap:22px"></section></div>'+
   '<div class="lv hide" id="lv"><div id="lfWrap"><iframe id="lf" title="الدرس" allow="fullscreen" referrerpolicy="no-referrer"></iframe>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="hint" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+
-   '<aside class="drawer open" id="drawer" aria-label="لوحة الصف"></aside></div></div>');
+   '<aside class="drawer" id="drawer" aria-label="لوحة الصف"></aside></div></div>');
   $('#lf').addEventListener('load',patchLesson); bindPick(); if(window.ResizeObserver) new ResizeObserver(layoutFrame).observe($('#lfWrap')); window.addEventListener('resize',layoutFrame);
   document.addEventListener('click',onDocClick); document.addEventListener('change',onDocChange);
   document.addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.ccard.add,tr.lk')){e.preventDefault(); e.target.click()} });

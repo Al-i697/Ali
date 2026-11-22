@@ -43,7 +43,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 sub,sup{line-height:0}
 
 /* ===== app frame ===== */
-.app{position:fixed; inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0; display:grid; grid-template-rows:60px 1fr 68px}
+.app{position:fixed; inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0; display:grid; grid-template-rows:60px 1fr 68px; grid-template-columns:minmax(0,1fr)}
 .top,.bot{background:var(--c-bar); color:var(--c-bar-ink); display:flex; align-items:center; gap:16px; padding:0 20px}
 .brand{display:flex; align-items:center; gap:12px; font-family:var(--font-display); font-weight:800; font-size:22px; white-space:nowrap}
 .brand i{font-style:normal; width:38px; height:42px; border-radius:9px; background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-size:21px; position:relative}
@@ -424,6 +424,24 @@ p{margin:0}
   .brand span em,.where small{display:none}
   .nav{min-width:92px; padding:0 14px; font-size:18px}
   .prog .seg.gap{margin-inline-start:4px}
+}
+
+/* ===== laptops and small windows (teacher's report: the page was cut off): the top bar never gets wider than the frame.
+   Under 1240 px the buttons keep only their icons and the long lesson name hides; the progress bar always keeps room; nothing overflows the frame. ===== */
+.top,.bot{min-width:0; overflow:hidden}
+.prog{min-width:150px}
+.view{min-width:0}
+@media (max-width:1240px){
+  .tbtn span{display:none}
+  .tbtn{min-width:46px; padding:0 11px}
+  .brand span em{display:none}
+  .top,.bot{gap:10px; padding:0 14px}
+  .nav{min-width:128px; padding:0 16px}
+}
+@media (max-width:900px){
+  .brand span{display:none}
+  .top{gap:6px}
+  .where small{display:none}
 }
 
 /* the platform shell: one frame for the home page and the teacher's records; the lesson view keeps the lesson player's frame */
@@ -933,7 +951,13 @@ select.inp{appearance:auto}
 .lv #lfWrap{position:relative; flex:1; min-width:0; overflow:hidden}
 .lv iframe{position:absolute; top:0; right:0; transform-origin:top right; border:0; background:var(--c-bg)}
 .lv .drawer{transition:none}
-.lv .drawer{height:100%}
+/* the class panel floats over the lesson (teacher's request): it takes no room from the page, stays in front, and moves by its title */
+.lv .drawer{position:absolute; z-index:60; left:16px; top:68px; width:clamp(340px,30vw,440px); height:min(calc(100% - 146px),760px); overflow:visible; display:none; flex:none}
+.lv .drawer.open{display:block; width:clamp(340px,30vw,440px)}
+.lv .drawer .dr-in{width:100%; height:100%; padding:0}
+.lv .drawer .dr{background:linear-gradient(160deg,rgb(var(--p1)),rgb(var(--d2))); box-shadow:0 22px 70px rgba(0,0,0,.65),0 0 0 2px rgba(var(--t2),.4)}
+.lv .drawer .dr-h{cursor:grab; touch-action:none; user-select:none}
+.lv .drawer .dr-h:active{cursor:grabbing}
 .rt tr.lk td:first-child{font-weight:800}
 .hint{font:600 17px var(--font-body); color:var(--muted)}
 
@@ -2290,7 +2314,7 @@ function renderCourse(){
 }
 
 /* ---------- lesson host: the lesson runs in a frame, the class drawer sits beside it ---------- */
-var host={id:'',w:null,d:null,poll:0,open:true,openRow:null,query:'',restAsk:0,slides:{},bgPrev:undefined,bgSaved:null};
+var host={id:'',w:null,d:null,poll:0,open:false,openRow:null,query:'',restAsk:0,slides:{},bgPrev:undefined,bgSaved:null};
 function bgKey(){try{if(host.bgSaved===null) localStorage.removeItem('l31fx'); else localStorage.setItem('l31fx',host.bgSaved)}catch(e){}}
 function pauseBg(){ if(host.bgPrev!==undefined) return; host.bgPrev=BG.tier(); try{host.bgSaved=localStorage.getItem('l31fx')}catch(e){host.bgSaved=null} BG.setTier(0); bgKey() }
 function resumeBg(){ if(host.bgPrev===undefined) return; BG.setTier(host.bgPrev); bgKey(); if(host.bgSaved===null) BG.auto(true); host.bgPrev=undefined }
@@ -2339,7 +2363,7 @@ function focusLesson(){ try{ if(host.w) host.w.focus() }catch(e){} }
 function hostFullscreen(){ try{ var p=document.fullscreenElement?document.exitFullscreen():$('#lv').requestFullscreen(); if(p&&p.catch) p.catch(function(){toast('تعذّر ملء الشاشة من هذه الصفحة. استخدم F11 في المتصفح.')}) }catch(e){} }
 function toggleDrawer(){ host.open=!host.open; $('#drawer').classList.toggle('open',host.open); layoutFrame(); updateClassBtn(); if(!host.open) focusLesson() }
 /* the lesson player needs about 1000 px of width (its top bar and footer), so when the drawer leaves less the frame keeps that width and is scaled down to fit */
-var MINW=1100;
+var MINW=960;
 function layoutFrame(){
   var wrap=$('#lfWrap'), f=$('#lf'); if(!wrap||!f) return; var W=wrap.clientWidth, H=wrap.clientHeight; if(!W||!H) return;
   var s=Math.min(1,W/MINW); f.style.width=(s<1?MINW:W)+'px'; f.style.height=(H/s)+'px'; f.style.transform=s<1?'scale('+s+')':'';
@@ -2381,6 +2405,15 @@ function buildDrawer(){
   $('#drawer').addEventListener('click',onDrawerClick);
   $('#drawer').addEventListener('change',onDrawerChange);
   $('#dQ').addEventListener('input',function(e){host.query=e.target.value; renderList()});
+  /* the panel floats: drag it by its title bar (pointer events, so a finger, a pen and a mouse all work, even over the lesson frame) */
+  var dh=$('#drawer .dr-h'); if(dh) dh.addEventListener('pointerdown',function(e){
+    if(e.target.closest('select,button,input,option')) return;
+    var dr=$('#drawer'), r=dr.getBoundingClientRect(), pr=$('#lv').getBoundingClientRect(), ox=e.clientX-r.left, oy=e.clientY-r.top;
+    try{dh.setPointerCapture(e.pointerId)}catch(x){}
+    function mv(ev){ dr.style.left=Math.max(0,Math.min(pr.width-r.width,ev.clientX-pr.left-ox))+'px'; dr.style.top=Math.max(0,Math.min(Math.max(0,pr.height-r.height),ev.clientY-pr.top-oy))+'px' }
+    function up(){ dh.removeEventListener('pointermove',mv); dh.removeEventListener('pointerup',up); dh.removeEventListener('pointercancel',up) }
+    dh.addEventListener('pointermove',mv); dh.addEventListener('pointerup',up); dh.addEventListener('pointercancel',up);
+  });
 }
 function renderCtx(){
   var l=LESSONS[ctx.lesson]; $('#dLs').textContent=(l?ar(l.code):'')+(ctx.slide?' · شريحة '+ar(ctx.slide):''); $('#dLs').title=l?l.title:''; updateClassBtn();
@@ -2703,7 +2736,7 @@ function boot(){
    '<section id="v-classes" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-summary" class="hide" style="display:flex;flex-direction:column;gap:22px"></section><section id="v-student" class="hide" style="display:flex;flex-direction:column;gap:22px"></section></div>'+
   '<div class="lv hide" id="lv"><div id="lfWrap"><iframe id="lf" title="الدرس" allow="fullscreen" referrerpolicy="no-referrer"></iframe>'+
    '<div class="pick hide" id="pick"><div class="glass box"><div class="hint" style="font:700 22px var(--font-display)">الطالب المختار</div><div class="who" id="who"></div><div class="row" id="pickBtns" style="justify-content:center"><button class="gbtn" id="pickYes" type="button">شارك</button><button class="sbtn" id="pickNo" type="button">اختر آخر</button><button class="sbtn" id="pickX" type="button">'+ic('close')+'إغلاق</button></div></div></div></div>'+
-   '<aside class="drawer open" id="drawer" aria-label="لوحة الصف"></aside></div></div>');
+   '<aside class="drawer" id="drawer" aria-label="لوحة الصف"></aside></div></div>');
   $('#lf').addEventListener('load',patchLesson); bindPick(); if(window.ResizeObserver) new ResizeObserver(layoutFrame).observe($('#lfWrap')); window.addEventListener('resize',layoutFrame);
   document.addEventListener('click',onDocClick); document.addEventListener('change',onDocChange);
   document.addEventListener('keydown',function(e){ if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('.ccard.add,tr.lk')){e.preventDefault(); e.target.click()} });

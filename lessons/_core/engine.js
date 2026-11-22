@@ -260,7 +260,6 @@ function boot(){
     '<div class="prog" id="prog" role="tablist" aria-label="شرائح الدرس"></div>'+
     (LESSON.home?'<a class="tbtn" id="bHome" href="'+LESSON.home+'" aria-label="كل الدروس"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg><span>الدروس</span></a>':'')+
     '<button class="tbtn" id="bFx" type="button" aria-label="الخلفية"><svg viewBox="0 0 24 24"><path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z"/></svg><span>كاملة</span></button>'+
-    (typeof STK!=='undefined'?STK.btn():'')+
     '<button class="tbtn" id="bNote" type="button" aria-label="ملاحظة المعلم"><svg viewBox="0 0 24 24"><path d="M5 4h14v12H9l-4 4z"/></svg><span>المعلم</span></button>'+
     '<button class="tbtn" id="bIdx" type="button" aria-label="فهرس الدرس"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>'+
     '<button class="tbtn" id="bFs" type="button" aria-label="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></header>'+

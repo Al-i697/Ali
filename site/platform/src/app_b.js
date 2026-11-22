@@ -1,5 +1,5 @@
 /* ---------- lesson host: the lesson runs in a frame, the class drawer sits beside it ---------- */
-var host={id:'',w:null,d:null,poll:0,open:true,openRow:null,query:'',restAsk:0,slides:{},bgPrev:undefined,bgSaved:null};
+var host={id:'',w:null,d:null,poll:0,open:false,openRow:null,query:'',restAsk:0,slides:{},bgPrev:undefined,bgSaved:null};
 function bgKey(){try{if(host.bgSaved===null) localStorage.removeItem('l31fx'); else localStorage.setItem('l31fx',host.bgSaved)}catch(e){}}
 function pauseBg(){ if(host.bgPrev!==undefined) return; host.bgPrev=BG.tier(); try{host.bgSaved=localStorage.getItem('l31fx')}catch(e){host.bgSaved=null} BG.setTier(0); bgKey() }
 function resumeBg(){ if(host.bgPrev===undefined) return; BG.setTier(host.bgPrev); bgKey(); if(host.bgSaved===null) BG.auto(true); host.bgPrev=undefined }
@@ -48,7 +48,7 @@ function focusLesson(){ try{ if(host.w) host.w.focus() }catch(e){} }
 function hostFullscreen(){ try{ var p=document.fullscreenElement?document.exitFullscreen():$('#lv').requestFullscreen(); if(p&&p.catch) p.catch(function(){toast('تعذّر ملء الشاشة من هذه الصفحة. استخدم F11 في المتصفح.')}) }catch(e){} }
 function toggleDrawer(){ host.open=!host.open; $('#drawer').classList.toggle('open',host.open); layoutFrame(); updateClassBtn(); if(!host.open) focusLesson() }
 /* the lesson player needs about 1000 px of width (its top bar and footer), so when the drawer leaves less the frame keeps that width and is scaled down to fit */
-var MINW=1100;
+var MINW=960;
 function layoutFrame(){
   var wrap=$('#lfWrap'), f=$('#lf'); if(!wrap||!f) return; var W=wrap.clientWidth, H=wrap.clientHeight; if(!W||!H) return;
   var s=Math.min(1,W/MINW); f.style.width=(s<1?MINW:W)+'px'; f.style.height=(H/s)+'px'; f.style.transform=s<1?'scale('+s+')':'';
@@ -90,6 +90,15 @@ function buildDrawer(){
   $('#drawer').addEventListener('click',onDrawerClick);
   $('#drawer').addEventListener('change',onDrawerChange);
   $('#dQ').addEventListener('input',function(e){host.query=e.target.value; renderList()});
+  /* the panel floats: drag it by its title bar (pointer events, so a finger, a pen and a mouse all work, even over the lesson frame) */
+  var dh=$('#drawer .dr-h'); if(dh) dh.addEventListener('pointerdown',function(e){
+    if(e.target.closest('select,button,input,option')) return;
+    var dr=$('#drawer'), r=dr.getBoundingClientRect(), pr=$('#lv').getBoundingClientRect(), ox=e.clientX-r.left, oy=e.clientY-r.top;
+    try{dh.setPointerCapture(e.pointerId)}catch(x){}
+    function mv(ev){ dr.style.left=Math.max(0,Math.min(pr.width-r.width,ev.clientX-pr.left-ox))+'px'; dr.style.top=Math.max(0,Math.min(Math.max(0,pr.height-r.height),ev.clientY-pr.top-oy))+'px' }
+    function up(){ dh.removeEventListener('pointermove',mv); dh.removeEventListener('pointerup',up); dh.removeEventListener('pointercancel',up) }
+    dh.addEventListener('pointermove',mv); dh.addEventListener('pointerup',up); dh.addEventListener('pointercancel',up);
+  });
 }
 function renderCtx(){
   var l=LESSONS[ctx.lesson]; $('#dLs').textContent=(l?ar(l.code):'')+(ctx.slide?' · شريحة '+ar(ctx.slide):''); $('#dLs').title=l?l.title:''; updateClassBtn();

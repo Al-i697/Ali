@@ -36,7 +36,7 @@ button{font:inherit; color:inherit; cursor:pointer}
 sub,sup{line-height:0}
 
 /* ===== app frame ===== */
-.app{position:fixed; inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0; display:grid; grid-template-rows:60px 1fr 68px}
+.app{position:fixed; inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0; display:grid; grid-template-rows:60px 1fr 68px; grid-template-columns:minmax(0,1fr)}
 .top,.bot{background:var(--c-bar); color:var(--c-bar-ink); display:flex; align-items:center; gap:16px; padding:0 20px}
 .brand{display:flex; align-items:center; gap:12px; font-family:var(--font-display); font-weight:800; font-size:22px; white-space:nowrap}
 .brand i{font-style:normal; width:38px; height:42px; border-radius:9px; background:var(--accent); color:var(--accent-ink); display:grid; place-items:center; font-size:21px; position:relative}
@@ -417,4 +417,22 @@ p{margin:0}
   .brand span em,.where small{display:none}
   .nav{min-width:92px; padding:0 14px; font-size:18px}
   .prog .seg.gap{margin-inline-start:4px}
+}
+
+/* ===== laptops and small windows (teacher's report: the page was cut off): the top bar never gets wider than the frame.
+   Under 1240 px the buttons keep only their icons and the long lesson name hides; the progress bar always keeps room; nothing overflows the frame. ===== */
+.top,.bot{min-width:0; overflow:hidden}
+.prog{min-width:150px}
+.view{min-width:0}
+@media (max-width:1240px){
+  .tbtn span{display:none}
+  .tbtn{min-width:46px; padding:0 11px}
+  .brand span em{display:none}
+  .top,.bot{gap:10px; padding:0 14px}
+  .nav{min-width:128px; padding:0 16px}
+}
+@media (max-width:900px){
+  .brand span{display:none}
+  .top{gap:6px}
+  .where small{display:none}
 }

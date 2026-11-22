@@ -44,8 +44,8 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
     await p.click('[data-slot="0|2"]'); await p.click('.menu button:has-text("10/3")'); await p.click('[data-nav=home]'); await p.waitForTimeout(300);
     const t=await p.innerText('#v-home .strip'); assert.ok(t.includes('حصصك اليوم')&&t.includes('الحصة ٢')&&t.includes('10/3'),t); await p.context().close();
   });
-async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-chem10-3-1'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500) }
-  async function openLesson(p){ await p.click('[data-start]'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500) }
+async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-chem10-3-1'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500); await p.frameLocator('#lf').locator('#bClass').click(); await p.waitForTimeout(350) }
+  async function openLesson(p){ await p.click('[data-start]'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(500); await p.frameLocator('#lf').locator('#bClass').click(); await p.waitForTimeout(350) }
   await T('lesson opens in a frame with the class button added to its top bar, drawer shows the roster',async()=>{
     const p=await page(); await addClass(p,'10/3',NAMES,'chem10'); await p.click('[data-nav=classes]'); await p.click('[data-slot="0|1"]'); await p.click('.menu button:has-text("10/3")'); await p.click('[data-nav=home]');
     await openLesson(p); assert.ok((await p.evaluate(()=>location.hash)).startsWith('#l-chem10-1-1')); assert.strictEqual(await p.locator('#slist .stu').count(),6);
@@ -85,8 +85,17 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
     await p.context().close();
   });
   await T('drawer closes and opens from the lesson top bar; with no class it offers to add one',async()=>{
-    const p=await page(); await p.goto(URL+'#l-chem10-3-2'); await p.waitForTimeout(2200); assert.ok((await p.innerText('#drawer')).includes('ما أضفت شعبة'));
-    await p.frameLocator('#lf').locator('#bClass').click(); await p.waitForTimeout(500); assert.ok(!(await p.getAttribute('#drawer','class')).includes('open')); await p.frameLocator('#lf').locator('#bClass').click(); assert.ok((await p.getAttribute('#drawer','class')).includes('open')); await p.context().close();
+    const p=await page(); await p.goto(URL+'#l-chem10-3-2'); await p.waitForTimeout(2200); assert.ok(!(await p.getAttribute('#drawer','class')).includes('open'),'the class panel starts closed: it floats over the lesson and takes no room');
+    await p.frameLocator('#lf').locator('#bClass').click(); await p.waitForTimeout(500); assert.ok((await p.getAttribute('#drawer','class')).includes('open')); assert.ok((await p.innerText('#drawer')).includes('ما أضفت شعبة'));
+    const fw=await p.evaluate(()=>[document.getElementById('lf').getBoundingClientRect().width,document.getElementById('lfWrap').getBoundingClientRect().width]); assert.strictEqual(fw[0],fw[1],'the lesson frame keeps its full width while the panel is open');
+    const h=await p.locator('#drawer .dr-h b').boundingBox(), r0=await p.locator('#drawer').boundingBox(); await p.mouse.move(h.x+h.width/2,h.y+h.height/2); await p.mouse.down(); await p.mouse.move(h.x+h.width/2+160,h.y+h.height/2+30,{steps:5}); await p.mouse.up(); const r1=await p.locator('#drawer').boundingBox(); assert.ok(r1.x-r0.x>100&&r1.y-r0.y>15,'the panel moves by its title bar '+JSON.stringify([r0,r1]));
+    const nb=await p.frameLocator('#lf').locator('#bNext').boundingBox(); assert.ok(nb, 'the Next button is reachable'); 
+    await p.frameLocator('#lf').locator('#bClass').click(); await p.waitForTimeout(300); assert.ok(!(await p.getAttribute('#drawer','class')).includes('open')); await p.frameLocator('#lf').locator('#bClass').click(); assert.ok((await p.getAttribute('#drawer','class')).includes('open')); await p.context().close();
+  });
+  await T('laptop windows: the lesson top bar never overflows the frame and keeps its progress bar (1366x657, 1280x600)',async()=>{
+    for(const [w,h] of [[1366,657],[1280,600]]){ const ctx=await b.newContext({viewport:{width:w,height:h}}); const p=await ctx.newPage(); await p.route(/^https?:\/\/(?!127\.0\.0\.1)/,r=>r.abort()); await p.goto(URL+'#l-sci6-3-4'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:20000}); await p.waitForTimeout(900);
+      const r=await p.evaluate(()=>{const f=document.getElementById('lf'), d=f.contentDocument, t=d.querySelector('.top'), pr=d.getElementById('prog').getBoundingClientRect(), st=d.getElementById('stage').getBoundingClientRect(), bt=d.querySelector('.bot').getBoundingClientRect(); return {over:t.scrollWidth-t.clientWidth,prog:pr.width,left:st.left,right:st.right,botBottom:bt.bottom,h:innerHeight,w:f.getBoundingClientRect().width,stk:!!d.getElementById('bStk')}});
+      assert.ok(r.over<=0&&r.prog>=150&&r.left>=0&&r.botBottom<=r.h+1&&!r.stk,w+'x'+h+' '+JSON.stringify(r)); await ctx.close() }
   });
   // ---- records: seeded data, numbers must equal the logic module's own results ----
   const seed=()=>{ const st=PL.emptyState(); const r=PL.addClass(st,{name:'10/3',course:'chem10',names:'أحمد\nسالم\nخالد\nمحمد\nيوسف\nهلال'}); const ids=r.cls.students.map(s=>s.id), c=i=>({classId:r.cls.id,date:PL.addDays('2026-11-01',-i),period:1,lesson:'chem10:3_2'});
