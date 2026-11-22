@@ -1662,9 +1662,9 @@ bdi.ltr{unicode-bidi:isolate; direction:ltr;} bdi.ltr.nw{white-space:nowrap;}
         <h3><span>1</span>بيانات المعلم</h3>
         <div class="reg-grid">
           <label class="fld"><span>الاسم الكامل <i>*</i></span><input id="rgName" autocomplete="name" placeholder="مثال: أ. محمد بن سالم البلوشي"><em class="err" id="rgNameErr"></em></label>
-          <label class="fld"><span>المدرسة أو المعهد <i>*</i></span><input id="rgSchool" autocomplete="organization" placeholder="اسم المدرسة"><em class="err" id="rgSchoolErr"></em></label>
+          <label class="fld"><span>المدرسة <i>*</i></span><input id="rgSchool" autocomplete="organization" placeholder="اسم المدرسة"><em class="err" id="rgSchoolErr"></em></label>
           <label class="fld"><span>مشرف المادة</span><input id="rgSup" placeholder="اختياري"></label>
-          <label class="fld"><span>مدير المعهد</span><input id="rgPrin" placeholder="اختياري"></label>
+          <label class="fld"><span>مدير المدرسة</span><input id="rgPrin" placeholder="اختياري"></label>
         </div>
       </section>
       <section class="reg-sec">
@@ -2597,7 +2597,7 @@ function submitReg(e){
   const supervisor = $("#rgSup").value.trim(), principal = $("#rgPrin").value.trim();
   let ok = true;
   if (name.length < 3){ regErr("rgNameErr", "اكتب اسمك الكامل"); ok = false; } else regErr("rgNameErr", "");
-  if (!school){ regErr("rgSchoolErr", "اكتب اسم المدرسة أو المعهد"); ok = false; } else regErr("rgSchoolErr", "");
+  if (!school){ regErr("rgSchoolErr", "اكتب اسم المدرسة"); ok = false; } else regErr("rgSchoolErr", "");
   if (!regSel.length){ regErr("rgCoursesErr", "اختر مادة وصفاً واحداً على الأقل"); ok = false; } else regErr("rgCoursesErr", "");
   if (!ok){ const f = $("#regDialog [aria-invalid=true]"); if (f) f.focus(); return; }
   const first = !store.profile;
@@ -3012,7 +3012,7 @@ function formHTML(pl, splits){
   const objById = {}; pl.objs.forEach(o => { objById[o.id] = o; });
   const codesOf = r => [...new Set((r.objIds || []).map(id => objById[id]).filter(Boolean).map(objLabel))];
   const banner = `<div class="m-banner m-hdr"><div class="h-r"><img class="lg-em" src="${LOGO_EMBLEM}" alt="" width="${LOGO_DIM.emblem[0]}" height="${LOGO_DIM.emblem[1]}"></div><div class="h-c"><img class="lg-v" src="${LOGO_V2040}" alt="رؤية عُمان 2040" width="${LOGO_DIM.v2040[0]}" height="${LOGO_DIM.v2040[1]}"></div><div class="h-l"><img class="lg-q" src="${LOGO_QMS}" alt="نظام إدارة الجودة" width="${LOGO_DIM.qms[0]}" height="${LOGO_DIM.qms[1]}"></div></div>`;
-  const sign = () => `<div class="m-sign">${[["teacher", "معلم المادة"], ["supervisor", "مشرف المادة"], ["principal", "مدير المعهد"]].map(([k, l]) =>
+  const sign = () => `<div class="m-sign">${[["teacher", "معلم المادة"], ["supervisor", "مشرف المادة"], ["principal", "مدير المدرسة"]].map(([k, l]) =>
     `<label class="sg"><b>${l}</b><input class="m-in" data-meta="${k}" value="${escapeHTML(m[k] || "")}" placeholder="اسم ${l}" autocomplete="${k === "teacher" ? "name" : "off"}"></label>`).join("")}</div>`;
 
   const info = `<table class="m-t m-info"><colgroup><col style="width:30%"><col style="width:46%"><col style="width:24%"></colgroup><tr>
@@ -3173,7 +3173,7 @@ function planAsText(pl){
   pl.ai.forEach(it => L.push(`إثراء مقترح (${it.title}): ${it.text}`));
   L.push(""); L.push(`التقويم الختامي: ${plainText(pl.t.exit)}`);
   L.push(`الواجب المنزلي: ${pl.t.homework}`);
-  L.push(""); L.push(`معلم المادة: ${m.teacher || "—"} | مشرف المادة: ${m.supervisor || "—"} | مدير المعهد: ${m.principal || "—"}`);
+  L.push(""); L.push(`معلم المادة: ${m.teacher || "—"} | مشرف المادة: ${m.supervisor || "—"} | مدير المدرسة: ${m.principal || "—"}`);
   return L.join("\n");
 }
 function syncTop(){ const a = $("#topTeacher"), b = $("#topSchool"); if (a) a.textContent = store.meta.teacher || "—"; if (b) b.textContent = store.meta.school || "—"; }
@@ -3423,7 +3423,7 @@ const DOCX = (() => {
 
     const sgw = Math.floor(PW / 3);
     const sgn = (k, v, w) => mc(mp(run(k, { bold: true, size: 20 }), { center: true, after: 30, before: 60 }) + mp(run(v ? `أ/ ${String(v).replace(/^أ[./]\s*/, "")}` : "....................................", { size: 19, color: v ? INK : "9AA3B5" }), { center: true, after: 0 }), w);
-    const sig = () => mt([sgw, sgw, PW - 2 * sgw], [{ cells: [sgn("معلم المادة", m.teacher, sgw), sgn("مشرف المادة", m.supervisor, sgw), sgn("مدير المعهد", m.principal, PW - 2 * sgw)] }], { none: true });
+    const sig = () => mt([sgw, sgw, PW - 2 * sgw], [{ cells: [sgn("معلم المادة", m.teacher, sgw), sgn("مشرف المادة", m.supervisor, sgw), sgn("مدير المدرسة", m.principal, PW - 2 * sgw)] }], { none: true });
 
     const b = crest(1) + gp(60) + info + gp(60) + days + gp(60) + big + gp(80) + sig()
       + mp("", { pageBreak: true, exact: 20, after: 0 }) + crest(2) + gp(60) + page2 + gp(80) + sig() + mp("", { exact: 20, after: 0 });

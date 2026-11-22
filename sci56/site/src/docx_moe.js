@@ -167,7 +167,7 @@ const DOCX = (() => {
 
     const sgw = Math.floor(PW / 3);
     const sgn = (k, v, w) => mc(mp(run(k, { bold: true, size: 20 }), { center: true, after: 30, before: 60 }) + mp(run(v ? `أ/ ${String(v).replace(/^أ[./]\s*/, "")}` : "....................................", { size: 19, color: v ? INK : "9AA3B5" }), { center: true, after: 0 }), w);
-    const sig = () => mt([sgw, sgw, PW - 2 * sgw], [{ cells: [sgn("معلم المادة", m.teacher, sgw), sgn("مشرف المادة", m.supervisor, sgw), sgn("مدير المعهد", m.principal, PW - 2 * sgw)] }], { none: true });
+    const sig = () => mt([sgw, sgw, PW - 2 * sgw], [{ cells: [sgn("معلم المادة", m.teacher, sgw), sgn("مشرف المادة", m.supervisor, sgw), sgn("مدير المدرسة", m.principal, PW - 2 * sgw)] }], { none: true });
 
     const b = crest(1) + gp(60) + info + gp(60) + days + gp(60) + big + gp(80) + sig()
       + mp("", { pageBreak: true, exact: 20, after: 0 }) + crest(2) + gp(60) + page2 + gp(80) + sig() + mp("", { exact: 20, after: 0 });
