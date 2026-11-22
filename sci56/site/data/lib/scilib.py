@@ -19,7 +19,7 @@ class Unit:
         self.C, self.S, self.N, self.title, self.short = C, S, N, title, short
         self.DB, self.AU, self.PER = {}, {}, {}
     def key(self, n): return f"{self.C}~{self.N}_{n}"
-    def lesson(self, n, title, objectives, periods, prior, warm, exit, homework, support, enrich, resources, strategies, lab, misconception, guideAnswers, code=None):
+    def lesson(self, n, title, objectives, periods, prior, warm, exit, homework, support, enrich, resources, strategies, lab, misconception, guideAnswers, code=None, exact=None, strats=None, sheet_title=None):
         k = self.key(n); N = len(periods)
         objs = []
         for i, (ocode, text, acts) in enumerate(objectives):
@@ -28,7 +28,8 @@ class Unit:
         rows, pstart = [], []
         for p, P in enumerate(periods):
             s = sum(r[2] for r in P)
-            assert s == 40, (k, "period", p + 1, "minutes", s, [r[2] for r in P])
+            if exact: assert 0 < s <= exact, (k, "period", p + 1, "minutes", s, "exceeds the exact period length", exact)   # a teacher's own plan: real minutes, may leave a few minutes free
+            else: assert s == 40, (k, "period", p + 1, "minutes", s, [r[2] for r in P])
             assert any(r[3] for r in P), (k, "period", p + 1, "has no objective row")
             if p < N - 1: assert not P[-1][3], (k, "period", p + 1, "closer must have no objectives")
             if p: assert not P[0][3], (k, "period", p + 1, "opener must have no objectives")
@@ -44,10 +45,12 @@ class Unit:
         assert len(set(qs)) == len(qs), (k, "duplicate formative questions")
         assert rows[-1][6]["q"] == exit["q"] and rows[-1][6]["ans"] == exit["a"], (k, "last row must carry the exit ticket")
         self.DB[k] = {"course": self.C, "sem": self.S, "unitNum": self.N, "unitTitle": self.title, "unitShort": self.short,
-                      "code": code or f"{self.N}-{n}", "title": title, "defaultDuration": 45, "objectives": objs,
+                      "code": code or f"{self.N}-{n}", "title": title, "sheetTitle": sheet_title or "", "defaultDuration": 45, "objectives": objs,
                       "prior": "؛ ".join(prior["items"]), "warmup": warm["question"], "resources": resources, "strategies": strategies,
                       "lab": lab, "misconception": misconception, "exitTicket": exit["q"], "homework": homework, "guideAnswers": guideAnswers}
         self.AU[k] = {"prior": prior, "warm": warm, "periods": [{"objs": list(range(len(objs))), "rows": rows}], "pstart": pstart,
                       "exit": exit, "homework": homework, "support": support, "enrich": enrich}
+        if exact: self.AU[k]["exact"] = exact
+        if strats: self.AU[k]["strats"] = strats
         self.PER[k] = N
         return k

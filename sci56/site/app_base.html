@@ -1945,11 +1945,12 @@ function scaleTo(list, target, lo){
   for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > lo){ out[k]--; diff++; } }
   return out;
 }
-function scalePeriods(flow){
-  const pm = PM(); if (pm === PERIOD_MIN) return flow;
+/* base = the period length the rows were written for (40 by default; a teacher's own exact plan declares its real length) */
+function scalePeriods(flow, base){
+  base = base || PERIOD_MIN; const pm = PM(); if (pm === base) return flow;
   const by = {}; flow.forEach(r => { (by[r.period || 1] = by[r.period || 1] || []).push(r); });
   Object.values(by).forEach(g => {
-    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / PERIOD_MIN), 2);
+    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / base), 2);
     g.forEach((r, i) => { r.minutes = m[i]; r.time = m[i] + " د"; });
   });
   return flow;
@@ -2400,7 +2401,7 @@ function computePlan(o = {}){
     flow = ai.rows.map((r, i) => ({ id: r.id || "ai" + i, period: r.period || 1, bk: r.bk || "", code: r.phase || "", strat: r.strat || "", time: r.time, minutes: minutesOf(r.time), teacher: r.teacher, student: r.student, eval: r.eval, q: r.q || "", objIds: r.objIds || [] }));
     aiUsed = true;
   } else if (authored){
-    flow = scalePeriods(authoredFlow(key, d, rec).rows);
+    flow = scalePeriods(authoredFlow(key, d, rec).rows, AU.exact);
     flow.forEach((r, i) => {
       if (r.code === "ربط بالحصة السابقة") r.code = "مراجعة وربط";
       else if (/^الختام/.test(r.code) && i < flow.length - 1) r.code = "تقويم مرحلي";
@@ -2413,7 +2414,7 @@ function computePlan(o = {}){
   });
   const T = {
     prior: ai && ai.prior ? ai.prior : authored ? aPriorHTML(AU) : priorHTML(c),
-    warm: ai && ai.warm ? ai.warm : authored ? aWarmHTML(AU, flow[0] ? flow[0].minutes : 5) : warmHTML(c),
+    warm: ai && ai.warm ? ai.warm : authored ? aWarmHTML(AU, (flow.find(r => r.code === "التهيئة" || r.code === "التمهيد") || flow[0] || { minutes: 5 }).minutes) : warmHTML(c),
     resources: aiL && aiL.resources ? aiL.resources : d.resources, exit: ai && ai.exit ? ai.exit : authored ? aExitHTML(AU, c) : exitHTML(c),
     homework: aiL && aiL.homework ? aiL.homework : authored ? AU.homework : d.homework, mis: aiL && aiL.mis ? aiL.mis : d.misconception, lab: aiL && aiL.lab ? aiL.lab : d.lab
   };
@@ -2424,7 +2425,7 @@ function computePlan(o = {}){
     support: rec.diff.support || (ai && ai.support) || dd.support, enrich: rec.diff.enrich || (ai && ai.enrich) || dd.enrich,
     supportAuto: !rec.diff.support, enrichAuto: !rec.diff.enrich
   };
-  const usedStrats = [...new Set(flow.map(r => r.strat).filter(s => s && s !== "بطاقة الخروج"))];
+  const usedStrats = authored && AU.strats ? AU.strats.slice() : [...new Set(flow.map(r => r.strat).filter(s => s && s !== "بطاقة الخروج"))];
   const strategies = authored ? usedStrats.concat((rec.astrat || []).filter(s => !usedStrats.includes(s)))
     : (def ? [def.label] : []).concat(allStrategies(key).filter(x => rec.strat.includes(x)));
   return {
@@ -2432,8 +2433,8 @@ function computePlan(o = {}){
     staleAI: !!(rec.aiFlow && !rec.aiFlow.locked && rec.aiFlow.sig !== sig),
     total: flow.reduce((t, r) => t + r.minutes, 0), actTotal,
     duration: periods * PM(), periodMin: PM(), durLabel: durLabel(periods),
-    title: (ed["t:title"] || "").trim() || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),
-    strategies, t: T, tEd, opts: state.opts, meta: metaNow(rec),
+    title: (ed["t:title"] || "").trim() || d.sheetTitle || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),
+    strategies, t: T, tEd, opts: Object.assign({}, state.opts, { mis: state.opts.mis && !!T.mis, lab: state.opts.lab && !!T.lab }), meta: metaNow(rec),
     diff, ai: rec.ai, reflect: rec.reflect,
     editedCount: Object.keys(ed).length
   };
@@ -2593,6 +2594,7 @@ function renderMeter(){
   if (!pl.objs.length){ st = "empty"; msg = "حدّد هدفاً واحداً على الأقل لتتكوّن الخطة."; }
   else if (pl.aiLocked) msg = `تحضير معدّل بمساعد التحضير لـ ${pl.durLabel}.`;
   else if (pl.aiUsed) msg = `تحضير الذكاء الاصطناعي لـ ${pl.durLabel}.`;
+  else if (pl.authored && pl.AU.exact) msg = `الخطة بأزمنة المعلم الفعلية: ${used} دقيقة موزعة على المراحل من أصل ${pl.duration}${left > 0 ? "، والباقي (" + left + " د) للانتقال والتنظيم" : ""}.`;
   else if (pl.authored) msg = left > 0 ? `تحضير متصل للدرس كاملاً (${pl.durLabel} حسب دليل المعلم)، وحُذفت أنشطة الأهداف غير المحددة (يتبقى ${left} دقيقة).` : `تحضير متصل للدرس كاملاً على مدى ${pl.durLabel} حسب دليل المعلم.`;
   else msg = `خطة متصلة للدرس كاملاً على مدى ${pl.durLabel}.`;
   m.dataset.state = st; $("#meterMsg").textContent = msg;

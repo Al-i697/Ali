@@ -140,11 +140,12 @@ _one('const PERIOD_MIN = 40;',
      '  for (let k = out.length - 1; diff < 0 && k >= 0; k--){ while (diff < 0 && out[k] > lo){ out[k]--; diff++; } }\n'
      '  return out;\n'
      '}\n'
-     'function scalePeriods(flow){\n'
-     '  const pm = PM(); if (pm === PERIOD_MIN) return flow;\n'
+     '/* base = the period length the rows were written for (40 by default; a teacher\'s own exact plan declares its real length) */\n'
+     'function scalePeriods(flow, base){\n'
+     '  base = base || PERIOD_MIN; const pm = PM(); if (pm === base) return flow;\n'
      '  const by = {}; flow.forEach(r => { (by[r.period || 1] = by[r.period || 1] || []).push(r); });\n'
      '  Object.values(by).forEach(g => {\n'
-     '    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / PERIOD_MIN), 2);\n'
+     '    const src = g.reduce((a, r) => a + r.minutes, 0), m = scaleTo(g.map(r => r.minutes), Math.round(src * pm / base), 2);\n'
      '    g.forEach((r, i) => { r.minutes = m[i]; r.time = m[i] + " د"; });\n'
      '  });\n'
      '  return flow;\n'
@@ -172,10 +173,15 @@ _one('const total = N * 40;', 'const total = N * PM();')
 _one('cap = 40 - 10;', 'cap = PM() - 10;')
 _one('buildDetailedFlow(rec.primary, pc, 40)', 'buildDetailedFlow(rec.primary, pc, PM())')
 _one('"|" + periods + "p|" + (rec.primary', '"|" + periods + "p" + PM() + "m|" + (rec.primary')
-_one('    flow = authoredFlow(key, d, rec).rows;\n', '    flow = scalePeriods(authoredFlow(key, d, rec).rows);\n')
+_one('    flow = authoredFlow(key, d, rec).rows;\n', '    flow = scalePeriods(authoredFlow(key, d, rec).rows, AU.exact);\n')
+# a lesson may list its ticked strategies explicitly (AU.strats) when a row names several (e.g. "التعلم التعاوني – الاستقصاء العلمي")
+_one('const usedStrats = [...new Set(flow.map(r => r.strat).filter(s => s && s !== "بطاقة الخروج"))];',
+     'const usedStrats = authored && AU.strats ? AU.strats.slice() : [...new Set(flow.map(r => r.strat).filter(s => s && s !== "بطاقة الخروج"))];')
+# exact plans (the teacher\'s own minutes) may leave minutes free: say so instead of "deleted activities"
+_one('  else if (pl.authored) msg = left > 0 ?', '  else if (pl.authored && pl.AU.exact) msg = `الخطة بأزمنة المعلم الفعلية: ${used} دقيقة موزعة على المراحل من أصل ${pl.duration}${left > 0 ? "، والباقي (" + left + " د) للانتقال والتنظيم" : ""}.`;\n  else if (pl.authored) msg = left > 0 ?')
 _one('duration: periods * 40, durLabel: durLabel(periods),',
      'duration: periods * PM(), periodMin: PM(), durLabel: durLabel(periods),\n'
-     '    title: (ed["t:title"] || "").trim() || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),')
+     '    title: (ed["t:title"] || "").trim() || d.sheetTitle || baseTitle(d.title), titleEd: !!(ed["t:title"] || "").trim(),')
 _one('<span class="code">(${d.code})</span>${escapeHTML(d.title)}</span></div>${icon("ic-book")}',
      '<span class="code">(${d.code})</span><span ${editAttrs("t:title", pl.titleEd)} aria-label="عنوان الدرس">${escapeHTML(pl.title)}</span></span></div>${icon("ic-book")}')
 _one('عنوان الدرس: (\\u200E${d.code}\\u200E) ${d.title} |', 'عنوان الدرس: (\\u200E${d.code}\\u200E) ${pl.title} |')
@@ -193,7 +199,9 @@ _one('const raw = list.map(x => x * target / total), out = raw.map(x => Math.max
 _one('while (diff < 0 && out[k] > 3){ out[k]--; diff++; }', 'while (diff < 0 && out[k] > lo){ out[k]--; diff++; }')
 _rxg(r'(function aWarmHTML\(A)\)\{(\s*return `[^\n]*?<strong>الزمن:</strong>) 5 دقائق`;',
      lambda m: m.group(1) + ', mins = 5){' + m.group(2) + ' ${minsAr(mins)}`;')
-_one('authored ? aWarmHTML(AU) : warmHTML(c)', 'authored ? aWarmHTML(AU, flow[0] ? flow[0].minutes : 5) : warmHTML(c)')
+_one('authored ? aWarmHTML(AU) : warmHTML(c)', 'authored ? aWarmHTML(AU, (flow.find(r => r.code === "التهيئة" || r.code === "التمهيد") || flow[0] || { minutes: 5 }).minutes) : warmHTML(c)')
+# sections the lesson leaves empty (misconception / lab notes) are not printed, whatever the option boxes say
+_one('tEd, opts: state.opts,', 'tEd, opts: Object.assign({}, state.opts, { mis: state.opts.mis && !!T.mis, lab: state.opts.lab && !!T.lab }),')
 _one('const mins = AU ? Math.round(aMin[o.id] || 0) :', 'const mins = AU ? Math.round((aMin[o.id] || 0) * PM() / PERIOD_MIN) :')
 _one('تختلف من مدرسة لأخرى، وتُحفظ لكل دروسك', 'تُحفظ لكل دروسك')
 _one('.seg.seg6 button[aria-disabled="true"]{opacity:.38; cursor:not-allowed;}',

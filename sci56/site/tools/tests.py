@@ -28,10 +28,11 @@ with sync_playwright() as p:
                   const p=computePlan(); const norm=x=>plainText(x||'').replace(/[؟?.،:«»\\s]+/g,' ').trim();
                   const qs=p.flow.map(r=>norm((r.eval.match(/<strong>السؤال:<\\/strong>\\s*([^<]*)/)||[])[1])).filter(Boolean);
                   return [p.authored, p.total, p.duration, qs.length-new Set(qs).size,
-                    p.flow.some(x=>/\bundefined\b|\bnull\b|\bNaN\b/.test(x.teacher+x.student+x.eval+x.time)), p.flow.length]}})()""")
-                authored, total, dur, dup, badtxt, rows = r
+                    p.flow.some(x=>/\bundefined\b|\bnull\b|\bNaN\b/.test(x.teacher+x.student+x.eval+x.time)), p.flow.length, !!(p.authored && p.AU.exact)]}})()""")
+                authored, total, dur, dup, badtxt, rows, exact = r
                 if authored and n > 1: continue
-                if badtxt or dup or total != dur or not rows: bad.append((k, s, n, r))
+                # a teacher's exact plan (AU.exact) may leave minutes free of the period
+                if badtxt or dup or not rows or (not (0 < total <= dur) if exact else total != dur): bad.append((k, s, n, r))
     print('engine problems:', len(bad), bad[:5])
     au = pg.evaluate('KEYS.filter(k=>AUTHORED[k])')
     print('written plans:', len([k for k in au if k in keys]), 'of', len(keys))

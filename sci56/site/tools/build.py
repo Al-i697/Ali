@@ -9,7 +9,9 @@ DB, AU, PER = {}, {}, {}
 def check(name, db, au, per):
     for k, a in au.items():
         mins = sum(r[2] for P in a['periods'] for r in P['rows'])
-        assert mins == per[k] * 40, (name, k, 'minutes', mins, per[k] * 40)
+        ex = a.get('exact')   # exact lessons carry a teacher's own real minutes for an `exact`-minute period (they may leave a few minutes free)
+        if ex: assert 0 < mins <= per[k] * ex, (name, k, 'minutes', mins, per[k] * ex)
+        else: assert mins == per[k] * 40, (name, k, 'minutes', mins, per[k] * 40)
         n = len(db[k]['objectives'])
         used = set()
         for P in a['periods']:
@@ -24,7 +26,8 @@ def check(name, db, au, per):
             assert len(ps) == per[k] and ps[0] == 0, (name, k, 'pstart count')
             for p in range(len(ps)):
                 seg = rows[ps[p]:(ps[p + 1] if p < len(ps) - 1 else len(rows))]
-                assert sum(r[2] for r in seg) == 40, (name, k, 'period', p + 1, 'minutes', sum(r[2] for r in seg))
+                sm = sum(r[2] for r in seg)
+                assert (0 < sm <= ex) if ex else sm == 40, (name, k, 'period', p + 1, 'minutes', sm)
                 assert any(r[3] for r in seg), (name, k, 'period', p + 1, 'no objective row')
 import re as _re
 def _nat(x): return [int(t) if t.isdigit() else t for t in _re.split(r'(\d+)', os.path.basename(x))]
