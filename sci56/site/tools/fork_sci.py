@@ -81,7 +81,7 @@ def _rep1(old, new):
     assert t.count(old) == 1, (old[:70], t.count(old))
     t = t.replace(old, new)
 _rep1('<img id="orgLogo" class="hero-logo" alt="شعار ديوان البلاط السلطاني">\n      <span class="org-rule" aria-hidden="true"></span>\n      <div class="org-name">مركز السلطان قابوس العالي للثقافة والعلوم</div>',
-      '<div class="hero-moe">\n        <div class="hm-r"><img id="heroEmblem" alt="" width="88" height="73"><div class="hm-t"><b>سلطنة عُمان</b><b>وزارة التعليم</b></div></div>\n        <div class="hm-c"><img id="heroV2040" alt="رؤية عُمان 2040" width="138" height="88"></div>\n        <div class="hm-l"><img id="heroQms" alt="نظام إدارة الجودة" width="191" height="204"></div>\n      </div>')
+      '<div class="hero-moe">\n        <div class="hm-r"><img id="heroEmblem" alt="وزارة التعليم" width="358" height="480"></div>\n        <div class="hm-c"><img id="heroV2040" alt="رؤية عُمان 2040" width="138" height="88"></div>\n        <div class="hm-l"><img id="heroQms" alt="نظام إدارة الجودة" width="191" height="204"></div>\n      </div>')
 _rep1('$("#orgLogo").src = LOGO_GOLD;', '$("#heroEmblem").src = LOGO_EMBLEM; $("#heroV2040").src = LOGO_V2040; $("#heroQms").src = LOGO_QMS;')
 _rep1('$("#regLogo").src = LOGO_RED;', '$("#regLogo").src = LOGO_EMBLEM;')
 t = re.sub(r'^const LOGO_GOLD = .*\n', '', t, flags=re.M)

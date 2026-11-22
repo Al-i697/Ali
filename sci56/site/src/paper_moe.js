@@ -17,7 +17,7 @@ function formHTML(pl, splits){
   const d = pl.d, m = pl.meta, unit = splitUnit(d.unitTitle), wk = weekData(pl), cm = courseMeta(pl.key), multi = !!pl.split;
   const objById = {}; pl.objs.forEach(o => { objById[o.id] = o; });
   const codesOf = r => [...new Set((r.objIds || []).map(id => objById[id]).filter(Boolean).map(objLabel))];
-  const banner = `<div class="m-banner m-hdr"><div class="h-r"><img class="lg-em" src="${LOGO_EMBLEM}" alt="" width="${LOGO_DIM.emblem[0]}" height="${LOGO_DIM.emblem[1]}"><div class="h-t"><b>${MOE_NAME[0]}</b><b>${MOE_NAME[1]}</b></div></div><div class="h-c"><img class="lg-v" src="${LOGO_V2040}" alt="رؤية عُمان 2040" width="${LOGO_DIM.v2040[0]}" height="${LOGO_DIM.v2040[1]}"></div><div class="h-l"><img class="lg-q" src="${LOGO_QMS}" alt="نظام إدارة الجودة" width="${LOGO_DIM.qms[0]}" height="${LOGO_DIM.qms[1]}"></div></div>`;
+  const banner = `<div class="m-banner m-hdr"><div class="h-r"><img class="lg-em" src="${LOGO_EMBLEM}" alt="" width="${LOGO_DIM.emblem[0]}" height="${LOGO_DIM.emblem[1]}"></div><div class="h-c"><img class="lg-v" src="${LOGO_V2040}" alt="رؤية عُمان 2040" width="${LOGO_DIM.v2040[0]}" height="${LOGO_DIM.v2040[1]}"></div><div class="h-l"><img class="lg-q" src="${LOGO_QMS}" alt="نظام إدارة الجودة" width="${LOGO_DIM.qms[0]}" height="${LOGO_DIM.qms[1]}"></div></div>`;
   const sign = () => `<div class="m-sign">${[["teacher", "معلم المادة"], ["supervisor", "مشرف المادة"], ["principal", "مدير المعهد"]].map(([k, l]) =>
     `<label class="sg"><b>${l}</b><input class="m-in" data-meta="${k}" value="${escapeHTML(m[k] || "")}" placeholder="اسم ${l}" autocomplete="${k === "teacher" ? "name" : "off"}"></label>`).join("")}</div>`;
 

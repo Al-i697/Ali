@@ -2,11 +2,8 @@
 .hero-moe{display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:18px; width:min(780px,100%); margin:0 auto 10px; padding:12px 26px; background:#fff; border:1.5px solid rgba(255,255,255,.75); border-radius:22px; box-shadow:0 18px 40px -22px rgba(0,0,0,.65);}
 .hero-moe > div{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; min-width:0;}
 .hero-moe img{display:block; width:auto; max-width:100%;}
-.hm-r img{height:62px;} .hm-c img{height:72px;} .hm-l img{height:82px;}
-.hm-t{display:flex; flex-direction:column; align-items:center; line-height:1.25; color:#161616; font-family:'Amiri','Traditional Arabic',serif; font-weight:700;}
-.hm-t b:first-child{font-size:.95rem;} .hm-t b:last-child{font-size:1.3rem;}
+.hm-r img{height:100px;} .hm-c img{height:84px;} .hm-l img{height:92px;}
 @media screen and (max-width:720px){
   .hero-moe{padding:8px 12px; gap:8px; border-radius:16px;}
-  .hm-r img{height:44px;} .hm-c img{height:52px;} .hm-l img{height:58px;}
-  .hm-t b:first-child{font-size:.78rem;} .hm-t b:last-child{font-size:1rem;}
+  .hm-r img{height:66px;} .hm-c img{height:56px;} .hm-l img{height:60px;}
 }
