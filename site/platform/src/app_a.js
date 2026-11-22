@@ -127,8 +127,10 @@ function renderBanner(){
 /* ---- the pages of the curriculum: big cards, one choice per page ---- */
 function courseId(g,s){return s+g}
 function courseCounts(cid,sem){var c=CATALOG.courses[cid], tot=0, b=0; if(c) c.units.forEach(function(u){ if(sem&&u.sem!==sem) return; u.lessons.forEach(function(l){tot++; if(l.page) b++})}); return {tot:tot,built:b}}
+/* the subjects offered in a grade: a subject lists its grades (catalog subjects.X.grades); one that does not is a secondary-school subject (grades 10 to 12) */
+function subjectsFor(g){return Object.keys(CATALOG.subjects).filter(function(s){var gs=CATALOG.subjects[s].grades; return gs?gs.indexOf(+g)>=0:+g>=10})}
 function gradeCounts(g){var tot=0,b=0,subs=0; Object.keys(CATALOG.subjects).forEach(function(s){var k=courseCounts(courseId(g,s)); if(k.tot){subs++; tot+=k.tot; b+=k.built}}); return {tot:tot,built:b,subjects:subs}}
-var GPAL={10:'emerald',11:'navy',12:'violet'}, SPAL={chem:'emerald',phys:'navy',bio:'ember',env:'violet'}, GSTK={10:'m_flask',11:'m_atom',12:'m_star'}, SSTK={chem:'m_flask',phys:'m_bulb',bio:'micro',env:'lens'};
+var GPAL={6:'ember',10:'emerald',11:'navy',12:'violet'}, SPAL={chem:'emerald',phys:'navy',bio:'ember',env:'violet',sci:'ember'}, GSTK={6:'kid_flask',10:'m_flask',11:'m_atom',12:'m_star'}, SSTK={chem:'m_flask',phys:'m_bulb',bio:'micro',env:'lens',sci:'kid_lab'};
 function readyText(k){return k.built?ar(k.built)+' '+(k.built===1?'درس جاهز':(k.built>10?'درساً جاهزاً':'دروس جاهزة')):'قريباً'}
 function countText(k){return k.built?readyText(k)+' من '+ar(k.tot):(k.tot?'قريباً · '+ar(k.tot)+' '+(k.tot>10?'درساً':'دروس'):'قريباً')}
 function backBar(title,sub){return '<div class="backbar"><button class="sbtn big" type="button" data-back>'+ic('chevr')+'رجوع</button><div><h1 class="h1" style="font-size:42px">'+title+'</h1>'+(sub?'<p class="sub">'+sub+'</p>':'')+'</div></div>'}
@@ -156,7 +158,7 @@ function renderHome(){
 }
 function renderGrade(){
   var g=nav.grade, name=CATALOG.grades[g];
-  var cards=Object.keys(CATALOG.subjects).map(function(s){var cid=courseId(g,s), k=courseCounts(cid), s0=CATALOG.subjects[s];
+  var cards=subjectsFor(g).map(function(s){var cid=courseId(g,s), k=courseCounts(cid), s0=CATALOG.subjects[s];
     var body='<span class="bname">'+esc(s0.name)+'</span><span class="bmeta">'+countText(k)+'</span>'+(k.tot?'<span class="bar"><i style="width:'+Math.round(k.built/k.tot*100)+'%"></i></span>':'')+stk(SSTK[s]||'m_star','left:14px;top:-34px;',100,-6);
     return k.tot?'<a class="bcard sub2" href="#'+courseHash(g,s)+'" data-pal="'+(SPAL[s]||'emerald')+'" data-pick="'+(SPAL[s]||'emerald')+'">'+body+'</a>':'<div class="bcard sub2 soon" data-pal="'+(SPAL[s]||'emerald')+'">'+body+'</div>'}).join('');
   $('#v-grade').innerHTML=backBar('الصف '+esc(name),'اختر المادة')+'<div class="bigcards two">'+cards+'</div>';

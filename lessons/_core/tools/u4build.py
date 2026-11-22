@@ -25,13 +25,15 @@ def build(num, title, parts, args, css_extra=(), skin=None, eqlab=False, shuffle
     fill=True: the slides listed in FILL (src/pages.js) get their content enlarged with CSS zoom, by a factor that still fits (u4/fill.js; the factors come from _core/tools/fill_tune.js).
     tools=True: the teacher tools (u4/tools.js + u4/tools.css): pen, highlighter, eraser, laser pointer, timer, blank screen."""
     d = 'src/'
-    css = ''.join(open(CORE + f).read() + '\n' for f in ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css', 'u4/lesson.css'] + (['u4/skin_photo.css'] if skin else []) + (['u4/eqlab.css'] if eqlab else []) + (['u4/book.css'] if book else []) + (['u4/kinds.css'] if kinds else []) + (['u4/summary.css'] if summary else []) + (['u4/tools.css'] if tools else [])) \
+    sci = skin == 'sci'   # the light primary-school look (_core/sci6): its own stylesheet, no photo or 3D backgrounds, no dark theme files
+    base_css = ['style.css', 'theme5.css', 'stickers.css', 'sci6/sci6.css'] if sci else ['style.css', 'theme.css', 'theme3.css', 'theme4.css', 'theme5.css', 'stickers.css', 'u4/lesson.css']
+    css = ''.join(open(CORE + f).read() + '\n' for f in base_css + (['u4/skin_photo.css'] if skin and not sci else []) + (['u4/eqlab.css'] if eqlab else []) + (['u4/book.css'] if book and not sci else []) + (['u4/kinds.css'] if kinds else []) + (['u4/summary.css'] if summary else []) + (['u4/tools.css'] if tools else [])) \
         + ''.join(open(d + f).read() + '\n' for f in css_extra)
     config = open(d + 'config.js').read()
     if book and os.path.exists(d + 'pages.js') and 'pages.js' not in parts: parts = ['pages.js'] + list(parts)
     lesson_js = [open(d + f).read() for f in parts]
     scenes = open(CORE + 'u4/scenes.js').read()
-    keep = used_photos(config, '\n'.join(lesson_js), scenes) if skin != 'photo' else set(re.findall(r"['\"]((?:u|nb|s)_\w+)['\"]", config))
+    keep = set() if sci else (used_photos(config, '\n'.join(lesson_js), scenes) if skin != 'photo' else set(re.findall(r"['\"]((?:u|nb|s)_\w+)['\"]", config)))
     raw = open(CORE + 'bgimg_assets.js').read()
     body = raw[raw.index('var BGIMG=') + 10:]
     pack = json.loads(body[:body.rindex('}') + 1])
@@ -40,8 +42,8 @@ def build(num, title, parts, args, css_extra=(), skin=None, eqlab=False, shuffle
     bgimg = '/* photo backgrounds used by this lesson (made by _core/tools/make_bg.py) */\nvar BGIMG=' + json.dumps({k: pack[k] for k in sorted(keep)}) + ';\n'
     stk = open(CORE + 'stickers_assets.js').read() + '\n'
     skinned = skin == 'photo'   # still pictures: no living engine
-    core_a = ['engine.js', 'art_core.js'] + ([] if skinned else ['bg.js'])
-    core_b = (['u4/photobg.js'] if skinned else ['mol3d.js']) + ['motion.js', 'stickers_assets.js', 'stickers.js', 'u4/helpers.js'] + ([] if skinned else ['u4/scenes.js']) + (['u4/eqlab.js'] if eqlab else []) + (['u4/shuffle.js'] if shuffle else []) + (['u4/skin.js'] if skin else []) + (['u4/bookpg.js', 'u4/defn.js'] if book else []) + (['u4/kinds.js'] if kinds else []) + (['u4/predict.js'] if predict else []) + (['u4/fill.js'] if fill else []) + (['u4/summary.js'] if summary else []) + (['u4/tools.js'] if tools else [])
+    core_a = ['engine.js', 'art_core.js'] + ([] if (skinned or sci) else ['bg.js'])
+    core_b = (['sci6/bgpaper.js'] if sci else (['u4/photobg.js'] if skinned else ['mol3d.js'])) + ['motion.js', 'stickers_assets.js', 'stickers.js'] + ([] if sci else ['u4/helpers.js']) + ([] if (skinned or sci) else ['u4/scenes.js']) + (['sci6/art.js', 'sci6/s6.js'] if sci else []) + (['u4/eqlab.js'] if eqlab else []) + (['u4/shuffle.js'] if shuffle else []) + (['u4/skin.js'] if skin and not sci else []) + (['u4/bookpg.js', 'u4/defn.js'] if book else []) + (['u4/kinds.js'] if kinds else []) + (['u4/predict.js'] if predict else []) + (['u4/fill.js'] if fill else []) + (['u4/summary.js'] if summary else []) + (['u4/tools.js'] if tools else [])
     rd = lambda fs: ''.join(open(CORE + f).read() + '\n' for f in fs)
     js = config + '\n' + rd(core_a) + bgimg + rd(core_b) + '\n'.join(lesson_js) + '\n' + (rd(['u4/digits.js']) if digits else '')
     if '--standalone' in args: js = js.replace("home:'index.html'", "home:''")

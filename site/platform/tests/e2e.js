@@ -22,7 +22,7 @@ const SUN='2026-11-01T09:30:00';   // a Sunday: a teaching day in the school wee
   const NAMES='أحمد\nسالم\nخالد\nمحمد\nيوسف\nسعيد';
 
   await T('pages: grades (big cards) -> subjects -> units and lessons -> the lesson opens on its slides; back buttons return one step',async()=>{
-    const p=await page(); assert.strictEqual(await p.locator('#v-home .bcard').count(),4,'three grades and the teacher record'); assert.ok((await p.innerText('#v-home .strip')).includes('أضف شعبتك'));
+    const p=await page(); assert.strictEqual(await p.locator('#v-home .bcard').count(),5,'four grades (6, 10, 11, 12) and the teacher record'); assert.ok((await p.innerText('#v-home .strip')).includes('أضف شعبتك'));
     const box=await p.locator('#v-home .bcard').first().boundingBox(); assert.ok(box.height>=300&&box.width>=280,'cards are big: '+JSON.stringify(box));
     await p.click('a[href="#grade-10"]'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-10'); assert.ok(await p.isVisible('#v-grade'));
     assert.strictEqual(await p.locator('#v-grade .bcard').count(),4); assert.strictEqual(await p.locator('#v-grade .bcard.soon').count(),3); assert.ok((await p.innerText('#v-grade a.bcard')).includes('١٦ درساً جاهزاً من ٢٦'));
@@ -147,6 +147,15 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('lesson hash survives a reload: opening #l-chem10-3-4 directly shows lesson 3-4 with the drawer',async()=>{
     const st=seed(), p=await page({state:st,hash:'#l-chem10-3-4'}); await p.waitForTimeout(1500); assert.ok((await p.innerText('#dLs')).includes('٣-٤')); assert.strictEqual(await p.locator('#slist .stu').count(),6); await p.context().close();
   });
+  await T('grade 6 science, unit 3: the grade card comes first, science is its only subject, lesson 3-4 (filtration) is listed in the first semester and opens in the frame with its 16 slides',async()=>{
+    const p=await page(); assert.ok((await p.innerText('#v-home .bcard >> nth=0')).includes('السادس'),'grade 6 is the first card');
+    await p.click('a[href="#grade-6"]'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6'); assert.strictEqual(await p.locator('#v-grade .bcard').count(),1,'grade 6 offers science only'); assert.strictEqual(await p.locator('#v-grade a.bcard').count(),1,'only science has lessons in grade 6'); assert.ok((await p.innerText('#v-grade a.bcard')).includes('العلوم'));
+    await p.click('#v-grade a.bcard'); await p.waitForTimeout(300); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6-sci'); await p.click('#v-term a.bcard >> nth=0'); await p.waitForTimeout(300);
+    assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-6-sci-1'); assert.strictEqual(await p.locator('#v-course .unit').count(),1); assert.strictEqual(await p.locator('#v-course .lc.built').count(),1); assert.ok((await p.innerText('#v-course')).includes('الترشيح'));
+    await p.click('#v-course .lc.built'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
+    assert.strictEqual(await p.evaluate(()=>location.hash),'#l-sci6-3-4'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0); assert.strictEqual(await fr.locator('.prog .seg').count(),16);
+    await p.close();
+  });
   await T('environmental science 11, unit 3: lesson 3-2 (scene edition) is listed in the first semester, opens in the frame with the class button and its scene slides, and its home button returns to the semester page',async()=>{
     const p=await page({hash:'#grade-11-env-1'}); assert.strictEqual(await p.locator('#v-course .unit').count(),3,'three units in the first semester'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),1); assert.ok((await p.innerText('#v-course')).includes('علاقات التغذية'));
     await p.click('#v-course .lc.built'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
@@ -159,7 +168,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
   await T('offline copy: the home page offers a download that builds ONE file with all 17 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
     const p=await page();
     if(process.env.OFFLINE){ assert.strictEqual(await p.locator('[data-act=offline]').count(),0,'no download button inside the offline copy itself'); await p.context().close(); return }
-    assert.strictEqual(await p.locator('#v-home .bcard').count(),4); assert.ok(await p.isVisible('#v-home .dlbar [data-act=offline]'));
+    assert.strictEqual(await p.locator('#v-home .bcard').count(),5); assert.ok(await p.isVisible('#v-home .dlbar [data-act=offline]'));
     await p.click('[data-act=offline]'); await p.click('#ofGo'); await p.waitForFunction(()=>/الملف جاهز/.test(document.getElementById('ofMsg').textContent),null,{timeout:120000});
     assert.ok((await p.innerText('#ofMsg')).includes('ميغا'));
     const [dl]=await Promise.all([p.waitForEvent('download',{timeout:120000}),p.click('#ofGo')]); assert.strictEqual(dl.suggestedFilename(),'platform-offline.html');
@@ -169,7 +178,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
     const ctx=await b.newContext({viewport:{width:1280,height:720}}), q=await ctx.newPage(); const e2=[]; q.on('pageerror',e=>e2.push(e.message)); await q.route(/^https?:\/\//,r=>r.abort());
     await q.goto('file://'+out+'#l-chem10-3-3'); await q.waitForTimeout(2500);
     const info=await q.evaluate(()=>({n:Object.keys(window.OFFLINE_LESSONS).length,ok:Object.values(window.OFFLINE_LESSONS).every(t=>t.startsWith('<!doctype html>')&&!t.includes('shared/stickers_assets.js')),stk:typeof STK_IMG}));
-    assert.deepStrictEqual(info,{n:17,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
+    assert.deepStrictEqual(info,{n:18,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
     assert.strictEqual(e2.length,0,e2.join('|')); await ctx.close(); fs.unlinkSync(out);
   });
   await b.close(); srv.close();

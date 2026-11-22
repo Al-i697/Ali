@@ -1,0 +1,232 @@
+/* ===== the light primary-school look (skin 'sci'): cream notebook paper, espresso bars, thick outlines with a flat offset shadow, clouds, boxes and sticky notes.
+   Built for Grade 5-6 science lessons on a classroom screen: big type, few words, flat drawn pictures. It replaces the dark theme files; style.css still gives the player its structure,
+   so this file only sets the colour tokens of five light palettes and restyles what the dark theme used to. ===== */
+:root{
+  --ink:#2B1B12; --field-ink:#FFF4E2; --c-bar-ink:#FFF4E2; --accent:#F2A33A; --accent-ink:#2B1700; --accent-soft:rgba(242,163,58,.30); --gold:#A85E0C;
+  --ok:#17783A; --ok-bg:rgba(60,170,90,.17); --bad:#B8302A; --bad-bg:rgba(220,70,50,.14); --radius:18px; --edge:#3A2418; color-scheme:light;
+}
+/* five palettes: the slide's accent and tint; the cream ground and the espresso frame stay the same family */
+:root,[data-pal="cafe"],[data-pal="emerald"],[data-pal="gold"]{--t1:196,112,36; --t2:150,98,52; --d1:255,250,238; --d2:255,244,222; --p1:255,236,200; --p2:255,246,226; --cyan:#9A4F0E; --muted:#6B5444; --ground:#FBF3E4; --field:#3A2418; --accent:#F2A33A; --gold:#A85E0C;
+  --c-bg:#2A1910; --c-bar:#3A2418; --c-bar-2:#5C3C2A; --c-muted:#D9C2AA; --f1:#5C3C2A; --f2:#4A2E20; --f3:#3A2418; --f4:#2A1910}
+[data-pal="sky"],[data-pal="navy"]{--t1:36,132,190; --t2:60,120,160; --d1:244,251,255; --d2:230,243,251; --p1:218,238,250; --p2:236,247,253; --cyan:#0F6A9C; --muted:#4D5F6C; --ground:#EFF7FB; --field:#173A52; --accent:#4DB6E6; --gold:#0F6A9C;
+  --c-bg:#10283A; --c-bar:#173A52; --c-bar-2:#285877; --c-muted:#BFD8E8; --f1:#285877; --f2:#1E4863; --f3:#173A52; --f4:#10283A}
+[data-pal="mint"],[data-pal="violet"]{--t1:40,150,96; --t2:70,140,100; --d1:246,254,249; --d2:232,248,239; --p1:216,243,226; --p2:236,250,242; --cyan:#13734A; --muted:#4A6556; --ground:#EEF8F0; --field:#1B4332; --accent:#4CC38A; --gold:#13734A;
+  --c-bg:#10281E; --c-bar:#1B4332; --c-bar-2:#2D6A4F; --c-muted:#BFE3CF; --f1:#2D6A4F; --f2:#245A42; --f3:#1B4332; --f4:#10281E}
+[data-pal="rose"],[data-pal="ember"]{--t1:206,64,104; --t2:180,90,110; --d1:255,248,250; --d2:253,236,241; --p1:253,226,234; --p2:255,240,244; --cyan:#A82552; --muted:#6B4D58; --ground:#FCEFF1; --field:#5A1E36; --accent:#F06A8D; --gold:#A82552;
+  --c-bg:#3A1224; --c-bar:#5A1E36; --c-bar-2:#7E3050; --c-muted:#EBC4D2; --f1:#7E3050; --f2:#6A2644; --f3:#5A1E36; --f4:#3A1224}
+[data-pal="sun"]{--t1:214,160,20; --t2:170,130,40; --d1:255,252,236; --d2:255,246,214; --p1:255,240,190; --p2:255,248,222; --cyan:#7D5A00; --muted:#6B5A30; --ground:#FFF7DC; --field:#4A3A10; --accent:#F5C93B; --gold:#7D5A00;
+  --c-bg:#2E2408; --c-bar:#4A3A10; --c-bar-2:#6B5518; --c-muted:#E8D9A0; --f1:#6B5518; --f2:#5A4812; --f3:#4A3A10; --f4:#2E2408}
+:root,[data-pal]{--paper:#FFFBF1; --surface:rgba(var(--t2),.16); --panel-line:var(--edge); --line:rgba(var(--t2),.45); --blue:var(--cyan)}
+
+body{background:var(--c-bg); color:var(--ink)}
+/* the stage: dotted notebook paper */
+.stage{background-color:var(--ground); background-image:radial-gradient(rgba(var(--t2),.26) 1.5px, transparent 1.8px); background-size:34px 34px; background-position:12px 12px; color:var(--ink)}
+.slide{padding:36px 54px 28px}
+#bFx{display:none}
+.tbtn:hover{background:var(--c-muted); color:var(--c-bg)}
+.btn:hover{background:var(--c-bar-2)}
+.btn.acc:hover{background:#FFB24E}
+.brand i{background:var(--accent); color:var(--accent-ink)}
+.top,.bot{border-block:3px solid var(--edge)}
+
+/* title: big and round, with a hand-drawn underline */
+.hd{border-bottom:4px dashed rgba(var(--t2),.55); padding-bottom:12px; margin-bottom:18px; min-height:62px; position:relative}
+.hd h2{font-size:46px; color:var(--ink); font-weight:800}
+.hd .chip{background:var(--field); color:var(--field-ink); height:36px; font-size:18px}
+.hd .tag{background:var(--accent); color:var(--accent-ink); border:3px solid var(--edge); height:40px}
+.hd .pgb{position:absolute; left:0; top:-30px; height:27px; padding:0 13px 0 11px; border-radius:999px; display:inline-flex; align-items:center; gap:7px; font-size:17px; font-weight:800; line-height:1; white-space:nowrap; background:#fff; border:2px solid var(--edge); color:var(--ink)}
+.hd .pgb svg{width:16px; height:16px; fill:var(--cyan); flex:none}
+
+/* surfaces: thick outline + a flat offset shadow */
+.panel,.frm,.mod,.qd,.rc,.mrc,.pq,.goal,.tq,.sent,.stp,.rcard,.score,.team,.arside{background:#fff; border:3px solid var(--edge); border-radius:20px; box-shadow:5px 5px 0 var(--edge); color:var(--ink)}
+.panel{padding:18px 24px}
+.panel.flat{background:var(--paper); box-shadow:none}
+.panel.dark{background:var(--field); color:var(--field-ink); border-color:var(--edge)}
+.panel.dark h3{color:var(--accent)!important}
+.pill,.tray,.mtray,.mslot{background:var(--paper); border:2.5px solid var(--edge); border-radius:14px; box-shadow:none}
+.k{background:var(--accent-soft)}
+.lead{font-size:34px; line-height:1.5}
+.big{font-size:38px}
+.sm{font-size:26px}
+.muted{color:var(--muted)}
+.btn{background:var(--field); color:var(--field-ink); border:3px solid var(--edge); box-shadow:4px 4px 0 var(--edge); min-height:58px; font-size:25px}
+.btn:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--edge)}
+.btn.acc{background:var(--accent); color:var(--accent-ink)}
+.btn.ghost{background:#fff; color:var(--ink); box-shadow:4px 4px 0 var(--edge)}
+.btn.sm{min-height:46px; font-size:21px}
+
+/* choices */
+.opt{background:#fff; border:3px solid var(--edge); box-shadow:4px 4px 0 var(--edge); font-size:28px; font-weight:700; min-height:68px; color:var(--ink)}
+.opt:hover{background:var(--accent-soft); box-shadow:4px 4px 0 var(--edge)}
+.opt:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--edge)}
+.opt .ix{background:var(--accent); color:var(--accent-ink); border:2.5px solid var(--edge)}
+.ok-b{background:var(--ok-bg)!important; box-shadow:4px 4px 0 var(--ok)!important; border-color:var(--ok)!important}
+.bad-b{background:var(--bad-bg)!important; box-shadow:4px 4px 0 var(--bad)!important; border-color:var(--bad)!important}
+.fb{font-size:26px; min-height:38px}
+.fb.ok{color:var(--ok)} .fb.bad{color:var(--bad)}
+.nin input{background:#fff; box-shadow:inset 0 0 0 3px var(--edge); color:var(--ink)}
+.idx .sheet{background:#FFF8EA; color:var(--ink); border:4px solid var(--edge)}
+.idx button.it:hover{background:var(--accent-soft)}
+.idx button.it i{background:var(--accent); color:var(--accent-ink)}
+.note{background:var(--field); color:var(--field-ink)}
+.note h4{color:var(--accent)}
+.note b{color:#fff}
+/* the exit ticket */
+.tk .tq{padding:18px 24px}
+.tk .tq h4{font-size:32px; display:flex; gap:14px; align-items:center; margin:0 0 12px}
+.tk .tq h4 i{flex:none; width:44px; height:44px; border-radius:50%; background:var(--accent); border:3px solid var(--edge); display:grid; place-items:center; font-style:normal}
+.tkbar{display:flex; align-items:center; gap:16px; margin-bottom:12px}
+.rounds{display:flex; gap:8px}
+.rd{color:var(--ink); width:38px; height:38px; border-radius:50%; border:3px solid var(--edge); background:#fff; display:grid; place-items:center; font-weight:800; font-size:20px}
+.rd.cur{background:var(--accent); color:var(--accent-ink)} .rd.done{background:var(--ok-bg); border-color:var(--ok); color:var(--ink)}
+.tk .tq{display:none} .tk .tq.cur{display:block}
+.score{padding:20px 28px; display:flex; align-items:center; gap:20px; font-size:30px; font-weight:800}
+.score b{font-size:48px; color:var(--gold)}
+.stp{display:flex; align-items:center; gap:16px; padding:14px 22px; font-size:28px; font-weight:700}
+.stp i{flex:none; width:44px; height:44px; border-radius:50%; background:var(--accent); border:3px solid var(--edge); display:grid; place-items:center; font-style:normal; font-weight:800}
+.gi{display:flex; align-items:flex-start; gap:14px; width:100%; padding:12px 20px; background:#fff; border:3px solid var(--edge); border-radius:18px; box-shadow:4px 4px 0 var(--edge); text-align:start; font-size:30px; font-weight:700; line-height:1.4}
+.gi .ck{flex:none; width:36px; height:36px; margin-top:2px; border-radius:10px; border:3px solid var(--edge); background:#fff; display:grid; place-items:center; color:transparent; font-weight:800}
+.gi.done .ck{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.gl{display:flex; flex-direction:column; gap:10px}
+
+/* the points that appear one click at a time */
+.pt-h{opacity:0!important; visibility:hidden!important; pointer-events:none!important}
+
+/* ---- the notebook language of the lesson: cloud, box, arrow, sticky note ---- */
+.cloud{position:relative; display:inline-flex; align-items:center; justify-content:center; text-align:center; background:#fff; border:3.5px solid var(--edge); border-radius:58% 42% 54% 46% / 56% 60% 40% 44%; padding:22px 44px; font-weight:800; font-size:34px; line-height:1.35; box-shadow:5px 6px 0 var(--edge)}
+.cloud::before,.cloud::after{content:""; position:absolute; background:#fff; border:3px solid var(--edge); border-radius:50%}
+.cloud::before{width:22px; height:22px; inset-inline-end:34px; bottom:-26px}
+.cloud::after{width:11px; height:11px; inset-inline-end:20px; bottom:-42px}
+.cloud.term{background:var(--accent); color:var(--accent-ink)}
+.cloud.med{font-size:27px; padding:14px 28px}
+.nbox.m{font-size:27px; padding:12px 24px; line-height:1.5}
+.cloud.big2{font-size:44px; padding:26px 60px}
+.nbox{position:relative; background:#fff; border:3.5px solid var(--edge); border-radius:22px 28px 20px 30px; padding:16px 28px; font-weight:700; font-size:32px; line-height:1.5; box-shadow:6px 6px 0 var(--accent)}
+.nbox b{color:var(--gold)}
+.nbox.key{background:#FFF1C9; box-shadow:6px 6px 0 var(--edge)}
+.sticky{position:relative; background:#FFE98A; border:2.5px solid #B99A1E; padding:14px 22px; font-size:26px; font-weight:700; line-height:1.45; box-shadow:4px 5px 0 rgba(58,36,24,.22); transform:rotate(-1.2deg)}
+.sticky::before{content:""; position:absolute; top:-12px; left:50%; width:74px; height:22px; margin-left:-37px; background:rgba(255,255,255,.7); border:2px solid rgba(58,36,24,.18); transform:rotate(2deg)}
+.dn-arrow{display:flex; justify-content:center; height:46px}
+.dn-arrow svg{width:46px; height:46px}
+.row{display:flex; gap:24px; align-items:stretch}
+.vstack{display:flex; flex-direction:column; gap:14px; justify-content:center; min-width:0}
+.vstack>div{max-width:100%}
+.cloud{max-width:100%}
+.art{display:block; width:100%; height:100%}
+.figbox{display:flex; flex-direction:column; align-items:stretch; justify-content:center; gap:8px; text-align:center}
+.figbox .tagc,.figbox .nbox,.figbox .cloud,.figbox .sticky{align-self:center}
+.figbox .cap{font-size:26px; font-weight:800}
+.figbox .cap small{display:block; font-size:21px; font-weight:600; color:var(--muted)}
+.tagc{display:inline-flex; align-items:center; height:38px; padding:0 16px; border-radius:999px; background:var(--accent); border:3px solid var(--edge); font-weight:800; font-size:21px; color:var(--accent-ink)}
+.tagc.dk{background:var(--field); color:var(--field-ink)}
+.tagc.ok{background:var(--ok-bg); border-color:var(--ok); color:var(--ok)}
+.tagc.warn{background:#FFE0D6; border-color:var(--bad); color:var(--bad)}
+
+/* definition card (u4/defn.js) in the light look */
+.dfc{position:relative; display:flex; flex-direction:column; gap:8px; padding:12px 24px 16px; border-radius:20px; border:3.5px solid var(--edge); border-inline-start-width:12px; background:#FFF1C9; box-shadow:6px 6px 0 var(--edge)}
+.dfc .dh{display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+.dfc .dt{display:inline-flex; align-items:center; gap:7px; height:36px; padding:0 15px 0 12px; border-radius:999px; background:var(--accent); border:2.5px solid var(--edge); color:var(--accent-ink); font-weight:800; font-size:19px}
+.dfc .dt svg{width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linejoin:round; stroke-linecap:round}
+.dfc .dn{font-family:var(--font-display); font-size:42px; font-weight:800; color:var(--gold); line-height:1.1}
+.dfc .de{font-family:var(--font-math); font-style:italic; font-size:24px; color:var(--muted); font-weight:600}
+.dfc .dx{margin:0; font-size:32px; line-height:1.55; font-weight:700; color:var(--ink)}
+.dfc .dx b{color:var(--gold)}
+.dfc.sm .dn{font-size:36px} .dfc.sm .dx{font-size:28px}
+.dfc.xs .dn{font-size:30px} .dfc.xs .dx{font-size:24px}
+.how{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.how .hl{font-weight:800; font-size:22px; color:var(--cyan)}
+.how .hs{display:inline-flex; align-items:center; gap:9px; min-height:44px; padding:4px 16px 4px 8px; border-radius:999px; background:#fff; border:2.5px solid var(--edge); font-size:25px; font-weight:700}
+.how .hs i{flex:none; width:30px; height:30px; border-radius:50%; background:var(--accent); font-style:normal; font-weight:800; font-size:18px; display:inline-flex; align-items:center; justify-content:center}
+
+/* animated bits of the pictures */
+.pores .pb{animation:pbounce 2.4s ease-in-out infinite}
+.pores .pb1{animation-delay:-.5s} .pores .pb2{animation-delay:-1s} .pores .pb3{animation-delay:-1.5s} .pores .pb4{animation-delay:-2s}
+@keyframes pbounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.pores .ps{animation:ppass 2.4s ease-in infinite}
+.pores .ps1{animation-delay:-.45s} .pores .ps2{animation-delay:-.9s} .pores .ps3{animation-delay:-1.35s} .pores .ps4{animation-delay:-1.8s}
+@keyframes ppass{0%{transform:translateY(0);opacity:1}55%{transform:translateY(100px);opacity:1}100%{transform:translateY(170px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.pores *{animation:none!important}}
+
+/* ---- the virtual filtration workshop (sci6/s6.js: flabHTML) ---- */
+.flab{display:flex; gap:22px; flex:1; min-height:0; align-items:stretch}
+.fscene{flex:0 0 612px; display:flex; align-items:center; justify-content:center}
+.flsvg{width:612px; height:auto; max-height:100%}
+.fpanel{flex:1; display:flex; flex-direction:column; gap:9px; min-width:0; justify-content:flex-start; padding-top:6px}
+.fstep{font-size:26px; font-weight:800; display:flex; align-items:center; gap:10px}
+.fstep b{flex:none; width:38px; height:38px; border-radius:50%; background:var(--accent); border:3px solid var(--edge); display:grid; place-items:center; font-size:21px}
+.fhint{font-size:19px; font-weight:600; color:var(--muted)}
+.fchips{display:flex; flex-wrap:wrap; gap:9px}
+.fchip{height:48px; padding:0 18px 0 14px; border-radius:24px; border:3px solid var(--edge); background:#fff; box-shadow:3px 3px 0 var(--edge); font-size:22px; font-weight:800; display:inline-flex; align-items:center; gap:9px; color:var(--ink)}
+.fchip i{width:20px; height:20px; border-radius:50%; border:2.5px solid var(--edge); flex:none}
+.fchip.on{background:var(--accent)}
+.fpred{display:flex; flex-wrap:wrap; gap:9px}
+.fp{height:50px; padding:0 18px; border-radius:16px; border:3px solid var(--edge); background:#fff; box-shadow:3px 3px 0 var(--edge); font-size:22px; font-weight:800; color:var(--ink)}
+.fp.on{background:var(--accent)}
+.fgo{display:flex; gap:12px; align-items:center}
+.fres{background:#fff; border:3px solid var(--edge); border-radius:18px; padding:10px 18px 12px; box-shadow:5px 5px 0 var(--edge); font-size:23px; line-height:1.42}
+.fres ul{margin:3px 0 4px; padding-inline-start:22px}
+.fres b{color:var(--gold)}
+.fwhy{font-weight:700; color:var(--cyan)}
+.fverd{font-weight:800; font-size:25px} .fverd.ok{color:var(--ok)} .fverd.no{color:var(--bad)}
+@keyframes fdrop{0%{transform:translateY(0);opacity:1}100%{transform:translateY(86px);opacity:0}}
+.go .fdr{animation:fdrop .9s ease-in infinite} .go .fd2{animation-delay:.3s} .go .fd3{animation-delay:.6s}
+@keyframes fflow{to{stroke-dashoffset:-28}}
+.flow{animation:fflow .6s linear infinite}
+/* ---- put the steps in order ---- */
+.ord{display:flex; gap:26px; flex:1; min-height:0}
+.ocol{flex:1; display:flex; flex-direction:column; gap:10px; min-width:0}
+.oh{font-size:26px; font-weight:800; color:var(--cyan)}
+.ocards,.oslots{display:flex; flex-direction:column; gap:10px}
+.ocard{text-align:start; padding:10px 18px; border:3px solid var(--edge); border-radius:16px; background:#fff; box-shadow:4px 4px 0 var(--edge); font-size:25px; font-weight:700; line-height:1.4; min-height:66px; color:var(--ink)}
+.ocard:hover{background:var(--accent-soft)}
+.ocard.used{opacity:.3; pointer-events:none}
+.oslot{display:flex; align-items:center; gap:12px; min-height:66px; padding:8px 14px; border:3px dashed rgba(var(--t2),.65); border-radius:16px; background:rgba(255,255,255,.55)}
+.oslot i{flex:none; width:40px; height:40px; border-radius:50%; border:3px solid var(--edge); background:#fff; display:grid; place-items:center; font-style:normal; font-weight:800; font-size:21px}
+.oslot.on{border-style:solid; border-color:var(--ok); background:var(--ok-bg)}
+.oslot.on i{background:var(--ok); color:#fff; border-color:var(--ok)}
+.oslot .ot{font-size:24px; font-weight:700; line-height:1.35}
+/* ---- label the diagram ---- */
+.lbl{display:flex; gap:24px; flex:1; min-height:0}
+.lsvg{flex:0 0 600px; display:flex; align-items:center} .lsvg svg{width:100%; height:auto; max-height:100%}
+.lside{flex:1; display:flex; flex-direction:column; gap:10px; justify-content:center}
+.lchips{display:flex; flex-direction:column; gap:9px}
+.lchip{text-align:start; padding:8px 18px; border:3px solid var(--edge); border-radius:16px; background:#fff; box-shadow:3px 3px 0 var(--edge); font-size:25px; font-weight:800; color:var(--ink); min-height:54px}
+.lchip.sel{background:var(--accent)} .lchip.used{opacity:.3; pointer-events:none}
+.lwrap{position:relative; width:100%}
+.lmk{position:absolute; width:46px; height:46px; margin:-23px 0 0 -23px; border-radius:50%; border:3.5px solid var(--edge); background:#fff; color:var(--ink); font:800 24px Cairo,Tajawal,sans-serif; display:grid; place-items:center; cursor:pointer; box-shadow:3px 3px 0 var(--edge); z-index:3}
+.lmk.done{background:var(--ok-bg); border-color:var(--ok); box-shadow:none}
+.ltxt{position:absolute; transform:translate(-50%,-50%); white-space:nowrap; padding:3px 14px; border-radius:999px; border:3px solid var(--ok); background:#fff; opacity:0; transition:opacity .3s; font:800 22px Cairo,Tajawal,sans-serif; color:var(--ink); z-index:4}
+.ltxt.on{opacity:1}
+
+/* ---- the printable worksheet (S6.worksheet) ---- */
+.wsov{position:fixed; inset:0; z-index:200; display:none; flex-direction:column; align-items:center; gap:12px; padding:14px 12px 20px; background:rgba(20,12,6,.9); overflow:auto}
+.wsov.on{display:flex}
+.wsbar{display:flex; gap:12px}
+.wsbar button{height:42px; padding:0 26px; border-radius:21px; border:2px solid #F2A33A; background:transparent; color:#fff; font:700 19px Cairo,Tajawal,sans-serif; cursor:pointer}
+.wsbar .wprint{background:#F2A33A; color:#2B1700}
+.wsheet{width:min(794px,100%); background:#fff; color:#17202a; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); font-family:Tajawal,Cairo,sans-serif}
+.wsbox{padding:26px 32px 24px; display:flex; flex-direction:column; gap:14px}
+.wsbox header{display:flex; align-items:center; justify-content:space-between; gap:18px; padding-bottom:8px; border-bottom:3px solid #3A2418}
+.wh1{font:800 28px Cairo,sans-serif; color:#3A2418} .wh2{font:700 17px Cairo,sans-serif; color:#555; margin-top:2px}
+.wfig{width:110px; height:96px} .wfig svg{width:100%; height:100%}
+.wname{font-size:17px; font-weight:700}
+.wt{width:100%; border-collapse:collapse; font-size:17px}
+.wt th,.wt td{border:2px solid #3A2418; padding:8px 10px; text-align:center}
+.wt th{background:#F6EAD3; font:800 17px Cairo,sans-serif}
+.wt td{height:62px} .wt td.w1{font-weight:800; width:24%; text-align:start}
+.wb b{display:block; font:800 18px Cairo,sans-serif; margin-bottom:2px}
+.wl{height:34px; border-bottom:1.6px solid #7a6a5a}
+@media print{
+  html.ws-open body>*:not(#wsov){display:none!important}
+  html.ws-open,html.ws-open body{background:#fff!important}
+  html.ws-open .wsov{position:static; display:block; padding:0; background:#fff; overflow:visible}
+  html.ws-open .wsbar{display:none}
+  html.ws-open .wsheet{width:100%; box-shadow:none; border-radius:0}
+  html.ws-open .wsbox{padding:0}
+  .wsheet *{-webkit-print-color-adjust:exact; print-color-adjust:exact}
+}
+.wsbtn{display:inline-flex; align-items:center; gap:9px; margin:2px 8px 12px 0; height:40px; padding:0 18px 0 14px; border-radius:20px; border:2px solid #ffd76b; background:rgba(255,215,107,.12); color:inherit; font:700 17px Cairo,Tajawal,sans-serif; cursor:pointer}
+.wsbtn svg{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linejoin:round; stroke-linecap:round}
+.wsbtn:hover,.wsbtn:focus-visible{background:rgba(255,215,107,.25); outline:none}
+.idx .sumbtn,.idx .wsbtn{border-color:var(--edge); background:#fff; color:var(--ink); box-shadow:3px 3px 0 var(--edge)}
+.idx .sumbtn:hover,.idx .wsbtn:hover{background:var(--accent-soft)}
