@@ -1,21 +1,20 @@
-/* ---- sheet header (old colourful design): Ministry logo | title | Vision 2040 + QMS, on white plates over the decorative waves ---- */
-.paper.sheet .sh-head{grid-template-columns:150px minmax(0,1fr) 240px;}
-.paper.sheet .sh-head .dr{width:auto; justify-self:start; line-height:0;}
-.paper.sheet .sh-head .dl{width:auto; justify-self:end; line-height:0; display:flex; align-items:center; gap:12px;}
+/* ---- sheet header (old colourful design): Ministry logo | title | Vision 2040 + QMS. No boxes behind the logos: they sit directly on the page,
+        so the dark top-right wave (it made the Ministry logo unreadable) is not drawn in the header any more; the bottom-left wave stays ---- */
+.paper.sheet .sh-wave.tr, .paper.pv .sh-wave.tr{display:none;}
+.paper.sheet .sh-head{grid-template-columns:130px minmax(0,1fr) 250px; padding:2px 6px 0;}
+.paper.sheet .sh-head .dr{width:auto; justify-self:start; line-height:0; background:none; box-shadow:none; padding:0;}
+.paper.sheet .sh-head .dl{width:auto; justify-self:end; line-height:0; display:flex; align-items:center; gap:14px; background:none; box-shadow:none; padding:0;}
 .paper.sheet .sh-head img{display:block; width:auto; filter:none;}
-.paper.sheet .sh-head .dr img{height:100px;} .paper.sheet .sh-head .dl .lg-v{height:66px;} .paper.sheet .sh-head .dl .lg-q{height:88px;}
-.paper.sheet .sh-head .dr, .paper.sheet .sh-head .dl{background:#fff; border-radius:14px; padding:4px 10px; box-shadow:0 4px 12px -6px rgba(11,29,58,.35); align-self:center;}
-.paper.pv .sh-head{grid-template-columns:62px minmax(0,1fr) 124px;}
-.paper.pv .sh-head .dr{width:auto;} .paper.pv .sh-head .dl{width:auto; gap:6px;}
-.paper.pv .sh-head .dr img{height:50px;} .paper.pv .sh-head .dl .lg-v{height:34px;} .paper.pv .sh-head .dl .lg-q{height:44px;}
-.paper.pv .sh-head .dr, .paper.pv .sh-head .dl{padding:2px 6px; border-radius:8px;}
+.paper.sheet .sh-head .dr img{height:104px;} .paper.sheet .sh-head .dl .lg-v{height:70px;} .paper.sheet .sh-head .dl .lg-q{height:92px;}
+.paper.pv .sh-head{grid-template-columns:60px minmax(0,1fr) 128px; padding:1px 4px 0;}
+.paper.pv .sh-head .dr{width:auto; background:none; box-shadow:none; padding:0;} .paper.pv .sh-head .dl{width:auto; gap:7px; background:none; box-shadow:none; padding:0;}
+.paper.pv .sh-head .dr img{height:56px;} .paper.pv .sh-head .dl .lg-v{height:38px;} .paper.pv .sh-head .dl .lg-q{height:50px;}
 @media print{
-  .paper.sheet .sh-head{grid-template-columns:62px minmax(0,1fr) 124px;}
-  .paper.sheet .sh-head .dl{gap:6px;}
-  .paper.sheet .sh-head .dr img{height:50px;} .paper.sheet .sh-head .dl .lg-v{height:34px;} .paper.sheet .sh-head .dl .lg-q{height:44px;}
-  .paper.sheet .sh-head .dr, .paper.sheet .sh-head .dl{padding:2px 6px; border-radius:8px;}
+  .paper.sheet .sh-head{grid-template-columns:60px minmax(0,1fr) 128px; padding:1px 4px 0;}
+  .paper.sheet .sh-head .dl{gap:7px;}
+  .paper.sheet .sh-head .dr img{height:56px;} .paper.sheet .sh-head .dl .lg-v{height:38px;} .paper.sheet .sh-head .dl .lg-q{height:50px;}
 }
 @media screen and (max-width:720px){
-  .paper:not(.pv) .sh-head{grid-template-columns:70px minmax(0,1fr) 120px;}
-  .paper:not(.pv) .sh-head .dr img{height:52px;} .paper:not(.pv) .sh-head .dl .lg-v{height:34px;} .paper:not(.pv) .sh-head .dl .lg-q{height:44px;}
+  .paper:not(.pv) .sh-head{grid-template-columns:70px minmax(0,1fr) 124px;}
+  .paper:not(.pv) .sh-head .dr img{height:56px;} .paper:not(.pv) .sh-head .dl .lg-v{height:36px;} .paper:not(.pv) .sh-head .dl .lg-q{height:48px;}
 }
