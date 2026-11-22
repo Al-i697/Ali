@@ -6,7 +6,7 @@ html = next((a for a in sys.argv[1:] if a.endswith('.html')), '/home/user/Ali/sc
 only = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--only=')), '')
 URL = 'file://' + html
 STRATS = ['', 'e5', 'poe', 'tps', 'inquiry', 'coop', 'problem']
-SEED = 'localStorage.setItem("sci56-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"أ. اختبار", school:"معهد العلوم الإسلامية"}, lessons:{}, profile:{name:"أ. اختبار", school:"معهد العلوم الإسلامية", courses:["chem10","chem11"]}}))'
+SEED = 'localStorage.setItem("sci56-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"أ. اختبار", school:"مدرسة تجريبية"}, lessons:{}, profile:{name:"أ. اختبار", school:"مدرسة تجريبية", courses:["chem10","chem11"]}}))'
 INIT = 'if(!localStorage.getItem("sci56-smart-planner:v2")){' + SEED + '}'
 
 def pdf_pages(path):

@@ -6,7 +6,7 @@ W = '/home/user/Ali/sci56/site'
 URL = 'file://' + W + '/app.html'
 OUT = '/tmp/claude-0/-home-claude/63cf5978-af4a-5581-8f1f-7338fefa86ef/scratchpad/asst'
 os.makedirs(OUT, exist_ok=True)
-SEED = 'localStorage.setItem("sci56-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"أ. اختبار", school:"معهد العلوم الإسلامية"}, lessons:{}, profile:{name:"أ. اختبار", school:"معهد العلوم الإسلامية", courses:["sci5","sci6"]}}))'
+SEED = 'localStorage.setItem("sci56-smart-planner:v2", JSON.stringify({v:2, meta:{teacher:"أ. اختبار", school:"مدرسة تجريبية"}, lessons:{}, profile:{name:"أ. اختبار", school:"مدرسة تجريبية", courses:["sci5","sci6"]}}))'
 INIT = 'if(!localStorage.getItem("sci56-smart-planner:v2")){' + SEED + '}'
 MOCK = r'''
 window.__calls = []; window.__saved = null;

@@ -2,7 +2,12 @@
 .paper.sheet[data-moe]{position:relative; isolation:auto; overflow-x:auto; max-width:1060px; margin:0 auto; padding:14px 18px 12px; background:#fff !important; color:#000; font-size:.86rem; line-height:1.6;
   border:1px solid #cfd4dc; border-radius:8px; box-shadow:var(--sh);}
 .paper.sheet[data-moe]::before, .paper.sheet[data-moe]::after{content:none !important; display:none !important;}
-.paper[data-moe] .m-banner{display:block; width:100%; height:auto; aspect-ratio:1860/230; margin:0 0 8px;}
+.paper[data-moe] .m-hdr{display:grid; grid-template-columns:1fr 1fr 1fr; align-items:center; gap:10px; min-height:92px; margin:0 0 8px;}
+.paper[data-moe] .m-hdr > div{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; min-width:0;}
+.paper[data-moe] .m-hdr img{display:block; width:auto; max-width:100%;}
+.paper[data-moe] .m-hdr .lg-em{height:58px;} .paper[data-moe] .m-hdr .lg-v{height:72px;} .paper[data-moe] .m-hdr .lg-q{height:82px;}
+.paper[data-moe] .m-hdr .h-t{display:flex; flex-direction:column; align-items:center; line-height:1.2; font-weight:800; color:#000;}
+.paper[data-moe] .m-hdr .h-t b:first-child{font-size:.9rem;} .paper[data-moe] .m-hdr .h-t b:last-child{font-size:1.1rem;}
 .paper[data-moe] .m-t{width:100%; min-width:640px; border-collapse:collapse; table-layout:fixed; margin:0 0 8px; background:#fff; border:2.5px solid #000;}
 .paper[data-moe] .m-t th, .paper[data-moe] .m-t td{border:1.5px solid #000; padding:4px 8px; vertical-align:top; overflow-wrap:anywhere;}
 .paper[data-moe] .m-t th{background:#FBE4D5; color:#000; font-weight:800; text-align:center; vertical-align:middle; font-size:1.04em; line-height:1.4;}
@@ -56,7 +61,9 @@
 
 /* preview (A4 box) and print share the same compact sizes, so what the preview measures is what prints */
 %S%{font-size:8.2pt; line-height:1.45; overflow:visible;}
-%S% .m-banner{width:auto; height:20mm; max-width:100%; aspect-ratio:1860/230; margin:0 auto 2mm;}
+%S% .m-hdr{height:22mm; min-height:0; margin:0 0 2mm; gap:4mm;}
+%S% .m-hdr .lg-em{height:13mm;} %S% .m-hdr .lg-v{height:17mm;} %S% .m-hdr .lg-q{height:20mm;}
+%S% .m-hdr .h-t b:first-child{font-size:8.5pt;} %S% .m-hdr .h-t b:last-child{font-size:10.5pt;}
 %S% .m-t{min-width:0; margin-bottom:2mm;}
 %S% .m-t th, %S% .m-t td{padding:1px 4px;}
 %S% .m-t{border-width:2.5px;}

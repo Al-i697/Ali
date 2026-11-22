@@ -68,11 +68,30 @@ _css = open(os.path.join(HERE, 'src', 'paper_moe.css'), encoding='utf-8').read()
 _compact = [l for l in _css if l.startswith('%S%')]
 _base = '\n'.join(l for l in _css if not l.startswith('%S%'))
 _all = _base + '\n' + '\n'.join(l.replace('%S%', '.paper.pv[data-moe]') for l in _compact) + '\n@media print{\n' + '\n'.join(l.replace('%S%', '.paper.sheet[data-moe]') for l in _compact) + '\n}\n'
+_all += open(os.path.join(HERE, 'src', 'brand_moe.css'), encoding='utf-8').read()
 _j = t.index('</style>', t.index('THE PREP SHEET'))
 t = t[:_j] + _all + t[_j:]
 
 # ---- Word export: the Ministry of Education prep template (src/docx_moe.js replaces the main site's DOCX builder) ----
-cut('const DOCX = (() => {', '\n})();\n', label='docx', repl=open(os.path.join(HERE, 'src', 'docx_moe.js'), encoding='utf-8').read().rstrip('\n') + '\n')
+cut('const DOCX = (() => {', '\n})();\n', label='docx', repl=open(os.path.join(HERE, 'src', 'logos.js'), encoding='utf-8').read() + open(os.path.join(HERE, 'src', 'docx_moe.js'), encoding='utf-8').read().rstrip('\n') + '\n')
+
+# ---- site identity: Ministry of Education only (no Royal Court crest, no Sultan Qaboos Centre line, no institute) ----
+def _rep1(old, new):
+    global t
+    assert t.count(old) == 1, (old[:70], t.count(old))
+    t = t.replace(old, new)
+_rep1('<img id="orgLogo" class="hero-logo" alt="شعار ديوان البلاط السلطاني">\n      <span class="org-rule" aria-hidden="true"></span>\n      <div class="org-name">مركز السلطان قابوس العالي للثقافة والعلوم</div>',
+      '<div class="hero-moe">\n        <div class="hm-r"><img id="heroEmblem" alt="" width="88" height="73"><div class="hm-t"><b>سلطنة عُمان</b><b>وزارة التعليم</b></div></div>\n        <div class="hm-c"><img id="heroV2040" alt="رؤية عُمان 2040" width="138" height="88"></div>\n        <div class="hm-l"><img id="heroQms" alt="نظام إدارة الجودة" width="191" height="204"></div>\n      </div>')
+_rep1('$("#orgLogo").src = LOGO_GOLD;', '$("#heroEmblem").src = LOGO_EMBLEM; $("#heroV2040").src = LOGO_V2040; $("#heroQms").src = LOGO_QMS;')
+_rep1('$("#regLogo").src = LOGO_RED;', '$("#regLogo").src = LOGO_EMBLEM;')
+t = re.sub(r'^const LOGO_GOLD = .*\n', '', t, flags=re.M)
+t = re.sub(r'^const LOGO_RED = .*\n', '', t, flags=re.M)
+_rep1('placeholder="معهد العلوم الإسلامية"', 'placeholder="اسم المدرسة"')
+_rep1('school: "معهد العلوم الإسلامية"', 'school: ""')
+_rep1('store.meta.school || "معهد العلوم الإسلامية"', 'store.meta.school || ""')
+_rep1('، مركز السلطان قابوس العالي للثقافة والعلوم، ${pl.meta.school || "معهد العلوم الإسلامية"}`', '، وزارة التعليم${pl.meta.school ? "، " + pl.meta.school : ""}`')
+for _bad in ('السلطان قابوس', 'معهد العلوم', 'العلوم الإسلامية', 'ديوان البلاط', 'LOGO_RED', 'LOGO_GOLD'):
+    assert _bad not in t, ('old identity left in the base', _bad)
 
 open(out, 'w', encoding='utf-8').write(t)
 print('ok', out, len(t))
