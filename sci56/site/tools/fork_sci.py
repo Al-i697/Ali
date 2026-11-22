@@ -68,16 +68,20 @@ _css = open(os.path.join(HERE, 'src', 'paper_moe.css'), encoding='utf-8').read()
 _compact = [l for l in _css if l.startswith('%S%')]
 _base = '\n'.join(l for l in _css if not l.startswith('%S%'))
 _all = _base + '\n' + '\n'.join(l.replace('%S%', '.paper.pv[data-moe]') for l in _compact) + '\n@media print{\n' + '\n'.join(l.replace('%S%', '.paper.sheet[data-moe]') for l in _compact) + '\n}\n'
-_all += open(os.path.join(HERE, 'src', 'brand_moe.css'), encoding='utf-8').read()
+_bc = open(os.path.join(HERE, 'src', 'brand_moe.css'), encoding='utf-8').read()
+if _bc.split('\n')[0] not in t: _all += _bc
 _j = t.index('</style>', t.index('THE PREP SHEET'))
 t = t[:_j] + _all + t[_j:]
 
+if '/*LOGOS*/' in t: cut('/*LOGOS*/', '/*END LOGOS*/\n', label='main logos')
 # ---- Word export: the Ministry of Education prep template (src/docx_moe.js replaces the main site's DOCX builder) ----
 cut('const DOCX = (() => {', '\n})();\n', label='docx', repl=open(os.path.join(HERE, 'src', 'logos.js'), encoding='utf-8').read() + open(os.path.join(HERE, 'src', 'docx_moe.js'), encoding='utf-8').read().rstrip('\n') + '\n')
 
 # ---- site identity: Ministry of Education only (no Royal Court crest, no Sultan Qaboos Centre line, no institute) ----
+_branded = 'class="hero-moe"' in t     # the main site already has the Ministry identity (tools/brand_main.py)
 def _rep1(old, new):
     global t
+    if _branded: return
     assert t.count(old) == 1, (old[:70], t.count(old))
     t = t.replace(old, new)
 _rep1('<img id="orgLogo" class="hero-logo" alt="شعار ديوان البلاط السلطاني">\n      <span class="org-rule" aria-hidden="true"></span>\n      <div class="org-name">مركز السلطان قابوس العالي للثقافة والعلوم</div>',

@@ -2,7 +2,7 @@
 
 Arabic RTL, single-file web app «منظومة التحضير الذكي للعلوم — الصفان الخامس والسادس» (lesson-prep generator:
 prep sheet per lesson, Word export, floating assistant). It is a SEPARATE site forked from the user's main
-chemistry/environment site (`main-site-src/`, reference only — NEVER modify the main site).
+chemistry/environment site (`main-site-src/`, reference only: do not modify the main site, EXCEPT the identity change the user explicitly asked for on 2026-11-22, done by `site/tools/brand_main.py`: Ministry of Education logos in the home header, the sheet header and the Word header, no Royal Court crest / Sultan Qaboos Centre / institute name. `fork_sci.py` works with the branded main base).
 
 ## User preferences (apply always)
 - Reply in Arabic, concise, no unnecessary questions; pick the best technical option yourself.
