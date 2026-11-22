@@ -56,5 +56,8 @@ sub1(r'buildPeriodic\(\); buildCalc\(\); ', '')
 sub1(r'[ \t]*if \(b\.dataset\.open === "calcDialog"\)[^\n]*\n', '')
 sub1(r'[ \t]*const chem = COURSES\[state\.course\]\.subject === "chem";\n[ \t]*\$\$\("\.chem-only"\)\.forEach\(b => \{ b\.hidden = !chem; \}\);\n', '')
 
+# ---- Word export: the Ministry of Education prep template (src/docx_moe.js replaces the main site's DOCX builder) ----
+cut('const DOCX = (() => {', '\n})();\n', label='docx', repl=open(os.path.join(HERE, 'src', 'docx_moe.js'), encoding='utf-8').read().rstrip('\n') + '\n')
+
 open(out, 'w', encoding='utf-8').write(t)
 print('ok', out, len(t))

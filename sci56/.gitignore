@@ -6,3 +6,7 @@ src_pdf/
 shots/
 __pycache__/
 *.pyc
+
+# test byproducts (rewritten by check.sh / tests.py)
+site/tools/_check.js
+site/tools/_p.pdf

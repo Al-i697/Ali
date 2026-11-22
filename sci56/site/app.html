@@ -3361,6 +3361,9 @@ function importLog(file){
 }
 
 
+/* Word export in the Ministry of Education prep template (2 pages). Replaces the main site's colourful DOCX builder; spliced in by tools/fork_sci.py.
+   Logo: the Ministry crest only (no Vision 2040 / QMS logos, per CLAUDE.md). */
+const LOGO_MOE = "data:image/jpeg;base64,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";
 const DOCX = (() => {
   const FONT = "Arial";
   const W = 9638;               // عرض منطقة الكتابة في A4 بهوامش 2 سم (twips)
@@ -3416,112 +3419,126 @@ const DOCX = (() => {
 
   
 
-  const LOGO_EMU = { cx: 786000, cy: 720000 };
-  function logoRun(){
-    return `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${LOGO_EMU.cx}" cy="${LOGO_EMU.cy}"/><wp:docPr id="1" name="Logo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="1" name="logo.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdLogo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${LOGO_EMU.cx}" cy="${LOGO_EMU.cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
+  const LOGO_EMU = { cx: 880000, cy: 760000 };   // شعار الوزارة (176×152)
+  function logoRun(id = 1){
+    return `<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="${LOGO_EMU.cx}" cy="${LOGO_EMU.cy}"/><wp:docPr id="${id}" name="Logo${id}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${id}" name="logo.jpg"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdLogo"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${LOGO_EMU.cx}" cy="${LOGO_EMU.cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>`;
   }
   function logoBytes(){
-    const bin = atob(LOGO_RED.split(",")[1]), out = new Uint8Array(bin.length);
+    const bin = atob(LOGO_MOE.split(",")[1]), out = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
     return out;
   }
-  function footerXML(pl){
-    const o = { size: 16, color: "64748B" };
-    const fld = code => `<w:r>${rPr(o)}<w:fldChar w:fldCharType="begin"/></w:r><w:r>${rPr(o)}<w:instrText xml:space="preserve"> ${code} </w:instrText></w:r><w:r>${rPr(o)}<w:fldChar w:fldCharType="separate"/></w:r><w:r>${rPr(o)}<w:t>1</w:t></w:r><w:r>${rPr(o)}<w:fldChar w:fldCharType="end"/></w:r>`;
-    const body = p(run(`تحضير ${courseMeta(pl.key).subj.short} ${courseMeta(pl.key).grade}، الدرس \u200E${pl.d.code}\u200E  |  ${pl.meta.teacher || ""}  |  صفحة `, o) + fld("PAGE") + run(" من ", o) + fld("NUMPAGES"), { center: true, after: 0, topBorder: "CBD5E1" });
-    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:ftr xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${body}</w:ftr>`;
+  /* ============================================================
+     قالب وزارة التربية والتعليم (ورقة التحضير): الصفحة الأولى ترويسة (الوحدة والدرس والصف) وجدول اليوم والحصة والمخرجات،
+     ثم التعلم القبلي/التمهيد وجدول المخرجات والاستراتيجيات والتنفيذ والوسائل؛ والصفحة الثانية التقويم التكويني ونشاط
+     إثرائي/علاجي والتقويم الختامي والواجب وملاحظات المعلم. الشعار: شعار الوزارة فقط (بلا شعاري رؤية عُمان 2040 والجودة).
+     ============================================================ */
+  const PW = 10546;                       // عرض منطقة الكتابة في A4 بهوامش 1.2 سم (twips)
+  const INK = "000000", BLUE = "0070C0", RED = "C00000", PURPLE = "7030A0", GREEN = "00863D", ORANGE = "C55A11", SKY = "2E75B6", NAVY = "1F3864", PEACH = "FBE4D5";
+  function mp(runs, { center = false, after = 40, before = 0, keep = false, pageBreak = false, exact = 0 } = {}){
+    return `<w:p><w:pPr>${pageBreak ? "<w:pageBreakBefore/>" : ""}<w:bidi/><w:spacing w:before="${before}" w:after="${after}" w:line="${exact || 264}" w:lineRule="${exact ? "exact" : "auto"}"/>${center ? '<w:jc w:val="center"/>' : ""}</w:pPr>${runs}</w:p>`;
   }
+  function mc(content, width, { fill = null, span = 0, va = "top" } = {}){
+    return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${span > 1 ? `<w:gridSpan w:val="${span}"/>` : ""}${fill ? `<w:shd w:val="clear" w:color="auto" w:fill="${fill}"/>` : ""}<w:vAlign w:val="${va}"/></w:tcPr>${content || mp("", { after: 0 })}</w:tc>`;
+  }
+  function mt(widths, rows, { none = false } = {}){
+    const ln = n => none ? `<w:${n} w:val="nil"/>` : `<w:${n} w:val="single" w:sz="8" w:space="0" w:color="000000"/>`;
+    const borders = ["top", "left", "bottom", "right", "insideH", "insideV"].map(ln).join("");
+    const total = widths.reduce((a, b) => a + b, 0);
+    const trs = rows.map(r => `<w:tr><w:trPr>${r.split ? "" : "<w:cantSplit/>"}${r.height ? `<w:trHeight w:val="${r.height}" w:hRule="atLeast"/>` : ""}</w:trPr>${r.cells.join("")}</w:tr>`).join("");
+    return `<w:tbl><w:tblPr><w:bidiVisual/><w:tblW w:w="${total}" w:type="dxa"/><w:tblBorders>${borders}</w:tblBorders><w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="50" w:type="dxa"/><w:left w:w="100" w:type="dxa"/><w:bottom w:w="50" w:type="dxa"/><w:right w:w="100" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${w}"/>`).join("")}</w:tblGrid>${trs}</w:tbl>`;
+  }
+
   function documentXML(pl){
-    const d = pl.d, m = pl.meta, unit = splitUnit(d.unitTitle), wk = weekData(pl);
-    // [fill, accent, body, header text]
-    const C = {
-      navy:["0B1D3A","E9C46A","F3F6FB","FFFFFF"], blue:["0D2B55","9CD3EE","F3F7FC","FFFFFF"], gold:["F2C462","7A4E0B","FFF9EC","2B1E06"],
-      pink:["FBD3D9","9F1239","FFF9FA","9F1239"], peach:["FDE0BC","9A4A08","FFFBF4","9A4A08"], mint:["C9EEDD","0F6E4D","F6FCF9","0F6E4D"], sky:["CFE2F7","1E4E8C","F7FAFE","1E4E8C"],
-      lab:["FFFFFF","14213D","FFFFFF","14213D"], rnavy:["12456E","0B2447","F3F7FC","FFFFFF"], rpurple:["6A2AA8","4C1D95","FAF5FE","FFFFFF"],
-      amber:["FFE7BF","B45309","FFFDF8","7A3E06"], green:["CDEFDF","047857","F7FDFA","065F46"], indigo:["D8DEFF","3730A3","F8F9FF","312E81"], purple:["EAD8FE","6B21A8","FCF9FF","581C87"],
-      brown:["F9E5BF","92400E","FFFDF7","78350F"], rose:["FFD6DD","BE123C","FFFAFB","9F1239"], teal:["C9F0E4","0F766E","F6FDFB","115E59"], bluek:["D3E4FD","1D4ED8","F8FBFF","1E3A8A"]
-    };
-    const sm = { size: 18 }, xs = { size: 17 };
-    const H = (txt, c, w, o = {}) => cell(p(run(txt, { bold: true, size: 20, color: C[c][3] }), { center: true, after: 0 }), w, Object.assign({ fill: C[c][0] }, o));
-    const B = (inner, c, w, o = {}) => cell(inner, w, Object.assign({ fill: C[c][2] }, o));
-    const P = (html, o = {}) => p(rich(html || "—", sm), Object.assign({ after: 40 }, o));
-    const lbl = (k, html, c) => p(run(k + " ", { bold: true, size: 18, color: C[c][1] }) + rich(html || "—", sm), { after: 40 });
-    const kv = (k, v, c, w, o = {}) => cell(p(run(k, { bold: true, size: 16, color: C[c][1] }), { after: 0 }) + p(v, { after: 0 }), w, Object.assign({ fill: C[c][0] }, o));
+    const d = pl.d, m = pl.meta, unit = splitUnit(d.unitTitle), wk = weekData(pl), cm = courseMeta(pl.key);
+    const T = 17;                                              // خط المتن: 8.5 نقطة
+    const P = (html, o = {}) => mp(rich(html || "—", { size: T }), Object.assign({ after: 40 }, o));
+    const L = (k, html, kc = INK, base = {}) => mp(run(k + " ", { bold: true, size: T, color: kc }) + rich(html || "—", Object.assign({ size: T }, base)), { after: 40 });
+    const hd = (txt, w, o = {}) => mc(mp(run(txt, { bold: true, size: 22 }), { center: true, after: 0 }), w, Object.assign({ va: "center" }, o));
+    const gp = h => gap(h);
+    const ph = (r, i, arr) => pl.split && (i === 0 || arr[i - 1].period !== r.period) ? mp(run(`الحصة ${r.period}`, { bold: true, size: 19, color: NAVY }), { after: 30, before: i ? 60 : 0, keep: true }) : "";
+    const objById = {}; pl.objs.forEach(o => { objById[o.id] = o; });
+    const codesOf = r => [...new Set((r.objIds || []).map(id => objById[id]).filter(Boolean).map(objLabel))];
 
-    let b = "";
-    b += table([2000, 5638, 2000], [[
-      cell(p(logoRun(), { center: true, after: 0 }), 2000),
-      cell(p(run(`تحضير ${courseMeta(pl.key).subj.short} ${courseMeta(pl.key).grade}`, { bold: true, size: 40, color: "0B1D3A" }), { center: true, after: 20 }) + p(run("مركز السلطان قابوس العالي للثقافة والعلوم", { bold: true, size: 17, color: "6B7590" }), { center: true, after: 0 }) + p(run(pl.meta.school || "معهد العلوم الإسلامية", { bold: true, size: 17, color: "9C7020" }), { center: true, after: 0, bottomBorder: "D4A548" }), 5638, { fill: "FBF8F1" }),
-      cell(p(run(`الصف ${courseMeta(pl.key).gradeName}`, { bold: true, size: 18, color: "0B1D3A" }), { center: true, after: 0 }) + p(run(semName(semOf(pl.key)), { size: 16, color: "9C7020" }), { center: true, after: 0 }), 2000)
-    ]], { style: "none" });
-    b += gap(120);
+    const crest = id => mt([2600, PW - 5200, 2600], [{ cells: [mc(mp(logoRun(id), { after: 0 }), 2600), mc("", PW - 5200), mc("", 2600)] }], { none: true });
 
-    b += table([2600, 4638, 2400], [[
-      kv("الوحدة", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { bold: true, size: 19, color: "2B1E06" }), "gold", 2600),
-      kv("عنوان الدرس", run(`(${d.code})  `, { bold: true, size: 20, color: "E9C46A" }) + run(d.title, { bold: true, size: 20, color: "FFFFFF" }), "blue", 4638),
-      kv("الصف", run(courseMeta(pl.key).gradeName + (m.section ? " / " + m.section : ""), { bold: true, size: 20, color: "FFFFFF" }), "navy", 2400)
-    ]], { style: "grid" });
-    b += gap(100);
+    // الوحدة / عنوان الدرس / الصف
+    const lv = (label, val) => mp(run(label + " ", { bold: true, size: 22 }) + val, { center: true, after: 0 });
+    const info = mt([3000, PW - 6000, 3000], [{ cells: [
+      mc(lv("الوحدة:", run(`${unit.label ? unit.label.replace(/^الوحدة\s*/, "") + ": " : ""}${unit.name}`, { size: 22, color: PURPLE })), 3000, { va: "center" }),
+      mc(lv("عنوان الدرس:", run(`(‎${d.code}‎) `, { bold: true, size: 22, color: ORANGE }) + run(d.title, { size: 22, color: PURPLE })), PW - 6000, { va: "center" }),
+      mc(lv("الصف:", run(cm.gradeName + (m.section ? " / " + m.section : ""), { size: 22, color: PURPLE })), 3000, { va: "center" })
+    ] }]);
 
-    const lw = 1938, dw = 1540, dayC = ["pink", "peach", "mint", "sky", "lav5"];
-    C.lav5 = ["E6DAFB", "5B21B6", "FBF8FF", "5B21B6"];
-    const dc = (txt, i) => B(p(run(txt || " ", { bold: true, size: 18 }), { center: true, after: 0 }), dayC[i], dw);
-    b += table([lw, dw, dw, dw, dw, dw], [
-      [H("اليوم والتاريخ", "lab", lw, { vm: "restart" })].concat(wk.map((w, i) => H(w.name, dayC[i], dw))),
-      [cell("", lw, { vm: "cont" })].concat(wk.map((w, i) => dc(w.date, i))),
-      [H("الحصة", "lab", lw)].concat(wk.map((w, i) => dc(w.period, i))),
-      [H("أرقام المخرجات", "lab", lw)].concat(wk.map((w, i) => dc(w.codes, i)))
-    ], { style: "grid" });
-    b += gap(100);
+    // اليوم والتاريخ / الحصة / أرقام المخرجات
+    const LW = 2001, DW = 1709;
+    const dayTxt = w => (w.date || w.period || w.codes) ? w.name + (w.date ? "  " + w.date : "") : "";
+    const dc = (txt, color) => mc(mp(run(txt || " ", { bold: true, size: 19, color }), { center: true, after: 0 }), DW, { va: "center" });
+    const days = mt([LW, DW, DW, DW, DW, DW], [
+      { cells: [hd("اليوم والتاريخ", LW)].concat(wk.map(w => dc(dayTxt(w), SKY))) },
+      { cells: [hd("الحصة", LW)].concat(wk.map(w => dc(w.period, ORANGE))) },
+      { cells: [hd("أرقام المخرجات", LW)].concat(wk.map(w => dc(w.codes, ORANGE))) }
+    ]);
 
-    const rl = 2300, cw = 9638 - rl;
-    const rows = [[H("التعلم القبلي/ التمهيد", "rnavy", rl), B(lbl("التعلم القبلي:", pl.t.prior, "rnavy") + lbl("التمهيد:", pl.t.warm, "rnavy"), "rnavy", cw)]];
-    if (pl.opts.mis) rows.push([H("المفاهيم الخاطئة وسوء الفهم", "rpurple", rl), B(P(pl.t.mis), "rpurple", cw)]);
-    b += table([rl, cw], rows, { style: "grid" });
-    b += gap(100);
-
-    const W3 = [3500, 3200, 2938];
-    const ph = (r, i, arr) => pl.split && (i === 0 || arr[i - 1].period !== r.period) ? p(run(`الحصة ${r.period}`, { bold: true, size: 19, color: "0B1D3A" }), { after: 30, keepNext: true }) : "";
-    const acts = pl.flow.length ? pl.flow.map((r, i, arr) => ph(r, i, arr) + p(run(`${r.time}  `, { bold: true, size: 17, color: C.indigo[1] }) + run(r.code, { bold: true, size: 17, color: "6B7590" }) + (r.strat ? run(`  (${r.strat})`, { bold: true, size: 16, color: "B4231A" }) : ""), { after: 10, keepNext: true })
-      + p(run("المعلم: ", { bold: true, size: 17 }) + rich(pl.def && !r.ed.teacher ? stripPhase(r.teacher) : r.teacher, xs), { after: 10 })
-      + p(run("المتعلم: ", { bold: true, size: 17 }) + rich(r.student, xs), { after: 80 })).join("") : P("—");
-    const res = P(pl.t.resources) + (pl.opts.lab ? lbl("النشاط العملي والسلامة:", pl.t.lab, "purple") : "");
+    // المخرجات
+    const outc = pl.objs.length ? pl.objs.map(o => mp(run(`المخرج (${objLabel(o)})`, { bold: true, size: T, color: BLUE }), { after: 0, keep: true }) + mp(rich(o.text, { size: T, color: BLUE }), { after: 80 })).join("") : P("—");
+    // الاستراتيجيات: بين القوسين أرقام المخرجات التي تخدمها الاستراتيجية (كما في القالب)
     const chosen = new Set(pl.strategies);
     const list = (pl.def ? [pl.def.label] : []).concat(allStrategies(pl.key));
-    const strat = list.map(s => p(run(chosen.has(s) ? "(✓) " : "(   ) ", { bold: true, size: 17, color: C.green[1] }) + run(s, { size: 17, bold: chosen.has(s) }), { after: 20 })).join("");
-    const outc = pl.objs.length ? pl.objs.map(o => p(run(`المخرج (${objLabel(o)})`, { bold: true, size: 17, color: C.amber[1] }), { after: 0 }) + p(rich(o.text, xs), { after: 60 })).join("") : P("—");
-    b += table(W3, [
-      [H("01  المخرجات التعليمية", "amber", W3[0]), H("02  الاستراتيجيات / طرق التدريس", "green", W3[1]), H("03  الوسائل ومصادر التعلم", "purple", W3[2])],
-      { split: true, cells: [B(outc, "amber", W3[0]), B(strat, "green", W3[1]), B(res, "purple", W3[2])] }
-    ], { style: "grid", headerRow: true });
-    b += gap(100);
-    b += table([9638], [
-      [H("04  آلية التنفيذ / الأنشطة التدريبية / التعليمية", "indigo", 9638)],
-      { split: true, cells: [B(acts, "indigo", 9638)] }
-    ], { style: "grid", headerRow: true });
+    const stratCodes = s => [...new Set(pl.flow.filter(r => r.strat === s).flatMap(codesOf))];
+    const strat = list.map(s => {
+      if (!chosen.has(s)) return mp(run("(    ) ", { size: T }) + run(s, { size: T }), { after: 30 });
+      const cs = stratCodes(s);
+      return mp(run(`(${cs.length ? cs.join("، ") : "✓"}) `, { bold: true, size: T, color: BLUE }) + run(s, { bold: true, size: T }), { after: 30 });
+    }).join("");
+    // آلية التنفيذ
+    const acts = pl.flow.length ? pl.flow.map((r, i, arr) => {
+      const cs = codesOf(r);
+      return ph(r, i, arr)
+        + mp(run(`${i + 1}- `, { bold: true, size: T }) + (cs.length ? run(`(${cs.join("، ")}) `, { bold: true, size: T, color: BLUE }) : "") + run(r.code, { bold: true, size: T })
+          + (r.strat ? run(`  باستخدام استراتيجية ${r.strat}`, { bold: true, size: T, color: RED }) : "") + run(`  (${r.time})`, { bold: true, size: T }), { after: 10, keep: true })
+        + mp(run("المعلم: ", { bold: true, size: T }) + rich(pl.def && !(r.ed && r.ed.teacher) ? stripPhase(r.teacher) : r.teacher, { size: T }), { after: 10 })
+        + mp(run("المتعلم: ", { bold: true, size: T }) + rich(r.student, { size: T }), { after: 50 });
+    }).join("") : P("—");
+    // الوسائل ومصادر التعلم
+    const resItems = String(pl.t.resources || "").split(/،|<br\s*\/?>|\n/).map(s => s.trim()).filter(Boolean);
+    const res = (resItems.length ? resItems.map(s => mp(run("- ", { size: T }) + rich(s, { size: T }), { after: 30 })).join("") : P("—")) + (pl.opts.lab ? L("النشاط العملي والسلامة:", pl.t.lab, PURPLE) : "");
 
-    b += `<w:p><w:r><w:br w:type="page"/></w:r></w:p>`;
+    const WO = 1700, WS = 1700, WE = 5700, WR = PW - WO - WS - WE;
+    const rows1 = [{ cells: [hd("التعلم القبلي/ التمهيد", WO), mc(L("التعلم القبلي:", pl.t.prior) + L("التمهيد:", pl.t.warm), WS + WE + WR, { span: 3 })] }];
+    if (pl.opts.mis) rows1.push({ cells: [hd("المفاهيم الخاطئة وسوء الفهم", WO), mc(P(pl.t.mis), WS + WE + WR, { span: 3 })] });
+    rows1.push({ cells: [hd("المخرجات التعليمية", WO), hd("الاستراتيجيات/ طرق التدريس", WS), hd("آلية التنفيذ/ الأنشطة التدريبية/ التعليمية", WE), hd("الوسائل ومصادر التعلم", WR)] });
+    rows1.push({ split: true, cells: [mc(outc, WO), mc(strat, WS), mc(acts, WE), mc(res, WR)] });
+    const big = mt([WO, WS, WE, WR], rows1);
 
-    const Wb = [3000, 2300, 2600, 1738];
-    const diffT = lbl("الطلاب ذوو التحصيل الدراسي المنخفض (علاجي):", pl.diff.support || "—", "rose") + lbl("الطلاب ذوو التحصيل الدراسي المرتفع (إثرائي):", pl.diff.enrich || "—", "rose") + pl.ai.map(it => lbl(it.title + ":", it.text, "rose")).join("");
-    const evals = pl.flow.length ? pl.flow.map((r, i, arr) => ph(r, i, arr) + p(run(`${r.code}`, { bold: true, size: 17, color: C.brown[1] }), { after: 10, keepNext: true }) + P(r.eval)).join("") : P("—");
-    b += table(Wb, [
-      [H("05  التقويم التكويني", "brown", Wb[0]), H("06  نشاط إثرائي / علاجي / تفريد التعليم", "rose", Wb[1]), H("07  التقويم الختامي", "teal", Wb[2]), H("08  الواجب المنزلي", "bluek", Wb[3])],
-      { height: 9000, split: true, cells: [B(evals, "brown", Wb[0]), B(diffT, "rose", Wb[1]), B(P(pl.t.exit), "teal", Wb[2]), B(P(pl.t.homework), "bluek", Wb[3])] }
-    ], { style: "grid", headerRow: true });
+    // الصفحة الثانية
+    const PS = html => mp(rich(html || "—", { size: 16 }), { after: 30 });
+    const evals = pl.flow.length ? pl.flow.map((r, i, arr) => ph(r, i, arr) + mp(run(`${i + 1}- ${r.code}`, { bold: true, size: 16, color: PURPLE }), { after: 10 }) + PS(String(r.eval || "").replace(/<br\s*\/?>/gi, " ؛ "))).join("") : P("—");
+    const diffT = L("الطلاب ذوو التحصيل الدراسي المنخفض (علاجي):", pl.diff.support || "—", GREEN, { color: BLUE }) + L("الطلاب ذوو التحصيل الدراسي المرتفع (إثرائي):", pl.diff.enrich || "—", GREEN, { color: BLUE })
+      + (pl.ai || []).map(it => L(it.title + ":", it.text, GREEN, { color: BLUE })).join("");
+    const rf = pl.reflect || {};
+    const notes = [["تحقق الأهداف", rf.goals], ["الصعوبات والتحديات", rf.challenges], ["مقترحات التطوير", rf.next]].filter(x => x[1] && String(x[1]).trim()).map(x => L(x[0] + ":", String(x[1]).replace(/&/g, "&amp;").replace(/</g, "&lt;"))).join("");
+    const W2 = [4900, 2200, 2200, PW - 9300];
+    const page2 = mt(W2, [
+      { cells: [hd("التقويم التكويني", W2[0], { fill: PEACH }), hd("نشاط إثرائي/ علاجي/ تفريد التعليم", W2[1], { fill: PEACH }), hd("التقويم الختامي", W2[2], { fill: PEACH }), hd("الواجب المنزلي", W2[3], { fill: PEACH })] },
+      { split: true, cells: [mc(evals, W2[0]), mc(diffT, W2[1]), mc(P(pl.t.exit), W2[2]), mc(P(pl.t.homework), W2[3])] },
+      { height: 600, cells: [hd("ملاحظات المعلم", W2[0], { fill: PEACH }), mc(notes, W2[1] + W2[2] + W2[3], { span: 3 })] }
+    ]);
 
-    const sgw = Math.floor(9638 / 3);
-    const sg = (k, v, w) => cell(p(run(k, { bold: true, size: 20, color: "0B1D3A" }), { center: true, after: 60, before: 160 }) + p(run(v ? `أ/ ${String(v).replace(/^أ[./]\s*/, "")}` : "....................................", { size: 19, color: v ? "14213D" : "9AA3B5" }), { center: true, after: 0 }), w);
-    b += table([sgw, sgw, 9638 - sgw * 2], [[sg("معلم المادة", m.teacher, sgw), sg("مشرف المادة", m.supervisor, sgw), sg("مدير المعهد", m.principal, 9638 - sgw * 2)]], { style: "none" });
+    const sgw = Math.floor(PW / 3);
+    const sgn = (k, v, w) => mc(mp(run(k, { bold: true, size: 20 }), { center: true, after: 30, before: 60 }) + mp(run(v ? `أ/ ${String(v).replace(/^أ[./]\s*/, "")}` : "....................................", { size: 19, color: v ? INK : "9AA3B5" }), { center: true, after: 0 }), w);
+    const sig = () => mt([sgw, sgw, PW - 2 * sgw], [{ cells: [sgn("معلم المادة", m.teacher, sgw), sgn("مشرف المادة", m.supervisor, sgw), sgn("مدير المعهد", m.principal, PW - 2 * sgw)] }], { none: true });
 
-    const sect = `<w:sectPr><w:footerReference w:type="default" r:id="rIdFtr"/><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1134" w:right="1134" w:bottom="1134" w:left="1134" w:header="567" w:footer="567" w:gutter="0"/><w:bidi/></w:sectPr>`;
+    const b = crest(1) + gp(60) + info + gp(60) + days + gp(60) + big + gp(80) + sig()
+      + mp("", { pageBreak: true, exact: 20, after: 0 }) + crest(2) + gp(60) + page2 + gp(80) + sig() + mp("", { exact: 20, after: 0 });
+    const sect = `<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="454" w:right="680" w:bottom="454" w:left="680" w:header="283" w:footer="283" w:gutter="0"/><w:bidi/></w:sectPr>`;
     return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><w:body>${b}${sect}</w:body></w:document>`;
   }
 
   const STYLES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${FONT}" w:eastAsia="${FONT}" w:hAnsi="${FONT}" w:cs="${FONT}"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="en-US" w:eastAsia="en-US" w:bidi="ar-OM"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:bidi/><w:spacing w:after="100" w:line="300" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/><w:pPr><w:bidi/></w:pPr></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>`;
-  const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`;
+  const CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>`;
   const ROOT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>`;
-  const DOC_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdLogo" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo.png"/><Relationship Id="rIdFtr" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer" Target="footer1.xml"/></Relationships>`;
+  const DOC_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdLogo" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/logo.jpg"/></Relationships>`;
   const APP = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>منظومة التحضير الذكي للعلوم</Application></Properties>`;
   function core(title, author){
     const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
@@ -3570,8 +3587,7 @@ const DOCX = (() => {
       { name: "word/document.xml", data: documentXML(pl) },
       { name: "word/_rels/document.xml.rels", data: DOC_RELS },
       { name: "word/styles.xml", data: STYLES },
-      { name: "word/media/logo.png", data: logoBytes() },
-      { name: "word/footer1.xml", data: footerXML(pl) }
+      { name: "word/media/logo.jpg", data: logoBytes() },
     ]);
   }
   return { build };
