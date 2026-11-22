@@ -48,3 +48,9 @@ AB ab6 exercises: 3-1 p38 ... 3-8 language review p45 (one page each, in order).
 
 ### Grade 5 (not started)
 OCR complete: ocr_sb5 (80 pages), ocr_tb5 (92), ocr_ab5 (92). Read TOC and the teacher guide overview tables first, record periods per topic in this file, then author course "sci5" (Unit("sci5", 1, n, …)); the UI shows «قريباً» for sci5 until lessons exist. Semester 2 books (both grades) have not been provided.
+
+## حالة 2026-11-22 (Claude Code، ليلاً)
+- أُنجزت 3-5 الجزء ب (`sci6_s1_u3_l5b.py`)، وأُعيدت كتابة 3-4 (`l4`, `l4b`) على تسلسل خطة المعلم المكتوبة بخط اليد (التعلم القبلي «المحلول المعلق»، «أستطيع أن»، القهوة العُمانية والغربال، ورقة الترشيح، نشاط Science Coffee، النشاط الختامي ملح ورمل، التطبيقات الأربعة). البناء: 33 ورقة.
+- تصدير Word صار على قالب وزارة التربية والتعليم (`site/src/docx_moe.js`، انظر CLAUDE.md). العرض المطبوع داخل الموقع (HTML) لم يتغير. أوراق الثلاث حصص (1-5، 1-6، 1-7، 2-4، 2-5، 3-2ب، 3-3) تخرج في 4 صفحات، والباقي في 3.
+- المتبقي في الوحدة 3: 3-6 (5 حصص: أ 3 + ب 2)، 3-7، 3-8 (انظر الخطة أعلاه)، ثم الخامس ف1.
+

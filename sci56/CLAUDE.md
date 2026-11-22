@@ -24,6 +24,7 @@ named `sb6.pdf tb6.pdf ab6.pdf sb5.pdf tb5.pdf ab5.pdf` (sb = student book, tb =
 ## Layout
 - `site/app_base.html` engine/UI (forked; change only if the engine must change; `site/tools/fork_sci.py` re-forks from the main site base).
 - `site/data/sci6_s1_u<unit>_l<n>[b].py` one file per prep sheet (authored content). `site/data/lib/scilib.py` authoring API.
+- `site/src/docx_moe.js` the Word export in the Ministry of Education prep template (2 pages: header/schedule/outcomes/strategies/execution/resources, then formative/enrichment/closing/homework/teacher notes; Ministry crest only). `tools/fork_sci.py` splices it over the main site's DOCX builder, so edit THIS file (not `app_base.html`), then run `python3 tools/fork_sci.py && python3 tools/build.py`. Check by exporting with the Word button and converting with `soffice --headless --convert-to pdf`.
 - `site/tools/build.py` merges base + data (+ src/assistant + vendor) into `site/app.html` and validates everything.
 - `site/server/` Cloudflare Worker for the assistant (server mode so the assistant works for everyone). Deployment guide for the main site: `deploy/دليل-نشر-الموقع.md` (same pattern: index.html + `_worker.js`).
 - `ocr_*/pNNN.txt` OCR per PDF page; `./rd.sh <sb6|tb6|ab6|sb5|tb5|ab5> <first> [last]` prints cleaned text. OCR is noisy (digits/letters garbled): confirm numbers and answers visually on the page image when it matters.
@@ -56,7 +57,7 @@ Lesson URL hash: `#sci6~<unit>-<n>` (split sheets `#sci6~3-1b`).
 
 ## Where things stand
 See PROGRESS.md. Summary: grade 6 semester 1 — Unit 1 (جسم الإنسان, 10 sheets) and Unit 2 (الكائنات الحية في البيئة, 14 sheets) are DONE and published;
-Unit 3 (تغيّرات المادة) is in progress: 3-1 … 3-4 and 3-5 part A are authored (build passes, 32 sheets total) but NOT yet published; then grade 5 semester 1;
+Unit 3 (تغيّرات المادة) is in progress: 3-1 … 3-5 are authored (build passes, 33 sheets total; 3-4 follows the teacher's handwritten plan) but NOT yet published; then grade 5 semester 1;
 semester 2 books of both grades were not provided yet.
 Published copy lives at a claude.ai Artifact (https://claude.ai/artifact/18gjGusRxhFqcvp7s3vQjN) — it can only be updated from a claude.ai session;
 from Claude Code deliver `site/app.html` (single file) to the user instead, or deploy it with the worker guide.
