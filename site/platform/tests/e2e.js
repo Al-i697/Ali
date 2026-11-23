@@ -166,15 +166,27 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
     await p.close();
   });
   await T('environmental science 11, unit 3: lesson 3-2 (scene edition) is listed in the first semester, opens in the frame with the class button and its scene slides, and its home button returns to the semester page',async()=>{
-    const p=await page({hash:'#grade-11-env-1'}); assert.strictEqual(await p.locator('#v-course .unit').count(),3,'three units in the first semester'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),1); assert.ok((await p.innerText('#v-course')).includes('علاقات التغذية'));
-    await p.click('#v-course .lc.built'); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
+    const p=await page({hash:'#grade-11-env-1'}); assert.strictEqual(await p.locator('#v-course .unit').count(),3,'three units in the first semester'); assert.strictEqual(await p.locator('#v-course .lc.built').count(),2,'lessons 3-2 and 3-3'); assert.ok((await p.innerText('#v-course')).includes('علاقات التغذية'));
+    await p.locator('#v-course .lc.built').first().click(); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
     assert.strictEqual(await p.evaluate(()=>location.hash),'#l-env11-3-2'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0);
     assert.ok((await fr.locator('header.top .brand').innerText()).includes('علوم بيئية'),'the top bar names the subject');
     let sc=0; for(let i=2;i<12&&!sc;i++){ await fr.locator('#prog .seg').nth(i).evaluate(e=>e.click()); await p.waitForTimeout(500); sc=await fr.locator('.slide.on.scn').count() } assert.ok(sc>0,'a scene slide opens from the progress bar'); await fr.locator('#bNext').click(); await p.waitForTimeout(400);
     assert.ok(await fr.locator('.slide.on.scn').evaluate(e=>!!e.shadowRoot&&e.shadowRoot.querySelectorAll('img').length>0),'the scene draws its picture inside its shadow root');
     await fr.locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-11-env-1'); await p.context().close();
   });
-  await T('offline copy: the home page offers a download that builds ONE file with all 17 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
+  await T('environmental science 11, unit 3: lesson 3-3 (nutrient cycles) opens in the frame, shows its picture drawn in code and its book-page badges, steps with the Next button, and its home button returns to the semester page',async()=>{
+    const p=await page({hash:'#grade-11-env-1'}); assert.ok((await p.innerText('#v-course')).includes('دورات المغذيات'));
+    await p.locator('#v-course .lc.built').nth(1).click(); await p.waitForFunction(()=>{const f=document.getElementById('lf'); try{return f.contentDocument&&f.contentDocument.getElementById('bClass')}catch(e){return false}},null,{timeout:30000}); await p.waitForTimeout(800);
+    assert.strictEqual(await p.evaluate(()=>location.hash),'#l-env11-3-3'); const fr=p.frameLocator('#lf'); assert.ok(await fr.locator('.slide.on').count()>0);
+    assert.ok((await fr.locator('header.top .brand').innerText()).includes('علوم بيئية'),'the top bar names the subject');
+    assert.strictEqual(await fr.locator('#prog .seg').count(),45,'45 slides');
+    await fr.locator('#prog .seg').nth(8).evaluate(e=>e.click()); await p.waitForTimeout(700);
+    assert.ok(await fr.locator('.slide.on svg.dg').count()>0,'the nutrient-cycle picture is an svg drawn in code'); assert.ok(await fr.locator('.slide.on [data-s].on').count()===0,'its parts wait for the points');
+    await fr.locator('#bNext').click(); await p.waitForTimeout(500); assert.ok(await fr.locator('.slide.on [data-s].on').count()>0,'the first point shows the first part of the picture');
+    await fr.locator('#prog .seg').nth(4).evaluate(e=>e.click()); await p.waitForTimeout(700); assert.ok(await fr.locator('.slide.on .hd .pgb').count()>0,'the book page badge shows on the activity slide');
+    await fr.locator('#bHome').click(); await p.waitForTimeout(500); assert.strictEqual(await p.evaluate(()=>location.hash),'#grade-11-env-1'); await p.context().close();
+  });
+  await T('offline copy: the home page offers a download that builds ONE file with all 19 lessons from the site pages; the file opens by itself and runs a lesson (hidden inside the offline copy)',async()=>{
     const p=await page();
     if(process.env.OFFLINE){ assert.strictEqual(await p.locator('[data-act=offline]').count(),0,'no download button inside the offline copy itself'); await p.context().close(); return }
     assert.strictEqual(await p.locator('#v-home .bcard').count(),5); assert.ok(await p.isVisible('#v-home .dlbar [data-act=offline]'));
@@ -187,7 +199,7 @@ async function openByHash(p,h){ await p.evaluate(x=>{location.hash=x},h||'#l-che
     const ctx=await b.newContext({viewport:{width:1280,height:720}}), q=await ctx.newPage(); const e2=[]; q.on('pageerror',e=>e2.push(e.message)); await q.route(/^https?:\/\//,r=>r.abort());
     await q.goto('file://'+out+'#l-chem10-3-3'); await q.waitForTimeout(2500);
     const info=await q.evaluate(()=>({n:Object.keys(window.OFFLINE_LESSONS).length,ok:Object.values(window.OFFLINE_LESSONS).every(t=>t.startsWith('<!doctype html>')&&!t.includes('shared/stickers_assets.js')),stk:typeof STK_IMG}));
-    assert.deepStrictEqual(info,{n:18,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
+    assert.deepStrictEqual(info,{n:19,ok:true,stk:'object'}); assert.ok(await q.frameLocator('#lf').locator('.slide.on').count()>0,'lesson 3-3 runs inside the downloaded file');
     assert.strictEqual(e2.length,0,e2.join('|')); await ctx.close(); fs.unlinkSync(out);
   });
   await b.close(); srv.close();
