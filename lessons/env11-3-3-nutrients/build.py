@@ -2,4 +2,4 @@
 import sys
 sys.path.insert(0, '../_core/tools')
 from u4build import build
-build('e33', 'دورات المغذيات ٣-٣', ['photos.js', 'helpers.js', 'svgs.js', 'part_a.js', 'part_b.js', 'part_c.js', 'part_d.js', 'part_e.js', 'part_f.js', 'tail.js'], sys.argv, css_extra=['env.css'], skin='cards', shuffle=True, digits=True, book=True, tools=True, kinds=True, predict=True, summary=True)
+build('e33', 'دورات المغذيات ٣-٣', ['photos.js', 'helpers.js', 'svgs.js', 'part_a.js', 'part_b.js', 'part_c.js', 'part_d.js', 'part_e.js', 'part_f.js', 'tail.js'], sys.argv, css_extra=['env.css', 'light.css'], skin='cards', shuffle=True, digits=True, book=True, tools=True, kinds=True, predict=True, summary=True)

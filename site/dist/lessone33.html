@@ -1732,6 +1732,121 @@ body.tl-laser .view, body.tl-laser .view *{cursor:none!important}
 .hw3 .stp{min-height:0!important;padding:3px 10px!important}
 .hw3 .stp .sn{width:30px!important;height:30px!important;font-size:16px!important}
 
+/* ---------- the light look of lesson 3-3 (teacher's request: light colours, like the grade-6 lesson).
+   Cream notebook paper, thick dark outlines with a flat offset shadow, pastel cards with dark ink. Only the stage (the slides) turns light; the top bar, the footer,
+   the teacher notes, the index and the tools keep the dark chrome of the player. The pictures drawn in code stay on dark "figure boards" so their white labels keep their contrast. ---------- */
+.app .view{background-color:#FBF6EA!important; background-image:radial-gradient(rgba(120,110,90,.22) 1.5px, transparent 1.8px)!important; background-size:34px 34px!important; background-position:12px 12px!important}
+.app .stage{color:#1c2630}
+.app .stage,.app .stage .slide[data-pal]{
+  --ink:#1c2630; --muted:#475565; --cyan:#0b5f8a; --gold:#8a5a00; --accent:#E4A92A; --ground:#FBF6EA; --d1:255,251,241; --d2:255,247,230; --t1:60,60,70; --t2:120,110,90;
+  --cardA:#E3F1FB; --cardB:#D3E8F7; --edge:#1c4966; --ok:#16743a; --ok-bg:rgba(60,170,90,.18); --bad:#b3261e; --bad-bg:rgba(220,70,50,.14);
+  color:var(--ink)}
+.app .stage .slide[data-pal="navy"]{--cardA:#E3F1FB; --cardB:#D3E8F7; --edge:#1c4966; --muted:#475565}
+.app .stage .slide[data-pal="emerald"]{--cardA:#E4F5EA; --cardB:#D1EBDA; --edge:#1c5a3a; --muted:#475565}
+.app .stage .slide[data-pal="violet"]{--cardA:#EFE9FB; --cardB:#E1D8F6; --edge:#41307a; --muted:#475565}
+.app .stage .slide[data-pal="gold"]{--cardA:#FBF0D3; --cardB:#F5E3B2; --edge:#5f4510; --muted:#475565}
+.app .stage .slide[data-pal="ember"]{--cardA:#FDE9DE; --cardB:#F9D6C4; --edge:#703018; --muted:#475565}
+.app .bgc,.app .bgscrim,.app .pbg,.app .pshade,.app .bgfx,.app .bgl,.app .bgwipe{display:none!important}
+
+/* surfaces: thick outline + flat offset shadow, pastel fill, dark ink */
+.app .stage .panel,.app .stage .frm,.app .stage .mod,.app .stage .qd,.app .stage .rc,.app .stage .mrc,.app .stage .pq,.app .stage .goal,.app .stage .tq,.app .stage .sent,.app .stage .stp,.app .stage .rcard,.app .stage .panel:not(.dark){
+  background:linear-gradient(160deg,var(--cardA),var(--cardB))!important; border:1.5px solid var(--edge)!important; border-radius:18px;
+  box-shadow:inset 0 0 0 1.5px var(--edge), 5px 5px 0 var(--edge)!important; color:var(--ink)}   /* a 3px outline made of the 1.5px border and an inset ring, so the layout keeps its old height */
+.app .stage .rcard{border:0!important; box-shadow:inset 0 0 0 3px var(--edge), 5px 5px 0 var(--edge)!important}
+.app .stage .rcard:hover{box-shadow:inset 0 0 0 3px #F6C945, 5px 5px 0 var(--edge)!important}
+.app .stage .rcard.on{background:linear-gradient(160deg,#DDF5E4,#C6EBD2)!important; box-shadow:inset 0 0 0 3px #16743a, 5px 5px 0 #16743a!important}
+.app .stage .panel .panel,.app .stage .panel .frm,.app .stage .frm .panel,.app .stage .frm .frm,.app .stage .panel:not(.dark) .panel:not(.dark){background:rgba(255,255,255,.72)!important; border:1.5px solid var(--edge)!important; box-shadow:none!important}
+.app .stage .panel.dark,.app .stage .frm.gold,.app .stage .stp.final,.app .stage .team.b,.app .stage .score{background:#3A2418!important; border-color:#2a1910!important; box-shadow:inset 0 0 0 1.5px #2a1910, 5px 5px 0 #2a1910!important; color:#FFF4E2}
+.app .stage .panel.dark h3{color:#F6C945!important}
+.app .stage .panel.dark b{color:#FFE9B0}
+.app .stage .frm>.fh{background:#F6C945; color:#241800}
+.app .stage .opt,.app .stage .pr,.app .stage .pill{background:#fff!important; border:2.5px solid var(--edge)!important; color:var(--ink)!important; box-shadow:none!important}
+.app .stage .opt:hover{background:#FFF3CC!important}
+.app .stage .opt .ix,.app .stage .pr .t .ix{background:var(--edge)!important; color:#fff!important}
+.app .stage .opt.ok-b{background:#DDF5E4!important; border-color:#16743a!important}
+.app .stage .opt.bad-b{background:#FDE0DC!important; border-color:#b3261e!important}
+.app .stage .lq .q{color:var(--gold)}
+.app .stage .rn,.app .stage .stp .sn{background:#F6C945!important; color:#241800!important}
+.app .stage .stp.final .sn{background:#F6C945!important}
+
+/* title: dark ink, no plate, a hand-drawn dashed underline */
+.app .stage .hd h2{color:var(--ink)!important; text-shadow:none!important}
+.app .stage .hd h2 .tp,.app .stage .onpic{background:none!important; box-shadow:none!important; text-shadow:none!important}
+.app .stage .hd{border-bottom:4px dashed rgba(120,110,90,.5)}
+.app .stage .hd .tag{background:var(--accent); color:#2b1700; border:2.5px solid #3a2418}
+.app .stage .hd .chip{background:#3A2418; color:#FFF4E2}
+.app .stage .sm,.app .stage .muted,.app .stage .fb{text-shadow:none}
+.app .stage .fb.ok{color:var(--ok)}
+.app .stage .fb.bad{color:var(--bad)}
+
+/* the class of answer bars, tray, slots, rows, buttons, inputs */
+.app .stage .gbar{background:#FFE8A8!important; color:#2d2000!important; border:3px solid #5f4510; border-radius:16px; text-shadow:none; box-shadow:4px 4px 0 #5f4510}
+.app .stage .gi{background:#fff!important}
+.app .stage .gi .ck{background:#F6C945; color:#241800}
+.app .stage .gi.done{background:#DDF5E4!important}
+.app .stage .tray,.app .stage .mtray{background:rgba(255,255,255,.7)!important; border:2.5px dashed var(--edge)!important}
+.app .stage .mslot,.app .stage .slot{background:rgba(255,255,255,.75)!important; border:2.5px dashed var(--edge)!important; color:var(--ink)}
+.app .stage .mslot .ph{color:#6b7683}
+.app .stage .mchip,.app .stage .chip.mchip{background:#fff!important; color:var(--ink)!important; border:2.5px solid var(--edge)!important; box-shadow:3px 3px 0 var(--edge)}
+.app .stage .mchip.ok-b{background:#DDF5E4!important; border-color:#16743a!important; box-shadow:none}
+.app .stage .cls{background:rgba(255,255,255,.8)!important; border:2px solid var(--edge); color:var(--ink)}
+.app .stage .btn:not(.acc):not(.tab){background:#fff!important; color:var(--ink)!important; border:2.5px solid var(--edge); box-shadow:2px 2px 0 var(--edge)}
+.app .stage .btn.ok-b{background:#DDF5E4!important; border-color:#16743a}
+.app .stage .btn.bad-b{background:#FDE0DC!important; border-color:#b3261e}
+.app .stage .btn.acc{background:#F6C945; color:#241800; border:2.5px solid #3a2418; box-shadow:2px 2px 0 #3a2418}
+.app .stage input{background:#fff!important; color:var(--ink)!important; border:2.5px solid var(--edge)!important}
+.app .stage .nin .go{background:#F6C945; color:#241800}
+.app .stage .tq h4{color:var(--ink)}
+.app .stage .rd{background:#fff; color:var(--ink); border:2px solid var(--edge)}
+.app .stage .rd.cur,.app .stage .rd.done{background:#F6C945; color:#241800}
+
+/* the rows and the book cards */
+.app .stage .dfc{background:linear-gradient(160deg,#FFF4CF,#FBE6A3)!important; border-color:#5f4510!important; box-shadow:inset 0 0 0 1.5px #5f4510, 5px 5px 0 #5f4510!important; color:var(--ink)}
+.app .stage .dfc{padding-block:11px 13px}
+.app .stage .dfc .dn{color:#2d2000}
+.app .stage .dfc .de{color:#5f4510}
+.app .stage .dfc .dx{color:var(--ink)}
+.app .stage .dfc .dt{background:#5f4510; color:#fff}
+.app .stage .dfc.law,.app .stage .dfc.warn,.app .stage .dfc.rem{background:#fff!important}
+.app .stage .pgb{background:#3A2418; color:#FFF4E2; border:2px solid #F6C945}
+.app .stage .pgb svg{fill:#F6C945}
+.app .stage .en{color:#0b5f8a!important}
+.app .stage .pb b{color:#7a4a00}
+.app .stage table.tbl32 th{color:#0b3a57!important; border-bottom:2px solid var(--edge)}
+.app .stage .tbl32 td{color:var(--ink)}
+.app .stage .tbl32 td:first-child{color:#0b3a57!important}
+.app .stage .ion{color:inherit}
+.app .stage .rcards .rq{color:#46525f}
+.app .stage .rcards .rt b{color:var(--ink)}
+.app .stage .rcards .rx{color:#1c2630}
+
+/* pictures drawn in code live on dark figure boards; the loose chips keep solid colours */
+.app .stage .dg{background:#12385a; border-radius:14px; border:2px solid #0a2540}
+.app .stage .chip3{color:#fff; border-color:rgba(0,0,0,.35)}
+.app .stage .chip3.ab{background:#2a6fa8}
+.app .stage .chip3.bi{background:#1f7a46}
+.app .stage .flv .fa{color:#6b4a00}
+.app .stage .phf figcaption{color:var(--muted)}
+.app .stage .phf img{border:3px solid var(--edge)}
+.app .stage .cyr{background:#fff; border:2.5px solid var(--edge); color:var(--ink); box-shadow:3px 3px 0 var(--edge)}
+.app .stage .cyr .cyl{background:var(--edge); color:#fff; border:0}
+.app .stage .cyr .cya{color:#7a4a00}
+.app .stage .cyr.on{background:#DDF5E4; border-color:#16743a; box-shadow:3px 3px 0 #16743a}
+.app .stage .car-svg .car circle{stroke:#cfe6ef}
+.app .stage .hw3 .stp{background:#fff!important}
+
+/* the student's sticker area is not used; keep what the player draws over the slide readable */
+.app .stage .kd{border-color:var(--edge)}
+
+/* the question bars (inline cyan lines) become yellow bars; the numbers of the objectives are dark */
+.app .stage div[style*="var(--cyan)"]{background:#FFE8A8!important; color:#2d2000!important; border:2.5px solid #5f4510; border-radius:12px; text-shadow:none; box-shadow:3px 3px 0 #5f4510}
+.app .stage .sa b.num{color:#0b5f8a!important}
+.app .stage .sab{background:#fff!important}
+.app .stage .sab.on{background:#F6C945!important; color:#241800!important}
+.app .stage .mslot .ph{color:#6b7683}
+.app .stage [style*="#fff3c4"],.app .stage [style*="255, 243, 196"]{color:#7a4a00!important}
+.app .stage .rcards .rq,.app .stage .rcard .rq{color:#46525f!important}
+
 
 </style>
 <script src="shared/stickers_assets.js"></script>
@@ -4724,7 +4839,7 @@ explain({id:'res',ch:3,title:'خزان المغذيات الذائبة وزمن 
   'زمن بقاء الأيونات المغذية في المحيط <b>طويل جداً</b> لأن بعضها يسقط إلى القاع مع البراز أو الكائنات الميتة فيبقى في الرواسب آلاف أو ملايين السنين.',
   'أما في الطبقة السطحية فزمن البقاء <b>قصير</b> لأن الكائنات الحية تستخدم المغذيات وتعيد تدويرها باستمرار؛ ولهذا الخزان السطحي أهمية خاصة: يوفر إنتاجية مرتفعة من العوالق النباتية.'],
  fig2:'<div class="panel" style="padding:8px"><div class="sm" style="font-size:17px;text-align:center;color:var(--cyan);margin-bottom:2px">الجدول 3-4: متوسط زمن البقاء التقريبي في المحيط (سنوات)</div>'+
-  logBars([['المغنيسيوم',17000000,'17 000 000'],['الكالسيوم',1000000,'1 000 000'],['الكربون',100000,'100 000'],['الفوسفات (الفسفور)',100000,'20 000 – 100 000',1],['النيتروجين',2000,'2000',1]],3,7.3,{w:440,lw:150,axis:'مقياس لوغاريتمي لتسهيل المقارنة'})+'</div>',fw:450,lw:360,fs:18,gap:7,
+  logBars([['المغنيسيوم',17000000,'17 000 000'],['الكالسيوم',1000000,'1 000 000'],['الكربون',100000,'100 000'],['الفوسفات (الفسفور)',100000,'20 000 – 100 000',1],['النيتروجين',2000,'2000',1]],3,7.3,{w:440,lw:150,axis:'مقياس لوغاريتمي لتسهيل المقارنة'})+'</div>',fw:450,lw:360,fs:17,gap:6,
  note:'<ul><li>كتاب الطالب ص١٠٤: «الخزانات في دورات المغذيات» ومصطلح زمن البقاء، والجدول ٣-٤ (الفوسفات 20 000–100 000، المغنيسيوم 17 000 000، كربونات الهيدروجين 100 000، النيتروجين 2000، الكالسيوم 1 000 000 سنة). القيم من الجدول، والرسم بالكود بمقياس لوغاريتمي (من عندي) لأن الفرق بينها كبير جداً؛ لوّنّا النيتروجين والفوسفات لأنهما سيظهران عاملاً محدّداً في الشريحة التالية.</li><li>سؤال البداية من عندي.</li></ul>'});
 
 /* 16 concentrations and the limiting nutrients (student book p. 104, table 3-5) */
@@ -4970,7 +5085,7 @@ explain({id:'dz3',ch:5,title:'خليج المكسيك والمسيسيبي',tag:
  pts:['خليج المكسيك حوض تحيط به الولايات المتحدة والمكسيك وكوبا، عرضه نحو <b>1500 km</b>، ويتصل بالمحيط الأطلسي والبحر الكاريبي.',
   'يصبّ <b>نهر المسيسيبي</b> في الخليج، وهو أكبر حوض نهر في أمريكا الشمالية؛ ومعظم الأراضي القريبة منه زراعية فتجرف مياه الأمطار الأسمدة باستمرار، فيصل <b>1.7 مليون طن</b> من المغذيات كل سنة إلى الخليج. ويعيش 12 مليون إنسان قربه ويطلقون فيه مياه الصرف الصحي المعالجة.',
   'يسبب فصلا <b>الربيع والصيف</b> ازدهار الطحالب وتكوّن المنطقة الميتة، وتبلغ مساحتها في المتوسط نحو <b>13 000 km²</b>؛ وهي <b>ثاني أكبر منطقة ميتة في العالم</b>، وتتغير مساحتها موسمياً بحسب ظروف الطقس كل سنة.'],
- fig2:'<div class="panel" style="padding:8px">'+gulfSVG()+'</div>',fw:470,sync:true,fs:20,gap:9,
+ fig2:'<div class="panel" style="padding:8px">'+gulfSVG()+'</div>',fw:470,sync:true,fs:19,gap:8,
  note:'<ul><li>كتاب الطالب ص١٠٩–١١٠: «خليج المكسيك» والشكل ٣-١١ (خريطة الخليج والبلدان المحيطة) والشكل ٣-١٣ (متوسط مساحة المنطقة الميتة في سنة 2018م: 13 084 km²). الأرقام (1500 km، 1.7 مليون طن، 12 مليون إنسان، 13 000 km² متوسطاً) من النص.</li><li><b>الخريطة مرسومة بالكود تقريبياً</b> (ليست مقيّسة ولا تطابق حدود الشكل ٣-١١). سؤال البداية من عندي.</li></ul>'});
 
 /* 34 why the size changes: seasons, floods, drought, layers of water (student book p. 110) */
